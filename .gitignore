@@ -1,0 +1,19 @@
+# Qt Creator user files
+*.user
+*.user.*
+
+# Build directories
+build/
+build-*/
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+
+# Compiled binaries
+*.exe
+*.o
+*.obj
+*.dll
+*.pdb

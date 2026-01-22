@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/migrations">
+        <file>core/database/migrations/001_create_users.sql</file>
+    </qresource>
+</RCC>

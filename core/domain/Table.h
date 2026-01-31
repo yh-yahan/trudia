@@ -8,7 +8,7 @@ class Table
 public:
     int id = -1;
     QString table_number;
-    std::optional<int> capacity;
+    int capacity;
     bool is_active;
 };
 

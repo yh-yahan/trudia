@@ -9,19 +9,40 @@ Item {
         spacing: 0
 
         AdminSidebar {
+            id: sidebar
             Layout.preferredWidth: 220
             Layout.fillHeight: true
         }
 
-        Rectangle {
+        Loader {
+            id: pageLoader
             Layout.fillWidth: true
             Layout.fillHeight: true
-            color: "#121212"
-
-            AdminMenuManagement {
-                Layout.fillHeight: true
-                anchors.fill: parent
-            }
         }
+    }
+
+    Component.onCompleted: loadPage(sidebar.selectedIndex)
+
+    Connections {
+        target: sidebar
+        onSelectionChanged: loadPage(index)
+    }
+
+    function loadPage(index) {
+        if (index === 0) {
+            pageLoader.sourceComponent = menuManagementPage
+        } else if (index === 1) {
+            pageLoader.sourceComponent = tableManagementPage
+        }
+    }
+
+    Component {
+        id: menuManagementPage
+        AdminMenuManagement {}
+    }
+
+    Component {
+        id: tableManagementPage
+        AdminTableManagement {}
     }
 }

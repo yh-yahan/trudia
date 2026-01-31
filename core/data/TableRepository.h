@@ -10,7 +10,11 @@ class TableRepository
 public:
     explicit TableRepository(QSqlDatabase db);
 
-    void createTable (const Table &table);
+    std::vector<Table> getAllTables();
+    std::optional<Table> getTableById(int tableId);
+    void create (const Table &table);
+    void update(const Table &table);
+    void remove(const Table &table);
 
 private:
     QSqlDatabase m_db;

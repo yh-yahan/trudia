@@ -4,6 +4,8 @@
 #include "core/data/UserRepository.h"
 #include "core/data/MenuRepository.h"
 #include "core/data/CategoryRepository.h"
+#include "core/data/TableRepository.h"
+#include "core/services/TableService.h"
 #include "core/services/AuthService.h"
 #include <QSqlDatabase>
 #include "core/services/MenuService.h"
@@ -21,12 +23,15 @@ int main(int argc, char *argv[])
     UserRepository repo(DatabaseManager::db());
     MenuRepository menuRepo(DatabaseManager::db());
     CategoryRepository categoryRepo(DatabaseManager::db());
+    TableRepository tableRepo(DatabaseManager::db());
 
     AuthService authService(repo);
     MenuService menuService(menuRepo, categoryRepo);
+    TableService tableService(tableRepo);
 
     qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "AuthService", &authService);
     qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "MenuService", &menuService);
+    qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "TableService", &tableService);
 
     QQmlApplicationEngine engine;
     engine.loadFromModule("xeno", "Main");

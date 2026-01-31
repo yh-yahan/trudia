@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS tables (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    table_number TEXT,
+    capacity INTEGER,
+    is_active INTEGER NOT NULL,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

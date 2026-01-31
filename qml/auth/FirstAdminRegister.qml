@@ -125,7 +125,7 @@ Item {
 
                         if (AuthService.registerUser(username, password,
                                                      passwordConfirm)) {
-                            stackView.push("Home.qml")
+                            stackView.push("../admin/AdminHome.qml")
                         } else {
                             errorMessage.text = qsTr("An error occurred.")
                         }

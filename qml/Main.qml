@@ -21,9 +21,9 @@ Window {
 
     Component.onCompleted: {
         if (AuthService.isFirstAdminSetupNeeded()) {
-            stackView.push("FirstAdminSetup.qml")
+            stackView.push("auth/FirstAdminRegister.qml")
         } else {
-            stackView.push("Login.qml")
+            stackView.push("auth/Login.qml")
         }
     }
 }

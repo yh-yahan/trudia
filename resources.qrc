@@ -1,5 +1,10 @@
 <RCC>
     <qresource prefix="/migrations">
         <file>core/database/migrations/001_create_users.sql</file>
+        <file>core/database/migrations/002_create_categories.sql</file>
+        <file>core/database/migrations/003_create_menu.sql</file>
+        <file>core/database/migrations/004_create_tables.sql</file>
+        <file>core/database/migrations/005_create_orders.sql</file>
+        <file>core/database/migrations/006_create_order_items.sql</file>
     </qresource>
 </RCC>

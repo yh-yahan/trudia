@@ -2,8 +2,11 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include "core/data/UserRepository.h"
+#include "core/data/MenuRepository.h"
+#include "core/data/CategoryRepository.h"
 #include "core/services/AuthService.h"
 #include <QSqlDatabase>
+#include "core/services/MenuService.h"
 #include "core/database/DatabaseManager.h"
 
 int main(int argc, char *argv[])
@@ -16,17 +19,16 @@ int main(int argc, char *argv[])
     }
 
     UserRepository repo(DatabaseManager::db());
-    AuthService authService(repo);
+    MenuRepository menuRepo(DatabaseManager::db());
+    CategoryRepository categoryRepo(DatabaseManager::db());
 
-    qmlRegisterSingletonInstance(
-        "Xeno.Services",
-        1, 0,
-        "AuthService",
-        &authService
-    );
+    AuthService authService(repo);
+    MenuService menuService(menuRepo, categoryRepo);
+
+    qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "AuthService", &authService);
+    qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "MenuService", &menuService);
 
     QQmlApplicationEngine engine;
-
     engine.loadFromModule("xeno", "Main");
 
     if (engine.rootObjects().isEmpty()) {

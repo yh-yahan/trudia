@@ -1,0 +1,10 @@
+CREATE TABLE IF NOT EXISTS menu (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    item TEXT NOT NULL,
+    category_id INTEGER NOT NULL,
+    price NUMERIC NOT NULL,
+    portion_size TEXT,
+    is_available INTEGER NOT NULL,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE ON UPDATE CASCADE
+);

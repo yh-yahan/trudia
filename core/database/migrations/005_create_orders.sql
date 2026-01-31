@@ -1,0 +1,13 @@
+CREATE TABLE IF NOT EXISTS orders (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    table_id TEXT,
+    order_type TEXT NOT NULL,
+    status TEXT,
+    subtotal NUMERIC NOT NULL,
+    tax NUMERIC NOT NULL,
+    total NUMERIC NOT NULL,
+    notes TEXT,
+    closed_at TEXT NULL,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (table_id) REFERENCES tables(id) ON DELETE CASCADE ON UPDATE CASCADE
+);

@@ -98,7 +98,14 @@ Item {
                         var username = usernameField.text
                         var password = passwordField.text
                         if (AuthService.login(username, password)) {
-                            stackView.push("Home.qml")
+                            var userRole = AuthService.currentUserRole
+                            if (userRole === "admin") {
+                                stackView.push("../admin/AdminHome.qml")
+                            } else {
+                                stackView.push("../user/UserHome.qml")
+                            }
+
+                            Window.window.showMaximized()
                         } else {
                             errorMessage.text = qsTr(
                                         "Invalid username or password.")

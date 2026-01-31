@@ -1,6 +1,5 @@
 #include "UserRepository.h"
 
-
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QVariant>

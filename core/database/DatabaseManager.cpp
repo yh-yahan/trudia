@@ -52,7 +52,12 @@ bool DatabaseManager::runMigrations()
     }
 
     const QStringList migrationFiles = {
-        "core/database/migrations/001_create_users.sql"
+        "core/database/migrations/001_create_users.sql",
+        "core/database/migrations/002_create_categories.sql",
+        "core/database/migrations/003_create_menu.sql",
+        "core/database/migrations/004_create_tables.sql",
+        "core/database/migrations/005_create_orders.sql",
+        "core/database/migrations/006_create_order_items.sql"
     };
 
     for (const QString &fileName : migrationFiles) {

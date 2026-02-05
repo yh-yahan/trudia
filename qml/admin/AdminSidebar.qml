@@ -18,13 +18,45 @@ Rectangle {
         spacing: 0
 
         Button {
+            id: orderBtn
+            Layout.fillWidth: true
+            Layout.preferredHeight: 50
+            text: "Take Order"
+            clip: true
+
+            property int index: 0
+
+            background: Rectangle {
+                color: sidebarBackground.selectedIndex === orderBtn.index ? "#9a7bff" : "#121212"
+            }
+
+            contentItem: Text {
+                text: qsTr("Take Order")
+                font.bold: true
+                anchors.centerIn: parent
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                color: "white"
+                elide: Text.ElideRight
+            }
+
+            onClicked: {
+                sidebarBackground.selectedIndex = index
+                sidebarBackground.selectionChanged(index)
+            }
+
+            hoverEnabled: false
+            focusPolicy: Qt.NoFocus
+        }
+
+        Button {
             id: menuBtn
             Layout.fillWidth: true
             Layout.preferredHeight: 50
             text: "Menu Management"
             clip: true
 
-            property int index: 0
+            property int index: 1
 
             background: Rectangle {
                 color: sidebarBackground.selectedIndex === menuBtn.index ? "#9a7bff" : "#121212"
@@ -56,7 +88,7 @@ Rectangle {
             text: "Table Management"
             clip: true
 
-            property int index: 1
+            property int index: 2
 
             background: Rectangle {
                 color: sidebarBackground.selectedIndex === tableBtn.index ? "#9a7bff" : "#121212"

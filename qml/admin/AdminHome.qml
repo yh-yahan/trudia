@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import "../common"
 
 Item {
     anchors.fill: parent
@@ -30,10 +31,17 @@ Item {
 
     function loadPage(index) {
         if (index === 0) {
-            pageLoader.sourceComponent = menuManagementPage
+            pageLoader.sourceComponent = orderTakingPage
         } else if (index === 1) {
+            pageLoader.sourceComponent = menuManagementPage
+        } else if (index === 2) {
             pageLoader.sourceComponent = tableManagementPage
         }
+    }
+
+    Component {
+        id: orderTakingPage
+        OrderTaking {}
     }
 
     Component {

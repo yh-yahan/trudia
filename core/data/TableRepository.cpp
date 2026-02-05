@@ -56,7 +56,7 @@ std::optional<Table> TableRepository::getTableById(int tableId)
     return table;
 }
 
-void TableRepository::create (const Table &table)
+void TableRepository::create(const Table &table)
 {
     QSqlQuery query(m_db);
     query.prepare(R"(
@@ -87,6 +87,23 @@ void TableRepository::update(const Table &table)
 
     if (!query.exec()) {
         qWarning() << "update failed:" << query.lastError();
+    }
+}
+
+void TableRepository::setTableState(int tableId, bool isActive)
+{
+    QSqlQuery query(m_db);
+    query.prepare(R"(
+        UPDATE tables
+        SET is_active = :is_active
+        WHERE id = :table_id
+    )");
+
+    query.bindValue(":table_id", tableId);
+    query.bindValue(":is_active", isActive);
+
+    if (!query.exec()) {
+        qWarning() << "setTableState failed:" << query.lastError();
     }
 }
 

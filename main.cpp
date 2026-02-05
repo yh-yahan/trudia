@@ -1,13 +1,16 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include <QSqlDatabase>
 #include "core/data/UserRepository.h"
 #include "core/data/MenuRepository.h"
 #include "core/data/CategoryRepository.h"
+#include "core/data/OrderRepository.h"
+#include "core/data/OrderItemRepository.h"
+#include "core/services/OrderService.h"
 #include "core/data/TableRepository.h"
 #include "core/services/TableService.h"
 #include "core/services/AuthService.h"
-#include <QSqlDatabase>
 #include "core/services/MenuService.h"
 #include "core/database/DatabaseManager.h"
 
@@ -24,14 +27,18 @@ int main(int argc, char *argv[])
     MenuRepository menuRepo(DatabaseManager::db());
     CategoryRepository categoryRepo(DatabaseManager::db());
     TableRepository tableRepo(DatabaseManager::db());
+    OrderRepository orderRepo(DatabaseManager::db());
+    OrderItemRepository orderItemRepo(DatabaseManager::db());
 
     AuthService authService(repo);
     MenuService menuService(menuRepo, categoryRepo);
     TableService tableService(tableRepo);
+    OrderService orderService(orderRepo, orderItemRepo, tableRepo);
 
     qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "AuthService", &authService);
     qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "MenuService", &menuService);
     qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "TableService", &tableService);
+    qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "OrderService", &orderService);
 
     QQmlApplicationEngine engine;
     engine.loadFromModule("xeno", "Main");

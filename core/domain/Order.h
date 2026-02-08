@@ -2,18 +2,14 @@
 #define ORDER_H
 
 #include <QString>
-#include <optional>
 
 class Order
 {
 public:
     int id = -1;
-    std::optional<int> table_id;
-    QString order_type;
+    int order_session_id;
+    int display_number;
     QString status;
-    double subtotal;
-    double tax;
-    double total;
     QString notes;
     QString closed_at;
 };

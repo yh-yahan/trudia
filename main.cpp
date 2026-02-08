@@ -7,6 +7,7 @@
 #include "core/data/CategoryRepository.h"
 #include "core/data/OrderRepository.h"
 #include "core/data/OrderItemRepository.h"
+#include "core/data/OrderSessionRepository.h"
 #include "core/services/OrderService.h"
 #include "core/data/TableRepository.h"
 #include "core/services/TableService.h"
@@ -29,11 +30,12 @@ int main(int argc, char *argv[])
     TableRepository tableRepo(DatabaseManager::db());
     OrderRepository orderRepo(DatabaseManager::db());
     OrderItemRepository orderItemRepo(DatabaseManager::db());
+    OrderSessionRepository orderSessionRepo(DatabaseManager::db());
 
     AuthService authService(repo);
     MenuService menuService(menuRepo, categoryRepo);
     TableService tableService(tableRepo);
-    OrderService orderService(orderRepo, orderItemRepo, tableRepo);
+    OrderService orderService(orderSessionRepo, orderRepo, orderItemRepo, tableRepo);
 
     qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "AuthService", &authService);
     qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "MenuService", &menuService);

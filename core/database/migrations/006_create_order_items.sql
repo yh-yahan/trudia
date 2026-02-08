@@ -8,5 +8,11 @@ CREATE TABLE IF NOT EXISTS order_items (
     item_status TEXT,
     notes TEXT,
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (item_id) REFERENCES orders(id) ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY (order_id) REFERENCES orders(id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+
+    FOREIGN KEY (item_id) REFERENCES menu(id)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE
 );

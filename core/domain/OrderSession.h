@@ -1,0 +1,22 @@
+#ifndef ORDERSESSION_H
+#define ORDERSESSION_H
+
+#include <QString>
+
+class OrderSession
+{
+public:
+    int id = -1;
+    int display_number;
+    std::optional<int> table_id;
+    QString order_type;
+    QString status;
+    double subtotal;
+    double tax;
+    double discount;
+    double total;
+    std::optional<QString> opened_at;
+    std::optional<QString> closed_at;
+};
+
+#endif // ORDERSESSION_H

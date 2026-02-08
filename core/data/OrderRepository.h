@@ -11,8 +11,8 @@ class OrderRepository
 public:
     explicit OrderRepository(QSqlDatabase db);
 
-    // std::vector<Order> getAllOrders();
     std::optional<Order> getOrderById(int orderId);
+    int getMaxDisplayNumberForDate(const QString &date);
     int create(const Order &order);
     void update(const Order &order);
     void remove(const Order &order);

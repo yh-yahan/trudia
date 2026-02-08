@@ -1,9 +1,12 @@
 #include "OrderService.h"
 
-OrderService::OrderService(OrderRepository &orderRepo,
+#include <QDate>
+#include <QRandomGenerator>
+
+OrderService::OrderService(OrderSessionRepository &orderSessionRepo, OrderRepository &orderRepo,
                            OrderItemRepository &orderItemRepo,
                            TableRepository &tableRepo)
-    : m_orderRepo(orderRepo), m_orderItemRepo(orderItemRepo), m_tableRepo(tableRepo) {}
+    : m_orderSessionRepo(orderSessionRepo), m_orderRepo(orderRepo), m_orderItemRepo(orderItemRepo), m_tableRepo(tableRepo) {}
 
 int OrderService::createOrder(
     const QString &orderType,
@@ -15,22 +18,64 @@ int OrderService::createOrder(
         return -1;
     }
 
-    Order order;
-    order.order_type = orderType;
-    order.status = "open";
-    order.subtotal = 0.0;
-    order.tax = 0.0;
-    order.total = 0.0;
-    order.notes = options.value("notes").toString();
+    int orderSessionId = -1;
+    OrderSession orderSession;
 
     if (orderType == "dine_in") {
-        order.table_id = options.value("tableId").toInt();
+        // findOpenSessionByTableId returns 0 if not found, if found, returns order session id
+        int existingSessionId = m_orderSessionRepo.findOpenSessionByTableId(options.value("tableId").toInt());
+        if (existingSessionId > 0) {
+            orderSessionId = existingSessionId;
+            orderSession = m_orderSessionRepo.getById(orderSessionId).value();
+        } else {
+            // create a new session
+            orderSession.table_id = options.value("tableId").toInt();
+            orderSession.display_number = generateOrderSessionDisplayNumber();
+            orderSession.order_type = orderType;
+            orderSession.status = "open";
+            orderSession.subtotal = 0.0;
+            orderSession.tax = 0.0;
+            orderSession.discount = 0.0;
+            orderSession.total = 0.0;
+
+            orderSessionId = m_orderSessionRepo.create(orderSession);
+            m_tableRepo.setTableState(orderSession.table_id.value(), true);
+            if (orderSessionId <= 0) {
+                qCritical() << "OrderSession creation failed, aborting order creation";
+                return -1;
+            }
+
+            orderSession.id = orderSessionId;
+        }
+    } else {
+        orderSession.display_number = generateOrderSessionDisplayNumber();
+        orderSession.order_type = orderType;
+        orderSession.status = "open";
+        orderSession.subtotal = 0.0;
+        orderSession.tax = 0.0;
+        orderSession.discount = 0.0;
+        orderSession.total = 0.0;
+
+        orderSessionId = m_orderSessionRepo.create(orderSession);
+        if (orderSessionId <= 0) {
+            qCritical() << "OrderSession creation failed, aborting order creation";
+            return -1;
+        }
+
+        orderSession.id = orderSessionId;
     }
+
+    // create order
+    Order order;
+    order.display_number = generateOrderDisplayNumber();
+    order.order_session_id = orderSessionId;
+    order.status = "pending";
+    order.notes = options.value("notes").toString();
 
     int orderId = m_orderRepo.create(order);
 
+    // create order items
     double subtotal = 0.0;
-
     for (const QVariant &v : items) {
         QVariantMap m = v.toMap();
 
@@ -47,18 +92,38 @@ int OrderService::createOrder(
         m_orderItemRepo.create(item);
     }
 
-    order.subtotal = subtotal;
-    order.tax = subtotal * 0.0;
-    order.total = subtotal + order.tax;
+    orderSession.subtotal += subtotal;
+    orderSession.tax = orderSession.subtotal * 0.0;
+    orderSession.discount = 0.0;
+    orderSession.total = orderSession.subtotal + orderSession.tax - orderSession.discount;
 
-    m_orderRepo.update(order);
-
-    if (orderType == "dine_in") {
-        auto tableOpt = m_tableRepo.getTableById(order.table_id.value());
-        if (tableOpt.has_value()) {
-            m_tableRepo.setTableState(order.table_id.value(), true);
-        }
-    }
+    m_orderSessionRepo.update(orderSession);
 
     return orderId;
+}
+
+int OrderService::generateOrderSessionDisplayNumber() {
+    QString today = QDate::currentDate().toString("yyyy-MM-dd");
+
+    int maxDisplay = m_orderSessionRepo.getMaxDisplayNumberForDate(today);
+    if (maxDisplay == 0) {
+        return QRandomGenerator::global()->bounded(4000, 8000);
+    } else {
+        int nextNumber = maxDisplay + 1;
+        if (nextNumber > 9999) nextNumber = 4000;
+        return nextNumber;
+    }
+}
+
+int OrderService::generateOrderDisplayNumber() {
+    QString today = QDate::currentDate().toString("yyyy-MM-dd");
+
+    int maxDisplay = m_orderRepo.getMaxDisplayNumberForDate(today);
+    if (maxDisplay == 0) {
+        return QRandomGenerator::global()->bounded(4000, 8000);
+    } else {
+        int nextNumber = maxDisplay + 1;
+        if (nextNumber > 9999) nextNumber = 4000;
+        return nextNumber;
+    }
 }

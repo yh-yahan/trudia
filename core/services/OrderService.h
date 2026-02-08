@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QString>
+#include "../data/OrderSessionRepository.h"
 #include "../data/OrderRepository.h"
 #include "../data/OrderItemRepository.h"
 #include "../data/TableRepository.h"
@@ -11,7 +12,7 @@ class OrderService : public QObject
 {
     Q_OBJECT
 public:
-    explicit OrderService(OrderRepository &orderRepo, OrderItemRepository &orderItemRepo,
+    explicit OrderService(OrderSessionRepository &orderSessionRepo, OrderRepository &orderRepo, OrderItemRepository &orderItemRepo,
                           TableRepository &tableRepo);
 
     Q_INVOKABLE int createOrder(
@@ -20,19 +21,13 @@ public:
         const QVariantMap &options = {}
         );
 
-    // bool finalizeOrder(int orderId);
-    // printKitchenTicket
-    // printReceipt
-
-    // bool markPreparing(int orderId);
-    // bool markReady(int orderId);
-    // bool markCompleted(int orderId);
-    // bool cancelOrder(int orderId, const QString& reason = "");
-
 private:
+    OrderSessionRepository &m_orderSessionRepo;
     OrderRepository &m_orderRepo;
     OrderItemRepository &m_orderItemRepo;
     TableRepository &m_tableRepo;
+    int generateOrderSessionDisplayNumber();
+    int generateOrderDisplayNumber();
 };
 
 #endif // ORDERSERVICE_H

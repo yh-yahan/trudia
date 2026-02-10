@@ -102,6 +102,50 @@ std::vector<OrderItem> OrderItemRepository::getOrderItemsByOrderId(int orderId)
     return items;
 }
 
+std::vector<OrderItem> OrderItemRepository::getOrderItemsByOrderIds(const QList<int> &orderIds)
+{
+    std::vector<OrderItem> items;
+
+    if (orderIds.isEmpty()) return items;
+
+    QStringList placeholders;
+    for (int i = 0; i < orderIds.size(); ++i)
+        placeholders << "?";
+
+    QString sql = QString(
+                      "SELECT id, order_id, item_id, item_name, quantity, price, item_status, notes "
+                      "FROM order_items "
+                      "WHERE order_id IN (%1)"
+                      ).arg(placeholders.join(","));
+
+    QSqlQuery query(m_db);
+    query.prepare(sql);
+
+    for (int i = 0; i < orderIds.size(); ++i)
+        query.addBindValue(orderIds[i]);
+
+    if (!query.exec()) {
+        qWarning() << "getOrderItemsByOrderIds failed:" << query.lastError();
+        return items;
+    }
+
+    while (query.next()) {
+        OrderItem item;
+        item.id = query.value("id").toInt();
+        item.order_id = query.value("order_id").toInt();
+        item.item_id = query.value("item_id").toInt();
+        item.item_name = query.value("item_name").toString();
+        item.quantity = query.value("quantity").toInt();
+        item.price = query.value("price").toDouble();
+        item.item_status = query.value("item_status").toString();
+        item.notes = query.value("notes").toString();
+
+        items.push_back(item);
+    }
+
+    return items;
+}
+
 void OrderItemRepository::create(const OrderItem &orderItem)
 {
     QSqlQuery query(m_db);

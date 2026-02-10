@@ -12,6 +12,7 @@ public:
     explicit OrderRepository(QSqlDatabase db);
 
     std::optional<Order> getOrderById(int orderId);
+    std::vector<Order> getOrdersByStatus(const QString &status);
     int getMaxDisplayNumberForDate(const QString &date);
     int create(const Order &order);
     void update(const Order &order);

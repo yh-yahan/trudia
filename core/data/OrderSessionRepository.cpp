@@ -69,6 +69,45 @@ std::optional<OrderSession> OrderSessionRepository::getById(const int &orderSess
     return std::nullopt;
 }
 
+std::optional<OrderSession>
+OrderSessionRepository::getByOrderId(int orderId)
+{
+    QSqlQuery query(m_db);
+    query.prepare(R"(
+        SELECT os.*
+        FROM order_sessions os
+        JOIN orders o ON o.order_session_id = os.id
+        WHERE o.id = :orderId
+        LIMIT 1
+    )");
+    query.bindValue(":orderId", orderId);
+
+    if (!query.exec()) {
+        qWarning() << "Failed to get order session by order id:"
+                   << query.lastError().text();
+        return std::nullopt;
+    }
+
+    if (!query.next()) return std::nullopt;
+
+    OrderSession session;
+    session.id = query.value("id").toInt();
+    session.display_number = query.value("display_number").toInt();
+    session.table_id = query.value("table_id").isNull()
+                           ? std::nullopt
+                           : std::make_optional(query.value("table_id").toInt());
+    session.order_type = query.value("order_type").toString();
+    session.status = query.value("status").toString();
+    session.subtotal = query.value("subtotal").toDouble();
+    session.tax = query.value("tax").toDouble();
+    session.discount = query.value("discount").toDouble();
+    session.total = query.value("total").toDouble();
+    session.opened_at = query.value("opened_at").toString();
+    session.closed_at = query.value("closed_at").toString();
+
+    return session;
+}
+
 int OrderSessionRepository::getMaxDisplayNumberForDate(const QString &date) {
     QSqlQuery query(m_db);
 

@@ -34,6 +34,40 @@ std::optional<Order> OrderRepository::getOrderById(int orderId)
     return order;
 }
 
+std::vector<Order> OrderRepository::getOrdersByStatus(const QString &status)
+{
+    std::vector<Order> orders;
+
+    QSqlQuery query(m_db);
+    query.prepare(R"(
+        SELECT id, display_number, order_session_id, status, notes, closed_at
+        FROM orders
+        WHERE status = :status
+        ORDER BY created_at ASC
+    )");
+
+    query.bindValue(":status", status);
+
+    if (!query.exec()) {
+        qWarning() << "getOrdersByStatus failed:" << query.lastError();
+        return orders;
+    }
+
+    while (query.next()) {
+        Order order;
+        order.id = query.value("id").toInt();
+        order.display_number = query.value("display_number").toInt();
+        order.order_session_id = query.value("order_session_id").toInt();
+        order.status = query.value("status").toString();
+        order.notes = query.value("notes").toString();
+        order.closed_at = query.value("closed_at").toString();
+
+        orders.push_back(order);
+    }
+
+    return orders;
+}
+
 int OrderRepository::getMaxDisplayNumberForDate(const QString &date) {
     QSqlQuery query(m_db);
 
@@ -85,7 +119,7 @@ void OrderRepository::update(const Order &order)
         UPDATE orders
         SET status = :status,
         notes = :notes,
-        closed_at = :closed_at,
+        closed_at = :closed_at
         WHERE id = :order_id
     )");
 

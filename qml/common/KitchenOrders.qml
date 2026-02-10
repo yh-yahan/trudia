@@ -1,385 +1,198 @@
-import QtQuick 2.15
-import QtQuick.Controls 2.15
-import QtQuick.Layouts 1.15
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
+import Xeno.Services 1.0
 
 Item {
-    id: kitchenDisplay
-    anchors.fill: parent
+    width: 1200
+    height: 600
 
-    // Dark theme palette
     readonly property color bgColor: "#121212"
-    readonly property color cardBg: "#1e1e1e"
-    readonly property color textPrimary: "#ffffff"
-    readonly property color textSecondary: "#cccccc"
-    readonly property color accent: "#9a7bff"
-    readonly property color readyGreen: "#4caf50"
-    readonly property color borderColor: "#333333"
+    readonly property color cardColor: "#1e1e1e"
+    readonly property color accentColor: "#9a7bff"
+    readonly property color textColor: "white"
+    readonly property color noteColor: "#ffcc80"
+
+    property var pendingOrders: []
+    property var preparingOrders: []
+    property var readyOrders: []
+
+    function loadOrders() {
+        pendingOrders = KitchenOrderService.getOrdersByStatus("pending")
+        preparingOrders = KitchenOrderService.getOrdersByStatus("in_progress")
+        readyOrders = KitchenOrderService.getOrdersByStatus("ready")
+    }
+
+    Component.onCompleted: loadOrders()
 
     Rectangle {
         anchors.fill: parent
         color: bgColor
     }
 
-    // Main layout - three columns
     RowLayout {
         anchors.fill: parent
         anchors.margins: 16
         spacing: 16
 
-        // Column 1: New Orders
-        ColumnLayout {
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            spacing: 12
-
-            Text {
-                text: "NEW"
-                font.pixelSize: 28
-                font.bold: true
-                color: accent
-                horizontalAlignment: Text.AlignHCenter
-                Layout.fillWidth: true
-                Layout.topMargin: 8
-                Layout.bottomMargin: 8
-            }
-
-            ScrollView {
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                clip: true
-                ScrollBar.vertical.policy: ScrollBar.AsNeeded
-
-                Flow {
-                    width: parent.width
-                    spacing: 16
-                    padding: 8
-
-                    Repeater {
-                        model: newOrdersModel
-                        delegate: orderCard
-                    }
-                }
-            }
+        KitchenColumn {
+            title: "NEW"
+            model: pendingOrders
+            actionText: "START"
+            nextState: "in_progress"
+            onActionDone: loadOrders()
         }
 
-        // Column 2: Preparing
-        ColumnLayout {
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            spacing: 12
-
-            Text {
-                text: "PREPARING"
-                font.pixelSize: 28
-                font.bold: true
-                color: accent
-                horizontalAlignment: Text.AlignHCenter
-                Layout.fillWidth: true
-                Layout.topMargin: 8
-                Layout.bottomMargin: 8
-            }
-
-            ScrollView {
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                clip: true
-
-                Flow {
-                    width: parent.width
-                    spacing: 16
-                    padding: 8
-
-                    Repeater {
-                        model: preparingOrdersModel
-                        delegate: orderCard
-                    }
-                }
-            }
+        KitchenColumn {
+            title: "PREPARING"
+            model: preparingOrders
+            actionText: "MARK READY"
+            nextState: "ready"
+            onActionDone: loadOrders()
         }
 
-        // Column 3: Ready
-        ColumnLayout {
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            spacing: 12
-
-            Text {
-                text: "READY"
-                font.pixelSize: 28
-                font.bold: true
-                color: accent
-                horizontalAlignment: Text.AlignHCenter
-                Layout.fillWidth: true
-                Layout.topMargin: 8
-                Layout.bottomMargin: 8
-            }
-
-            ScrollView {
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                clip: true
-
-                Flow {
-                    width: parent.width
-                    spacing: 16
-                    padding: 8
-
-                    Repeater {
-                        model: readyOrdersModel
-                        delegate: orderCard
-                    }
-                }
-            }
+        KitchenColumn {
+            title: "READY"
+            model: readyOrders
+            actionText: "SERVE"
+            nextState: "served"
+            onActionDone: loadOrders()
         }
     }
 
-    // Reusable Order Card Component
-    Component {
-        id: orderCard
+    component KitchenColumn: ColumnLayout {
+        property string title
+        property var model
+        property string actionText
+        property string nextState
+        signal actionDone
+
+        Layout.fillWidth: true
+        Layout.fillHeight: true
+        spacing: 12
+
+        Text {
+            text: title
+            color: textColor
+            font.pixelSize: 22
+            font.bold: true
+        }
 
         Rectangle {
-            width: 360
-            height: childrenRect.height + 32
-            radius: 12
-            color: cardBg
-            border.color: borderColor
-            border.width: 1
+            height: 2
+            width: parent.width
+            color: accentColor
+        }
 
-            ColumnLayout {
-                width: parent.width - 32
-                x: 16
-                y: 16
-                spacing: 12
+        ListView {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            spacing: 12
+            clip: true
+            model: parent.model
 
-                // Header row: Order # + type
-                RowLayout {
-                    Layout.fillWidth: true
-                    spacing: 12
+            delegate: Rectangle {
+                width: ListView.view.width
+                color: cardColor
+                radius: 6
+                implicitHeight: content.implicitHeight + 24
 
-                    Text {
-                        text: "#" + model.orderNumber
-                        font.pixelSize: 26
-                        font.bold: true
-                        color: textPrimary
-                    }
-
-                    Rectangle {
-                        Layout.fillWidth: true
-                        height: 1
-                        color: borderColor
-                        Layout.alignment: Qt.AlignVCenter
-                    }
-
-                    Text {
-                        text: model.type
-                        font.pixelSize: 18
-                        font.bold: true
-                        color: model.type === "Dine-in" ? "#ff9800" : "#2196f3"
-                    }
-                }
-
-                // Table / Pickup info
-                Text {
-                    text: model.tableOrPickup
-                    font.pixelSize: 20
-                    font.bold: true
-                    color: textPrimary
-                    Layout.fillWidth: true
-                }
-
-                // Items list
                 ColumnLayout {
-                    Layout.fillWidth: true
-                    spacing: 6
+                    id: content
+                    anchors.fill: parent
+                    anchors.margins: 12
+                    spacing: 8
 
-                    Repeater {
-                        model: model.items
+                    RowLayout {
+                        Layout.fillWidth: true
 
                         Text {
-                            text: modelData.quantity + " × " + modelData.name
-                            font.pixelSize: 17
-                            color: textPrimary
-                            wrapMode: Text.WordWrap
+                            text: "#" + modelData.display_number
+                            color: textColor
+                            font.pixelSize: 18
+                            font.bold: true
+                        }
+
+                        Text {
+                            text: modelData.order_type.toUpperCase()
+                            color: textColor
+                            font.pixelSize: 12
+                        }
+
+                        Item {
                             Layout.fillWidth: true
                         }
+
+                        Text {
+                            visible: modelData.table_id !== null
+                            text: "Table " + modelData.table_id
+                            color: textColor
+                            font.pixelSize: 12
+                        }
                     }
-                }
 
-                // Modifiers & Notes
-                ColumnLayout {
-                    visible: model.modifiers.length > 0 || model.notes !== ""
-                    spacing: 4
-                    Layout.topMargin: 4
-                    Layout.bottomMargin: 8
+                    ColumnLayout {
+                        spacing: 4
 
-                    Repeater {
-                        model: model.modifiers
-                        delegate: Text {
-                            text: "• " + modelData
-                            font.pixelSize: 15
-                            color: textSecondary
-                            wrapMode: Text.WordWrap
-                            Layout.fillWidth: true
+                        Repeater {
+                            model: modelData.items
+
+                            ColumnLayout {
+                                spacing: 2
+
+                                Text {
+                                    text: modelData.item_name + " ×" + modelData.quantity
+                                    color: textColor
+                                    font.pixelSize: 14
+                                }
+
+                                Text {
+                                    visible: modelData.notes
+                                             && modelData.notes.length > 0
+                                    text: "– " + modelData.notes
+                                    color: noteColor
+                                    font.pixelSize: 12
+                                }
+                            }
                         }
                     }
 
                     Text {
-                        visible: model.notes !== ""
-                        text: "Note: " + model.notes
-                        font.pixelSize: 15
-                        color: "#ffeb3b"
-                        wrapMode: Text.WordWrap
+                        visible: modelData.notes && modelData.notes.length > 0
+                        text: "NOTE: " + modelData.notes
+                        color: noteColor
+                        font.pixelSize: 12
+                        wrapMode: Text.Wrap
+                    }
+
+                    Button {
                         Layout.fillWidth: true
-                    }
-                }
+                        text: actionText
 
-                // Action Button
-                Button {
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 56
-                    text: {
-                        // Simple context-based text (you can improve with property or signal later)
-                        if (parent.parent.parent.parent.parent === newOrdersColumn)
-                            return "START"
-                        if (parent.parent.parent.parent.parent === preparingOrdersColumn)
-                            return "COMPLETE"
-                        return "SERVED / PICKED UP"
-                    }
-                    font.pixelSize: 18
-                    font.bold: true
-
-                    background: Rectangle {
-                        radius: 8
-                        color: {
-                            if (parent.text === "SERVED / PICKED UP")
-                                return readyGreen
-                            return accent
+                        background: Rectangle {
+                            color: accentColor
+                            radius: 4
                         }
-                        opacity: parent.pressed ? 0.8 : 1.0
-                    }
 
-                    contentItem: Text {
-                        text: parent.text
-                        font: parent.font
-                        color: "#000000"
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                    }
+                        contentItem: Text {
+                            text: actionText
+                            color: "white"
+                            font.bold: true
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                        }
 
-                    onClicked: {
-                        console.log("Action clicked for order #" + model.orderNumber)
-                        // In real app: move order between models or emit signal
+                        hoverEnabled: false
+                        focusPolicy: Qt.NoFocus
+
+                        onClicked: {
+                            KitchenOrderService.markState(modelData.id,
+                                                          nextState)
+                            actionDone()
+                        }
                     }
                 }
             }
-        }
-    }
-
-    // ───────────────────────────────────────────────
-    // Dummy data models (hardcoded for now)
-    // ───────────────────────────────────────────────
-    ListModel {
-        id: newOrdersModel
-        ListElement {
-            orderNumber: "124"
-            type: "Dine-in"
-            tableOrPickup: "Table 12"
-            items: [
-                ListElement {
-                    quantity: 2
-                    name: "Margherita Pizza"
-                },
-                ListElement {
-                    quantity: 1
-                    name: "Caesar Salad"
-                },
-                ListElement {
-                    quantity: 1
-                    name: "Garlic Bread"
-                }
-            ]
-            modifiers: ["No olives", "Extra cheese on pizza"]
-            notes: "Allergic to nuts - please be careful"
-        }
-        ListElement {
-            orderNumber: "125"
-            type: "Takeaway"
-            tableOrPickup: "Pickup #3"
-            items: [
-                ListElement {
-                    quantity: 1
-                    name: "Beef Burger"
-                },
-                ListElement {
-                    quantity: 1
-                    name: "Fries"
-                },
-                ListElement {
-                    quantity: 1
-                    name: "Coke Zero"
-                }
-            ]
-            modifiers: ["Medium done", "No mayo"]
-            notes: ""
-        }
-    }
-
-    ListModel {
-        id: preparingOrdersModel
-        ListElement {
-            orderNumber: "119"
-            type: "Dine-in"
-            tableOrPickup: "Table 7"
-            items: [
-                ListElement {
-                    quantity: 3
-                    name: "Pasta Carbonara"
-                },
-                ListElement {
-                    quantity: 2
-                    name: "Tiramisu"
-                }
-            ]
-            modifiers: ["One without pancetta"]
-            notes: "Table is in a hurry"
-        }
-    }
-
-    ListModel {
-        id: readyOrdersModel
-        ListElement {
-            orderNumber: "117"
-            type: "Dine-in"
-            tableOrPickup: "Table 4"
-            items: [
-                ListElement {
-                    quantity: 2
-                    name: "Grilled Salmon"
-                },
-                ListElement {
-                    quantity: 2
-                    name: "Mashed Potatoes"
-                }
-            ]
-            modifiers: []
-            notes: ""
-        }
-        ListElement {
-            orderNumber: "122"
-            type: "Takeaway"
-            tableOrPickup: "Pickup #1"
-            items: [
-                ListElement {
-                    quantity: 1
-                    name: "Chicken Shawarma Wrap"
-                },
-                ListElement {
-                    quantity: 1
-                    name: "Falafel Wrap"
-                }
-            ]
-            modifiers: ["Extra tahini"]
-            notes: ""
         }
     }
 }

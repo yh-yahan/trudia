@@ -26,15 +26,23 @@ Item {
 
     Connections {
         target: sidebar
-        onSelectionChanged: loadPage(index)
+        onSelectionChanged: {
+            handleSelectionChanged(sidebar.selectedIndex)
+        }
+    }
+
+    function handleSelectionChanged(index) {
+        loadPage(index)
     }
 
     function loadPage(index) {
         if (index === 0) {
             pageLoader.sourceComponent = orderTakingPage
         } else if (index === 1) {
-            pageLoader.sourceComponent = menuManagementPage
+            pageLoader.sourceComponent = kitchenPage
         } else if (index === 2) {
+            pageLoader.sourceComponent = menuManagementPage
+        } else if (index === 3) {
             pageLoader.sourceComponent = tableManagementPage
         }
     }
@@ -42,6 +50,11 @@ Item {
     Component {
         id: orderTakingPage
         OrderTaking {}
+    }
+
+    Component {
+        id: kitchenPage
+        KitchenOrders {}
     }
 
     Component {

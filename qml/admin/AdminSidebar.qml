@@ -50,13 +50,45 @@ Rectangle {
         }
 
         Button {
+            id: checkoutBtn
+            Layout.fillWidth: true
+            Layout.preferredHeight: 50
+            text: "Checkout"
+            clip: true
+
+            property int index: 1
+
+            background: Rectangle {
+                color: sidebarBackground.selectedIndex === checkoutBtn.index ? "#9a7bff" : "#121212"
+            }
+
+            contentItem: Text {
+                text: qsTr("Checkout")
+                font.bold: true
+                anchors.centerIn: parent
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                color: "white"
+                elide: Text.ElideRight
+            }
+
+            onClicked: {
+                sidebarBackground.selectedIndex = index
+                sidebarBackground.selectionChanged(index)
+            }
+
+            hoverEnabled: false
+            focusPolicy: Qt.NoFocus
+        }
+
+        Button {
             id: kitchenBtn
             Layout.fillWidth: true
             Layout.preferredHeight: 50
             text: "Kitchen"
             clip: true
 
-            property int index: 1
+            property int index: 2
 
             background: Rectangle {
                 color: sidebarBackground.selectedIndex === kitchenBtn.index ? "#9a7bff" : "#121212"
@@ -88,7 +120,7 @@ Rectangle {
             text: "Menu Management"
             clip: true
 
-            property int index: 2
+            property int index: 3
 
             background: Rectangle {
                 color: sidebarBackground.selectedIndex === menuBtn.index ? "#9a7bff" : "#121212"
@@ -120,7 +152,7 @@ Rectangle {
             text: "Table Management"
             clip: true
 
-            property int index: 3
+            property int index: 4
 
             background: Rectangle {
                 color: sidebarBackground.selectedIndex === tableBtn.index ? "#9a7bff" : "#121212"

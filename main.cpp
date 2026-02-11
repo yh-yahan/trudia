@@ -14,6 +14,7 @@
 #include "core/services/AuthService.h"
 #include "core/services/MenuService.h"
 #include "core/services/KitchenOrderService.h"
+#include "core/services/CheckoutService.h"
 #include "core/database/DatabaseManager.h"
 
 int main(int argc, char *argv[])
@@ -38,12 +39,14 @@ int main(int argc, char *argv[])
     TableService tableService(tableRepo);
     OrderService orderService(orderSessionRepo, orderRepo, orderItemRepo, tableRepo);
     KitchenOrderService kitchenOrderService(orderSessionRepo, orderRepo, orderItemRepo);
+    CheckoutService checkoutService(orderSessionRepo, orderRepo, orderItemRepo);
 
     qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "AuthService", &authService);
     qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "MenuService", &menuService);
     qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "TableService", &tableService);
     qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "OrderService", &orderService);
     qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "KitchenOrderService", &kitchenOrderService);
+    qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "CheckoutService", &checkoutService);
 
     QQmlApplicationEngine engine;
     engine.loadFromModule("xeno", "Main");

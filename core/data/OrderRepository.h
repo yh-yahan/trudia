@@ -13,6 +13,7 @@ public:
 
     std::optional<Order> getOrderById(int orderId);
     std::vector<Order> getOrdersByStatus(const QString &status);
+    std::vector<Order> getOrdersBySessionId(int orderSessionId);
     int getMaxDisplayNumberForDate(const QString &date);
     int create(const Order &order);
     void update(const Order &order);

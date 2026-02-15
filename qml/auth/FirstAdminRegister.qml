@@ -126,6 +126,8 @@ Item {
                         if (AuthService.registerUser(username, password,
                                                      passwordConfirm)) {
                             stackView.push("../admin/AdminHome.qml")
+
+                            Window.window.showMaximized()
                         } else {
                             errorMessage.text = qsTr("An error occurred.")
                         }

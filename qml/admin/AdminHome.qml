@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import "./settings"
 import "../common"
 
 Item {
@@ -46,6 +47,8 @@ Item {
             pageLoader.sourceComponent = menuManagementPage
         } else if (index === 4) {
             pageLoader.sourceComponent = tableManagementPage
+        } else if (index === 5) {
+            pageLoader.sourceComponent = settingsPage
         }
     }
 
@@ -72,5 +75,10 @@ Item {
     Component {
         id: tableManagementPage
         AdminTableManagement {}
+    }
+
+    Component {
+        id: settingsPage
+        AdminSettings {}
     }
 }

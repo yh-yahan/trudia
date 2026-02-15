@@ -29,6 +29,10 @@ qt_add_qml_module(appxeno
         qml/admin/AdminSidebar.qml
         qml/admin/AdminMenuManagement.qml
         qml/admin/AdminTableManagement.qml
+        qml/admin/settings/AdminStoreSettings.qml
+        qml/admin/settings/AdminPrinterSettings.qml
+        qml/admin/settings/AdminSettings.qml
+        qml/admin/settings/AdminSettingsSidebar.qml
 
     SOURCES core/database/DatabaseManager.h
     SOURCES core/database/DatabaseManager.cpp
@@ -52,6 +56,11 @@ qt_add_qml_module(appxeno
     SOURCES core/data/OrderSessionRepository.h core/data/OrderSessionRepository.cpp
     SOURCES core/services/KitchenOrderService.h core/services/KitchenOrderService.cpp
     SOURCES core/services/CheckoutService.h core/services/CheckoutService.cpp
+    SOURCES core/data/PrinterSettingRepository.h core/data/PrinterSettingRepository.cpp
+    SOURCES core/domain/PrinterSetting.h
+    SOURCES core/data/RestaurantRepository.h core/data/RestaurantRepository.cpp
+    SOURCES core/domain/Restaurant.h
+    SOURCES core/services/SettingService.h core/services/SettingService.cpp
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

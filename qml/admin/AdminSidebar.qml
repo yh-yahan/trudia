@@ -12,169 +12,64 @@ Rectangle {
 
     signal selectionChanged(int index)
 
+    ListModel {
+        id: buttonModel
+        ListElement {
+            text: "Take Order"
+        }
+        ListElement {
+            text: "Checkout"
+        }
+        ListElement {
+            text: "Kitchen"
+        }
+        ListElement {
+            text: "Menu Management"
+        }
+        ListElement {
+            text: "Table Management"
+        }
+        ListElement {
+            text: "Settings"
+        }
+    }
+
     ColumnLayout {
         id: sidebarLayout
         anchors.fill: parent
         spacing: 0
 
-        Button {
-            id: orderBtn
-            Layout.fillWidth: true
-            Layout.preferredHeight: 50
-            text: "Take Order"
-            clip: true
+        Repeater {
+            model: buttonModel
+            delegate: Button {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 50
+                clip: true
 
-            property int index: 0
+                property int index: model.index
 
-            background: Rectangle {
-                color: sidebarBackground.selectedIndex === orderBtn.index ? "#9a7bff" : "#121212"
+                background: Rectangle {
+                    color: sidebarBackground.selectedIndex === index ? "#9a7bff" : "#121212"
+                }
+
+                contentItem: Text {
+                    text: model.text
+                    font.bold: true
+                    anchors.centerIn: parent
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    color: "white"
+                    elide: Text.ElideRight
+                }
+
+                onClicked: {
+                    sidebarBackground.selectedIndex = index
+                    sidebarBackground.selectionChanged(index)
+                }
+
+                hoverEnabled: false
+                focusPolicy: Qt.NoFocus
             }
-
-            contentItem: Text {
-                text: qsTr("Take Order")
-                font.bold: true
-                anchors.centerIn: parent
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-                color: "white"
-                elide: Text.ElideRight
-            }
-
-            onClicked: {
-                sidebarBackground.selectedIndex = index
-                sidebarBackground.selectionChanged(index)
-            }
-
-            hoverEnabled: false
-            focusPolicy: Qt.NoFocus
-        }
-
-        Button {
-            id: checkoutBtn
-            Layout.fillWidth: true
-            Layout.preferredHeight: 50
-            text: "Checkout"
-            clip: true
-
-            property int index: 1
-
-            background: Rectangle {
-                color: sidebarBackground.selectedIndex === checkoutBtn.index ? "#9a7bff" : "#121212"
-            }
-
-            contentItem: Text {
-                text: qsTr("Checkout")
-                font.bold: true
-                anchors.centerIn: parent
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-                color: "white"
-                elide: Text.ElideRight
-            }
-
-            onClicked: {
-                sidebarBackground.selectedIndex = index
-                sidebarBackground.selectionChanged(index)
-            }
-
-            hoverEnabled: false
-            focusPolicy: Qt.NoFocus
-        }
-
-        Button {
-            id: kitchenBtn
-            Layout.fillWidth: true
-            Layout.preferredHeight: 50
-            text: "Kitchen"
-            clip: true
-
-            property int index: 2
-
-            background: Rectangle {
-                color: sidebarBackground.selectedIndex === kitchenBtn.index ? "#9a7bff" : "#121212"
-            }
-
-            contentItem: Text {
-                text: qsTr("Kitchen")
-                font.bold: true
-                anchors.centerIn: parent
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-                color: "white"
-                elide: Text.ElideRight
-            }
-
-            onClicked: {
-                sidebarBackground.selectedIndex = index
-                sidebarBackground.selectionChanged(index)
-            }
-
-            hoverEnabled: false
-            focusPolicy: Qt.NoFocus
-        }
-
-        Button {
-            id: menuBtn
-            Layout.fillWidth: true
-            Layout.preferredHeight: 50
-            text: "Menu Management"
-            clip: true
-
-            property int index: 3
-
-            background: Rectangle {
-                color: sidebarBackground.selectedIndex === menuBtn.index ? "#9a7bff" : "#121212"
-            }
-
-            contentItem: Text {
-                text: qsTr("Menu Management")
-                font.bold: true
-                anchors.centerIn: parent
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-                color: "white"
-                elide: Text.ElideRight
-            }
-
-            onClicked: {
-                sidebarBackground.selectedIndex = index
-                sidebarBackground.selectionChanged(index)
-            }
-
-            hoverEnabled: false
-            focusPolicy: Qt.NoFocus
-        }
-
-        Button {
-            id: tableBtn
-            Layout.fillWidth: true
-            Layout.preferredHeight: 50
-            text: "Table Management"
-            clip: true
-
-            property int index: 4
-
-            background: Rectangle {
-                color: sidebarBackground.selectedIndex === tableBtn.index ? "#9a7bff" : "#121212"
-            }
-
-            contentItem: Text {
-                text: qsTr("Table Management")
-                font.bold: true
-                anchors.centerIn: parent
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-                color: "white"
-                elide: Text.ElideRight
-            }
-
-            onClicked: {
-                sidebarBackground.selectedIndex = index
-                sidebarBackground.selectionChanged(index)
-            }
-
-            hoverEnabled: false
-            focusPolicy: Qt.NoFocus
         }
 
         Item {

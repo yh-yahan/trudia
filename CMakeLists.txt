@@ -61,6 +61,9 @@ qt_add_qml_module(appxeno
     SOURCES core/data/RestaurantRepository.h core/data/RestaurantRepository.cpp
     SOURCES core/domain/Restaurant.h
     SOURCES core/services/SettingService.h core/services/SettingService.cpp
+    SOURCES core/printing/EscPosBuilder.h core/printing/EscPosBuilder.cpp
+    SOURCES core/printing/ReceiptFormatter.h core/printing/ReceiptFormatter.cpp
+    SOURCES core/printing/NetworkPrinterService.h core/printing/NetworkPrinterService.cpp
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

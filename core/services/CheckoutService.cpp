@@ -1,10 +1,21 @@
 #include "CheckoutService.h"
 
 #include <QDateTime>
+#include "../printing/EscPosBuilder.h"
 
 CheckoutService::CheckoutService(OrderSessionRepository &orderSessionRepo, OrderRepository &orderRepo,
-                           OrderItemRepository &orderItemRepo)
-    : m_orderSessionRepo(orderSessionRepo), m_orderRepo(orderRepo), m_orderItemRepo(orderItemRepo) {}
+                            OrderItemRepository &orderItemRepo,
+                            RestaurantRepository &restaurantRepo,
+                            PrinterSettingRepository &printerRepo,
+                            ReceiptFormatter &formatter,
+                            NetworkPrinterService &printerService)
+    : m_orderSessionRepo(orderSessionRepo),
+      m_orderRepo(orderRepo),
+      m_orderItemRepo(orderItemRepo),
+      m_restaurantRepo(restaurantRepo),
+      m_printerRepo(printerRepo),
+      m_formatter(formatter),
+      m_printerService(printerService){}
 
 QVariantList CheckoutService::getActiveOrdersForCheckout() const
 {
@@ -102,4 +113,39 @@ QVariantList CheckoutService::getCheckoutDetails(const int &orderSessionId)
     }
 
     return result;
+}
+
+bool CheckoutService::printReceipt(int orderSessionId)
+{
+    auto sessionOpt = m_orderSessionRepo.getById(orderSessionId);
+    if (!sessionOpt.has_value()) return false;
+    const auto &session = sessionOpt.value();
+
+    auto restaurantOpt = m_restaurantRepo.get();
+    if (!restaurantOpt.has_value()) return false;
+
+    auto printerOpt = m_printerRepo.get();
+    if (!printerOpt.has_value()) return false;
+
+    ReceiptData data;
+    data.storeName = restaurantOpt->name;
+    data.address = restaurantOpt->address;
+    data.phone = restaurantOpt->phone_number.value_or("");
+    data.email = restaurantOpt->email.value_or("");
+    data.website = restaurantOpt->website.value_or("");
+    data.subtotal = session.subtotal;
+    data.tax = session.tax;
+    data.total = session.total;
+
+    QString formattedText = m_formatter.format(data, printerOpt->char_per_line);
+
+    EscPosBuilder builder;
+    builder.initialize();
+    builder.addText(formattedText);
+
+    builder.cut(printerOpt->cut_mode);
+
+    return m_printerService.print(*printerOpt->ip_address,
+                                  static_cast<quint16>(*printerOpt->port),
+                                  builder.data());
 }

@@ -151,11 +151,7 @@ void PrinterSettingRepository::save(const PrinterSetting &setting)
     query.bindValue(":char_per_line", setting.char_per_line);
     query.bindValue(":cut_mode", setting.cut_mode);
 
-    qDebug() << "Expected placeholders:" << query.boundValues();
-
     if (!query.exec()) {
         qDebug() << "Failed to save printer setting:" << query.lastError().text();
     }
-
-    qDebug() << "Query:" << query.lastQuery();
 }

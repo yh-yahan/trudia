@@ -8,6 +8,11 @@
 #include "../data/OrderSessionRepository.h"
 #include "../data/OrderRepository.h"
 #include "../data/OrderItemRepository.h"
+#include "../data/RestaurantRepository.h"
+#include "../data/PrinterSettingRepository.h"
+#include "../printing/ReceiptFormatter.h"
+#include "../printing/NetworkPrinterService.h"
+
 
 class CheckoutService : public QObject
 {
@@ -16,16 +21,26 @@ class CheckoutService : public QObject
 public:
     explicit CheckoutService(OrderSessionRepository &orderSessionRepo,
                              OrderRepository &orderRepo,
-                             OrderItemRepository &orderItemRepo);
+                             OrderItemRepository &orderItemRepo,
+                             RestaurantRepository &restaurantRepo,
+                             PrinterSettingRepository &printerRepo,
+                             ReceiptFormatter &formatter,
+                             NetworkPrinterService &printerService);
 
     Q_INVOKABLE QVariantList getActiveOrdersForCheckout() const;
     Q_INVOKABLE bool markOrderPaid(const int &orderSessionId);
     Q_INVOKABLE QVariantList getCheckoutDetails(const int &orderSessionId);
 
+    Q_INVOKABLE bool printReceipt(int orderSessionId);
+
 private:
     OrderSessionRepository &m_orderSessionRepo;
     OrderRepository &m_orderRepo;
     OrderItemRepository &m_orderItemRepo;
+    RestaurantRepository &m_restaurantRepo;
+    PrinterSettingRepository &m_printerRepo;
+    ReceiptFormatter &m_formatter;
+    NetworkPrinterService &m_printerService;
 };
 
 #endif // CHECKOUTSERVICE_H

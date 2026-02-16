@@ -19,6 +19,8 @@
 #include "core/services/CheckoutService.h"
 #include "core/services/SettingService.h"
 #include "core/database/DatabaseManager.h"
+#include "core/printing/ReceiptFormatter.h"
+#include "core/printing/NetworkPrinterService.h"
 
 int main(int argc, char *argv[])
 {
@@ -38,13 +40,23 @@ int main(int argc, char *argv[])
     OrderSessionRepository orderSessionRepo(DatabaseManager::db());
     RestaurantRepository restaurantRepo(DatabaseManager::db());
     PrinterSettingRepository printerSettingRepo(DatabaseManager::db());
+    ReceiptFormatter receiptFormatter;
+    NetworkPrinterService networkPrinterService;
 
     AuthService authService(repo);
     MenuService menuService(menuRepo, categoryRepo);
     TableService tableService(tableRepo);
     OrderService orderService(orderSessionRepo, orderRepo, orderItemRepo, tableRepo);
     KitchenOrderService kitchenOrderService(orderSessionRepo, orderRepo, orderItemRepo);
-    CheckoutService checkoutService(orderSessionRepo, orderRepo, orderItemRepo);
+    CheckoutService checkoutService(
+        orderSessionRepo,
+        orderRepo,
+        orderItemRepo,
+        restaurantRepo,
+        printerSettingRepo,
+        receiptFormatter,
+        networkPrinterService
+    );
     SettingService settingService(restaurantRepo, printerSettingRepo);
 
     qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "AuthService", &authService);

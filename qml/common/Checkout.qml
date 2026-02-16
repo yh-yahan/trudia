@@ -211,7 +211,7 @@ Item {
 
                     Button {
                         visible: selectedSession !== null
-                        text: qsTr("Mark as Paid")
+                        text: qsTr("Checkout")
                         leftPadding: 15
                         rightPadding: 15
                         topPadding: 15
@@ -224,7 +224,7 @@ Item {
                         }
 
                         contentItem: Text {
-                            text: qsTr("Mark as Paid")
+                            text: qsTr("Checkout")
                             font.bold: true
                             anchors.centerIn: parent
                             horizontalAlignment: Text.AlignHCenter
@@ -241,6 +241,13 @@ Item {
 
                             if (CheckoutService.markOrderPaid(
                                         selectedSession.id)) {
+                                var printed = CheckoutService.printReceipt(
+                                            selectedSession.id)
+                                if (!printed) {
+                                    console.log("Failed to print receipt for order #"
+                                                + selectedSession.display_number)
+                                }
+
                                 reloadSessions()
                             }
                         }

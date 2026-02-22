@@ -81,6 +81,7 @@ QVariantList MenuService::getAllMenuItems() const
         itemMap["category_id"] = item.category_id;
         itemMap["price"] = item.price;
         itemMap["is_available"] = item.is_available;
+        itemMap["is_taxable"] = item.is_taxable;
 
         if (item.portion_size.has_value()) {
             itemMap["portion_size"] = item.portion_size.value();
@@ -106,6 +107,7 @@ QVariantList MenuService::getMenuItemsByCategory(int categoryId) const
         map["category_id"] = item.category_id;
         map["price"] = item.price;
         map["is_available"] = item.is_available;
+        map["is_taxable"] = item.is_taxable;
 
         map["portion_size"] = item.portion_size.has_value() ? item.portion_size.value() : QVariant();
 
@@ -119,6 +121,7 @@ bool MenuService::addMenuItem(const QString &itemName,
                               const int &categoryId,
                               const double &price,
                               const bool &isAvailable,
+                              const bool &isTaxable,
                               const QString &portionSize)
 {
     if (itemName.trimmed().isEmpty()) {
@@ -136,6 +139,7 @@ bool MenuService::addMenuItem(const QString &itemName,
     newItem.category_id = categoryId;
     newItem.price = price;
     newItem.is_available = isAvailable;
+    newItem.is_taxable = isTaxable;
 
     newItem.portion_size = portionSize.isEmpty() ? "" : portionSize;
 
@@ -149,6 +153,7 @@ bool MenuService::editMenuItem(const int &menuItemId,
                                const int &categoryId,
                                const double &price,
                                const bool &isAvailable,
+                               const bool &isTaxable,
                                const QString &portionSize)
 {
     auto menuItemOpt = m_menuRepo.getMenuItemById(menuItemId);
@@ -170,16 +175,11 @@ bool MenuService::editMenuItem(const int &menuItemId,
         qWarning() << "Category with ID" << categoryId << "not found";
         return false;
     }
+
     menuItem.category_id = categoryId;
-
-    if (price <= 0) {
-        qWarning() << "Price must be greater than 0";
-        return false;
-    }
     menuItem.price = price;
-
     menuItem.is_available = isAvailable;
-
+    menuItem.is_taxable = isTaxable;
     menuItem.portion_size = portionSize.isEmpty() ? "" : portionSize;
 
     m_menuRepo.update(menuItem);

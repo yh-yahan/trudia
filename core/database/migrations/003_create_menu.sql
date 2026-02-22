@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS menu (
     price NUMERIC NOT NULL,
     portion_size TEXT,
     is_available INTEGER NOT NULL,
+    is_taxable INTEGER NOT NULL,
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE ON UPDATE CASCADE
 );

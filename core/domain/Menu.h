@@ -12,6 +12,7 @@ public:
     double price;
     std::optional<QString> portion_size;
     bool is_available;
+    bool is_taxable;
 };
 
 #endif // MENU_H

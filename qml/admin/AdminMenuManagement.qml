@@ -299,40 +299,53 @@ Item {
                 Rectangle {
                     visible: selectedCategoryId !== -1
                     Layout.fillWidth: true
-                    height: 36
+                    height: 40
                     color: "#1f1f1f"
-                    radius: 4
+                    radius: 6
 
                     RowLayout {
                         anchors.fill: parent
-                        anchors.margins: 8
+                        anchors.margins: 12
+                        spacing: 12
 
                         Text {
                             text: "Item"
-                            Layout.fillWidth: true
-                            color: "#b0b0b0"
                             font.bold: true
+                            color: "#b0b0b0"
+                            Layout.fillWidth: true
                         }
+
                         Text {
                             text: "Price"
-                            width: 70
-                            color: "#b0b0b0"
                             font.bold: true
+                            color: "#b0b0b0"
+                            Layout.preferredWidth: 90
+                            horizontalAlignment: Text.AlignRight
                         }
+
                         Text {
                             text: "Portion"
-                            width: 100
-                            color: "#b0b0b0"
                             font.bold: true
+                            color: "#b0b0b0"
+                            Layout.preferredWidth: 120
                         }
+
                         Text {
                             text: "Available"
-                            width: 80
-                            color: "#b0b0b0"
                             font.bold: true
+                            color: "#b0b0b0"
+                            Layout.preferredWidth: 100
                         }
+
+                        Text {
+                            text: "Taxable"
+                            font.bold: true
+                            color: "#b0b0b0"
+                            Layout.preferredWidth: 100
+                        }
+
                         Item {
-                            width: 120
+                            Layout.preferredWidth: 160
                         }
                     }
                 }
@@ -359,88 +372,119 @@ Item {
                         property string editedPortion: modelData.portion_size
                                                        || ""
                         property bool editedAvailable: modelData.is_available
+                        property bool editedTaxable: modelData.is_taxable
 
                         RowLayout {
                             anchors.fill: parent
                             anchors.margins: 8
                             spacing: 10
 
-                            TextField {
-                                visible: itemRect.isEditing
-                                text: itemRect.editedName
+                            Item {
                                 Layout.fillWidth: true
-                                color: "white"
-                                background: Rectangle {
-                                    color: "#292929"
-                                    radius: 4
-                                    border.color: "#888888"
-                                    border.width: 1
-                                }
-                                onTextChanged: itemRect.editedName = text
-                            }
-                            Text {
-                                visible: !itemRect.isEditing
-                                text: modelData.item
-                                Layout.fillWidth: true
-                                color: "white"
-                            }
+                                height: 24
 
-                            TextField {
-                                visible: itemRect.isEditing
-                                text: itemRect.editedPrice
-                                width: 70
-                                color: "white"
-                                inputMethodHints: Qt.ImhFormattedNumbersOnly
-                                background: Rectangle {
-                                    color: "#292929"
-                                    radius: 4
-                                    border.color: "#888888"
-                                    border.width: 1
-                                }
-                                onTextChanged: itemRect.editedPrice = text
-                            }
-                            Text {
-                                visible: !itemRect.isEditing
-                                text: modelData.price.toFixed(2)
-                                width: 70
-                                color: "#d0d0d0"
-                            }
-
-                            TextField {
-                                visible: itemRect.isEditing
-                                text: itemRect.editedPortion
-                                width: 100
-                                color: "white"
-                                background: Rectangle {
-                                    color: "#292929"
-                                    radius: 4
-                                    border.color: "#888888"
-                                    border.width: 1
-                                }
-                                onTextChanged: itemRect.editedPortion = text
-                            }
-                            Text {
-                                visible: !itemRect.isEditing
-                                text: modelData.portion_size || "-"
-                                width: 100
-                                color: "#d0d0d0"
-                            }
-
-                            CheckBox {
-                                visible: itemRect.isEditing
-                                checked: itemRect.editedAvailable
-                                width: 80
-                                onCheckedChanged: itemRect.editedAvailable = checked
-                                contentItem: Text {
-                                    text: "Available"
+                                TextField {
+                                    visible: itemRect.isEditing
+                                    text: itemRect.editedName
+                                    anchors.fill: parent
                                     color: "white"
+                                    placeholderText: "Item Name"
+                                    font.pixelSize: 14
+                                    placeholderTextColor: "#b5b5b5"
+                                    background: Rectangle {
+                                        color: "#292929"
+                                        radius: 4
+                                        border.color: "#888888"
+                                    }
+
+                                    onTextChanged: itemRect.editedName = text
+                                }
+
+                                Text {
+                                    visible: !itemRect.isEditing
+                                    text: modelData.item
+                                    color: "white"
+                                    elide: Text.ElideRight
                                     anchors.verticalCenter: parent.verticalCenter
+                                    width: parent.width
                                 }
                             }
+
+                            Item {
+                                Layout.preferredWidth: 90
+                                height: 24
+
+                                TextField {
+                                    visible: itemRect.isEditing
+                                    text: itemRect.editedPrice
+                                    anchors.fill: parent
+                                    horizontalAlignment: Text.AlignRight
+                                    color: "white"
+                                    placeholderText: "Price"
+                                    font.pixelSize: 14
+                                    placeholderTextColor: "#b5b5b5"
+                                    background: Rectangle {
+                                        color: "#292929"
+                                        radius: 4
+                                        border.color: "#888888"
+                                    }
+
+                                    onTextChanged: itemRect.editedPrice = text
+                                }
+
+                                Text {
+                                    visible: !itemRect.isEditing
+                                    text: modelData.price.toFixed(2)
+                                    horizontalAlignment: Text.AlignRight
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    width: parent.width
+                                    color: "#d0d0d0"
+                                }
+                            }
+
+                            Item {
+                                Layout.preferredWidth: 120
+                                height: 24
+
+                                TextField {
+                                    visible: itemRect.isEditing
+                                    text: itemRect.editedPortion
+                                    anchors.fill: parent
+                                    color: "white"
+                                    placeholderText: "Portion"
+                                    font.pixelSize: 14
+                                    placeholderTextColor: "#b5b5b5"
+                                    background: Rectangle {
+                                        color: "#1f1f1f"
+                                        radius: 4
+                                        border.color: "#888888"
+                                        border.width: 1
+                                    }
+
+                                    onTextChanged: itemRect.editedPortion = text
+                                }
+
+                                Text {
+                                    visible: !itemRect.isEditing
+                                    text: modelData.portion_size || "-"
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    width: parent.width
+                                    color: "#d0d0d0"
+                                }
+                            }
+
                             CheckBox {
-                                visible: !itemRect.isEditing
-                                checked: modelData.is_available
-                                width: 80
+                                Layout.preferredWidth: 100
+                                checked: itemRect.isEditing ? itemRect.editedAvailable : modelData.is_available
+                                enabled: itemRect.isEditing
+                                onCheckedChanged: itemRect.editedAvailable = checked
+                            }
+
+                            CheckBox {
+                                Layout.preferredWidth: 100
+                                checked: itemRect.isEditing ? itemRect.editedTaxable : modelData.is_taxable
+                                enabled: itemRect.isEditing
+                                onCheckedChanged: itemRect.editedTaxable = checked
                             }
 
                             Button {
@@ -481,6 +525,7 @@ Item {
                                                     selectedCategoryId,
                                                     priceVal,
                                                     itemRect.editedAvailable,
+                                                    itemRect.editedTaxable,
                                                     portionTrimmed)
 
                                         if (success) {
@@ -626,6 +671,19 @@ Item {
                                 anchors.verticalCenter: parent.verticalCenter
                             }
                         }
+
+                        CheckBox {
+                            id: newItemTaxable
+                            text: "Taxable"
+                            checked: true
+                            font.pixelSize: 14
+                            Layout.alignment: Qt.AlignVCenter
+                            contentItem: Text {
+                                text: "Taxable"
+                                color: "white"
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+                        }
                     }
 
                     Button {
@@ -668,12 +726,14 @@ Item {
                             MenuService.addMenuItem(itemNameTrimmed,
                                                     selectedCategoryId, price,
                                                     newItemAvailable.checked,
+                                                    newItemTaxable.checked,
                                                     portionTrimmed)
 
                             newItemName.text = ""
                             newItemPrice.text = ""
                             newItemPortion.text = ""
                             newItemAvailable.checked = true
+                            newItemTaxable.checked = true
 
                             loadMenuItems(selectedCategoryId)
                         }

@@ -60,7 +60,10 @@ bool DatabaseManager::runMigrations()
         "core/database/migrations/006_create_order_items.sql",
         "core/database/migrations/007_create_orders.sql",
         "core/database/migrations/008_create_restaurant.sql",
-        "core/database/migrations/009_create_printer_settings.sql"
+        "core/database/migrations/009_create_printer_settings.sql",
+        "core/database/migrations/010_create_tax_settings.sql",
+        "core/database/migrations/011_create_tax_rules.sql",
+        "core/database/migrations/012_create_order_tax_lines.sql"
     };
 
     for (const QString &fileName : migrationFiles) {

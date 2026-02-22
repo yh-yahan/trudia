@@ -12,7 +12,7 @@ std::vector<Menu> MenuRepository::getAllMenuItems()
     std::vector<Menu> menuItems;
 
     QSqlQuery query(m_db);
-    query.prepare("SELECT id, item, category_id, price, portion_size, is_available FROM menu");
+    query.prepare("SELECT id, item, category_id, price, portion_size, is_available, is_taxable FROM menu");
 
     if (!query.exec()) {
         qWarning() << "getAllCategories failed:" << query.lastError();
@@ -27,7 +27,8 @@ std::vector<Menu> MenuRepository::getAllMenuItems()
         menu.price = query.value("price").toDouble();
         menu.portion_size = query.value("portion_size").toString();
         menu.is_available = query.value("is_available").toBool();
-
+        menu.is_taxable = query.value("is_taxable").toBool();
+        
         menuItems.push_back(menu);
     }
 
@@ -37,7 +38,7 @@ std::vector<Menu> MenuRepository::getAllMenuItems()
 std::optional<Menu> MenuRepository::getMenuItemById(int menuId)
 {
     QSqlQuery query(m_db);
-    query.prepare(R"(SELECT id, item, category_id, price, portion_size, is_available
+    query.prepare(R"(SELECT id, item, category_id, price, portion_size, is_available, is_taxable
         FROM menu
         WHERE id = :id)");
     query.bindValue(":id", menuId);
@@ -58,6 +59,7 @@ std::optional<Menu> MenuRepository::getMenuItemById(int menuId)
     menu.price = query.value("price").toDouble();
     menu.portion_size = query.value("portion_size").toString();
     menu.is_available = query.value("is_available").toBool();
+    menu.is_taxable = query.value("is_taxable").toBool();
 
     return menu;
 }
@@ -68,10 +70,11 @@ std::vector<Menu> MenuRepository::getMenuItemsByCategory(int categoryId)
 
     QSqlQuery query(m_db);
     query.prepare(R"(
-        SELECT id, item, category_id, price, portion_size, is_available
+        SELECT id, item, category_id, price, portion_size, is_available, is_taxable 
         FROM menu
         WHERE category_id = :category_id
     )");
+    
     query.bindValue(":category_id", categoryId);
 
     if (!query.exec()) {
@@ -87,6 +90,7 @@ std::vector<Menu> MenuRepository::getMenuItemsByCategory(int categoryId)
         menu.price = query.value("price").toDouble();
         menu.portion_size = query.value("portion_size").toString();
         menu.is_available = query.value("is_available").toBool();
+        menu.is_taxable = query.value("is_taxable").toBool();
 
         menuItems.push_back(menu);
     }
@@ -98,8 +102,8 @@ void MenuRepository::create(const Menu &menu)
 {
     QSqlQuery query(m_db);
     query.prepare(R"(
-        INSERT INTO menu (item, category_id, price, portion_size, is_available)
-        VALUES (:item, :category_id, :price, :portion_size, :is_available)
+        INSERT INTO menu (item, category_id, price, portion_size, is_available, is_taxable)
+        VALUES (:item, :category_id, :price, :portion_size, :is_available, :is_taxable)
     )");
 
     query.bindValue(":item", menu.item);
@@ -111,6 +115,7 @@ void MenuRepository::create(const Menu &menu)
         query.bindValue(":portion_size", "");
     }
     query.bindValue(":is_available", menu.is_available);
+    query.bindValue(":is_taxable", menu.is_taxable);
 
     if (!query.exec()) {
         qWarning() << "create failed:" << query.lastError();
@@ -126,7 +131,8 @@ void MenuRepository::update(const Menu &menu)
         category_id = :category_id,
         price = :price,
         portion_size = :portion_size,
-        is_available = :is_available
+        is_available = :is_available,
+        is_taxable = :is_taxable 
         WHERE id = :menu_item_id
     )");
 
@@ -140,6 +146,7 @@ void MenuRepository::update(const Menu &menu)
         query.bindValue(":portion_size", "");
     }
     query.bindValue(":is_available", menu.is_available);
+    query.bindValue(":is_taxable", menu.is_taxable);
 
     if (!query.exec()) {
         qWarning() << "update failed:" << query.lastError();

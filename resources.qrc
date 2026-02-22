@@ -10,5 +10,8 @@
     <file>core/database/migrations/007_create_orders.sql</file>
     <file>core/database/migrations/008_create_restaurant.sql</file>
     <file>core/database/migrations/009_create_printer_settings.sql</file>
+    <file>core/database/migrations/010_create_tax_settings.sql</file>
+    <file>core/database/migrations/011_create_tax_rules.sql</file>
+    <file>core/database/migrations/012_create_order_tax_lines.sql</file>
   </qresource>
 </RCC>

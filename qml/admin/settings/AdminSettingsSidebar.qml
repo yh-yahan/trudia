@@ -17,8 +17,13 @@ Rectangle {
         ListElement {
             text: "Restaurant"
         }
+
         ListElement {
             text: "Printer"
+        }
+
+        ListElement {
+            text: "Tax"
         }
     }
 

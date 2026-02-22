@@ -36,19 +36,26 @@ Item {
 
     function loadPage(index) {
         if (index === 0) {
-            pageLoader.sourceComponent = storeSettingPage
+            pageLoader.sourceComponent = storeSettingsPage
         } else if (index === 1) {
-            pageLoader.sourceComponent = printerSettingPage
+            pageLoader.sourceComponent = printerSettingsPage
+        } else if (index === 2) {
+            pageLoader.sourceComponent = taxSettingsPage
         }
     }
 
     Component {
-        id: storeSettingPage
+        id: storeSettingsPage
         AdminStoreSettings {}
     }
 
     Component {
-        id: printerSettingPage
+        id: printerSettingsPage
         AdminPrinterSettings {}
+    }
+
+    Component {
+        id: taxSettingsPage
+        AdminTaxSettings {}
     }
 }

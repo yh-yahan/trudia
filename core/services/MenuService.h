@@ -26,12 +26,14 @@ public:
                     const int &categoryId,
                     const double &price,
                     const bool &isAvailable,
+                    const bool &isTaxable,
                     const QString &portionSize = QString());
     Q_INVOKABLE bool editMenuItem(const int &menuItemId,
                      const QString &itemName,
                      const int &categoryId,
                      const double &price,
                      const bool &isAvailable,
+                     const bool &isTaxable,
                      const QString &portionSize = QString());
     Q_INVOKABLE bool removeMenuItem(const int &menuItemId);
 

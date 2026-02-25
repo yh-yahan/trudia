@@ -10,9 +10,16 @@
 #include "../data/OrderItemRepository.h"
 #include "../data/RestaurantRepository.h"
 #include "../data/PrinterSettingRepository.h"
+#include "../data/TaxSettingsRepository.h"
 #include "../printing/ReceiptFormatter.h"
 #include "../printing/NetworkPrinterService.h"
+#include "./TaxCalculationService.h"
 
+struct TaxComputationResult {
+    double subtotal = 0.0;
+    double taxTotal = 0.0;
+    double grandTotal = 0.0;
+};
 
 class CheckoutService : public QObject
 {
@@ -25,12 +32,13 @@ public:
                              RestaurantRepository &restaurantRepo,
                              PrinterSettingRepository &printerRepo,
                              ReceiptFormatter &formatter,
-                             NetworkPrinterService &printerService);
+                             NetworkPrinterService &printerService,
+                             TaxCalculationService &taxCalculationService);
 
     Q_INVOKABLE QVariantList getActiveOrdersForCheckout() const;
     Q_INVOKABLE bool markOrderPaid(const int &orderSessionId);
+    bool recalculateSessionTotals(int orderSessionId);
     Q_INVOKABLE QVariantList getCheckoutDetails(const int &orderSessionId);
-
     Q_INVOKABLE bool printReceipt(int orderSessionId);
 
 private:
@@ -41,6 +49,7 @@ private:
     PrinterSettingRepository &m_printerRepo;
     ReceiptFormatter &m_formatter;
     NetworkPrinterService &m_printerService;
+    TaxCalculationService &m_taxCalculationService;
 };
 
 #endif // CHECKOUTSERVICE_H

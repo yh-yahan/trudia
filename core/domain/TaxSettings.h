@@ -8,9 +8,9 @@ class TaxSettings
 public:
     int id = -1;
     bool enabled;
+    int rate;
     std::optional<QString> registration_number;
-    QString price_mode; // exclusive/inclusive
-    QString rounding_strategy; // per_line/per_order
+    QString name;
     std::optional<QString> created_at;
 };
 

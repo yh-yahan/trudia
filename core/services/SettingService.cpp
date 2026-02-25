@@ -1,13 +1,11 @@
 #include "SettingService.h"
 
 SettingService::SettingService(RestaurantRepository &restaurantRepo,
-                               PrinterSettingRepository  &printerSettingRepo,
-                               TaxSettingsRepository &taxSettingsRepo,
-                               TaxRuleRepository &taxRuleRepo)
+                               PrinterSettingRepository &printerSettingRepo,
+                               TaxSettingsRepository &taxSettingsRepo)
     : m_restaurantRepo(restaurantRepo),
       m_printerSettingRepo(printerSettingRepo),
-      m_taxSettingsRepo(taxSettingsRepo),
-      m_taxRuleRepo(taxRuleRepo) {}
+      m_taxSettingsRepo(taxSettingsRepo) {}
 
 QVariantMap SettingService::getRestaurant()
 {
@@ -116,9 +114,9 @@ QVariantMap SettingService::getTaxSettings()
     const TaxSettings &ts = taxSettingsOpt.value();
     map["id"] = ts.id;
     map["enabled"] = ts.enabled;
+    map["rate"] = ts.rate;
     map["registration_number"] = ts.registration_number.value_or("");
-    map["price_mode"] = ts.price_mode;
-    map["rounding_strategy"] = ts.rounding_strategy;
+    map["name"] = ts.name;
 
     return map;
 }
@@ -129,97 +127,14 @@ bool SettingService::saveTaxSettings(const QVariantMap &map)
     taxSettings.id = map.value("id", -1).toInt();
     taxSettings.enabled = map.value("enabled").toBool();
     taxSettings.registration_number = map.value("registration_number").toString();
-    taxSettings.price_mode = map.value("price_mode").toString();
-    taxSettings.rounding_strategy = map.value("rounding_strategy").toString();
+    taxSettings.rate = map.value("rate").toInt();
+    taxSettings.name = map.value("name").toString();
 
     try {
         m_taxSettingsRepo.save(taxSettings);
         return true;
     } catch (const std::exception &e) {
         qWarning() << "Failed to save tax settings:" << e.what();
-        return false;
-    }
-}
-
-QVariantList SettingService::getAllTaxRule()
-{
-    QVariantList list;
-
-    try {
-        auto taxRules = m_taxRuleRepo.getAllTaxRules();
-
-        for (const auto &r : taxRules) {
-            QVariantMap map;
-
-            map["id"] = r.id;
-            map["name"] = r.name;
-
-            // descale rate
-            double descaledRate = static_cast<double>(r.rate) / 1000000.0;
-            map["rate"] = descaledRate;
-
-            map["scope"] = r.scope;
-            map["apply_to"] = r.apply_to;
-            map["priority"] = r.priority;
-            map["active"] = r.active;
-            map["created_at"] = r.created_at;
-
-            list.append(map);
-        }
-
-    } catch (const std::exception &e) {
-        qWarning() << "Failed to fetch tax rules:" << e.what();
-    }
-
-    return list;
-}
-
-bool SettingService::addTaxRule(const QVariantMap &map)
-{
-    TaxRule taxRule;
-
-    taxRule.name = map.value("name").toString();
-
-    double fractionalRate = map.value("rate").toDouble();
-
-    // Scale to integer (fraction * 1,000,000)
-    taxRule.rate = static_cast<int>(fractionalRate * 1000000.0);
-
-    taxRule.scope = map.value("scope").toString();
-    taxRule.apply_to = map.value("apply_to").toString();
-    taxRule.priority = map.value("priority").toInt();
-    taxRule.active = map.value("active").toBool();
-
-    try {
-        m_taxRuleRepo.create(taxRule);
-        return true;
-    } catch (const std::exception &e) {
-        qWarning() << "Failed to create tax rule:" << e.what();
-        return false;
-    }
-}
-
-bool SettingService::setTaxRuleActiveStatus(const QVariantMap &map, const bool &setActive)
-{
-    int id = map.value("id").toInt();
-
-    try {
-        auto taxRuleOpt = m_taxRuleRepo.getTaxRulesById(id);
-        if (!taxRuleOpt.has_value()) {
-            qWarning() << "Tax rule not found with id:" << id;
-            return false;
-        }
-
-        if (setActive) {
-            m_taxRuleRepo.setActive(taxRuleOpt.value());
-        } else {
-            m_taxRuleRepo.setInactive(taxRuleOpt.value());
-        }
-
-        return true;
-
-    } catch (const std::exception &e) {
-        qWarning() << "Failed to update tax rule active status:" << e.what();
         return false;
     }
 }

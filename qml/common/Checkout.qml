@@ -10,7 +10,8 @@ Item {
     property var sessions: []
     property var selectedSession: null
     property var checkoutDetails: []
-    property bool hasUnservedOrders: sessionHasUnservedOrders(checkoutDetails)
+
+    property bool canCheckout: false
 
     function reloadSessions() {
         sessions = CheckoutService.getActiveOrdersForCheckout()
@@ -18,21 +19,33 @@ Item {
         checkoutDetails = []
     }
 
-    function sessionHasUnservedOrders(details) {
+    function normalizeStatus(status) {
+        if (!status)
+            return ""
+        return (status + "").trim().toLowerCase()
+    }
+
+    function isOrderServed(order) {
+        return normalizeStatus(order ? order.status : "") === "served"
+    }
+
+    function sessionIsFullyServed(details) {
         if (!details || details.length === 0)
             return false
-
         for (var i = 0; i < details.length; i++) {
-            if (details[i].status !== "served") {
-                return true
+            if (!isOrderServed(details[i])) {
+                return false
             }
         }
-
-        return false
+        return true
     }
 
     Component.onCompleted: {
         reloadSessions()
+    }
+
+    onCheckoutDetailsChanged: {
+        canCheckout = sessionIsFullyServed(checkoutDetails)
     }
 
     RowLayout {
@@ -56,6 +69,9 @@ Item {
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
+                        if (selectedSession === modelData) {
+                            checkoutDetails = []
+                        }
                         selectedSession = modelData
                         checkoutDetails = CheckoutService.getCheckoutDetails(
                                     modelData.id)
@@ -72,11 +88,10 @@ Item {
                         color: "white"
                         font.bold: true
                     }
-
                     Text {
                         text: modelData.table_id ? "Table "
                                                    + modelData.table_id : modelData.order_type
-                        color: "#aaaaaa"
+                        color: "#cccccc"
                         font.pixelSize: 12
                     }
                 }
@@ -92,7 +107,7 @@ Item {
             ColumnLayout {
                 anchors.fill: parent
                 anchors.margins: 16
-                spacing: 12
+                spacing: 14
 
                 Text {
                     visible: selectedSession !== null
@@ -105,28 +120,54 @@ Item {
                 ListView {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    Layout.minimumHeight: 100
+                    Layout.minimumHeight: 120
                     model: checkoutDetails
-                    spacing: 12
+                    spacing: 16
                     clip: true
 
                     delegate: Column {
-                        spacing: 6
+                        spacing: 8
+                        width: parent.width
 
-                        Text {
-                            text: "Order " + modelData.display_number
-                            color: "#9a7bff"
-                            font.bold: true
+                        RowLayout {
+                            spacing: 12
+                            width: parent.width
+
+                            Text {
+                                text: "Order " + modelData.display_number
+                                color: "#bbbbff"
+                                font.bold: true
+                                font.pixelSize: 16
+                                Layout.fillWidth: true
+                            }
+
+                            Text {
+                                visible: !isOrderServed(modelData)
+                                text: "PENDING"
+                                color: "#ffaa66"
+                                font.bold: true
+                                font.pixelSize: 15
+                            }
+
+                            Text {
+                                visible: isOrderServed(modelData)
+                                text: "SERVED"
+                                color: "#88ffaa"
+                                font.bold: true
+                                font.pixelSize: 15
+                            }
                         }
 
                         Repeater {
                             model: modelData.items
                             delegate: Row {
-                                spacing: 8
+                                spacing: 12
+                                width: parent ? parent.width : 0
 
                                 Text {
                                     text: modelData.item_name + " ×" + modelData.quantity
-                                    color: modelData.item_status === "served" ? "white" : "#aaaaaa"
+                                    color: isOrderServed(
+                                               modelData.parentModelData) ? "white" : "#888888"
                                     font.pixelSize: 16
                                 }
 
@@ -134,8 +175,9 @@ Item {
                                     visible: modelData.notes
                                              && modelData.notes.length > 0
                                     text: "(" + modelData.notes + ")"
-                                    color: "#ffcc80"
-                                    font.pixelSize: 16
+                                    color: isOrderServed(
+                                               modelData.parentModelData) ? "#ffdd99" : "#aa8844"
+                                    font.pixelSize: 15
                                 }
                             }
                         }
@@ -146,90 +188,49 @@ Item {
                     Layout.fillWidth: true
                     Layout.alignment: Qt.AlignBottom
                     spacing: 12
-                    Rectangle {
-                        visible: selectedSession && hasUnservedOrders
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: visible ? 160 : 0
-                        Layout.minimumHeight: visible ? 120 : 0
-                        radius: 4
-                        color: "#332222"
-                        border.color: "#ff8080"
-                        border.width: 1
-
-                        Column {
-                            anchors.fill: parent
-                            anchors.margins: 8
-                            spacing: 4
-
-                            Text {
-                                text: "Cannot checkout yet"
-                                color: "#ff8080"
-                                font.bold: true
-                            }
-
-                            Text {
-                                text: "The following items are not served:"
-                                color: "#ffcccc"
-                                font.pixelSize: 12
-                            }
-
-                            Repeater {
-                                model: checkoutDetails
-                                delegate: Repeater {
-                                    model: modelData.items
-                                    delegate: Text {
-                                        visible: modelData.order_status !== "served"
-                                        text: "• " + modelData.item_name + " ×" + modelData.quantity
-                                        color: "#ffcccc"
-                                        font.pixelSize: 12
-                                    }
-                                }
-                            }
-                        }
-                    }
 
                     Column {
                         visible: selectedSession !== null
-                        spacing: 4
+                        spacing: 6
 
                         Text {
                             text: "Subtotal: RM" + selectedSession.subtotal.toFixed(
                                       2)
                             color: "white"
+                            font.pixelSize: 15
                         }
                         Text {
                             text: "Tax: RM" + selectedSession.tax.toFixed(2)
                             color: "white"
+                            font.pixelSize: 15
                         }
                         Text {
                             text: "Total: RM" + selectedSession.total.toFixed(2)
                             color: "white"
                             font.bold: true
-                            font.pixelSize: 16
+                            font.pixelSize: 18
                         }
                     }
 
                     Button {
                         visible: selectedSession !== null
-                        text: qsTr("Checkout")
-                        leftPadding: 15
-                        rightPadding: 15
-                        topPadding: 15
-                        bottomPadding: 15
-                        enabled: selectedSession && !hasUnservedOrders
+                        text: "Checkout"
+                        Layout.alignment: Qt.AlignHCenter
+
+                        enabled: canCheckout
 
                         background: Rectangle {
-                            radius: 4
-                            color: enabled ? "#9a7bff" : "#444"
+                            radius: 6
+                            color: enabled ? "#7a5be0" : "#444444"
                         }
 
                         contentItem: Text {
-                            text: qsTr("Checkout")
+                            text: "Checkout"
+                            color: "white"
                             font.bold: true
-                            anchors.centerIn: parent
+                            font.pixelSize: 16
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
-                            color: "white"
                         }
 
                         hoverEnabled: false
@@ -238,16 +239,14 @@ Item {
                         onClicked: {
                             if (!selectedSession)
                                 return
-
                             if (CheckoutService.markOrderPaid(
                                         selectedSession.id)) {
                                 var printed = CheckoutService.printReceipt(
                                             selectedSession.id)
                                 if (!printed) {
-                                    console.log("Failed to print receipt for order #"
+                                    console.log("Receipt printing failed for #"
                                                 + selectedSession.display_number)
                                 }
-
                                 reloadSessions()
                             }
                         }

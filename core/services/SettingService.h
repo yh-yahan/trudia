@@ -8,7 +8,6 @@
 #include "../data/RestaurantRepository.h"
 #include "../data/PrinterSettingRepository.h"
 #include "../data/TaxSettingsRepository.h"
-#include "../data/TaxRuleRepository.h"
 
 class SettingService : public QObject
 {
@@ -16,9 +15,8 @@ class SettingService : public QObject
 
 public:
     explicit SettingService(RestaurantRepository &restaurantRepo,
-                            PrinterSettingRepository  &printerSettingRepo,
-                            TaxSettingsRepository &taxSettingsRepo,
-                            TaxRuleRepository &taxRuleRepo);
+                            PrinterSettingRepository &printerSettingRepo,
+                            TaxSettingsRepository &taxSettingsRepo);
 
     Q_INVOKABLE QVariantMap getRestaurant();
     Q_INVOKABLE QVariantMap getPrinterSetting();
@@ -27,15 +25,11 @@ public:
     Q_INVOKABLE bool savePrinterSettingMap(const QVariantMap &map);
     Q_INVOKABLE QVariantMap getTaxSettings();
     Q_INVOKABLE bool saveTaxSettings(const QVariantMap &map);
-    Q_INVOKABLE QVariantList getAllTaxRule();
-    Q_INVOKABLE bool addTaxRule(const QVariantMap &map);
-    Q_INVOKABLE bool setTaxRuleActiveStatus(const QVariantMap &map, const bool &setActive);
 
 private:
     RestaurantRepository &m_restaurantRepo;
     PrinterSettingRepository &m_printerSettingRepo;
     TaxSettingsRepository &m_taxSettingsRepo;
-    TaxRuleRepository &m_taxRuleRepo;
 };
 
 #endif // SETTINGSERVICE_H

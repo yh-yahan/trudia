@@ -4,51 +4,22 @@ import QtQuick.Layouts
 import Xeno.Services 1.0
 
 ScrollView {
-    ListModel {
-        id: taxRuleModel
-    }
-
-    function findIndexByValue(model, value) {
-        for (var i = 0; i < model.length; i++) {
-            if (model[i].value === value)
-                return i
-        }
-        return 0
-    }
+    anchors.fill: parent
+    contentWidth: parent.width
+    clip: true
 
     function loadTaxSettings() {
         let data = SettingService.getTaxSettings()
-
         if (!data || Object.keys(data).length === 0)
             return
 
         enableTaxSwitch.checked = data.enabled
+        taxNameField.text = data.name
+        taxRateField.text = (data.rate / 1000000).toFixed(2)
         registrationField.text = data.registration_number
-
-        priceModeCombo.currentIndex = findIndexByValue(priceModeCombo.model,
-                                                       data.price_mode)
-        roundingCombo.currentIndex = findIndexByValue(roundingCombo.model,
-                                                      data.rounding_strategy)
     }
 
-    function loadTaxRules() {
-        taxRuleModel.clear()
-
-        let rules = SettingService.getAllTaxRule()
-
-        for (var i = 0; i < rules.length; i++) {
-            taxRuleModel.append(rules[i])
-        }
-    }
-
-    Component.onCompleted: {
-        loadTaxSettings()
-        loadTaxRules()
-    }
-
-    anchors.fill: parent
-    contentWidth: parent.width
-    clip: true
+    Component.onCompleted: loadTaxSettings()
 
     ColumnLayout {
         width: parent.width
@@ -61,7 +32,6 @@ ScrollView {
             color: "white"
         }
 
-        // =========================
         ColumnLayout {
             spacing: 15
 
@@ -73,7 +43,7 @@ ScrollView {
             }
 
             ColumnLayout {
-                spacing: 10
+                spacing: 15
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.leftMargin: 20
@@ -98,240 +68,15 @@ ScrollView {
                     Layout.fillWidth: true
 
                     Label {
-                        text: "Tax Registration Number"
-                        color: "white"
-                        Layout.preferredWidth: 220
-                    }
-
-                    TextField {
-                        id: registrationField
-                        Layout.fillWidth: true
-                        placeholderText: "Enter registration number"
-                        color: "white"
-                        placeholderTextColor: "#AAAAAA"
-
-                        leftPadding: 10
-                        rightPadding: 10
-                        topPadding: 10
-                        bottomPadding: 10
-
-                        background: Rectangle {
-                            color: "#3A3A3A"
-                            radius: 6
-                        }
-                    }
-                }
-            }
-        }
-
-        // =========================
-        ColumnLayout {
-            spacing: 15
-
-            Text {
-                text: "Calculation Settings"
-                font.bold: true
-                color: "#c9c9c9"
-                font.pointSize: 16
-            }
-
-            ColumnLayout {
-                spacing: 10
-                anchors.fill: parent
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.leftMargin: 20
-                anchors.topMargin: 30
-
-                RowLayout {
-                    Layout.fillWidth: true
-
-                    Label {
-                        text: "Price Mode"
-                        color: "white"
-                        Layout.preferredWidth: 220
-                    }
-
-                    ComboBox {
-                        id: priceModeCombo
-                        Layout.fillWidth: true
-                        model: [{
-                                "text": "Tax Exclusive",
-                                "value": "exclusive"
-                            }, {
-                                "text": "Tax Inclusive",
-                                "value": "inclusive"
-                            }]
-
-                        textRole: "text"
-                        background: Rectangle {
-                            color: "#3A3A3A"
-                            radius: 6
-                        }
-                        contentItem: Text {
-                            text: parent.displayText
-                            color: "white"
-                            verticalAlignment: Text.AlignVCenter
-                            leftPadding: 8
-                        }
-                    }
-                }
-
-                RowLayout {
-                    Layout.fillWidth: true
-
-                    Label {
-                        text: "Rounding Strategy"
-                        color: "white"
-                        Layout.preferredWidth: 220
-                    }
-
-                    ComboBox {
-                        id: roundingCombo
-                        Layout.fillWidth: true
-                        model: [{
-                                "text": "Round Per Line",
-                                "value": "per_line"
-                            }, {
-                                "text": "Round At Order Total",
-                                "value": "per_order"
-                            }]
-
-                        textRole: "text"
-                        background: Rectangle {
-                            color: "#3A3A3A"
-                            radius: 6
-                        }
-                        contentItem: Text {
-                            text: parent.displayText
-                            color: "white"
-                            verticalAlignment: Text.AlignVCenter
-                            leftPadding: 8
-                        }
-                    }
-                }
-            }
-        }
-
-        // =========================
-        ColumnLayout {
-            spacing: 15
-
-            Text {
-                text: "Tax Configuration"
-                font.bold: true
-                color: "#c9c9c9"
-                font.pointSize: 16
-                anchors.topMargin: 30
-            }
-
-            ColumnLayout {
-                spacing: 10
-                anchors.fill: parent
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.leftMargin: 20
-                anchors.topMargin: 30
-
-                Rectangle {
-                    Layout.fillWidth: true
-                    height: 36
-                    color: "#1f1f1f"
-                    radius: 4
-
-                    RowLayout {
-                        anchors.fill: parent
-                        anchors.margins: 8
-
-                        Text {
-                            text: "Name"
-                            color: "#b0b0b0"
-                            font.bold: true
-                        }
-                        Text {
-                            text: "Rate"
-                            width: 70
-                            color: "#b0b0b0"
-                            font.bold: true
-                        }
-                        Text {
-                            text: "Applied To"
-                            width: 100
-                            color: "#b0b0b0"
-                            font.bold: true
-                        }
-                        Text {
-                            text: "Active"
-                            width: 70
-                            color: "#b0b0b0"
-                            font.bold: true
-                        }
-                    }
-                }
-
-                ListView {
-                    Layout.fillWidth: true
-                    height: 250
-                    model: taxRuleModel
-                    clip: true
-
-                    delegate: Rectangle {
-                        width: ListView.view.width
-                        height: 36
-                        color: index % 2 === 0 ? "#262626" : "#2e2e2e"
-
-                        RowLayout {
-                            anchors.fill: parent
-                            anchors.margins: 8
-                            spacing: 20
-
-                            Text {
-                                text: name
-                                color: "white"
-                                Layout.fillWidth: true
-                                elide: Text.ElideRight
-                            }
-
-                            Text {
-                                text: (rate * 100).toFixed(2) + "%"
-                                width: 70
-                                color: "white"
-                            }
-
-                            Text {
-                                text: apply_to
-                                width: 100
-                                color: "white"
-                            }
-
-                            Switch {
-                                width: 70
-                                checked: active
-
-                                onToggled: {
-                                    SettingService.setTaxRuleActiveStatus({
-                                                                              "id": id
-                                                                          },
-                                                                          checked)
-                                }
-                            }
-                        }
-                    }
-                }
-
-                RowLayout {
-                    Layout.fillWidth: true
-                    spacing: 20
-
-                    Label {
                         text: "Tax Name"
                         color: "white"
+                        Layout.preferredWidth: 200
                     }
 
                     TextField {
                         id: taxNameField
-                        Layout.preferredWidth: 200
-                        placeholderText: "e.g. Service Tax"
+                        Layout.fillWidth: true
+                        placeholderText: "e.g. Sales Tax"
                         color: "white"
                         placeholderTextColor: "#AAAAAA"
 
@@ -340,15 +85,21 @@ ScrollView {
                             radius: 6
                         }
                     }
+                }
+
+                RowLayout {
+                    visible: enableTaxSwitch.checked
+                    Layout.fillWidth: true
 
                     Label {
                         text: "Tax Rate (%)"
                         color: "white"
+                        Layout.preferredWidth: 200
                     }
 
                     TextField {
                         id: taxRateField
-                        Layout.preferredWidth: 100
+                        Layout.preferredWidth: 150
                         inputMethodHints: Qt.ImhFormattedNumbersOnly
                         color: "white"
 
@@ -357,158 +108,28 @@ ScrollView {
                             radius: 6
                         }
                     }
-
-                    Label {
-                        text: "Scope"
-                        color: "white"
-                    }
-
-                    ComboBox {
-                        id: scopeCombo
-                        Layout.preferredWidth: 150
-
-                        model: [{
-                                "text": "Item-Level",
-                                "value": "item"
-                            }, {
-                                "text": "Order-Level",
-                                "value": "order"
-                            }]
-
-                        textRole: "text"
-
-                        background: Rectangle {
-                            color: "#3A3A3A"
-                            radius: 6
-                        }
-
-                        contentItem: Text {
-                            text: parent.displayText
-                            color: "white"
-                            verticalAlignment: Text.AlignVCenter
-                            leftPadding: 8
-                        }
-                    }
-
-                    Label {
-                        text: "Apply To"
-                        color: "white"
-                    }
-
-                    ComboBox {
-                        id: applyToCombo
-                        Layout.preferredWidth: 180
-
-                        model: [{
-                                "text": "All Items",
-                                "value": "all"
-                            }, {
-                                "text": "Only Taxable Items",
-                                "value": "taxable_only"
-                            }]
-
-                        textRole: "text"
-
-                        background: Rectangle {
-                            color: "#3A3A3A"
-                            radius: 6
-                        }
-
-                        contentItem: Text {
-                            text: parent.displayText
-                            color: "white"
-                            verticalAlignment: Text.AlignVCenter
-                            leftPadding: 8
-                        }
-                    }
-
-                    Label {
-                        text: "Priority"
-                        color: "white"
-                    }
-
-                    TextField {
-                        id: priorityField
-                        Layout.preferredWidth: 60
-                        text: "1"
-                        inputMethodHints: Qt.ImhDigitsOnly
-                        color: "white"
-
-                        background: Rectangle {
-                            color: "#3A3A3A"
-                            radius: 6
-                        }
-                    }
-
-                    CheckBox {
-                        id: activeCheck
-                        checked: true
-
-                        contentItem: Text {
-                            text: "Active"
-                            color: "white"
-                            verticalAlignment: Text.AlignVCenter
-                            leftPadding: 6
-                        }
-                    }
                 }
 
                 RowLayout {
+                    visible: enableTaxSwitch.checked
                     Layout.fillWidth: true
-                    Layout.alignment: Qt.AlignRight
-                    spacing: 10
 
-                    Button {
-                        text: "Add Tax Rule"
-                        width: 120
-                        height: 36
+                    Label {
+                        text: "Registration Number"
+                        color: "white"
+                        Layout.preferredWidth: 200
+                    }
+
+                    TextField {
+                        id: registrationField
+                        Layout.fillWidth: true
+                        placeholderText: "Optional"
+                        color: "white"
+                        placeholderTextColor: "#AAAAAA"
+
                         background: Rectangle {
-                            color: "#9a7bff"
-                            radius: 4
-                        }
-                        contentItem: Text {
-                            text: qsTr("Add Tax Rule")
-                            font.bold: true
-                            anchors.centerIn: parent
-                            color: "white"
-                        }
-
-                        hoverEnabled: false
-                        focusPolicy: Qt.NoFocus
-
-                        onClicked: {
-                            if (taxNameField.text.trim() === ""
-                                    || taxRateField.text.trim() === "") {
-                                console.log("Tax Name and Rate are required")
-                                return
-                            }
-
-                            let newRule = {
-                                "name": taxNameField.text,
-                                "rate": parseFloat(taxRateField.text) / 100,
-                                "scope"// convert % → fraction
-                                : scopeCombo.model[scopeCombo.currentIndex].value,
-                                "apply_to": applyToCombo.model[applyToCombo.currentIndex].value,
-                                "priority": parseInt(priorityField.text),
-                                "active": activeCheck.checked
-                            }
-
-                            let ok = SettingService.addTaxRule(newRule)
-
-                            if (ok) {
-                                // Refresh list
-                                loadTaxRules()
-
-                                // Clear input fields
-                                taxNameField.text = ""
-                                taxRateField.text = ""
-                                scopeCombo.currentIndex = 0
-                                applyToCombo.currentIndex = 0
-                                priorityField.text = "1"
-                                activeCheck.checked = true
-                            } else {
-                                console.log("Failed to add tax rule")
-                            }
+                            color: "#3A3A3A"
+                            radius: 6
                         }
                     }
                 }
@@ -553,27 +174,32 @@ ScrollView {
             hoverEnabled: false
             focusPolicy: Qt.NoFocus
             onClicked: {
+                if (enableTaxSwitch.checked && taxRateField.text.trim(
+                            ) === "") {
+                    console.log("Tax rate required")
+                    return
+                }
+
+                let scaledRate = 0
+
+                if (enableTaxSwitch.checked) {
+                    scaledRate = Math.round(parseFloat(
+                                                taxRateField.text) * 1000000)
+                }
+
                 let taxSettings = {
                     "enabled": enableTaxSwitch.checked,
-                    "registration_number": registrationField.text,
-                    "price_mode": priceModeCombo.model[priceModeCombo.currentIndex].value,
-                    "rounding_strategy": roundingCombo.model[roundingCombo.currentIndex].value
+                    "name": taxNameField.text,
+                    "rate": scaledRate,
+                    "registration_number": registrationField.text
                 }
 
                 if (SettingService.saveTaxSettings(taxSettings)) {
-                    console.log("General tax settings saved successfully")
+                    console.log("Tax settings saved")
                 } else {
-                    console.error("Failed to save general tax settings")
+                    console.error("Failed to save tax settings")
                 }
             }
         }
-
-        // Text {
-        //     text: root.errorMessage
-        //     color: "red"
-        //     font.bold: true
-        //     wrapMode: Text.WordWrap
-        //     Layout.fillWidth: true
-        // }
     }
 }

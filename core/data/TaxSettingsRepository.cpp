@@ -11,7 +11,7 @@ std::optional<TaxSettings> TaxSettingsRepository::get()
 {
     QSqlQuery query(m_db);
     query.prepare(R"(
-        SELECT id, enabled, registration_number, price_mode, rounding_strategy, created_at
+        SELECT id, enabled, rate, registration_number, name, created_at
         FROM tax_settings
         LIMIT 1
     )");
@@ -29,8 +29,8 @@ std::optional<TaxSettings> TaxSettingsRepository::get()
     TaxSettings taxSettings;
     taxSettings.id = query.value("id").toInt();
     taxSettings.enabled = query.value("enabled").toBool();
-    taxSettings.price_mode = query.value("price_mode").toString();
-    taxSettings.rounding_strategy = query.value("rounding_strategy").toString();
+    taxSettings.rate = query.value("rate").toInt();
+    taxSettings.name = query.value("name").toString();
     taxSettings.created_at = query.value("created_at").toString();
 
     if (!query.value("registration_number").isNull())
@@ -45,19 +45,19 @@ void TaxSettingsRepository::save(const TaxSettings &taxSettings)
 
     query.prepare(R"(
         INSERT INTO tax_settings
-            (id, enabled, registration_number, price_mode, rounding_strategy)
+            (id, enabled, rate, registration_number, name)
         VALUES
-            (1, :enabled, :registration_number, :price_mode, :rounding_strategy)
+            (1, :enabled, :rate, :registration_number, :name)
         ON CONFLICT(id) DO UPDATE SET
             enabled = excluded.enabled,
+            rate = excluded.rate,
             registration_number = excluded.registration_number,
-            price_mode = excluded.price_mode,
-            rounding_strategy = excluded.rounding_strategy
+            name = excluded.name
     )");
 
     query.bindValue(":enabled", taxSettings.enabled);
-    query.bindValue(":price_mode", taxSettings.price_mode);
-    query.bindValue(":rounding_strategy", taxSettings.rounding_strategy);
+    query.bindValue(":rate", taxSettings.rate);
+    query.bindValue(":name", taxSettings.name);
 
     query.bindValue(":registration_number",
                     taxSettings.registration_number.has_value()

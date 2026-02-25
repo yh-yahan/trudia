@@ -66,10 +66,8 @@ qt_add_qml_module(appxeno
     SOURCES core/printing/ReceiptFormatter.h core/printing/ReceiptFormatter.cpp
     SOURCES core/printing/NetworkPrinterService.h core/printing/NetworkPrinterService.cpp
     SOURCES core/domain/TaxSettings.h
-    SOURCES core/domain/TaxRule.h
-    SOURCES core/domain/OrderTaxLine.h
     SOURCES core/data/TaxSettingsRepository.h core/data/TaxSettingsRepository.cpp
-    SOURCES core/data/TaxRuleRepository.h core/data/TaxRuleRepository.cpp
+    SOURCES core/services/TaxCalculationService.h core/services/TaxCalculationService.cpp
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

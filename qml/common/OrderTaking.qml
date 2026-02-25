@@ -16,7 +16,6 @@ Item {
     property int selectedTableId: -1
 
     property real subtotal: 0
-    property real tax: 0
     property real total: 0
     property int totalItems: 0
     property real discount: 0
@@ -79,9 +78,8 @@ Item {
         }
 
         subtotal = s
-        tax = 0
         discount = 0
-        total = subtotal - discount + tax
+        total = subtotal - discount
         totalItems = items
     }
 
@@ -623,7 +621,6 @@ Item {
                             }
                             return {
                                 "subtotal": subtotal,
-                                "tax": subtotal * 0.0,
                                 "total": subtotal,
                                 "totalItems": totalItems,
                                 "discount": 0
@@ -639,19 +636,6 @@ Item {
                             }
                             Label {
                                 text: "RM " + subtotal.toFixed(2)
-                                color: "white"
-                            }
-                        }
-
-                        RowLayout {
-                            spacing: 8
-                            Label {
-                                text: "Tax:"
-                                color: "white"
-                                font.bold: true
-                            }
-                            Label {
-                                text: "RM " + tax.toFixed(2)
                                 color: "white"
                             }
                         }

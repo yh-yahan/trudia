@@ -25,6 +25,10 @@ Rectangle {
         ListElement {
             text: "Tax"
         }
+
+        ListElement {
+            text: "Membership"
+        }
     }
 
     ColumnLayout {

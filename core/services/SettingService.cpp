@@ -2,10 +2,12 @@
 
 SettingService::SettingService(RestaurantRepository &restaurantRepo,
                                PrinterSettingRepository &printerSettingRepo,
-                               TaxSettingsRepository &taxSettingsRepo)
+                               TaxSettingsRepository &taxSettingsRepo,
+                               MembershipSettingsRepository &membershipSettingsRepo)
     : m_restaurantRepo(restaurantRepo),
       m_printerSettingRepo(printerSettingRepo),
-      m_taxSettingsRepo(taxSettingsRepo) {}
+      m_taxSettingsRepo(taxSettingsRepo),
+      m_membershipSettingsRepo(membershipSettingsRepo){}
 
 QVariantMap SettingService::getRestaurant()
 {
@@ -135,6 +137,48 @@ bool SettingService::saveTaxSettings(const QVariantMap &map)
         return true;
     } catch (const std::exception &e) {
         qWarning() << "Failed to save tax settings:" << e.what();
+        return false;
+    }
+}
+
+QVariantMap SettingService::getMembershipSettings()
+{
+    QVariantMap map;
+
+    auto membershipSettingsOpt = m_membershipSettingsRepo.get();
+    if (!membershipSettingsOpt.has_value())
+        return map;
+
+    const MembershipSettings &ms = membershipSettingsOpt.value();
+    map["id"] = ms.id;
+    map["enabled"] = ms.enabled;
+    map["earn_rate"] = ms.earn_rate;
+    map["min_spend"] = ms.min_spend;
+    map["earn_on"] = ms.earn_on;
+    map["conversion"] = ms.conversion;
+    map["redeem_min_point"] = ms.redeem_min_point;
+    map["partial_redemption"] = ms.partial_redemption;
+
+    return map;
+}
+
+bool SettingService::saveMembershipSettings(const QVariantMap &map)
+{
+    MembershipSettings membershipSettings;
+    membershipSettings.id = map.value("id", 1).toInt();
+    membershipSettings.enabled = map.value("enabled").toBool();
+    membershipSettings.earn_rate = map.value("earn_rate").toInt();
+    membershipSettings.min_spend = map.value("min_spend").toInt();
+    membershipSettings.earn_on = map.value("earn_on").toString();
+    membershipSettings.conversion = map.value("conversion").toInt();
+    membershipSettings.redeem_min_point = map.value("redeem_min_point").toInt();
+    membershipSettings.partial_redemption = map.value("partial_redemption").toInt();
+
+    try {
+        m_membershipSettingsRepo.save(membershipSettings);
+        return true;
+    } catch (const std::exception &e) {
+        qWarning() << "Failed to save membership settings:" << e.what();
         return false;
     }
 }

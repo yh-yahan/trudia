@@ -12,6 +12,7 @@
 #include "core/data/RestaurantRepository.h"
 #include "core/data/PrinterSettingRepository.h"
 #include "core/data/TaxSettingsRepository.h"
+#include "core/data/MembershipSettingsRepository.h"
 #include "core/services/OrderService.h"
 #include "core/services/TableService.h"
 #include "core/services/AuthService.h"
@@ -43,6 +44,7 @@ int main(int argc, char *argv[])
     RestaurantRepository restaurantRepo(DatabaseManager::db());
     PrinterSettingRepository printerSettingRepo(DatabaseManager::db());
     TaxSettingsRepository taxSettingsRepo(DatabaseManager::db());
+    MembershipSettingsRepository membershipSettingsRepo(DatabaseManager::db());
 
     ReceiptFormatter receiptFormatter;
     NetworkPrinterService networkPrinterService;
@@ -62,7 +64,12 @@ int main(int argc, char *argv[])
         networkPrinterService,
         taxCalculationService
     );
-    SettingService settingService(restaurantRepo, printerSettingRepo, taxSettingsRepo);
+    SettingService settingService(
+        restaurantRepo,
+        printerSettingRepo,
+        taxSettingsRepo,
+        membershipSettingsRepo
+    );
 
     qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "AuthService", &authService);
     qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "MenuService", &menuService);

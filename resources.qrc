@@ -1,14 +1,16 @@
+<!DOCTYPE RCC>
 <RCC>
-    <qresource prefix="/migrations">
-        <file>core/database/migrations/001_create_users.sql</file>
-        <file>core/database/migrations/002_create_categories.sql</file>
-        <file>core/database/migrations/003_create_menu.sql</file>
-        <file>core/database/migrations/004_create_tables.sql</file>
-        <file>core/database/migrations/005_create_order_sessions.sql</file>
-        <file>core/database/migrations/006_create_order_items.sql</file>
-        <file>core/database/migrations/007_create_orders.sql</file>
-        <file>core/database/migrations/008_create_restaurant.sql</file>
-        <file>core/database/migrations/009_create_printer_settings.sql</file>
-        <file>core/database/migrations/010_create_tax_settings.sql</file>
-    </qresource>
+  <qresource prefix="/migrations">
+    <file>core/database/migrations/001_create_users.sql</file>
+    <file>core/database/migrations/002_create_categories.sql</file>
+    <file>core/database/migrations/003_create_menu.sql</file>
+    <file>core/database/migrations/004_create_tables.sql</file>
+    <file>core/database/migrations/005_create_order_sessions.sql</file>
+    <file>core/database/migrations/006_create_order_items.sql</file>
+    <file>core/database/migrations/007_create_orders.sql</file>
+    <file>core/database/migrations/008_create_restaurant.sql</file>
+    <file>core/database/migrations/009_create_printer_settings.sql</file>
+    <file>core/database/migrations/010_create_tax_settings.sql</file>
+    <file>core/database/migrations/011_create_membership_settings.sql</file>
+  </qresource>
 </RCC>

@@ -32,6 +32,7 @@ qt_add_qml_module(appxeno
         qml/admin/settings/AdminStoreSettings.qml
         qml/admin/settings/AdminPrinterSettings.qml
         qml/admin/settings/AdminTaxSettings.qml
+        qml/admin/settings/AdminMembershipSettings.qml
         qml/admin/settings/AdminSettings.qml
         qml/admin/settings/AdminSettingsSidebar.qml
 
@@ -68,6 +69,8 @@ qt_add_qml_module(appxeno
     SOURCES core/domain/TaxSettings.h
     SOURCES core/data/TaxSettingsRepository.h core/data/TaxSettingsRepository.cpp
     SOURCES core/services/TaxCalculationService.h core/services/TaxCalculationService.cpp
+    SOURCES core/domain/MembershipSettings.h
+    SOURCES core/data/MembershipSettingsRepository.h core/data/MembershipSettingsRepository.cpp
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

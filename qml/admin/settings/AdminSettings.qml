@@ -41,6 +41,8 @@ Item {
             pageLoader.sourceComponent = printerSettingsPage
         } else if (index === 2) {
             pageLoader.sourceComponent = taxSettingsPage
+        } else if (index === 3) {
+            pageLoader.sourceComponent = membershipSettingsPage
         }
     }
 
@@ -57,5 +59,10 @@ Item {
     Component {
         id: taxSettingsPage
         AdminTaxSettings {}
+    }
+
+    Component {
+        id: membershipSettingsPage
+        AdminMembershipSettings {}
     }
 }

@@ -60,6 +60,7 @@ int main(int argc, char *argv[])
         orderItemRepo,
         restaurantRepo,
         printerSettingRepo,
+        tableRepo,
         receiptFormatter,
         networkPrinterService,
         taxCalculationService

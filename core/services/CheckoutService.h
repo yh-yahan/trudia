@@ -11,6 +11,7 @@
 #include "../data/RestaurantRepository.h"
 #include "../data/PrinterSettingRepository.h"
 #include "../data/TaxSettingsRepository.h"
+#include "../data/TableRepository.h"
 #include "../printing/ReceiptFormatter.h"
 #include "../printing/NetworkPrinterService.h"
 #include "./TaxCalculationService.h"
@@ -31,6 +32,7 @@ public:
                              OrderItemRepository &orderItemRepo,
                              RestaurantRepository &restaurantRepo,
                              PrinterSettingRepository &printerRepo,
+                             TableRepository &tableRepo,
                              ReceiptFormatter &formatter,
                              NetworkPrinterService &printerService,
                              TaxCalculationService &taxCalculationService);
@@ -50,6 +52,7 @@ private:
     ReceiptFormatter &m_formatter;
     NetworkPrinterService &m_printerService;
     TaxCalculationService &m_taxCalculationService;
+    TableRepository &m_tableRepo;
 };
 
 #endif // CHECKOUTSERVICE_H

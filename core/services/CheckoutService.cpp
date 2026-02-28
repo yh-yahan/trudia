@@ -11,6 +11,7 @@ CheckoutService::CheckoutService(OrderSessionRepository &orderSessionRepo,
                                  OrderItemRepository &orderItemRepo,
                                  RestaurantRepository &restaurantRepo,
                                  PrinterSettingRepository &printerRepo,
+                                 TableRepository &tableRepo,
                                  ReceiptFormatter &formatter,
                                  NetworkPrinterService &printerService,
                                  TaxCalculationService &taxCalculationService)
@@ -21,7 +22,8 @@ CheckoutService::CheckoutService(OrderSessionRepository &orderSessionRepo,
     m_printerRepo(printerRepo),
     m_formatter(formatter),
     m_printerService(printerService),
-    m_taxCalculationService(taxCalculationService) {}
+    m_taxCalculationService(taxCalculationService),
+    m_tableRepo(tableRepo) {}
 
 QVariantList CheckoutService::getActiveOrdersForCheckout() const
 {
@@ -162,6 +164,10 @@ bool CheckoutService::markOrderPaid(const int &orderSessionId)
     session.closed_at = QDateTime::currentDateTime().toString(Qt::ISODate);
 
     m_orderSessionRepo.update(session);
+
+    if (session.table_id.has_value()) {
+        m_tableRepo.setTableState(session.table_id.value(), false);
+    }
 
     return true;
 }

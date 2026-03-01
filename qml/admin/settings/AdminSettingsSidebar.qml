@@ -15,19 +15,19 @@ Rectangle {
     ListModel {
         id: buttonModel
         ListElement {
-            text: "Restaurant"
+            text: qsTr("Restaurant")
         }
 
         ListElement {
-            text: "Printer"
+            text: qsTr("Printer")
         }
 
         ListElement {
-            text: "Tax"
+            text: qsTr("Tax")
         }
 
         ListElement {
-            text: "Membership"
+            text: qsTr("Membership")
         }
     }
 

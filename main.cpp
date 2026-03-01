@@ -29,6 +29,11 @@ int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
 
+    QTranslator translator;
+    if (translator.load(QLocale(), "app", "_", ":/i18n")) {
+        app.installTranslator(&translator);
+    }
+
     if (!DatabaseManager::initialize()){
         qWarning() << "Database initialization failed";
         return -1;

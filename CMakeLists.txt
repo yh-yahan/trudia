@@ -4,7 +4,7 @@ project(xeno VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Quick Sql)
+find_package(Qt6 REQUIRED COMPONENTS Quick Sql LinguistTools)
 
 qt_standard_project_setup(REQUIRES 6.8)
 
@@ -71,6 +71,11 @@ qt_add_qml_module(appxeno
     SOURCES core/services/TaxCalculationService.h core/services/TaxCalculationService.cpp
     SOURCES core/domain/MembershipSettings.h
     SOURCES core/data/MembershipSettingsRepository.h core/data/MembershipSettingsRepository.cpp
+)
+
+qt_add_translations(appxeno
+    TS_FILES app_zh_CN.ts
+    RESOURCE_PREFIX "/i18n"
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

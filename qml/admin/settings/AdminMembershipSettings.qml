@@ -7,23 +7,21 @@ ScrollView {
     property var membershipData: ({})
 
     Component.onCompleted: {
-        membershipData = SettingService.getMembershipSettings()
+        membershipData = SettingService.getMembershipSettings();
 
         if (!membershipData || Object.keys(membershipData).length === 0)
-            return
+            return;
+        enableLoyaltySwitch.checked = membershipData.enabled;
 
-        enableLoyaltySwitch.checked = membershipData.enabled
+        earnRateField.text = membershipData.earn_rate || "";
 
-        earnRateField.text = membershipData.earn_rate || ""
+        minSpendField.text = membershipData.min_spend ? (membershipData.min_spend / 100).toFixed(2) : "";
 
-        minSpendField.text = membershipData.min_spend ? (membershipData.min_spend / 100).toFixed(
-                                                            2) : ""
+        earnBaseCombo.currentValue = membershipData.earn_on || "subtotal";
 
-        earnBaseCombo.currentIndex = membershipData.earn_on === "total" ? 1 : 0
-
-        conversionRateField.text = membershipData.conversion || ""
-        minRedeemField.text = membershipData.redeem_min_point || ""
-        partialRedeemSwitch.checked = membershipData.partial_redemption
+        conversionRateField.text = membershipData.conversion || "";
+        minRedeemField.text = membershipData.redeem_min_point || "";
+        partialRedeemSwitch.checked = membershipData.partial_redemption;
     }
 
     anchors.fill: parent
@@ -35,7 +33,7 @@ ScrollView {
         spacing: 30
 
         Label {
-            text: "Membership Settings"
+            text: qsTr("Membership Settings")
             font.pixelSize: 26
             font.bold: true
             color: "white"
@@ -45,7 +43,7 @@ ScrollView {
             spacing: 15
 
             Text {
-                text: "General"
+                text: qsTr("General")
                 font.bold: true
                 color: "#c9c9c9"
                 font.pointSize: 16
@@ -61,7 +59,7 @@ ScrollView {
                     Layout.fillWidth: true
 
                     Label {
-                        text: "Enable Points Loyalty"
+                        text: qsTr("Enable Points Loyalty")
                         color: "white"
                         Layout.fillWidth: true
                     }
@@ -79,7 +77,7 @@ ScrollView {
             visible: enableLoyaltySwitch.checked
 
             Text {
-                text: "Earning Rules"
+                text: qsTr("Earning Rules")
                 font.bold: true
                 color: "#c9c9c9"
                 font.pointSize: 16
@@ -95,7 +93,7 @@ ScrollView {
                     Layout.fillWidth: true
 
                     Label {
-                        text: "Earn Rate (points per RM1)"
+                        text: qsTr("Earn Rate (points per RM1)")
                         color: "white"
                         Layout.preferredWidth: 230
                     }
@@ -119,7 +117,7 @@ ScrollView {
                     Layout.fillWidth: true
 
                     Label {
-                        text: "Minimum Spend (RM)"
+                        text: qsTr("Minimum Spend (RM)")
                         color: "white"
                         Layout.preferredWidth: 230
                     }
@@ -143,7 +141,7 @@ ScrollView {
                     Layout.fillWidth: true
 
                     Label {
-                        text: "Earn Based On"
+                        text: qsTr("Earn Based On")
                         color: "white"
                         Layout.preferredWidth: 230
                     }
@@ -151,7 +149,18 @@ ScrollView {
                     ComboBox {
                         id: earnBaseCombo
                         Layout.preferredWidth: 220
-                        model: ["Subtotal (Before Tax)", "Total (After Tax)"]
+                        model: [
+                            {
+                                value: "subtotal",
+                                label: qsTr("Subtotal (Before Tax)")
+                            },
+                            {
+                                value: "total",
+                                label: qsTr("Total (After Tax)")
+                            }
+                        ]
+                        textRole: "label"
+                        valueRole: "value"
                     }
                 }
             }
@@ -162,7 +171,7 @@ ScrollView {
             visible: enableLoyaltySwitch.checked
 
             Text {
-                text: "Redemption Rules"
+                text: qsTr("Redemption Rules")
                 font.bold: true
                 color: "#c9c9c9"
                 font.pointSize: 16
@@ -178,7 +187,7 @@ ScrollView {
                     Layout.fillWidth: true
 
                     Label {
-                        text: "Conversion (points = RM1)"
+                        text: qsTr("Conversion (points = RM1)")
                         color: "white"
                         Layout.preferredWidth: 230
                     }
@@ -202,7 +211,7 @@ ScrollView {
                     Layout.fillWidth: true
 
                     Label {
-                        text: "Minimum Points to Redeem"
+                        text: qsTr("Minimum Points to Redeem")
                         color: "white"
                         Layout.preferredWidth: 230
                     }
@@ -226,7 +235,7 @@ ScrollView {
                     Layout.fillWidth: true
 
                     Label {
-                        text: "Allow Partial Redemption"
+                        text: qsTr("Allow Partial Redemption")
                         color: "white"
                         Layout.fillWidth: true
                     }
@@ -276,25 +285,25 @@ ScrollView {
             focusPolicy: Qt.NoFocus
 
             onClicked: {
-                var payload = {}
+                var payload = {};
 
-                payload.id = membershipData.id || 1
-                payload.enabled = enableLoyaltySwitch.checked
+                payload.id = membershipData.id || 1;
+                payload.enabled = enableLoyaltySwitch.checked;
 
-                payload.earn_rate = parseInt(earnRateField.text || 0)
+                payload.earn_rate = parseInt(earnRateField.text || 0);
 
                 // convert RM → cents
-                var minSpend = parseFloat(minSpendField.text || 0)
-                payload.min_spend = Math.round(minSpend * 100)
+                var minSpend = parseFloat(minSpendField.text || 0);
+                payload.min_spend = Math.round(minSpend * 100);
 
-                payload.earn_on = earnBaseCombo.currentIndex === 1 ? "total" : "subtotal"
+                payload.earn_on = earnBaseCombo.currentValue;
 
-                payload.conversion = parseInt(conversionRateField.text || 0)
-                payload.redeem_min_point = parseInt(minRedeemField.text || 0)
+                payload.conversion = parseInt(conversionRateField.text || 0);
+                payload.redeem_min_point = parseInt(minRedeemField.text || 0);
 
-                payload.partial_redemption = partialRedeemSwitch.checked ? 1 : 0
+                payload.partial_redemption = partialRedeemSwitch.checked ? 1 : 0;
 
-                SettingService.saveMembershipSettings(payload)
+                SettingService.saveMembershipSettings(payload);
             }
         }
     }

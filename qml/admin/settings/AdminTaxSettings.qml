@@ -26,7 +26,7 @@ ScrollView {
         spacing: 30
 
         Label {
-            text: "Tax Settings"
+            text: qsTr("Tax Settings")
             font.pixelSize: 26
             font.bold: true
             color: "white"
@@ -36,7 +36,7 @@ ScrollView {
             spacing: 15
 
             Text {
-                text: "General"
+                text: qsTr("General")
                 font.bold: true
                 color: "#c9c9c9"
                 font.pointSize: 16
@@ -52,7 +52,7 @@ ScrollView {
                     Layout.fillWidth: true
 
                     Label {
-                        text: "Enable Tax"
+                        text: qsTr("Enable Tax")
                         color: "white"
                         Layout.fillWidth: true
                     }
@@ -68,7 +68,7 @@ ScrollView {
                     Layout.fillWidth: true
 
                     Label {
-                        text: "Tax Name"
+                        text: qsTr("Tax Name")
                         color: "white"
                         Layout.preferredWidth: 200
                     }
@@ -76,7 +76,7 @@ ScrollView {
                     TextField {
                         id: taxNameField
                         Layout.fillWidth: true
-                        placeholderText: "e.g. Sales Tax"
+                        placeholderText: qsTr("e.g. Sales Tax")
                         color: "white"
                         placeholderTextColor: "#AAAAAA"
 
@@ -92,7 +92,7 @@ ScrollView {
                     Layout.fillWidth: true
 
                     Label {
-                        text: "Tax Rate (%)"
+                        text: qsTr("Tax Rate (%)")
                         color: "white"
                         Layout.preferredWidth: 200
                     }
@@ -115,7 +115,7 @@ ScrollView {
                     Layout.fillWidth: true
 
                     Label {
-                        text: "Registration Number"
+                        text: qsTr("Registration Number")
                         color: "white"
                         Layout.preferredWidth: 200
                     }
@@ -123,7 +123,7 @@ ScrollView {
                     TextField {
                         id: registrationField
                         Layout.fillWidth: true
-                        placeholderText: "Optional"
+                        placeholderText: qsTr("Optional")
                         color: "white"
                         placeholderTextColor: "#AAAAAA"
 
@@ -150,7 +150,7 @@ ScrollView {
         anchors.bottomMargin: 20
 
         Button {
-            text: "Save"
+            text: qsTr("Save")
             width: 60
             leftPadding: 20
             rightPadding: 20

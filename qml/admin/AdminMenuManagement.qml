@@ -23,18 +23,18 @@ Item {
     property var menuItems: []
 
     function loadCategories() {
-        categories = MenuService.getAllCategory()
+        categories = MenuService.getAllCategory();
         if (categories.length > 0 && selectedCategoryId === -1) {
-            selectedCategoryId = categories[0].id
-            loadMenuItems(selectedCategoryId)
+            selectedCategoryId = categories[0].id;
+            loadMenuItems(selectedCategoryId);
         }
     }
 
     function loadMenuItems(categoryId) {
         if (categoryId >= 0) {
-            menuItems = MenuService.getMenuItemsByCategory(categoryId)
+            menuItems = MenuService.getMenuItemsByCategory(categoryId);
         } else {
-            menuItems = []
+            menuItems = [];
         }
     }
 
@@ -55,7 +55,7 @@ Item {
                 spacing: 12
 
                 Text {
-                    text: "Categories"
+                    text: qsTr("Categories")
                     font.bold: true
                     font.pixelSize: 18
                     color: "white"
@@ -82,57 +82,50 @@ Item {
                         border.color: "#2a2a2a"
 
                         function commitEdit() {
-                            var newName = editedCategory.trim()
-                            if (newName.length === 0
-                                    || newName === originalCategory) {
-                                isEditing = false
-                                return
+                            var newName = editedCategory.trim();
+                            if (newName.length === 0 || newName === originalCategory) {
+                                isEditing = false;
+                                return;
                             }
-                            var success = MenuService.renameCategory(
-                                        modelData.id, newName)
-                            console.log("renameCategory success:", success,
-                                        "new name:", newName)
+                            var success = MenuService.renameCategory(modelData.id, newName);
+                            console.log("renameCategory success:", success, "new name:", newName);
                             if (success) {
-                                loadCategories()
+                                loadCategories();
                             }
-                            isEditing = false
+                            isEditing = false;
                         }
 
                         function cancelEdit() {
-                            editedCategory = originalCategory
-                            isEditing = false
+                            editedCategory = originalCategory;
+                            isEditing = false;
                         }
 
                         Menu {
                             id: categoryMenu
                             MenuItem {
-                                text: "Rename"
+                                text: qsTr("Rename")
                                 onTriggered: {
-                                    categoryListView.currentIndex = index
-                                    itemRect.originalCategory = modelData.category
-                                    itemRect.editedCategory = modelData.category
-                                    itemRect.isEditing = true
-                                    editField.forceActiveFocus()
-                                    editField.selectAll()
+                                    categoryListView.currentIndex = index;
+                                    itemRect.originalCategory = modelData.category;
+                                    itemRect.editedCategory = modelData.category;
+                                    itemRect.isEditing = true;
+                                    editField.forceActiveFocus();
+                                    editField.selectAll();
                                 }
                             }
                             MenuItem {
-                                text: "Delete"
+                                text: qsTr("Delete")
                                 onTriggered: {
-                                    confirmationDialog.title = "Delete Category"
-                                    confirmationDialog.contentItem.children[0].text
-                                            = "Are you sure you want to delete \""
-                                            + modelData.category + "\"? All menu items within \""
-                                            + modelData.category + "\" will be deleted."
+                                    confirmationDialog.title = qsTr("Delete Category");
+                                    confirmationDialog.contentItem.children[0].text = qsTr('Are you sure you want to delete "%1"? All menu items within "%1" will be deleted.').arg(modelData.category);
 
                                     confirmationDialog.confirmCallback = function (confirmed) {
                                         if (confirmed) {
-                                            MenuService.removeCategory(
-                                                        modelData.id)
-                                            loadCategories()
+                                            MenuService.removeCategory(modelData.id);
+                                            loadCategories();
                                         }
-                                    }
-                                    confirmationDialog.open()
+                                    };
+                                    confirmationDialog.open();
                                 }
                             }
                         }
@@ -168,23 +161,23 @@ Item {
 
                             onActiveFocusChanged: {
                                 if (!activeFocus && itemRect.isEditing) {
-                                    itemRect.commitEdit()
+                                    itemRect.commitEdit();
                                 }
                             }
 
                             onFocusChanged: {
                                 if (focus)
-                                    selectAll()
+                                    selectAll();
                             }
 
                             Keys.onReturnPressed: {
-                                itemRect.commitEdit()
-                                event.accepted = true
+                                itemRect.commitEdit();
+                                event.accepted = true;
                             }
 
                             Keys.onEscapePressed: {
-                                itemRect.cancelEdit()
-                                event.accepted = true
+                                itemRect.cancelEdit();
+                                event.accepted = true;
                             }
                         }
 
@@ -195,11 +188,11 @@ Item {
 
                             onClicked: function (mouse) {
                                 if (mouse.button === Qt.RightButton) {
-                                    categoryMenu.popup(itemRect)
+                                    categoryMenu.popup(itemRect);
                                 } else {
-                                    categoryListView.currentIndex = index
-                                    selectedCategoryId = modelData.id
-                                    loadMenuItems(selectedCategoryId)
+                                    categoryListView.currentIndex = index;
+                                    selectedCategoryId = modelData.id;
+                                    loadMenuItems(selectedCategoryId);
                                 }
                             }
                         }
@@ -213,7 +206,7 @@ Item {
 
                     TextField {
                         id: newCategoryField
-                        placeholderText: "New category name"
+                        placeholderText: qsTr("New category name")
                         Layout.fillWidth: true
                         height: 40
                         font.pixelSize: 14
@@ -233,17 +226,17 @@ Item {
 
                         Component.onCompleted: {
                             if (itemRect.isEditing)
-                                forceActiveFocus()
+                                forceActiveFocus();
                         }
 
                         onActiveFocusChanged: {
-                            background.border.color = activeFocus ? "#9a7bff" : "#888888"
-                            background.color = activeFocus ? "#292929" : "#1f1f1f"
+                            background.border.color = activeFocus ? "#9a7bff" : "#888888";
+                            background.color = activeFocus ? "#292929" : "#1f1f1f";
                         }
                     }
 
                     Button {
-                        text: "Add Category"
+                        text: qsTr("Add Category")
                         Layout.fillWidth: true
                         Layout.topMargin: 15
                         leftPadding: 15
@@ -255,7 +248,7 @@ Item {
                             radius: 4
                         }
                         contentItem: Text {
-                            text: "Add Category"
+                            text: qsTr("Add Category")
                             color: "white"
                             font.bold: true
                             anchors.centerIn: parent
@@ -266,12 +259,11 @@ Item {
 
                         onClicked: {
                             if (newCategoryField.text.length === 0)
-                                return
-                            var success = MenuService.addCategory(
-                                        newCategoryField.text)
+                                return;
+                            var success = MenuService.addCategory(newCategoryField.text);
                             if (success) {
-                                loadCategories()
-                                newCategoryField.text = ""
+                                loadCategories();
+                                newCategoryField.text = "";
                             }
                         }
                     }
@@ -290,7 +282,7 @@ Item {
                 spacing: 12
 
                 Text {
-                    text: selectedCategoryId !== -1 ? "Menu Items" : "Select a category"
+                    text: selectedCategoryId !== -1 ? qsTr("Menu Items") : qsTr("Select a category")
                     font.bold: true
                     font.pixelSize: 18
                     color: "white"
@@ -309,14 +301,14 @@ Item {
                         spacing: 12
 
                         Text {
-                            text: "Item"
+                            text: qsTr("Item")
                             font.bold: true
                             color: "#b0b0b0"
                             Layout.fillWidth: true
                         }
 
                         Text {
-                            text: "Price"
+                            text: qsTr("Price")
                             font.bold: true
                             color: "#b0b0b0"
                             Layout.preferredWidth: 90
@@ -324,21 +316,21 @@ Item {
                         }
 
                         Text {
-                            text: "Portion"
+                            text: qsTr("Portion")
                             font.bold: true
                             color: "#b0b0b0"
                             Layout.preferredWidth: 120
                         }
 
                         Text {
-                            text: "Available"
+                            text: qsTr("Available")
                             font.bold: true
                             color: "#b0b0b0"
                             Layout.preferredWidth: 100
                         }
 
                         Text {
-                            text: "Taxable"
+                            text: qsTr("Taxable")
                             font.bold: true
                             color: "#b0b0b0"
                             Layout.preferredWidth: 100
@@ -369,8 +361,7 @@ Item {
                         property bool isEditing: false
                         property string editedName: modelData.item
                         property string editedPrice: modelData.price.toFixed(2)
-                        property string editedPortion: modelData.portion_size
-                                                       || ""
+                        property string editedPortion: modelData.portion_size || ""
                         property bool editedAvailable: modelData.is_available
                         property bool editedTaxable: modelData.is_taxable
 
@@ -388,7 +379,7 @@ Item {
                                     text: itemRect.editedName
                                     anchors.fill: parent
                                     color: "white"
-                                    placeholderText: "Item Name"
+                                    placeholderText: qsTr("Item Name")
                                     font.pixelSize: 14
                                     placeholderTextColor: "#b5b5b5"
                                     background: Rectangle {
@@ -420,7 +411,7 @@ Item {
                                     anchors.fill: parent
                                     horizontalAlignment: Text.AlignRight
                                     color: "white"
-                                    placeholderText: "Price"
+                                    placeholderText: qsTr("Price")
                                     font.pixelSize: 14
                                     placeholderTextColor: "#b5b5b5"
                                     background: Rectangle {
@@ -451,7 +442,7 @@ Item {
                                     text: itemRect.editedPortion
                                     anchors.fill: parent
                                     color: "white"
-                                    placeholderText: "Portion"
+                                    placeholderText: qsTr("Portion")
                                     font.pixelSize: 14
                                     placeholderTextColor: "#b5b5b5"
                                     background: Rectangle {
@@ -488,7 +479,7 @@ Item {
                             }
 
                             Button {
-                                text: itemRect.isEditing ? "Save" : "Edit"
+                                text: itemRect.isEditing ? qsTr("Save") : qsTr("Edit")
                                 background: Rectangle {
                                     color: "#9a7bff"
                                     radius: 4
@@ -498,42 +489,34 @@ Item {
                                 topPadding: 5
                                 bottomPadding: 5
                                 contentItem: Text {
-                                    text: itemRect.isEditing ? "Save" : "Edit"
+                                    text: itemRect.isEditing ? qsTr("Save") : qsTr("Edit")
                                     color: "white"
                                     anchors.centerIn: parent
                                 }
                                 onClicked: {
                                     if (itemRect.isEditing) {
-                                        var itemNameTrimmed = itemRect.editedName.trim()
-                                        var portionTrimmed = itemRect.editedPortion.trim()
-                                        var priceVal = parseFloat(
-                                                    itemRect.editedPrice)
+                                        var itemNameTrimmed = itemRect.editedName.trim();
+                                        var portionTrimmed = itemRect.editedPortion.trim();
+                                        var priceVal = parseFloat(itemRect.editedPrice);
 
                                         if (itemNameTrimmed.length === 0) {
-                                            console.warn("Item name cannot be empty")
-                                            return
+                                            console.warn("Item name cannot be empty");
+                                            return;
                                         }
 
                                         if (isNaN(priceVal) || priceVal <= 0) {
-                                            console.warn("Price must be a number greater than 0")
-                                            return
+                                            console.warn("Price must be a number greater than 0");
+                                            return;
                                         }
 
-                                        var success = MenuService.editMenuItem(
-                                                    modelData.id,
-                                                    itemNameTrimmed,
-                                                    selectedCategoryId,
-                                                    priceVal,
-                                                    itemRect.editedAvailable,
-                                                    itemRect.editedTaxable,
-                                                    portionTrimmed)
+                                        var success = MenuService.editMenuItem(modelData.id, itemNameTrimmed, selectedCategoryId, priceVal, itemRect.editedAvailable, itemRect.editedTaxable, portionTrimmed);
 
                                         if (success) {
-                                            loadMenuItems(selectedCategoryId)
-                                            itemRect.isEditing = false
+                                            loadMenuItems(selectedCategoryId);
+                                            itemRect.isEditing = false;
                                         }
                                     } else {
-                                        itemRect.isEditing = true
+                                        itemRect.isEditing = true;
                                     }
                                 }
 
@@ -557,18 +540,15 @@ Item {
                                     anchors.centerIn: parent
                                 }
                                 onClicked: {
-                                    confirmationDialog.title = "Delete Item"
-                                    confirmationDialog.contentItem.children[0].text
-                                            = "Are you sure you want to delete \""
-                                            + modelData.item + "\"?"
+                                    confirmationDialog.title = "Delete Item";
+                                    confirmationDialog.contentItem.children[0].text = qsTr('Are you sure you want to delete "%1"?').arg(modelData.item);
                                     confirmationDialog.confirmCallback = function (confirmed) {
                                         if (confirmed) {
-                                            MenuService.removeMenuItem(
-                                                        modelData.id)
-                                            loadMenuItems(selectedCategoryId)
+                                            MenuService.removeMenuItem(modelData.id);
+                                            loadMenuItems(selectedCategoryId);
                                         }
-                                    }
-                                    confirmationDialog.open()
+                                    };
+                                    confirmationDialog.open();
                                 }
                                 hoverEnabled: false
                                 focusPolicy: Qt.NoFocus
@@ -587,7 +567,7 @@ Item {
 
                         TextField {
                             id: newItemName
-                            placeholderText: "Item name"
+                            placeholderText: qsTr("Item name")
                             Layout.fillWidth: true
                             height: 40
                             leftPadding: 10
@@ -605,14 +585,14 @@ Item {
                                 border.width: 1
                             }
                             onActiveFocusChanged: {
-                                background.border.color = activeFocus ? "#9a7bff" : "#888888"
-                                background.color = activeFocus ? "#292929" : "#1f1f1f"
+                                background.border.color = activeFocus ? "#9a7bff" : "#888888";
+                                background.color = activeFocus ? "#292929" : "#1f1f1f";
                             }
                         }
 
                         TextField {
                             id: newItemPrice
-                            placeholderText: "Price"
+                            placeholderText: qsTr("Price")
                             width: 200
                             inputMethodHints: Qt.ImhFormattedNumbersOnly
                             height: 40
@@ -630,14 +610,14 @@ Item {
                                 border.width: 1
                             }
                             onActiveFocusChanged: {
-                                background.border.color = activeFocus ? "#9a7bff" : "#888888"
-                                background.color = activeFocus ? "#292929" : "#1f1f1f"
+                                background.border.color = activeFocus ? "#9a7bff" : "#888888";
+                                background.color = activeFocus ? "#292929" : "#1f1f1f";
                             }
                         }
 
                         TextField {
                             id: newItemPortion
-                            placeholderText: "Portion (optional)"
+                            placeholderText: qsTr("Portion (optional)")
                             width: 150
                             height: 40
                             font.pixelSize: 14
@@ -654,19 +634,19 @@ Item {
                                 border.width: 1
                             }
                             onActiveFocusChanged: {
-                                background.border.color = activeFocus ? "#9a7bff" : "#888888"
-                                background.color = activeFocus ? "#292929" : "#1f1f1f"
+                                background.border.color = activeFocus ? "#9a7bff" : "#888888";
+                                background.color = activeFocus ? "#292929" : "#1f1f1f";
                             }
                         }
 
                         CheckBox {
                             id: newItemAvailable
-                            text: "Available"
+                            text: qsTr("Available")
                             checked: true
                             font.pixelSize: 14
                             Layout.alignment: Qt.AlignVCenter
                             contentItem: Text {
-                                text: "Available"
+                                text: qsTr("Available")
                                 color: "white"
                                 anchors.verticalCenter: parent.verticalCenter
                             }
@@ -674,12 +654,12 @@ Item {
 
                         CheckBox {
                             id: newItemTaxable
-                            text: "Taxable"
+                            text: qsTr("Taxable")
                             checked: true
                             font.pixelSize: 14
                             Layout.alignment: Qt.AlignVCenter
                             contentItem: Text {
-                                text: "Taxable"
+                                text: qsTr("Taxable")
                                 color: "white"
                                 anchors.verticalCenter: parent.verticalCenter
                             }
@@ -687,7 +667,7 @@ Item {
                     }
 
                     Button {
-                        text: "Add Menu Item"
+                        text: qsTr("Add Menu Item")
                         Layout.fillWidth: true
                         Layout.topMargin: 15
                         leftPadding: 15
@@ -699,7 +679,7 @@ Item {
                             radius: 4
                         }
                         contentItem: Text {
-                            text: "Add Menu Item"
+                            text: qsTr("Add Menu Item")
                             color: "white"
                             font.bold: true
                             anchors.centerIn: parent
@@ -707,35 +687,29 @@ Item {
                         hoverEnabled: false
                         focusPolicy: Qt.NoFocus
                         onClicked: {
-                            var itemNameTrimmed = newItemName.text.trim()
-                            var portionTrimmed = newItemPortion.text.trim()
+                            var itemNameTrimmed = newItemName.text.trim();
+                            var portionTrimmed = newItemPortion.text.trim();
 
-                            if (itemNameTrimmed.length === 0
-                                    || newItemPrice.text.length === 0
-                                    || selectedCategoryId === -1) {
-                                console.warn("Item name, price, and category are required")
-                                return
+                            if (itemNameTrimmed.length === 0 || newItemPrice.text.length === 0 || selectedCategoryId === -1) {
+                                console.warn("Item name, price, and category are required");
+                                return;
                             }
 
-                            var price = parseFloat(newItemPrice.text)
+                            var price = parseFloat(newItemPrice.text);
                             if (isNaN(price) || price <= 0) {
-                                console.warn("Price must be a number greater than 0")
-                                return
+                                console.warn("Price must be a number greater than 0");
+                                return;
                             }
 
-                            MenuService.addMenuItem(itemNameTrimmed,
-                                                    selectedCategoryId, price,
-                                                    newItemAvailable.checked,
-                                                    newItemTaxable.checked,
-                                                    portionTrimmed)
+                            MenuService.addMenuItem(itemNameTrimmed, selectedCategoryId, price, newItemAvailable.checked, newItemTaxable.checked, portionTrimmed);
 
-                            newItemName.text = ""
-                            newItemPrice.text = ""
-                            newItemPortion.text = ""
-                            newItemAvailable.checked = true
-                            newItemTaxable.checked = true
+                            newItemName.text = "";
+                            newItemPrice.text = "";
+                            newItemPortion.text = "";
+                            newItemAvailable.checked = true;
+                            newItemTaxable.checked = true;
 
-                            loadMenuItems(selectedCategoryId)
+                            loadMenuItems(selectedCategoryId);
                         }
                     }
                 }

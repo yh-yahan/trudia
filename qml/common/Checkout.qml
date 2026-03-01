@@ -143,7 +143,7 @@ Item {
 
                             Text {
                                 visible: !isOrderServed(modelData)
-                                text: "PENDING"
+                                text: qsTr("PENDING")
                                 color: "#ffaa66"
                                 font.bold: true
                                 font.pixelSize: 15
@@ -151,7 +151,7 @@ Item {
 
                             Text {
                                 visible: isOrderServed(modelData)
-                                text: "SERVED"
+                                text: qsTr("SERVED")
                                 color: "#88ffaa"
                                 font.bold: true
                                 font.pixelSize: 15
@@ -194,18 +194,18 @@ Item {
                         spacing: 6
 
                         Text {
-                            text: "Subtotal: RM" + selectedSession.subtotal.toFixed(
+                            text: qsTr("Subtotal: RM") + selectedSession.subtotal.toFixed(
                                       2)
                             color: "white"
                             font.pixelSize: 15
                         }
                         Text {
-                            text: "Tax: RM" + selectedSession.tax.toFixed(2)
+                            text: qsTr("Tax: RM") + selectedSession.tax.toFixed(2)
                             color: "white"
                             font.pixelSize: 15
                         }
                         Text {
-                            text: "Total: RM" + selectedSession.total.toFixed(2)
+                            text: qsTr("Total: RM") + selectedSession.total.toFixed(2)
                             color: "white"
                             font.bold: true
                             font.pixelSize: 18
@@ -214,7 +214,7 @@ Item {
 
                     Button {
                         visible: selectedSession !== null
-                        text: "Checkout"
+                        text: qsTr("Checkout")
                         Layout.alignment: Qt.AlignHCenter
 
                         enabled: canCheckout
@@ -225,7 +225,7 @@ Item {
                         }
 
                         contentItem: Text {
-                            text: "Checkout"
+                            text: qsTr("Checkout")
                             color: "white"
                             font.bold: true
                             font.pixelSize: 16

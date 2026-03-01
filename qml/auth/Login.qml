@@ -48,7 +48,7 @@ Item {
 
                 TextField {
                     id: usernameField
-                    placeholderText: "Enter username"
+                    placeholderText: qsTr("Enter username")
                     leftPadding: 10
                     rightPadding: 10
                     topPadding: 10
@@ -63,7 +63,7 @@ Item {
 
                 TextField {
                     id: passwordField
-                    placeholderText: "Enter password"
+                    placeholderText: qsTr("Enter password")
                     echoMode: TextInput.Password
                     leftPadding: 10
                     rightPadding: 10
@@ -73,7 +73,7 @@ Item {
                 }
 
                 Button {
-                    text: "Login"
+                    text: qsTr("Login")
                     Layout.fillWidth: true
                     leftPadding: 15
                     rightPadding: 15

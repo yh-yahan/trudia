@@ -32,7 +32,7 @@ ScrollView {
 
         // section title
         Text {
-            text: "Restaurant Settings"
+            text: qsTr("Restaurant Settings")
             font.bold: true
             font.pixelSize: 26
             color: "white"
@@ -44,7 +44,7 @@ ScrollView {
 
             Text {
                 Layout.fillWidth: true
-                text: "Basic Information"
+                text: qsTr("Basic Information")
                 font.bold: true
                 color: "#c9c9c9"
                 font.pointSize: 16
@@ -63,7 +63,7 @@ ScrollView {
 
                 TextField {
                     Layout.fillWidth: true
-                    placeholderText: "Enter Restaurant Name"
+                    placeholderText: qsTr("Enter Restaurant Name")
                     text: root.restaurantName
                     onTextChanged: root.restaurantName = text
                     leftPadding: 10
@@ -86,7 +86,7 @@ ScrollView {
 
                 TextField {
                     Layout.fillWidth: true
-                    placeholderText: "Enter Address"
+                    placeholderText: qsTr("Enter Address")
                     text: root.restaurantAddress
                     onTextChanged: root.restaurantAddress = text
                     leftPadding: 10
@@ -109,7 +109,7 @@ ScrollView {
 
                 TextField {
                     Layout.fillWidth: true
-                    placeholderText: "Enter Phone Number"
+                    placeholderText: qsTr("Enter Phone Number")
                     text: root.restaurantPhone
                     onTextChanged: root.restaurantPhone = text
                     leftPadding: 10
@@ -132,7 +132,7 @@ ScrollView {
 
                 TextField {
                     Layout.fillWidth: true
-                    placeholderText: "Enter Email"
+                    placeholderText: qsTr("Enter Email")
                     text: root.restaurantEmail
                     onTextChanged: root.restaurantEmail = text
                     leftPadding: 10
@@ -155,7 +155,7 @@ ScrollView {
 
                 TextField {
                     Layout.fillWidth: true
-                    placeholderText: "Enter Website"
+                    placeholderText: qsTr("Enter Website")
                     text: root.restaurantWebsite
                     onTextChanged: root.restaurantWebsite = text
                     leftPadding: 10
@@ -183,7 +183,7 @@ ScrollView {
         anchors.bottomMargin: 20
 
         Button {
-            text: "Save"
+            text: qsTr("Save")
             width: 60
             leftPadding: 20
             rightPadding: 20

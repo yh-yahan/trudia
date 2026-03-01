@@ -21,7 +21,7 @@ Item {
     property var tables: []
 
     function loadTables() {
-        tables = TableService.getAllTables()
+        tables = TableService.getAllTables();
     }
 
     Component.onCompleted: loadTables()
@@ -32,7 +32,7 @@ Item {
         spacing: 12
 
         Text {
-            text: "Table Management"
+            text: qsTr("Table Management")
             font.bold: true
             font.pixelSize: 18
             color: "white"
@@ -50,13 +50,13 @@ Item {
                 spacing: 10
 
                 Text {
-                    text: "Table Name"
+                    text: qsTr("Table Name")
                     Layout.fillWidth: true
                     color: "#b0b0b0"
                     font.bold: true
                 }
                 Text {
-                    text: "Capacity"
+                    text: qsTr("Capacity")
                     width: 80
                     color: "#b0b0b0"
                     font.bold: true
@@ -106,16 +106,16 @@ Item {
                         }
                         onTextChanged: tableRect.editedName = text
                         onActiveFocusChanged: {
-                            background.border.color = activeFocus ? "#9a7bff" : "#888888"
-                            background.color = activeFocus ? "#292929" : "#1f1f1f"
+                            background.border.color = activeFocus ? "#9a7bff" : "#888888";
+                            background.color = activeFocus ? "#292929" : "#1f1f1f";
                         }
                         Keys.onReturnPressed: {
-                            commitEdit()
-                            event.accepted = true
+                            commitEdit();
+                            event.accepted = true;
                         }
                         Keys.onEscapePressed: {
-                            cancelEdit()
-                            event.accepted = true
+                            cancelEdit();
+                            event.accepted = true;
                         }
                     }
 
@@ -143,7 +143,7 @@ Item {
                     }
 
                     Button {
-                        text: tableRect.isEditing ? "Save" : "Edit"
+                        text: tableRect.isEditing ? qsTr("Save") : qsTr("Edit")
                         background: Rectangle {
                             color: "#9a7bff"
                             radius: 4
@@ -154,16 +154,16 @@ Item {
                         bottomPadding: 5
                         onClicked: {
                             if (tableRect.isEditing)
-                                commitEdit()
+                                commitEdit();
                             else
-                                tableRect.isEditing = true
+                                tableRect.isEditing = true;
                         }
                         hoverEnabled: false
                         focusPolicy: Qt.NoFocus
                     }
 
                     Button {
-                        text: "Delete"
+                        text: qsTr("Delete")
                         background: Rectangle {
                             color: "red"
                             radius: 4
@@ -173,17 +173,15 @@ Item {
                         topPadding: 5
                         bottomPadding: 5
                         onClicked: {
-                            confirmationDialog.title = "Delete Table"
-                            confirmationDialog.contentItem.children[0].text
-                                    = "Are you sure you want to delete table \""
-                                    + modelData.table_number + "\"?"
+                            confirmationDialog.title = "Delete Table";
+                            confirmationDialog.message = qsTr('Are you sure you want to delete table "%1"?').arg(modelData.table_number);
                             confirmationDialog.confirmCallback = function (confirmed) {
                                 if (confirmed) {
-                                    TableService.removeTable(modelData.id)
-                                    loadTables()
+                                    TableService.removeTable(modelData.id);
+                                    loadTables();
                                 }
-                            }
-                            confirmationDialog.open()
+                            };
+                            confirmationDialog.open();
                         }
                         hoverEnabled: false
                         focusPolicy: Qt.NoFocus
@@ -191,24 +189,20 @@ Item {
                 }
 
                 function commitEdit() {
-                    if (editedName.trim().length === 0
-                            || (editedName === originalName
-                                && editedCapacity === originalCapacity)) {
-                        isEditing = false
-                        return
+                    if (editedName.trim().length === 0 || (editedName === originalName && editedCapacity === originalCapacity)) {
+                        isEditing = false;
+                        return;
                     }
-                    var success = TableService.editTable(modelData.id,
-                                                         editedName,
-                                                         editedCapacity)
+                    var success = TableService.editTable(modelData.id, editedName, editedCapacity);
                     if (success)
-                        loadTables()
-                    isEditing = false
+                        loadTables();
+                    isEditing = false;
                 }
 
                 function cancelEdit() {
-                    editedName = originalName
-                    editedCapacity = originalCapacity
-                    isEditing = false
+                    editedName = originalName;
+                    editedCapacity = originalCapacity;
+                    isEditing = false;
                 }
             }
         }
@@ -222,7 +216,7 @@ Item {
 
                 TextField {
                     id: newTableName
-                    placeholderText: "Table name"
+                    placeholderText: qsTr("Table name")
                     Layout.fillWidth: true
                     height: 40
                     leftPadding: 10
@@ -237,8 +231,8 @@ Item {
                         border.color: "#888888"
                     }
                     onActiveFocusChanged: {
-                        background.border.color = activeFocus ? "#9a7bff" : "#888888"
-                        background.color = activeFocus ? "#292929" : "#1f1f1f"
+                        background.border.color = activeFocus ? "#9a7bff" : "#888888";
+                        background.color = activeFocus ? "#292929" : "#1f1f1f";
                     }
                 }
 
@@ -259,7 +253,7 @@ Item {
             }
 
             Button {
-                text: "Add Table"
+                text: qsTr("Add Table")
                 Layout.fillWidth: true
                 Layout.topMargin: 15
                 leftPadding: 15
@@ -280,13 +274,12 @@ Item {
                 focusPolicy: Qt.NoFocus
                 onClicked: {
                     if (newTableName.text.trim().length === 0)
-                        return
-                    var success = TableService.addTable(newTableName.text,
-                                                        newTableCapacity.value)
+                        return;
+                    var success = TableService.addTable(newTableName.text, newTableCapacity.value);
                     if (success) {
-                        loadTables()
-                        newTableName.text = ""
-                        newTableCapacity.value = 4
+                        loadTables();
+                        newTableName.text = "";
+                        newTableCapacity.value = 4;
                     }
                 }
             }

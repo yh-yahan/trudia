@@ -49,7 +49,7 @@ ScrollView {
 
         // section title
         Text {
-            text: "Printing"
+            text: qsTr("Printing")
             font.bold: true
             font.pixelSize: 26
             color: "white"
@@ -126,7 +126,7 @@ ScrollView {
 
                     TextField {
                         Layout.fillWidth: true
-                        placeholderText: "IP Address"
+                        placeholderText: qsTr("IP Address")
                         text: root.ipAddress
                         onTextChanged: root.ipAddress = text
                         leftPadding: 10
@@ -149,7 +149,7 @@ ScrollView {
 
                     TextField {
                         Layout.preferredWidth: 180
-                        placeholderText: "Port"
+                        placeholderText: qsTr("Port")
                         text: root.port === 0 ? "" : root.port.toString()
                         onTextChanged: root.port = parseInt(text) || 0
                         leftPadding: 10
@@ -176,7 +176,7 @@ ScrollView {
                     }
                     TextField {
                         Layout.fillWidth: true
-                        placeholderText: "COM Port"
+                        placeholderText: qsTr("COM Port")
                         text: root.comPort
                         onTextChanged: root.comPort = text
                         leftPadding: 10
@@ -198,7 +198,7 @@ ScrollView {
                     }
                     TextField {
                         Layout.fillWidth: true
-                        placeholderText: "Baud Rate"
+                        placeholderText: qsTr("Baud Rate")
                         text: root.baudRate === 0 ? "" : root.baudRate.toString(
                                                         )
                         onTextChanged: root.baudRate = parseInt(text) || 0
@@ -238,7 +238,7 @@ ScrollView {
                     }
                     TextField {
                         Layout.fillWidth: true
-                        placeholderText: "Data Bits"
+                        placeholderText: qsTr("Data Bits")
                         text: root.dataBits === 0 ? "" : root.dataBits.toString(
                                                         )
                         onTextChanged: root.dataBits = parseInt(text) || 0
@@ -261,7 +261,7 @@ ScrollView {
                     }
                     TextField {
                         Layout.fillWidth: true
-                        placeholderText: "Stop Bits"
+                        placeholderText: qsTr("Stop Bits")
                         text: root.stopBits === 0 ? "" : root.stopBits.toString(
                                                         )
                         onTextChanged: root.stopBits = parseInt(text) || 0
@@ -402,7 +402,7 @@ ScrollView {
         anchors.bottomMargin: 20
 
         Button {
-            text: "Save"
+            text: qsTr("Save")
             width: 60
             leftPadding: 20
             rightPadding: 20

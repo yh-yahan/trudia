@@ -15,22 +15,22 @@ Rectangle {
     ListModel {
         id: buttonModel
         ListElement {
-            text: "Take Order"
+            text: qsTr("Take Order")
         }
         ListElement {
-            text: "Checkout"
+            text: qsTr("Checkout")
         }
         ListElement {
-            text: "Kitchen"
+            text: qsTr("Kitchen")
         }
         ListElement {
-            text: "Menu Management"
+            text: qsTr("Menu Management")
         }
         ListElement {
-            text: "Table Management"
+            text: qsTr("Table Management")
         }
         ListElement {
-            text: "Settings"
+            text: qsTr("Settings")
         }
     }
 

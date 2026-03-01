@@ -36,25 +36,25 @@ Item {
         spacing: 16
 
         KitchenColumn {
-            title: "NEW"
+            title: qsTr("NEW")
             model: pendingOrders
-            actionText: "START"
+            actionText: qsTr("START")
             nextState: "in_progress"
             onActionDone: loadOrders()
         }
 
         KitchenColumn {
-            title: "PREPARING"
+            title: qsTr("PREPARING")
             model: preparingOrders
-            actionText: "MARK READY"
+            actionText: qsTr("MARK READY")
             nextState: "ready"
             onActionDone: loadOrders()
         }
 
         KitchenColumn {
-            title: "READY"
+            title: qsTr("READY")
             model: readyOrders
-            actionText: "SERVE"
+            actionText: qsTr("SERVE")
             nextState: "served"
             onActionDone: loadOrders()
         }
@@ -159,7 +159,7 @@ Item {
 
                     Text {
                         visible: modelData.notes && modelData.notes.length > 0
-                        text: "NOTE: " + modelData.notes
+                        text: qsTr("NOTE: ") + modelData.notes
                         color: noteColor
                         font.pixelSize: 12
                         wrapMode: Text.Wrap

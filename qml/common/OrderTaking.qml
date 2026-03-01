@@ -105,7 +105,7 @@ Item {
 
             Button {
                 id: dineInBtn
-                text: "Dine In"
+                text: qsTr("Dine In")
                 checkable: true
                 ButtonGroup.group: modeGroup
                 Layout.fillWidth: true
@@ -137,7 +137,7 @@ Item {
 
             Button {
                 id: takeawayBtn
-                text: "Takeaway"
+                text: qsTr("Takeaway")
                 checkable: true
                 ButtonGroup.group: modeGroup
                 Layout.fillWidth: true
@@ -169,7 +169,7 @@ Item {
 
             Button {
                 id: deliveryBtn
-                text: "Delivery"
+                text: qsTr("Delivery")
                 checkable: true
                 ButtonGroup.group: modeGroup
                 Layout.fillWidth: true
@@ -217,7 +217,7 @@ Item {
                     spacing: 12
 
                     Text {
-                        text: "Categories"
+                        text: qsTr("Categories")
                         font.bold: true
                         font.pixelSize: 18
                         color: "white"
@@ -273,7 +273,7 @@ Item {
                     spacing: 12
 
                     Text {
-                        text: selectedCategoryId !== -1 ? "Menu Items" : "Select a category"
+                        text: selectedCategoryId !== -1 ? qsTr("Menu Items") : qsTr("Select a category")
                         font.bold: true
                         font.pixelSize: 18
                         color: "white"
@@ -291,19 +291,19 @@ Item {
                             anchors.margins: 8
 
                             Text {
-                                text: "Item"
+                                text: qsTr("Item")
                                 Layout.fillWidth: true
                                 color: "#b0b0b0"
                                 font.bold: true
                             }
                             Text {
-                                text: "Price"
+                                text: qsTr("Price")
                                 width: 70
                                 color: "#b0b0b0"
                                 font.bold: true
                             }
                             Text {
-                                text: "Portion"
+                                text: qsTr("Portion")
                                 width: 100
                                 color: "#b0b0b0"
                                 font.bold: true
@@ -365,7 +365,7 @@ Item {
                                 }
 
                                 Button {
-                                    text: "Add"
+                                    text: qsTr("Add")
                                     enabled: modelData.is_available
                                     background: Rectangle {
                                         color: "#9a7bff"
@@ -424,7 +424,7 @@ Item {
                     spacing: 2
 
                     Label {
-                        text: "Current Order"
+                        text: qsTr("Current Order")
                         font.pixelSize: 18
                         color: "white"
                     }
@@ -557,7 +557,7 @@ Item {
 
                                     TextField {
                                         Layout.preferredWidth: 100
-                                        placeholderText: "Add a remark"
+                                        placeholderText: qsTr("Add a remark")
                                         text: notes
                                         onTextChanged: notes = text
                                         leftPadding: 5
@@ -582,7 +582,7 @@ Item {
                                     }
 
                                     Button {
-                                        text: "Remove"
+                                        text: qsTr("Remove")
                                         background: Rectangle {
                                             color: "#ff4d4d"
                                             radius: 4
@@ -630,7 +630,7 @@ Item {
                         RowLayout {
                             spacing: 8
                             Label {
-                                text: "Subtotal:"
+                                text: qsTr("Subtotal:")
                                 color: "white"
                                 font.bold: true
                             }
@@ -643,7 +643,7 @@ Item {
                         RowLayout {
                             spacing: 8
                             Label {
-                                text: "Total:"
+                                text: qsTr("Total:")
                                 color: "white"
                                 font.bold: true
                             }
@@ -656,7 +656,7 @@ Item {
                         RowLayout {
                             spacing: 8
                             Label {
-                                text: "Total Items:"
+                                text: qsTr("Total Items:")
                                 color: "white"
                                 font.bold: true
                             }
@@ -669,7 +669,7 @@ Item {
                         RowLayout {
                             spacing: 8
                             Label {
-                                text: "Table:"
+                                text: qsTr("Table:")
                                 color: "white"
                                 font.bold: true
                             }
@@ -689,7 +689,7 @@ Item {
                         RowLayout {
                             spacing: 8
                             Label {
-                                text: "Discount:"
+                                text: qsTr("Discount:")
                                 color: "white"
                                 font.bold: true
                             }
@@ -707,7 +707,7 @@ Item {
                     }
 
                     Button {
-                        text: "Place Order"
+                        text: qsTr("Place Order")
                         Layout.fillWidth: true
 
                         leftPadding: 15

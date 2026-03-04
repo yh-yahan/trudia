@@ -24,10 +24,7 @@ Rectangle {
             text: qsTr("Kitchen")
         }
         ListElement {
-            text: qsTr("Menu Management")
-        }
-        ListElement {
-            text: qsTr("Table Management")
+            text: qsTr("Management")
         }
         ListElement {
             text: qsTr("Settings")

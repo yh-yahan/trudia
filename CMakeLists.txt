@@ -27,8 +27,10 @@ qt_add_qml_module(appxeno
         qml/auth/FirstAdminRegister.qml
         qml/admin/AdminHome.qml
         qml/admin/AdminSidebar.qml
-        qml/admin/AdminMenuManagement.qml
-        qml/admin/AdminTableManagement.qml
+        qml/admin/management/AdminMenuManagement.qml
+        qml/admin/management/AdminTableManagement.qml
+        qml/admin/management/AdminManagement.qml
+        qml/admin/management/AdminManagementSidebar.qml
         qml/admin/settings/AdminStoreSettings.qml
         qml/admin/settings/AdminPrinterSettings.qml
         qml/admin/settings/AdminTaxSettings.qml

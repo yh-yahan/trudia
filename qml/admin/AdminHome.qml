@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import "./settings"
+import "./management"
 import "../common"
 
 Item {
@@ -44,10 +45,8 @@ Item {
         } else if (index === 2) {
             pageLoader.sourceComponent = kitchenPage
         } else if (index === 3) {
-            pageLoader.sourceComponent = menuManagementPage
+            pageLoader.sourceComponent = managementPage
         } else if (index === 4) {
-            pageLoader.sourceComponent = tableManagementPage
-        } else if (index === 5) {
             pageLoader.sourceComponent = settingsPage
         }
     }
@@ -68,13 +67,8 @@ Item {
     }
 
     Component {
-        id: menuManagementPage
-        AdminMenuManagement {}
-    }
-
-    Component {
-        id: tableManagementPage
-        AdminTableManagement {}
+        id: managementPage
+        AdminManagement {}
     }
 
     Component {

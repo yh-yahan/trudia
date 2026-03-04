@@ -2,7 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import Xeno.Services 1.0
-import "../components"
+import "../../components"
 
 Item {
     width: 800
@@ -21,7 +21,7 @@ Item {
     property var tables: []
 
     function loadTables() {
-        tables = TableService.getAllTables();
+        tables = TableService.getAllTables()
     }
 
     Component.onCompleted: loadTables()
@@ -106,16 +106,16 @@ Item {
                         }
                         onTextChanged: tableRect.editedName = text
                         onActiveFocusChanged: {
-                            background.border.color = activeFocus ? "#9a7bff" : "#888888";
-                            background.color = activeFocus ? "#292929" : "#1f1f1f";
+                            background.border.color = activeFocus ? "#9a7bff" : "#888888"
+                            background.color = activeFocus ? "#292929" : "#1f1f1f"
                         }
                         Keys.onReturnPressed: {
-                            commitEdit();
-                            event.accepted = true;
+                            commitEdit()
+                            event.accepted = true
                         }
                         Keys.onEscapePressed: {
-                            cancelEdit();
-                            event.accepted = true;
+                            cancelEdit()
+                            event.accepted = true
                         }
                     }
 
@@ -154,9 +154,9 @@ Item {
                         bottomPadding: 5
                         onClicked: {
                             if (tableRect.isEditing)
-                                commitEdit();
+                                commitEdit()
                             else
-                                tableRect.isEditing = true;
+                                tableRect.isEditing = true
                         }
                         hoverEnabled: false
                         focusPolicy: Qt.NoFocus
@@ -173,15 +173,17 @@ Item {
                         topPadding: 5
                         bottomPadding: 5
                         onClicked: {
-                            confirmationDialog.title = "Delete Table";
-                            confirmationDialog.message = qsTr('Are you sure you want to delete table "%1"?').arg(modelData.table_number);
+                            confirmationDialog.title = "Delete Table"
+                            confirmationDialog.message = qsTr(
+                                        'Are you sure you want to delete table "%1"?').arg(
+                                        modelData.table_number)
                             confirmationDialog.confirmCallback = function (confirmed) {
                                 if (confirmed) {
-                                    TableService.removeTable(modelData.id);
-                                    loadTables();
+                                    TableService.removeTable(modelData.id)
+                                    loadTables()
                                 }
-                            };
-                            confirmationDialog.open();
+                            }
+                            confirmationDialog.open()
                         }
                         hoverEnabled: false
                         focusPolicy: Qt.NoFocus
@@ -189,20 +191,24 @@ Item {
                 }
 
                 function commitEdit() {
-                    if (editedName.trim().length === 0 || (editedName === originalName && editedCapacity === originalCapacity)) {
-                        isEditing = false;
-                        return;
+                    if (editedName.trim().length === 0
+                            || (editedName === originalName
+                                && editedCapacity === originalCapacity)) {
+                        isEditing = false
+                        return
                     }
-                    var success = TableService.editTable(modelData.id, editedName, editedCapacity);
+                    var success = TableService.editTable(modelData.id,
+                                                         editedName,
+                                                         editedCapacity)
                     if (success)
-                        loadTables();
-                    isEditing = false;
+                        loadTables()
+                    isEditing = false
                 }
 
                 function cancelEdit() {
-                    editedName = originalName;
-                    editedCapacity = originalCapacity;
-                    isEditing = false;
+                    editedName = originalName
+                    editedCapacity = originalCapacity
+                    isEditing = false
                 }
             }
         }
@@ -231,8 +237,8 @@ Item {
                         border.color: "#888888"
                     }
                     onActiveFocusChanged: {
-                        background.border.color = activeFocus ? "#9a7bff" : "#888888";
-                        background.color = activeFocus ? "#292929" : "#1f1f1f";
+                        background.border.color = activeFocus ? "#9a7bff" : "#888888"
+                        background.color = activeFocus ? "#292929" : "#1f1f1f"
                     }
                 }
 
@@ -274,12 +280,13 @@ Item {
                 focusPolicy: Qt.NoFocus
                 onClicked: {
                     if (newTableName.text.trim().length === 0)
-                        return;
-                    var success = TableService.addTable(newTableName.text, newTableCapacity.value);
+                        return
+                    var success = TableService.addTable(newTableName.text,
+                                                        newTableCapacity.value)
                     if (success) {
-                        loadTables();
-                        newTableName.text = "";
-                        newTableCapacity.value = 4;
+                        loadTables()
+                        newTableName.text = ""
+                        newTableCapacity.value = 4
                     }
                 }
             }

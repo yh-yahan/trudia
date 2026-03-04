@@ -7,7 +7,16 @@ SettingService::SettingService(RestaurantRepository &restaurantRepo,
     : m_restaurantRepo(restaurantRepo),
       m_printerSettingRepo(printerSettingRepo),
       m_taxSettingsRepo(taxSettingsRepo),
-      m_membershipSettingsRepo(membershipSettingsRepo){}
+      m_membershipSettingsRepo(membershipSettingsRepo)
+{
+    auto result = m_membershipSettingsRepo.get();
+    m_membershipEnabled = result.has_value() && result->enabled;
+}
+
+bool SettingService::membershipEnabled() const
+{
+    return m_membershipEnabled;
+}
 
 QVariantMap SettingService::getRestaurant()
 {
@@ -165,20 +174,22 @@ QVariantMap SettingService::getMembershipSettings()
 bool SettingService::saveMembershipSettings(const QVariantMap &map)
 {
     MembershipSettings membershipSettings;
-    membershipSettings.id = map.value("id", 1).toInt();
-    membershipSettings.enabled = map.value("enabled").toBool();
-    membershipSettings.earn_rate = map.value("earn_rate").toInt();
-    membershipSettings.min_spend = map.value("min_spend").toInt();
-    membershipSettings.earn_on = map.value("earn_on").toString();
-    membershipSettings.conversion = map.value("conversion").toInt();
-    membershipSettings.redeem_min_point = map.value("redeem_min_point").toInt();
-    membershipSettings.partial_redemption = map.value("partial_redemption").toInt();
 
-    try {
-        m_membershipSettingsRepo.save(membershipSettings);
-        return true;
-    } catch (const std::exception &e) {
-        qWarning() << "Failed to save membership settings:" << e.what();
-        return false;
+    membershipSettings.id = 1;
+    membershipSettings.enabled = map["enabled"].toBool();
+    membershipSettings.earn_rate = map["earn_rate"].toInt();
+    membershipSettings.min_spend = map["min_spend"].toInt();
+    membershipSettings.earn_on = map["earn_on"].toString();
+    membershipSettings.conversion = map["conversion"].toInt();
+    membershipSettings.redeem_min_point = map["redeem_min_point"].toInt();
+    membershipSettings.partial_redemption = map["partial_redemption"].toInt();
+
+    m_membershipSettingsRepo.save(membershipSettings);
+
+    if (m_membershipEnabled != membershipSettings.enabled) {
+        m_membershipEnabled = membershipSettings.enabled;
+        emit membershipEnabledChanged();
     }
+
+    return true;
 }

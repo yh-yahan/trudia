@@ -13,12 +13,17 @@
 class SettingService : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(bool membershipEnabled
+            READ membershipEnabled
+            NOTIFY membershipEnabledChanged)
 
 public:
     explicit SettingService(RestaurantRepository &restaurantRepo,
                             PrinterSettingRepository &printerSettingRepo,
                             TaxSettingsRepository &taxSettingsRepo,
                             MembershipSettingsRepository &membershipSettingsRepo);
+
+    bool membershipEnabled() const;
 
     Q_INVOKABLE QVariantMap getRestaurant();
     Q_INVOKABLE QVariantMap getPrinterSetting();
@@ -30,11 +35,15 @@ public:
     Q_INVOKABLE QVariantMap getMembershipSettings();
     Q_INVOKABLE bool saveMembershipSettings(const QVariantMap &map);
 
+signals:
+    void membershipEnabledChanged();
+
 private:
     RestaurantRepository &m_restaurantRepo;
     PrinterSettingRepository &m_printerSettingRepo;
     TaxSettingsRepository &m_taxSettingsRepo;
     MembershipSettingsRepository &m_membershipSettingsRepo;
+    bool m_membershipEnabled = false;
 };
 
 #endif // SETTINGSERVICE_H

@@ -12,18 +12,22 @@ CheckoutService::CheckoutService(OrderSessionRepository &orderSessionRepo,
                                  RestaurantRepository &restaurantRepo,
                                  PrinterSettingRepository &printerRepo,
                                  TableRepository &tableRepo,
+                                 MembershipRepository &membershipRepo,
                                  ReceiptFormatter &formatter,
                                  NetworkPrinterService &printerService,
-                                 TaxCalculationService &taxCalculationService)
+                                 TaxCalculationService &taxCalculationService,
+                                 MembershipService &membershipService)
     : m_orderSessionRepo(orderSessionRepo),
     m_orderRepo(orderRepo),
     m_orderItemRepo(orderItemRepo),
     m_restaurantRepo(restaurantRepo),
     m_printerRepo(printerRepo),
+    m_membershipRepo(membershipRepo),
     m_formatter(formatter),
     m_printerService(printerService),
     m_taxCalculationService(taxCalculationService),
-    m_tableRepo(tableRepo) {}
+    m_tableRepo(tableRepo),
+    m_membershipService(membershipService) {}
 
 QVariantList CheckoutService::getActiveOrdersForCheckout() const
 {
@@ -49,6 +53,45 @@ QVariantList CheckoutService::getActiveOrdersForCheckout() const
     }
 
     return result;
+}
+
+bool CheckoutService::processMembershipPoints(int orderSessionId, const QString &memberPhone, int pointsToRedeem)
+{
+    if (memberPhone.isEmpty())
+        return true;
+
+    if (!m_membershipService.createMember(memberPhone))
+        return false;
+
+    QVariantMap member = m_membershipService.getMemberByPhone(memberPhone);
+    int memberId = member.value("id").toInt();
+
+    if (memberId <= 0)
+        return false;
+
+    auto sessionOpt = m_orderSessionRepo.getById(orderSessionId);
+    if (!sessionOpt.has_value())
+        return false;
+
+    OrderSession session = sessionOpt.value();
+
+    double discountAmount = 0.0;
+    if (pointsToRedeem > 0 && m_membershipService.canRedeem(memberId, pointsToRedeem)) {
+        discountAmount = m_membershipService.redeemPoints(memberId, pointsToRedeem);
+        qint64 discountMinor = static_cast<qint64>(std::llround(discountAmount * CURRENCY_SCALE));
+        session.discount += discountMinor;
+        session.total -= discountMinor;
+    }
+
+    int earnedPoints = m_membershipService.calculateEarnedPoints(static_cast<double>(session.total) / CURRENCY_SCALE, "total");
+    if (earnedPoints > 0) {
+        m_membershipService.addTransaction(memberId, earnedPoints, "earn", orderSessionId);
+        m_membershipRepo.adjustPoints(memberId, "add", earnedPoints);
+    }
+
+    m_orderSessionRepo.update(session);
+
+    return true;
 }
 
 bool CheckoutService::recalculateSessionTotals(int orderSessionId)
@@ -149,7 +192,7 @@ QVariantList CheckoutService::getCheckoutDetails(const int &orderSessionId)
     return result;
 }
 
-bool CheckoutService::markOrderPaid(const int &orderSessionId)
+bool CheckoutService::markOrderPaid(const int &orderSessionId, const QString &memberPhone, int pointsToRedeem)
 {
     if (!recalculateSessionTotals(orderSessionId))
         return false;
@@ -159,6 +202,9 @@ bool CheckoutService::markOrderPaid(const int &orderSessionId)
         return false;
 
     OrderSession session = sessionOpt.value();
+
+    if (!processMembershipPoints(orderSessionId, memberPhone, pointsToRedeem))
+        return false;
 
     session.status = "paid";
     session.closed_at = QDateTime::currentDateTime().toString(Qt::ISODate);

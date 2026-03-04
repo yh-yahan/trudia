@@ -12,9 +12,11 @@
 #include "../data/PrinterSettingRepository.h"
 #include "../data/TaxSettingsRepository.h"
 #include "../data/TableRepository.h"
+#include "../data/MembershipRepository.h"
 #include "../printing/ReceiptFormatter.h"
 #include "../printing/NetworkPrinterService.h"
 #include "./TaxCalculationService.h"
+#include "./MembershipService.h"
 
 struct TaxComputationResult {
     double subtotal = 0.0;
@@ -33,12 +35,15 @@ public:
                              RestaurantRepository &restaurantRepo,
                              PrinterSettingRepository &printerRepo,
                              TableRepository &tableRepo,
+                             MembershipRepository &membershipRepo,
                              ReceiptFormatter &formatter,
                              NetworkPrinterService &printerService,
-                             TaxCalculationService &taxCalculationService);
+                             TaxCalculationService &taxCalculationService,
+                             MembershipService &membershipService);
 
     Q_INVOKABLE QVariantList getActiveOrdersForCheckout() const;
-    Q_INVOKABLE bool markOrderPaid(const int &orderSessionId);
+    Q_INVOKABLE bool processMembershipPoints(int orderSessionId, const QString &memberPhone, int pointsToRedeem);
+    Q_INVOKABLE bool markOrderPaid(const int &orderSessionId, const QString &memberPhone, int pointsToRedeem);
     bool recalculateSessionTotals(int orderSessionId);
     Q_INVOKABLE QVariantList getCheckoutDetails(const int &orderSessionId);
     Q_INVOKABLE bool printReceipt(int orderSessionId);
@@ -49,10 +54,12 @@ private:
     OrderItemRepository &m_orderItemRepo;
     RestaurantRepository &m_restaurantRepo;
     PrinterSettingRepository &m_printerRepo;
+    MembershipRepository &m_membershipRepo;
     ReceiptFormatter &m_formatter;
     NetworkPrinterService &m_printerService;
     TaxCalculationService &m_taxCalculationService;
     TableRepository &m_tableRepo;
+    MembershipService &m_membershipService;
 };
 
 #endif // CHECKOUTSERVICE_H

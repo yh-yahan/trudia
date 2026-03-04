@@ -1,0 +1,201 @@
+#include "MembershipTransactionRepository.h"
+
+#include <QSqlQuery>
+#include <QSqlError>
+#include <QVariant>
+#include <QDebug>
+
+MembershipTransactionRepository::MembershipTransactionRepository(QSqlDatabase db): m_db(db) {}
+
+bool MembershipTransactionRepository::create(const MembershipTransaction &transaction)
+{
+    if (transaction.membership_id <= 0) {
+        qDebug() << "Invalid membership_id.";
+        return false;
+    }
+
+    if (transaction.points <= 0) {
+        qDebug() << "Points must be greater than zero.";
+        return false;
+    }
+
+    if (transaction.type != "earn" && transaction.type != "redeem") {
+        qDebug() << "Invalid transaction type. Must be 'earn' or 'redeem'.";
+        return false;
+    }
+
+    QSqlQuery query(m_db);
+
+    query.prepare(R"(
+        INSERT INTO membership_transactions
+        (membership_id, order_session_id, type, points)
+        VALUES (:membership_id, :order_session_id, :type, :points)
+    )");
+
+    query.bindValue(":membership_id", transaction.membership_id);
+    query.bindValue(":order_session_id", transaction.order_session_id);
+    query.bindValue(":type", transaction.type);
+    query.bindValue(":points", transaction.points);
+
+    if (!query.exec()) {
+        qDebug() << "Failed to insert membership transaction:"
+                 << query.lastError().text();
+        return false;
+    }
+
+    return true;
+}
+
+MembershipTransaction MembershipTransactionRepository::getById(int id)
+{
+    MembershipTransaction transaction;
+
+    if (id <= 0) {
+        qDebug() << "Invalid transaction ID.";
+        return transaction;
+    }
+
+    QSqlQuery query(m_db);
+    query.prepare(R"(
+        SELECT id, membership_id, order_session_id, type, points
+        FROM membership_transactions
+        WHERE id = :id
+    )");
+
+    query.bindValue(":id", id);
+
+    if (!query.exec()) {
+        qDebug() << "Failed to fetch membership transaction:"
+                 << query.lastError().text();
+        return transaction;
+    }
+
+    if (query.next()) {
+        transaction.id = query.value("id").toInt();
+        transaction.membership_id = query.value("membership_id").toInt();
+        transaction.order_session_id = query.value("order_session_id").toInt();
+        transaction.type = query.value("type").toString();
+        transaction.points = query.value("points").toInt();
+    } else {
+        qDebug() << "No membership transaction found with ID:" << id;
+    }
+
+    return transaction;
+}
+
+std::vector<MembershipTransaction> MembershipTransactionRepository::getByMembershipId(int membershipId)
+{
+    std::vector<MembershipTransaction> transactions;
+
+    if (membershipId <= 0) {
+        qDebug() << "Invalid membership ID.";
+        return transactions;
+    }
+
+    QSqlQuery query(m_db);
+    query.prepare(R"(
+        SELECT id, membership_id, order_session_id, type, points
+        FROM membership_transactions
+        WHERE membership_id = :membership_id
+        ORDER BY created_at DESC
+    )");
+
+    query.bindValue(":membership_id", membershipId);
+
+    if (!query.exec()) {
+        qDebug() << "Failed to fetch transactions for membership:"
+                 << query.lastError().text();
+        return transactions;
+    }
+
+    while (query.next()) {
+        MembershipTransaction transaction;
+        transaction.id = query.value("id").toInt();
+        transaction.membership_id = query.value("membership_id").toInt();
+        transaction.order_session_id = query.value("order_session_id").toInt();
+        transaction.type = query.value("type").toString();
+        transaction.points = query.value("points").toInt();
+
+        transactions.push_back(transaction);
+    }
+
+    return transactions;
+}
+
+std::vector<MembershipTransaction> MembershipTransactionRepository::getByOrderSessionId(int orderSessionId)
+{
+    std::vector<MembershipTransaction> transactions;
+
+    if (orderSessionId <= 0) {
+        qDebug() << "Invalid order session ID.";
+        return transactions;
+    }
+
+    QSqlQuery query(m_db);
+    query.prepare(R"(
+        SELECT id, membership_id, order_session_id, type, points
+        FROM membership_transactions
+        WHERE order_session_id = :order_session_id
+        ORDER BY created_at DESC
+    )");
+
+    query.bindValue(":order_session_id", orderSessionId);
+
+    if (!query.exec()) {
+        qDebug() << "Failed to fetch transactions for order session:"
+                 << query.lastError().text();
+        return transactions;
+    }
+
+    while (query.next()) {
+        MembershipTransaction transaction;
+        transaction.id = query.value("id").toInt();
+        transaction.membership_id = query.value("membership_id").toInt();
+        transaction.order_session_id = query.value("order_session_id").toInt();
+        transaction.type = query.value("type").toString();
+        transaction.points = query.value("points").toInt();
+
+        transactions.push_back(transaction);
+    }
+
+    return transactions;
+}
+
+std::vector<MembershipTransaction> MembershipTransactionRepository::getByType(const QString &type)
+{
+    std::vector<MembershipTransaction> transactions;
+
+    if (type != "earn" && type != "redeem") {
+        qDebug() << "Invalid transaction type. Must be 'earn' or 'redeem'.";
+        return transactions;
+    }
+
+    QSqlQuery query(m_db);
+    query.prepare(R"(
+        SELECT id, membership_id, order_session_id, type, points
+        FROM membership_transactions
+        WHERE type = :type
+        ORDER BY created_at DESC
+    )");
+
+    query.bindValue(":type", type);
+
+    if (!query.exec()) {
+        qDebug() << "Failed to fetch transactions by type:"
+                 << query.lastError().text();
+        return transactions;
+    }
+
+    while (query.next()) {
+        MembershipTransaction transaction;
+        transaction.id = query.value("id").toInt();
+        transaction.membership_id = query.value("membership_id").toInt();
+        transaction.order_session_id = query.value("order_session_id").toInt();
+        transaction.type = query.value("type").toString();
+        transaction.points = query.value("points").toInt();
+
+        transactions.push_back(transaction);
+    }
+
+    return transactions;
+}

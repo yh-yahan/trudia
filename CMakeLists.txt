@@ -71,6 +71,11 @@ qt_add_qml_module(appxeno
     SOURCES core/services/TaxCalculationService.h core/services/TaxCalculationService.cpp
     SOURCES core/domain/MembershipSettings.h
     SOURCES core/data/MembershipSettingsRepository.h core/data/MembershipSettingsRepository.cpp
+    SOURCES core/domain/Membership.h
+    SOURCES core/domain/MembershipTransaction.h
+    SOURCES core/data/MembershipRepository.h core/data/MembershipRepository.cpp
+    SOURCES core/data/MembershipTransactionRepository.h core/data/MembershipTransactionRepository.cpp
+    SOURCES core/services/MembershipService.h core/services/MembershipService.cpp
 )
 
 qt_add_translations(appxeno

@@ -4,6 +4,8 @@ CREATE TABLE IF NOT EXISTS order_sessions (
     table_id INTEGER NULL,
     order_type TEXT NOT NULL,
     status TEXT NOT NULL DEFAULT 'open',
+    points_earned INTEGER DEFAULT 0,
+    points_redeemed INTEGER DEFAULT 0,
     subtotal NUMERIC NOT NULL DEFAULT 0,
     tax NUMERIC NOT NULL DEFAULT 0,
     discount NUMERIC DEFAULT 0,

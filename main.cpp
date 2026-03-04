@@ -13,6 +13,8 @@
 #include "core/data/PrinterSettingRepository.h"
 #include "core/data/TaxSettingsRepository.h"
 #include "core/data/MembershipSettingsRepository.h"
+#include "core/data/MembershipRepository.h"
+#include "core/data/MembershipTransactionRepository.h"
 #include "core/services/OrderService.h"
 #include "core/services/TableService.h"
 #include "core/services/AuthService.h"
@@ -21,6 +23,7 @@
 #include "core/services/CheckoutService.h"
 #include "core/services/SettingService.h"
 #include "core/services/TaxCalculationService.h"
+#include "core/services/MembershipService.h"
 #include "core/database/DatabaseManager.h"
 #include "core/printing/ReceiptFormatter.h"
 #include "core/printing/NetworkPrinterService.h"
@@ -50,10 +53,13 @@ int main(int argc, char *argv[])
     PrinterSettingRepository printerSettingRepo(DatabaseManager::db());
     TaxSettingsRepository taxSettingsRepo(DatabaseManager::db());
     MembershipSettingsRepository membershipSettingsRepo(DatabaseManager::db());
+    MembershipRepository membershipRepo(DatabaseManager::db());
+    MembershipTransactionRepository membershipTransactionRepo(DatabaseManager::db());
 
     ReceiptFormatter receiptFormatter;
     NetworkPrinterService networkPrinterService;
     TaxCalculationService taxCalculationService(taxSettingsRepo);
+    MembershipService membershipService(membershipRepo, membershipSettingsRepo, membershipTransactionRepo);
     AuthService authService(repo);
     MenuService menuService(menuRepo, categoryRepo);
     TableService tableService(tableRepo);
@@ -66,9 +72,11 @@ int main(int argc, char *argv[])
         restaurantRepo,
         printerSettingRepo,
         tableRepo,
+        membershipRepo,
         receiptFormatter,
         networkPrinterService,
-        taxCalculationService
+        taxCalculationService,
+        membershipService
     );
     SettingService settingService(
         restaurantRepo,
@@ -84,6 +92,7 @@ int main(int argc, char *argv[])
     qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "KitchenOrderService", &kitchenOrderService);
     qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "CheckoutService", &checkoutService);
     qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "SettingService", &settingService);
+    qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "MembershipService", &membershipService);
 
     QQmlApplicationEngine engine;
     engine.loadFromModule("xeno", "Main");

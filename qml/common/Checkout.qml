@@ -7,6 +7,12 @@ Item {
     width: 1200
     height: 700
 
+    property string memberPhone: ""
+    property int memberId: 0
+    property int currentPoints: 0
+    property bool membershipChecked: false
+    property bool membershipEnabled: SettingService.membershipEnabled
+    property int earnedPointsPreview: 0
     property var sessions: []
     property var selectedSession: null
     property var checkoutDetails: []
@@ -17,6 +23,10 @@ Item {
         sessions = CheckoutService.getActiveOrdersForCheckout()
         selectedSession = null
         checkoutDetails = []
+        memberPhone = ""
+        memberId = 0
+        currentPoints = 0
+        earnedPointsPreview = 0
     }
 
     function normalizeStatus(status) {
@@ -38,6 +48,29 @@ Item {
             }
         }
         return true
+    }
+
+    function updateMembershipInfo() {
+        memberId = 0
+        currentPoints = 0
+        earnedPointsPreview = 0
+        membershipChecked = false
+
+        if (!memberPhone || memberPhone.length === 0)
+            return
+        var member = MembershipService.getMemberByPhone(memberPhone)
+
+        membershipChecked = true
+
+        if (member && member.id) {
+            memberId = member.id
+            currentPoints = member.total_points
+        }
+
+        if (selectedSession) {
+            earnedPointsPreview = MembershipService.calculateEarnedPoints(
+                        selectedSession.total, "total")
+        }
     }
 
     Component.onCompleted: {
@@ -75,6 +108,7 @@ Item {
                         selectedSession = modelData
                         checkoutDetails = CheckoutService.getCheckoutDetails(
                                     modelData.id)
+                        updateMembershipInfo()
                     }
                 }
 
@@ -189,6 +223,94 @@ Item {
                     Layout.alignment: Qt.AlignBottom
                     spacing: 12
 
+                    Row {
+                        visible: selectedSession !== null
+                        spacing: 8
+
+                        Column {
+                            spacing: 6
+
+                            visible: selectedSession !== null
+                                     && membershipEnabled
+
+                            Text {
+                                text: "Member Phone (optional)"
+                                color: "#cccccc"
+                                font.pixelSize: 13
+                            }
+
+                            Row {
+                                spacing: 8
+
+                                TextField {
+                                    id: memberPhoneField
+                                    width: 200
+                                    text: memberPhone
+
+                                    onTextChanged: {
+                                        memberPhone = text.trim()
+                                        membershipChecked = false
+                                        memberId = 0
+                                        currentPoints = 0
+                                        earnedPointsPreview = 0
+                                    }
+                                    onAccepted: updateMembershipInfo()
+
+                                    background: Rectangle {
+                                        radius: 4
+                                        color: "#2a2a2a"
+                                        border.color: "#555555"
+                                    }
+
+                                    color: "white"
+                                }
+
+                                Button {
+                                    text: qsTr("Check")
+                                    enabled: memberPhone.length > 0
+                                    background: Rectangle {
+                                        color: '#929292'
+                                        radius: 4
+                                    }
+                                    contentItem: Text {
+                                        text: qsTr("Check")
+                                        font.bold: true
+                                        anchors.centerIn: parent
+                                        horizontalAlignment: Text.AlignHCenter
+                                        verticalAlignment: Text.AlignVCenter
+                                        color: "white"
+                                    }
+                                    hoverEnabled: false
+                                    focusPolicy: Qt.NoFocus
+                                    onClicked: updateMembershipInfo()
+                                    height: memberPhoneField.height
+                                    anchors.verticalCenter: memberPhoneField.verticalCenter
+                                }
+                            }
+                        }
+                    }
+
+                    Column {
+                        visible: selectedSession !== null && membershipChecked
+                        spacing: 4
+
+                        Text {
+                            text: memberId > 0 ? "Current Points: "
+                                                 + currentPoints : "New member will be created"
+                            color: memberId > 0 ? "#88ffaa" : "#ffaa66"
+                            font.pixelSize: 14
+                            font.bold: true
+                        }
+
+                        Text {
+                            visible: selectedSession !== null
+                            text: "Points to Earn: +" + earnedPointsPreview
+                            color: "#9a7bff"
+                            font.pixelSize: 14
+                            font.bold: true
+                        }
+                    }
+
                     Column {
                         visible: selectedSession !== null
                         spacing: 6
@@ -200,12 +322,14 @@ Item {
                             font.pixelSize: 15
                         }
                         Text {
-                            text: qsTr("Tax: RM") + selectedSession.tax.toFixed(2)
+                            text: qsTr("Tax: RM") + selectedSession.tax.toFixed(
+                                      2)
                             color: "white"
                             font.pixelSize: 15
                         }
                         Text {
-                            text: qsTr("Total: RM") + selectedSession.total.toFixed(2)
+                            text: qsTr("Total: RM") + selectedSession.total.toFixed(
+                                      2)
                             color: "white"
                             font.bold: true
                             font.pixelSize: 18
@@ -215,13 +339,12 @@ Item {
                     Button {
                         visible: selectedSession !== null
                         text: qsTr("Checkout")
-                        Layout.alignment: Qt.AlignHCenter
 
                         enabled: canCheckout
 
                         background: Rectangle {
                             radius: 6
-                            color: enabled ? "#7a5be0" : "#444444"
+                            color: enabled ? "#9a7bff" : "#444444"
                         }
 
                         contentItem: Text {
@@ -240,14 +363,17 @@ Item {
                             if (!selectedSession)
                                 return
                             if (CheckoutService.markOrderPaid(
-                                        selectedSession.id)) {
+                                        selectedSession.id, memberPhone, 0)) {
                                 var printed = CheckoutService.printReceipt(
                                             selectedSession.id)
+
                                 if (!printed) {
                                     console.log("Receipt printing failed for #"
                                                 + selectedSession.display_number)
                                 }
+
                                 reloadSessions()
+                                memberPhone = ""
                             }
                         }
                     }

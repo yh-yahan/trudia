@@ -26,6 +26,8 @@ std::vector<OrderSession> OrderSessionRepository::getAllActiveOrderSessions()
         orderSession.table_id = query.value("table_id").isNull() ? std::nullopt : std::make_optional(query.value("table_id").toInt());
         orderSession.order_type = query.value("order_type").toString();
         orderSession.status = query.value("status").toString();
+        orderSession.points_earned = query.value("points_earned").toInt();
+        orderSession.points_redeemed = query.value("points_redeemed").toInt();
         orderSession.subtotal = query.value("subtotal").toDouble();
         orderSession.tax = query.value("tax").toDouble();
         orderSession.discount = query.value("discount").toDouble();
@@ -57,6 +59,8 @@ std::optional<OrderSession> OrderSessionRepository::getById(const int &orderSess
         session.table_id = query.value("table_id").isNull() ? std::nullopt : std::make_optional(query.value("table_id").toInt());
         session.order_type = query.value("order_type").toString();
         session.status = query.value("status").toString();
+        session.points_earned = query.value("points_earned").toInt();
+        session.points_redeemed = query.value("points_redeemed").toInt();
         session.subtotal = query.value("subtotal").toDouble();
         session.tax = query.value("tax").toDouble();
         session.discount = query.value("discount").toDouble();
@@ -69,8 +73,7 @@ std::optional<OrderSession> OrderSessionRepository::getById(const int &orderSess
     return std::nullopt;
 }
 
-std::optional<OrderSession>
-OrderSessionRepository::getByOrderId(int orderId)
+std::optional<OrderSession> OrderSessionRepository::getByOrderId(int orderId)
 {
     QSqlQuery query(m_db);
     query.prepare(R"(
@@ -98,6 +101,8 @@ OrderSessionRepository::getByOrderId(int orderId)
                            : std::make_optional(query.value("table_id").toInt());
     session.order_type = query.value("order_type").toString();
     session.status = query.value("status").toString();
+    session.points_earned = query.value("points_earned").toInt();
+    session.points_redeemed = query.value("points_redeemed").toInt();
     session.subtotal = query.value("subtotal").toDouble();
     session.tax = query.value("tax").toDouble();
     session.discount = query.value("discount").toDouble();
@@ -153,8 +158,8 @@ int OrderSessionRepository::create(const OrderSession &orderSession)
 {
     QSqlQuery query(m_db);
     query.prepare(R"(INSERT INTO order_sessions
-                     (display_number, table_id, order_type, status, subtotal, tax, discount, total, closed_at)
-                     VALUES (:display_number, :table_id, :order_type, :status, :subtotal, :tax, :discount, :total, :closed_at))");
+                     (display_number, table_id, order_type, status, points_earned, points_redeemed, subtotal, tax, discount, total, closed_at)
+                     VALUES (:display_number, :table_id, :order_type, :status, :points_earned, :points_redeemed, :subtotal, :tax, :discount, :total, :closed_at))");
 
     query.bindValue(":display_number", orderSession.display_number);
     if (orderSession.table_id.has_value()) {
@@ -164,6 +169,8 @@ int OrderSessionRepository::create(const OrderSession &orderSession)
     }
     query.bindValue(":order_type", orderSession.order_type);
     query.bindValue(":status", orderSession.status);
+    query.bindValue(":points_earned", orderSession.points_earned);
+    query.bindValue(":points_redeemed", orderSession.points_redeemed);
     query.bindValue(":subtotal", orderSession.subtotal);
     query.bindValue(":tax", orderSession.tax);
     query.bindValue(":discount", orderSession.discount);
@@ -190,6 +197,8 @@ void OrderSessionRepository::update(const OrderSession &orderSession)
                      table_id = :table_id,
                      order_type = :order_type,
                      status = :status,
+                     points_earned = :points_earned,
+                     points_redeemed = :points_redeemed,
                      subtotal = :subtotal,
                      tax = :tax,
                      discount = :discount,
@@ -205,6 +214,8 @@ void OrderSessionRepository::update(const OrderSession &orderSession)
     }
     query.bindValue(":order_type", orderSession.order_type);
     query.bindValue(":status", orderSession.status);
+    query.bindValue(":points_earned", orderSession.points_earned);
+    query.bindValue(":points_redeemed", orderSession.points_redeemed);
     query.bindValue(":subtotal", orderSession.subtotal);
     query.bindValue(":tax", orderSession.tax);
     query.bindValue(":discount", orderSession.discount);

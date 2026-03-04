@@ -11,6 +11,8 @@ public:
     std::optional<int> table_id;
     QString order_type;
     QString status;
+    int points_earned;
+    int points_redeemed;
     double subtotal;
     double tax;
     double discount;

@@ -39,6 +39,8 @@ Item {
             pageLoader.sourceComponent = menu
         } else if (index === 1) {
             pageLoader.sourceComponent = table
+        } else if (index === 2) {
+            pageLoader.sourceComponent = user
         }
     }
 
@@ -50,5 +52,10 @@ Item {
     Component {
         id: table
         AdminTableManagement {}
+    }
+
+    Component {
+        id: user
+        AdminUserManagement {}
     }
 }

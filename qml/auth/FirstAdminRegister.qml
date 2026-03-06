@@ -4,6 +4,8 @@ import QtQuick.Controls
 import Xeno.Services 1.0
 
 Item {
+    property bool running: false
+
     visible: true
 
     Rectangle {
@@ -119,18 +121,48 @@ Item {
                     hoverEnabled: false
                     focusPolicy: Qt.NoFocus
                     onClicked: {
-                        var username = usernameField.text
-                        var password = passwordField.text
-                        var passwordConfirm = passwordConfirmField.text
+                        let username = usernameField.text.trim();
+                        let pw = passwordField.text;
+                        let pw2 = passwordConfirmField.text;
 
-                        if (AuthService.registerUser(username, password,
-                                                     passwordConfirm)) {
-                            stackView.push("../admin/AdminHome.qml")
-
-                            Window.window.showMaximized()
-                        } else {
-                            errorMessage.text = qsTr("An error occurred.")
+                        if (username === "" || pw === "") {
+                            errorMessage.text = qsTr("Please fill in all fields");
+                            return;
                         }
+                        if (pw !== pw2) {
+                            errorMessage.text = qsTr("Passwords do not match");
+                            return;
+                        }
+
+                        running = true;
+                        errorMessage.text = "";
+
+                        var future = UserService.createUser(username, pw, pw2, "admin");
+                        var watcher = Qt.createQmlObject('import QtQuick 2.0; QFutureWatcher {}', parent);
+
+                        watcher.future = future;
+                        watcher.finished.connect(function () {
+                            var success = watcher.result;
+                            if (!success) {
+                                errorMessage.text = qsTr("Could not create account");
+                                running = false;
+                                return;
+                            }
+
+                            AuthService.login(username, pw).then(function (loginOk) {
+                                running = false;
+                                if (loginOk) {
+                                    stackView.push("../admin/AdminHome.qml");
+                                    Window.window.showMaximized();
+                                } else {
+                                    errorMessage.text = qsTr("Login failed after registration");
+                                }
+                            }).catch(function (err) {
+                                running = false;
+                                errorMessage.text = qsTr("Error: ") + (err || "Unknown error");
+                                console.error("Login failed:", err);
+                            });
+                        });
                     }
                 }
 

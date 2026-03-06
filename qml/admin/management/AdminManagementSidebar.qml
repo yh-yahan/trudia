@@ -21,6 +21,10 @@ Rectangle {
         ListElement {
             text: qsTr("Table")
         }
+
+        ListElement {
+            text: qsTr("User")
+        }
     }
 
     ColumnLayout {

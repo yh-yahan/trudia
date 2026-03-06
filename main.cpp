@@ -24,6 +24,7 @@
 #include "core/services/SettingService.h"
 #include "core/services/TaxCalculationService.h"
 #include "core/services/MembershipService.h"
+#include "core/services/UserService.h"
 #include "core/database/DatabaseManager.h"
 #include "core/printing/ReceiptFormatter.h"
 #include "core/printing/NetworkPrinterService.h"
@@ -42,7 +43,7 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    UserRepository repo(DatabaseManager::db());
+    UserRepository userRepo(DatabaseManager::db());
     MenuRepository menuRepo(DatabaseManager::db());
     CategoryRepository categoryRepo(DatabaseManager::db());
     TableRepository tableRepo(DatabaseManager::db());
@@ -60,7 +61,8 @@ int main(int argc, char *argv[])
     NetworkPrinterService networkPrinterService;
     TaxCalculationService taxCalculationService(taxSettingsRepo);
     MembershipService membershipService(membershipRepo, membershipSettingsRepo, membershipTransactionRepo);
-    AuthService authService(repo);
+    AuthService authService(userRepo);
+    UserService userService(userRepo);
     MenuService menuService(menuRepo, categoryRepo);
     TableService tableService(tableRepo);
     OrderService orderService(orderSessionRepo, orderRepo, orderItemRepo, tableRepo);
@@ -86,6 +88,7 @@ int main(int argc, char *argv[])
     );
 
     qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "AuthService", &authService);
+    qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "UserService", &userService);
     qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "MenuService", &menuService);
     qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "TableService", &tableService);
     qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "OrderService", &orderService);

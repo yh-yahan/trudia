@@ -7,6 +7,34 @@
 #include "../domain/User.h"
 #include "../data/UserRepository.h"
 
+enum class Permission {
+    Managements,
+    ViewReports,
+    CreateOrder,
+    MarkKitchenOrderProgressions,
+    Checkout,
+    SystemConfig
+};
+
+static const QMap<QString, QSet<Permission>> ROLE_PERMISSIONS = {
+    { "admin", {
+        Permission::Managements,
+        Permission::ViewReports,
+        Permission::CreateOrder,
+        Permission::MarkKitchenOrderProgressions,
+        Permission::Checkout,
+        Permission::SystemConfig
+    }},
+    { "service_staff", {
+        Permission::CreateOrder,
+        Permission::MarkKitchenOrderProgressions,
+        Permission::Checkout
+    }},
+    { "kitchen_staff", {
+        Permission::MarkKitchenOrderProgressions
+    }}
+};
+
 class AuthService : public QObject
 {
     Q_OBJECT
@@ -14,12 +42,10 @@ class AuthService : public QObject
     Q_PROPERTY(QString currentUserRole  READ currentUserRole NOTIFY currentUserChanged)
 
 public:
-    explicit AuthService(UserRepository &repo);
+    explicit AuthService(UserRepository &userRepo);
 
+    bool hasPermission(Permission permission) const;
     Q_INVOKABLE bool login(const QString &username, const QString &password);
-    Q_INVOKABLE bool registerUser(const QString &username,
-                                  const QString &password,
-                                  const QString &passwordConfirm);
     Q_INVOKABLE void logout();
 
     Q_INVOKABLE bool isFirstAdminSetupNeeded() const;
@@ -33,10 +59,7 @@ signals:
     void currentUserChanged();
 
 private:
-    QString hashPassword(const QString &password) const;
-
-private:
-    UserRepository &m_repo;
+    UserRepository &m_userRepo;
     std::optional<User> m_currentUser;
 };
 

@@ -4,7 +4,7 @@ project(xeno VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Quick Sql LinguistTools)
+find_package(Qt6 REQUIRED COMPONENTS Quick Sql LinguistTools Concurrent)
 
 qt_standard_project_setup(REQUIRES 6.8)
 
@@ -29,6 +29,7 @@ qt_add_qml_module(appxeno
         qml/admin/AdminSidebar.qml
         qml/admin/management/AdminMenuManagement.qml
         qml/admin/management/AdminTableManagement.qml
+        qml/admin/management/AdminUserManagement.qml
         qml/admin/management/AdminManagement.qml
         qml/admin/management/AdminManagementSidebar.qml
         qml/admin/settings/AdminStoreSettings.qml
@@ -78,6 +79,8 @@ qt_add_qml_module(appxeno
     SOURCES core/data/MembershipRepository.h core/data/MembershipRepository.cpp
     SOURCES core/data/MembershipTransactionRepository.h core/data/MembershipTransactionRepository.cpp
     SOURCES core/services/MembershipService.h core/services/MembershipService.cpp
+    SOURCES core/services/UserService.h core/services/UserService.cpp
+    SOURCES core/utilities/PasswordHasher.h core/utilities/PasswordHasher.cpp
 )
 
 qt_add_translations(appxeno
@@ -100,6 +103,7 @@ target_link_libraries(appxeno
     PRIVATE
         Qt6::Quick
         Qt6::Sql
+        Qt6::Concurrent
 )
 
 include(GNUInstallDirs)

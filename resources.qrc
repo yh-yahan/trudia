@@ -17,5 +17,6 @@
     <qresource prefix="/">
         <file>qml/admin/management/AdminManagement.qml</file>
         <file>qml/admin/management/AdminManagementSidebar.qml</file>
+        <file>qml/admin/management/AdminUserManagement.qml</file>
     </qresource>
 </RCC>

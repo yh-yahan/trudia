@@ -24,6 +24,9 @@ Rectangle {
             text: qsTr("Kitchen")
         }
         ListElement {
+            text: qsTr("Analytics")
+        }
+        ListElement {
             text: qsTr("Management")
         }
         ListElement {

@@ -14,9 +14,4 @@
         <file>core/database/migrations/012_create_memberships.sql</file>
         <file>core/database/migrations/013_create_membership_transactions.sql</file>
     </qresource>
-    <qresource prefix="/">
-        <file>qml/admin/management/AdminManagement.qml</file>
-        <file>qml/admin/management/AdminManagementSidebar.qml</file>
-        <file>qml/admin/management/AdminUserManagement.qml</file>
-    </qresource>
 </RCC>

@@ -45,8 +45,10 @@ Item {
         } else if (index === 2) {
             pageLoader.sourceComponent = kitchenPage
         } else if (index === 3) {
-            pageLoader.sourceComponent = managementPage
+            pageLoader.sourceComponent = analyticsPage
         } else if (index === 4) {
+            pageLoader.sourceComponent = managementPage
+        } else if (index === 5) {
             pageLoader.sourceComponent = settingsPage
         }
     }
@@ -64,6 +66,11 @@ Item {
     Component {
         id: kitchenPage
         KitchenOrders {}
+    }
+
+    Component {
+        id: analyticsPage
+        AdminAnalytics {}
     }
 
     Component {

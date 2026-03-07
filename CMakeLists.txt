@@ -27,6 +27,7 @@ qt_add_qml_module(appxeno
         qml/auth/FirstAdminRegister.qml
         qml/admin/AdminHome.qml
         qml/admin/AdminSidebar.qml
+        qml/admin/AdminAnalytics.qml
         qml/admin/management/AdminMenuManagement.qml
         qml/admin/management/AdminTableManagement.qml
         qml/admin/management/AdminUserManagement.qml
@@ -81,6 +82,8 @@ qt_add_qml_module(appxeno
     SOURCES core/services/MembershipService.h core/services/MembershipService.cpp
     SOURCES core/services/UserService.h core/services/UserService.cpp
     SOURCES core/utilities/PasswordHasher.h core/utilities/PasswordHasher.cpp
+    SOURCES core/services/AnalyticsService.h core/services/AnalyticsService.cpp
+    SOURCES core/data/AnalyticsRepository.h core/data/AnalyticsRepository.cpp
 )
 
 qt_add_translations(appxeno

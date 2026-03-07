@@ -15,6 +15,7 @@
 #include "core/data/MembershipSettingsRepository.h"
 #include "core/data/MembershipRepository.h"
 #include "core/data/MembershipTransactionRepository.h"
+#include "core/data/AnalyticsRepository.h"
 #include "core/services/OrderService.h"
 #include "core/services/TableService.h"
 #include "core/services/AuthService.h"
@@ -25,6 +26,7 @@
 #include "core/services/TaxCalculationService.h"
 #include "core/services/MembershipService.h"
 #include "core/services/UserService.h"
+#include "core/services/AnalyticsService.h"
 #include "core/database/DatabaseManager.h"
 #include "core/printing/ReceiptFormatter.h"
 #include "core/printing/NetworkPrinterService.h"
@@ -56,6 +58,7 @@ int main(int argc, char *argv[])
     MembershipSettingsRepository membershipSettingsRepo(DatabaseManager::db());
     MembershipRepository membershipRepo(DatabaseManager::db());
     MembershipTransactionRepository membershipTransactionRepo(DatabaseManager::db());
+    AnalyticsRepository analyticsRepo(DatabaseManager::db());
 
     ReceiptFormatter receiptFormatter;
     NetworkPrinterService networkPrinterService;
@@ -86,6 +89,7 @@ int main(int argc, char *argv[])
         taxSettingsRepo,
         membershipSettingsRepo
     );
+    AnalyticsService analyticsService(analyticsRepo);
 
     qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "AuthService", &authService);
     qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "UserService", &userService);
@@ -96,6 +100,7 @@ int main(int argc, char *argv[])
     qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "CheckoutService", &checkoutService);
     qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "SettingService", &settingService);
     qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "MembershipService", &membershipService);
+    qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "AnalyticsService", &analyticsService);
 
     QQmlApplicationEngine engine;
     engine.loadFromModule("xeno", "Main");

@@ -101,8 +101,12 @@ Item {
                             var userRole = AuthService.currentUserRole
                             if (userRole === "admin") {
                                 stackView.push("../admin/AdminHome.qml")
-                            } else {
-                                stackView.push("../user/UserHome.qml")
+                            } else if (userRole === "service_staff") {
+                                stackView.push(
+                                            "../serviceStaff/ServiceStaffHome.qml")
+                            } else if (userRole === "kitchen_staff") {
+                                stackView.push(
+                                            "../kitchenStaff/KitchenStaffHome.qml")
                             }
 
                             Window.window.showMaximized()

@@ -39,6 +39,9 @@ qt_add_qml_module(appxeno
         qml/admin/settings/AdminMembershipSettings.qml
         qml/admin/settings/AdminSettings.qml
         qml/admin/settings/AdminSettingsSidebar.qml
+        qml/serviceStaff/ServiceStaffHome.qml
+        qml/serviceStaff/ServiceStaffSidebar.qml
+        qml/kitchenStaff/KitchenStaffHome.qml
 
     SOURCES core/database/DatabaseManager.h
     SOURCES core/database/DatabaseManager.cpp

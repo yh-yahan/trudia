@@ -68,7 +68,14 @@ int main(int argc, char *argv[])
     UserService userService(userRepo);
     MenuService menuService(menuRepo, categoryRepo);
     TableService tableService(tableRepo);
-    OrderService orderService(orderSessionRepo, orderRepo, orderItemRepo, tableRepo);
+    OrderService orderService(
+        orderSessionRepo,
+        orderRepo,
+        orderItemRepo,
+        tableRepo,
+        menuRepo,
+        taxCalculationService
+    );
     KitchenOrderService kitchenOrderService(orderSessionRepo, orderRepo, orderItemRepo);
     CheckoutService checkoutService(
         orderSessionRepo,

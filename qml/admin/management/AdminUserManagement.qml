@@ -11,7 +11,7 @@ Item {
     property var users: []
 
     function loadUsers() {
-        users = UserService.getAllUsers();
+        users = UserService.getAllUsers()
     }
 
     Component.onCompleted: loadUsers()
@@ -158,10 +158,10 @@ Item {
                         focusPolicy: Qt.NoFocus
 
                         onClicked: {
-                            editDialog.userId = modelData.id;
-                            editDialog.username = modelData.username;
-                            editDialog.role = modelData.role;
-                            editDialog.open();
+                            editDialog.userId = modelData.id
+                            editDialog.username = modelData.username
+                            editDialog.role = modelData.role
+                            editDialog.open()
                         }
                     }
 
@@ -184,8 +184,8 @@ Item {
                         focusPolicy: Qt.NoFocus
 
                         onClicked: {
-                            passwordDialog.userId = modelData.id;
-                            passwordDialog.open();
+                            passwordDialog.userId = modelData.id
+                            passwordDialog.open()
                         }
                     }
 
@@ -208,17 +208,19 @@ Item {
                         focusPolicy: Qt.NoFocus
 
                         onClicked: {
-                            confirmationDialog.title = qsTr("Deactivate User");
-                            confirmationDialog.contentItem.children[0].text = qsTr("Deactivate \"%1\"?").arg(modelData.username);
+                            confirmationDialog.title = qsTr("Deactivate User")
+                            confirmationDialog.contentItem.children[0].text = qsTr(
+                                        "Deactivate \"%1\"?").arg(
+                                        modelData.username)
 
                             confirmationDialog.confirmCallback = function (confirmed) {
                                 if (confirmed) {
-                                    UserService.deactivateUser(modelData.id);
-                                    loadUsers();
+                                    UserService.deactivateUser(modelData.id)
+                                    loadUsers()
                                 }
-                            };
+                            }
 
-                            confirmationDialog.open();
+                            confirmationDialog.open()
                         }
                     }
                 }
@@ -363,11 +365,14 @@ Item {
                     }
 
                     onClicked: {
-                        var ok = UserService.createUser(newUsername.text, newPassword.text, newPasswordConfirm.text, newRole.currentText);
+                        var ok = UserService.createUser(
+                                    newUsername.text, newPassword.text,
+                                    newPasswordConfirm.text,
+                                    newRole.currentText)
 
                         if (ok) {
-                            createDialog.close();
-                            loadUsers();
+                            createDialog.close()
+                            loadUsers()
                         }
                     }
                 }
@@ -451,7 +456,14 @@ Item {
             ComboBox {
                 id: editRole
                 model: ["admin", "service_staff", "kitchen_staff"]
-                Component.onCompleted: currentIndex = role === "admin" ? 0 : 1
+                Component.onCompleted: {
+                    if (editDialog.role === "admin")
+                        currentIndex = 0
+                    else if (editDialog.role === "service_staff")
+                        currentIndex = 1
+                    else if (editDialog.role === "kitchen_staff")
+                        currentIndex = 2
+                }
                 leftPadding: 10
                 rightPadding: 10
                 topPadding: 10
@@ -481,11 +493,13 @@ Item {
                     hoverEnabled: false
                     focusPolicy: Qt.NoFocus
                     onClicked: {
-                        var ok = UserService.updateUser(editDialog.userId, editUsername.text, editRole.currentText);
+                        var ok = UserService.updateUser(editDialog.userId,
+                                                        editUsername.text,
+                                                        editRole.currentText)
 
                         if (ok) {
-                            editDialog.close();
-                            loadUsers();
+                            editDialog.close()
+                            loadUsers()
                         }
                     }
                 }
@@ -630,13 +644,15 @@ Item {
                         anchors.centerIn: parent
                     }
                     onClicked: {
-                        var ok = UserService.changePassword(passwordDialog.userId, oldPass.text, newPass.text, newPassConfirm.text);
+                        var ok = UserService.changePassword(
+                                    passwordDialog.userId, oldPass.text,
+                                    newPass.text, newPassConfirm.text)
 
                         if (ok) {
-                            passwordDialog.close();
-                            oldPass.text = "";
-                            newPass.text = "";
-                            newPassConfirm.text = "";
+                            passwordDialog.close()
+                            oldPass.text = ""
+                            newPass.text = ""
+                            newPassConfirm.text = ""
                         }
                     }
                 }

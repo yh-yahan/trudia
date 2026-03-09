@@ -1,6 +1,5 @@
 #include "CheckoutService.h"
 
-#include <QDateTime>
 #include <cmath>
 #include "../printing/EscPosBuilder.h"
 
@@ -206,10 +205,7 @@ bool CheckoutService::markOrderPaid(const int &orderSessionId, const QString &me
     if (!processMembershipPoints(orderSessionId, memberPhone, pointsToRedeem))
         return false;
 
-    session.status = "paid";
-    session.closed_at = QDateTime::currentDateTime().toString(Qt::ISODate);
-
-    m_orderSessionRepo.update(session);
+    m_orderSessionRepo.markAsPaid(orderSessionId);
 
     if (session.table_id.has_value()) {
         m_tableRepo.setTableState(session.table_id.value(), false);

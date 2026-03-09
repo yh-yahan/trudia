@@ -17,6 +17,7 @@ public:
     int findOpenSessionByTableId(int const &tableId);
     int create(const OrderSession &orderSession);
     void update(const OrderSession &orderSession);
+    void markAsPaid(int orderId);
 
 private:
     QSqlDatabase m_db;

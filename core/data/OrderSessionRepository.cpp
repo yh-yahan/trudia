@@ -5,7 +5,7 @@
 #include <QVariant>
 #include <QDebug>
 
-OrderSessionRepository::OrderSessionRepository(QSqlDatabase db): m_db(db) {}
+OrderSessionRepository::OrderSessionRepository(QSqlDatabase db) : m_db(db) {}
 
 std::vector<OrderSession> OrderSessionRepository::getAllActiveOrderSessions()
 {
@@ -14,12 +14,14 @@ std::vector<OrderSession> OrderSessionRepository::getAllActiveOrderSessions()
     QSqlQuery query(m_db);
     query.prepare(R"(SELECT * FROM order_sessions WHERE status = 'open')");
 
-    if (!query.exec()) {
+    if (!query.exec())
+    {
         qWarning() << "Failed to get active order sessions:" << query.lastError().text();
         return orderSessions;
     }
 
-    while (query.next()) {
+    while (query.next())
+    {
         OrderSession orderSession;
         orderSession.id = query.value("id").toInt();
         orderSession.display_number = query.value("display_number").toInt();
@@ -47,12 +49,14 @@ std::optional<OrderSession> OrderSessionRepository::getById(const int &orderSess
     query.prepare(R"(SELECT * FROM order_sessions WHERE id = :id)");
     query.bindValue(":id", orderSessionId);
 
-    if (!query.exec()) {
+    if (!query.exec())
+    {
         qWarning() << "Failed to get order session by id:" << query.lastError().text();
         return std::nullopt;
     }
 
-    if (query.next()) {
+    if (query.next())
+    {
         OrderSession session;
         session.id = query.value("id").toInt();
         session.display_number = query.value("display_number").toInt();
@@ -85,13 +89,15 @@ std::optional<OrderSession> OrderSessionRepository::getByOrderId(int orderId)
     )");
     query.bindValue(":orderId", orderId);
 
-    if (!query.exec()) {
+    if (!query.exec())
+    {
         qWarning() << "Failed to get order session by order id:"
                    << query.lastError().text();
         return std::nullopt;
     }
 
-    if (!query.next()) return std::nullopt;
+    if (!query.next())
+        return std::nullopt;
 
     OrderSession session;
     session.id = query.value("id").toInt();
@@ -113,22 +119,24 @@ std::optional<OrderSession> OrderSessionRepository::getByOrderId(int orderId)
     return session;
 }
 
-int OrderSessionRepository::getMaxDisplayNumberForDate(const QString &date) {
+int OrderSessionRepository::getMaxDisplayNumberForDate(const QString &date)
+{
     QSqlQuery query(m_db);
 
     query.prepare(
         "SELECT MAX(display_number) "
         "FROM order_sessions "
-        "WHERE DATE(opened_at) = :date"
-        );
+        "WHERE DATE(opened_at) = :date");
     query.bindValue(":date", date);
 
-    if (!query.exec()) {
+    if (!query.exec())
+    {
         qWarning() << "Failed to get max display number:" << query.lastError();
         return 0;
     }
 
-    if (query.next()) {
+    if (query.next())
+    {
         return query.value(0).toInt();
     }
 
@@ -147,7 +155,8 @@ int OrderSessionRepository::findOpenSessionByTableId(int const &tableId)
                      LIMIT 1)");
     query.bindValue(":tableId", tableId);
 
-    if (query.exec() && query.next()) {
+    if (query.exec() && query.next())
+    {
         return query.value("id").toInt();
     }
 
@@ -159,12 +168,15 @@ int OrderSessionRepository::create(const OrderSession &orderSession)
     QSqlQuery query(m_db);
     query.prepare(R"(INSERT INTO order_sessions
                      (display_number, table_id, order_type, status, points_earned, points_redeemed, subtotal, tax, discount, total, closed_at)
-                     VALUES (:display_number, :table_id, :order_type, :status, :points_earned, :points_redeemed, :subtotal, :tax, :discount, :total, :closed_at))");
+                     VALUES (:display_number, :table_id, :order_type, :status, :points_earned, :points_redeemed, :subtotal, :tax, :discount, :total, NULL))");
 
     query.bindValue(":display_number", orderSession.display_number);
-    if (orderSession.table_id.has_value()) {
+    if (orderSession.table_id.has_value())
+    {
         query.bindValue(":table_id", orderSession.table_id.value());
-    } else {
+    }
+    else
+    {
         query.bindValue(":table_id", QVariant());
     }
     query.bindValue(":order_type", orderSession.order_type);
@@ -175,13 +187,9 @@ int OrderSessionRepository::create(const OrderSession &orderSession)
     query.bindValue(":tax", orderSession.tax);
     query.bindValue(":discount", orderSession.discount);
     query.bindValue(":total", orderSession.total);
-    if (orderSession.closed_at.has_value()) {
-        query.bindValue(":closed_at", orderSession.closed_at.value());
-    } else {
-        query.bindValue(":closed_at", QVariant());
-    }
 
-    if (!query.exec()) {
+    if (!query.exec())
+    {
         qWarning() << "Failed to create order session:" << query.lastError().text();
         return 0;
     }
@@ -202,8 +210,7 @@ void OrderSessionRepository::update(const OrderSession &orderSession)
                      subtotal = :subtotal,
                      tax = :tax,
                      discount = :discount,
-                     total = :total,
-                     closed_at = :closed_at
+                     total = :total
                      WHERE id = :id)");
 
     query.bindValue(":display_number", orderSession.display_number);
@@ -220,14 +227,24 @@ void OrderSessionRepository::update(const OrderSession &orderSession)
     query.bindValue(":tax", orderSession.tax);
     query.bindValue(":discount", orderSession.discount);
     query.bindValue(":total", orderSession.total);
-    if (orderSession.closed_at.has_value()) {
-        query.bindValue(":closed_at", orderSession.closed_at.value());
-    } else {
-        query.bindValue(":closed_at", QVariant());
-    }
     query.bindValue(":id", orderSession.id);
 
     if (!query.exec()) {
         qWarning() << "Failed to update order session:" << query.lastError().text();
+    }
+}
+
+void OrderSessionRepository::markAsPaid(int orderId)
+{
+    QSqlQuery query(m_db);
+    query.prepare(R"(UPDATE order_sessions
+                     SET status = 'paid',
+                         closed_at = CURRENT_TIMESTAMP
+                     WHERE id = :id)");
+    query.bindValue(":id", orderId);
+
+    if (!query.exec())
+    {
+        qWarning() << "Failed to mark order as closed:" << query.lastError().text();
     }
 }

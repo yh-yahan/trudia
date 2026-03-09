@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS menu (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     item TEXT NOT NULL,
     category_id INTEGER NOT NULL,
-    price NUMERIC NOT NULL,
+    price INTEGER NOT NULL,
     portion_size TEXT,
     is_available INTEGER NOT NULL,
     is_taxable INTEGER NOT NULL,

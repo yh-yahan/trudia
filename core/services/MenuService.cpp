@@ -79,7 +79,7 @@ QVariantList MenuService::getAllMenuItems() const
         itemMap["id"] = item.id;
         itemMap["item"] = item.item;
         itemMap["category_id"] = item.category_id;
-        itemMap["price"] = item.price;
+        itemMap["price"] = item.price / 100.0;
         itemMap["is_available"] = item.is_available;
         itemMap["is_taxable"] = item.is_taxable;
 
@@ -105,7 +105,7 @@ QVariantList MenuService::getMenuItemsByCategory(int categoryId) const
         map["id"] = item.id;
         map["item"] = item.item;
         map["category_id"] = item.category_id;
-        map["price"] = item.price;
+        map["price"] = item.price / 100.0;
         map["is_available"] = item.is_available;
         map["is_taxable"] = item.is_taxable;
 
@@ -137,7 +137,7 @@ bool MenuService::addMenuItem(const QString &itemName,
     Menu newItem;
     newItem.item = itemName;
     newItem.category_id = categoryId;
-    newItem.price = price;
+    newItem.price = price * 100.0;
     newItem.is_available = isAvailable;
     newItem.is_taxable = isTaxable;
 
@@ -177,7 +177,7 @@ bool MenuService::editMenuItem(const int &menuItemId,
     }
 
     menuItem.category_id = categoryId;
-    menuItem.price = price;
+    menuItem.price = price * 100.0;
     menuItem.is_available = isAvailable;
     menuItem.is_taxable = isTaxable;
     menuItem.portion_size = portionSize.isEmpty() ? "" : portionSize;

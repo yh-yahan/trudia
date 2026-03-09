@@ -9,7 +9,7 @@ public:
     int id = -1;
     QString item;
     int category_id;
-    double price;
+    int price;
     std::optional<QString> portion_size;
     bool is_available;
     bool is_taxable;

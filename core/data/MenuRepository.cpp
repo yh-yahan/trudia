@@ -24,7 +24,7 @@ std::vector<Menu> MenuRepository::getAllMenuItems()
         menu.id = query.value("id").toInt();
         menu.item = query.value("item").toString();
         menu.category_id = query.value("category_id").toInt();
-        menu.price = query.value("price").toDouble();
+        menu.price = query.value("price").toInt();
         menu.portion_size = query.value("portion_size").toString();
         menu.is_available = query.value("is_available").toBool();
         menu.is_taxable = query.value("is_taxable").toBool();
@@ -56,7 +56,7 @@ std::optional<Menu> MenuRepository::getMenuItemById(int menuId)
     menu.id = query.value("id").toInt();
     menu.item = query.value("item").toString();
     menu.category_id = query.value("category_id").toInt();
-    menu.price = query.value("price").toDouble();
+    menu.price = query.value("price").toInt();
     menu.portion_size = query.value("portion_size").toString();
     menu.is_available = query.value("is_available").toBool();
     menu.is_taxable = query.value("is_taxable").toBool();
@@ -87,7 +87,7 @@ std::vector<Menu> MenuRepository::getMenuItemsByCategory(int categoryId)
         menu.id = query.value("id").toInt();
         menu.item = query.value("item").toString();
         menu.category_id = query.value("category_id").toInt();
-        menu.price = query.value("price").toDouble();
+        menu.price = query.value("price").toInt();
         menu.portion_size = query.value("portion_size").toString();
         menu.is_available = query.value("is_available").toBool();
         menu.is_taxable = query.value("is_taxable").toBool();

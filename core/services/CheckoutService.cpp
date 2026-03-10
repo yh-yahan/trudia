@@ -113,8 +113,7 @@ bool CheckoutService::recalculateSessionTotals(int orderSessionId)
 
     // Sum all items from all orders in minor units (cents)
     for (const auto &item : items) {
-        qint64 priceMinor = static_cast<qint64>(std::llround(item.price * CURRENCY_SCALE));
-        subtotal += priceMinor * item.quantity;
+        subtotal += item.price * item.quantity;
     }
 
     // Calculate tax using the TaxCalculationService

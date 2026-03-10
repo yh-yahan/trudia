@@ -41,7 +41,8 @@ Item {
                             opacity: 0.7
                         }
                         Label {
-                            text: "RM " + snapshot.revenueToday
+                            text: "RM " + Number(
+                                      snapshot.revenueToday).toFixed(2)
                             font.pixelSize: 28
                             font.bold: true
                             color: "#9a7bff"
@@ -91,7 +92,8 @@ Item {
                             opacity: 0.7
                         }
                         Label {
-                            text: "RM " + snapshot.averageOrder
+                            text: "RM " + Number(
+                                      snapshot.averageOrder).toFixed(2)
                             font.pixelSize: 28
                             font.bold: true
                             color: "#ffffff"
@@ -200,7 +202,8 @@ Item {
                                 }
 
                                 Label {
-                                    text: "RM " + modelData.amount
+                                    text: "RM " + Number(
+                                              modelData.amount).toFixed(2)
                                     font.bold: true
                                     color: "#ffffff"
                                 }
@@ -241,7 +244,8 @@ Item {
                             }
 
                             Label {
-                                text: "RM " + modelData.amount
+                                text: "RM " + Number(
+                                          modelData.amount).toFixed(2)
                                 font.bold: true
                                 color: "#ffffff"
                             }

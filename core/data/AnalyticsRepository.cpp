@@ -18,7 +18,8 @@ double AnalyticsRepository::revenueToday()
         SELECT SUM(total)
         FROM order_sessions
         WHERE status = 'paid'
-          AND DATE(closed_at) = DATE('now')
+        AND closed_at IS NOT NULL
+        AND DATE(closed_at) = DATE('now')
     )");
 
     if (!query.exec()) {
@@ -41,7 +42,9 @@ int AnalyticsRepository::ordersCountToday()
     query.prepare(R"(
         SELECT COUNT(*)
         FROM order_sessions
-        WHERE DATE(opened_at) = DATE('now')
+        WHERE status = 'paid'
+        AND closed_at IS NOT NULL
+        AND DATE(closed_at) = DATE('now')
     )");
 
     if (!query.exec()) {
@@ -64,7 +67,9 @@ double AnalyticsRepository::averageOrderToday()
     query.prepare(R"(
         SELECT AVG(total)
         FROM order_sessions
-        WHERE DATE(opened_at) = DATE('now')
+        WHERE status = 'paid'
+        AND closed_at IS NOT NULL
+        AND DATE(closed_at) = DATE('now')
     )");
 
     if (!query.exec()) {
@@ -89,7 +94,9 @@ int AnalyticsRepository::itemsSoldToday()
         FROM order_items oi
         JOIN orders o ON oi.order_id = o.id
         JOIN order_sessions os ON o.order_session_id = os.id
-        WHERE DATE(os.opened_at) = DATE('now')
+        WHERE os.status = 'paid'
+        AND os.closed_at IS NOT NULL
+        AND DATE(os.closed_at) = DATE('now')
     )");
 
     if (!query.exec()) {
@@ -114,7 +121,9 @@ std::vector<ItemCount> AnalyticsRepository::topItemsToday()
         FROM order_items oi
         JOIN orders o ON oi.order_id = o.id
         JOIN order_sessions os ON o.order_session_id = os.id
-        WHERE DATE(os.opened_at) = DATE('now')
+        WHERE os.status = 'paid'
+        AND os.closed_at IS NOT NULL
+        AND DATE(os.closed_at) = DATE('now')
         GROUP BY oi.item_name
         ORDER BY total_quantity DESC
         LIMIT 5
@@ -141,9 +150,11 @@ std::vector<RevenueHour> AnalyticsRepository::revenueByHourToday()
 
     QSqlQuery query(m_db);
     query.prepare(R"(
-        SELECT STRFTIME('%H', opened_at) AS hour, SUM(total) AS amount
+        SELECT STRFTIME('%H', closed_at) AS hour, SUM(total) AS amount
         FROM order_sessions
-        WHERE DATE(opened_at) = DATE('now')
+        WHERE status = 'paid'
+        AND closed_at IS NOT NULL
+        AND DATE(closed_at) = DATE('now')
         GROUP BY hour
         ORDER BY hour ASC
     )");
@@ -174,9 +185,11 @@ std::vector<RevenueDay> AnalyticsRepository::revenueLastSevenDays()
 
     QSqlQuery query(m_db);
     query.prepare(R"(
-        SELECT DATE(opened_at) AS day, SUM(total) AS amount
+        SELECT DATE(closed_at) AS day, SUM(total) AS amount
         FROM order_sessions
-        WHERE DATE(opened_at) >= DATE('now', '-6 days')
+        WHERE status = 'paid'
+        AND closed_at IS NOT NULL
+        AND DATE(closed_at) >= DATE('now', '-6 days')
         GROUP BY day
         ORDER BY day ASC
     )");

@@ -4,9 +4,30 @@ import QtQuick.Controls
 import Xeno.Services 1.0
 
 Item {
+    visible: true
+
     property bool running: false
 
-    visible: true
+    Connections {
+        target: UserService
+
+        function onCreateUserFinished(success) {
+            running = false
+
+            if (!success) {
+                errorMessage.text = "Could not create account"
+                return
+            }
+
+            if (!AuthService.login(usernameField.text, passwordField.text)) {
+                errorMessage.text = "Login failed after registration"
+                return
+            }
+
+            stackView.push("../admin/AdminHome.qml")
+            Window.window.showMaximized()
+        }
+    }
 
     Rectangle {
         anchors.fill: parent
@@ -99,6 +120,7 @@ Item {
                 }
 
                 Button {
+                    id: registerButton
                     text: qsTr("Register")
                     Layout.fillWidth: true
                     leftPadding: 15
@@ -121,48 +143,24 @@ Item {
                     hoverEnabled: false
                     focusPolicy: Qt.NoFocus
                     onClicked: {
-                        let username = usernameField.text.trim();
-                        let pw = passwordField.text;
-                        let pw2 = passwordConfirmField.text;
+                        let username = usernameField.text.trim()
+                        let pw = passwordField.text
+                        let pw2 = passwordConfirmField.text
 
                         if (username === "" || pw === "") {
-                            errorMessage.text = qsTr("Please fill in all fields");
-                            return;
+                            errorMessage.text = "Please fill in all fields"
+                            return
                         }
+
                         if (pw !== pw2) {
-                            errorMessage.text = qsTr("Passwords do not match");
-                            return;
+                            errorMessage.text = "Passwords do not match"
+                            return
                         }
 
-                        running = true;
-                        errorMessage.text = "";
+                        errorMessage.text = ""
+                        running = true
 
-                        var future = UserService.createUser(username, pw, pw2, "admin");
-                        var watcher = Qt.createQmlObject('import QtQuick 2.0; QFutureWatcher {}', parent);
-
-                        watcher.future = future;
-                        watcher.finished.connect(function () {
-                            var success = watcher.result;
-                            if (!success) {
-                                errorMessage.text = qsTr("Could not create account");
-                                running = false;
-                                return;
-                            }
-
-                            AuthService.login(username, pw).then(function (loginOk) {
-                                running = false;
-                                if (loginOk) {
-                                    stackView.push("../admin/AdminHome.qml");
-                                    Window.window.showMaximized();
-                                } else {
-                                    errorMessage.text = qsTr("Login failed after registration");
-                                }
-                            }).catch(function (err) {
-                                running = false;
-                                errorMessage.text = qsTr("Error: ") + (err || "Unknown error");
-                                console.error("Login failed:", err);
-                            });
-                        });
+                        UserService.createUser(username, pw, pw2, "admin")
                     }
                 }
 
@@ -171,7 +169,7 @@ Item {
                     text: ""
                     color: "red"
                     font.pixelSize: 14
-                    anchors.top: button.bottom
+                    anchors.top: registerButton.bottom
                     anchors.topMargin: 10
                     anchors.horizontalCenter: parent.horizontalCenter
                     wrapMode: Text.WordWrap

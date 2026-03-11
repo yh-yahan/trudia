@@ -16,6 +16,23 @@ Item {
 
     Component.onCompleted: loadUsers()
 
+    Connections {
+        target: UserService
+
+        function onCreateUserFinished(success) {
+
+            if (!createDialog.visible)
+                return
+
+            if (success) {
+                createDialog.close()
+                loadUsers()
+            } else {
+                console.log("Create user failed")
+            }
+        }
+    }
+
     ConfirmationDialog {
         id: confirmationDialog
         anchors.centerIn: parent
@@ -365,15 +382,12 @@ Item {
                     }
 
                     onClicked: {
-                        var ok = UserService.createUser(
-                                    newUsername.text, newPassword.text,
-                                    newPasswordConfirm.text,
-                                    newRole.currentText)
-
-                        if (ok) {
-                            createDialog.close()
-                            loadUsers()
-                        }
+                        UserService.createUser(
+                            newUsername.text,
+                            newPassword.text,
+                            newPasswordConfirm.text,
+                            newRole.currentText
+                        )
                     }
                 }
 

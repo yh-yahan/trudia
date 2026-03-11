@@ -26,46 +26,22 @@ QVariantList UserService::getAllUsers()
     return list;
 }
 
-QFuture<bool> UserService::createUser(const QString &username,
-                            const QString &password,
-                            const QString &passwordConfirm,
-                            const QString &role)
+void UserService::createUser(QString username,
+                             QString password,
+                             QString confirm,
+                             QString role)
 {
-    return QtConcurrent::run([this, username, password, passwordConfirm, role]() -> bool
-                             {
-                                 QString name = username.trimmed();
-                                 if (name.isEmpty())
-                                     return false;
+    QtConcurrent::run([=]() {
 
-                                 if (password.isEmpty())
-                                     return false;
+        bool success = createUserInternal(username, password, confirm, role);
 
-                                 if (password != passwordConfirm)
-                                     return false;
+        QMetaObject::invokeMethod(
+            this,
+            [=]() { emit createUserFinished(success); },
+            Qt::QueuedConnection
+            );
 
-                                 auto emptyOpt = m_userRepo.isEmpty();
-                                 if (!emptyOpt.has_value())
-                                     return false;
-
-                                 bool isEmpty = emptyOpt.value();
-
-                                 QString finalRole = role;
-                                 if (isEmpty) {
-                                     finalRole = "admin";
-                                 }
-
-                                 if (m_userRepo.usernameExists(name))
-                                     return false;
-
-                                 User user;
-                                 user.username = name;
-                                 user.password = PasswordHasher::hash(password);
-                                 user.role     = finalRole;
-
-                                 m_userRepo.create(user);
-
-                                 return true;
-                             });
+    });
 }
 
 bool UserService::updateUser(
@@ -125,6 +101,44 @@ bool UserService::deactivateUser(int userId)
         return false;
 
     m_userRepo.remove(userId);
+
+    return true;
+}
+
+bool UserService::createUserInternal(const QString &username,
+                                     const QString &password,
+                                     const QString &confirm,
+                                     const QString &role)
+{
+    QString name = username.trimmed();
+    if (name.isEmpty())
+        return false;
+
+    if (password.isEmpty())
+        return false;
+
+    if (password != confirm)
+        return false;
+
+    auto emptyOpt = m_userRepo.isEmpty();
+    if (!emptyOpt.has_value())
+        return false;
+
+    bool isEmpty = emptyOpt.value();
+
+    QString finalRole = role;
+    if (isEmpty)
+        finalRole = "admin";
+
+    if (m_userRepo.usernameExists(name))
+        return false;
+
+    User user;
+    user.username = name;
+    user.password = PasswordHasher::hash(password);
+    user.role = finalRole;
+
+    m_userRepo.create(user);
 
     return true;
 }

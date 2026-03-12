@@ -148,6 +148,11 @@ Item {
                             color: "#9a7bff"
                             radius: 4
                         }
+                        contentItem: Text {
+                            text: tableRect.isEditing ? qsTr("Save") : qsTr("Edit")
+                            color: "white"
+                            anchors.centerIn: parent
+                        }
                         leftPadding: 15
                         rightPadding: 15
                         topPadding: 5
@@ -167,6 +172,11 @@ Item {
                         background: Rectangle {
                             color: "red"
                             radius: 4
+                        }
+                        contentItem: Text {
+                            text: qsTr("Delete")
+                            color: "white"
+                            anchors.centerIn: parent
                         }
                         leftPadding: 15
                         rightPadding: 15

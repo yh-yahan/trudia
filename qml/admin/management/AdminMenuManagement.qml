@@ -119,11 +119,10 @@ Item {
                             MenuItem {
                                 text: qsTr("Delete")
                                 onTriggered: {
-                                    confirmationDialog.title = qsTr(
-                                                "Delete Category")
-                                    confirmationDialog.contentItem.children[0].text = qsTr(
-                                                'Are you sure you want to delete "%1"? All menu items within "%1" will be deleted.').arg(
-                                                modelData.category)
+                                    confirmationDialog.title = qsTr("Delete Category")
+                                    confirmationDialog.message = qsTr(
+                                        'Are you sure you want to delete "%1"? All menu items within "%1" will be deleted.'
+                                    ).arg(modelData.category)
 
                                     confirmationDialog.confirmCallback = function (confirmed) {
                                         if (confirmed) {
@@ -560,10 +559,10 @@ Item {
                                     anchors.centerIn: parent
                                 }
                                 onClicked: {
-                                    confirmationDialog.title = "Delete Item"
-                                    confirmationDialog.contentItem.children[0].text = qsTr(
-                                                'Are you sure you want to delete "%1"?').arg(
-                                                modelData.item)
+                                    confirmationDialog.title = qsTr("Delete Item")
+                                    confirmationDialog.message = qsTr(
+                                        'Are you sure you want to delete "%1"?'
+                                    ).arg(modelData.item)
                                     confirmationDialog.confirmCallback = function (confirmed) {
                                         if (confirmed) {
                                             MenuService.removeMenuItem(

@@ -226,9 +226,9 @@ Item {
 
                         onClicked: {
                             confirmationDialog.title = qsTr("Deactivate User")
-                            confirmationDialog.contentItem.children[0].text = qsTr(
-                                        "Deactivate \"%1\"?").arg(
-                                        modelData.username)
+                            confirmationDialog.message = qsTr(
+                                'Deactivate "%1"?'
+                            ).arg(modelData.username)
 
                             confirmationDialog.confirmCallback = function (confirmed) {
                                 if (confirmed) {

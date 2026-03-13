@@ -65,6 +65,7 @@ bool DatabaseManager::runMigrations()
         "core/database/migrations/011_create_membership_settings.sql",
         "core/database/migrations/012_create_memberships.sql",
         "core/database/migrations/013_create_membership_transactions.sql",
+        "core/database/migrations/014_create_kitchen_settings.sql",
     };
 
     for (const QString &fileName : migrationFiles) {

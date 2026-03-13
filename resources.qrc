@@ -13,5 +13,6 @@
         <file>core/database/migrations/011_create_membership_settings.sql</file>
         <file>core/database/migrations/012_create_memberships.sql</file>
         <file>core/database/migrations/013_create_membership_transactions.sql</file>
+        <file>core/database/migrations/014_create_kitchen_settings.sql</file>
     </qresource>
 </RCC>

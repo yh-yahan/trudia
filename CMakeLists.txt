@@ -87,6 +87,8 @@ qt_add_qml_module(appxeno
     SOURCES core/utilities/PasswordHasher.h core/utilities/PasswordHasher.cpp
     SOURCES core/services/AnalyticsService.h core/services/AnalyticsService.cpp
     SOURCES core/data/AnalyticsRepository.h core/data/AnalyticsRepository.cpp
+    SOURCES core/domain/KitchenSettings.h
+    SOURCES core/data/KitchenSettingsRepository.h core/data/KitchenSettingsRepository.cpp
 )
 
 qt_add_translations(appxeno

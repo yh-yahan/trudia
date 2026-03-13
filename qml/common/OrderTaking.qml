@@ -28,7 +28,7 @@ Item {
     }
 
     function loadCategories() {
-        categories = MenuService.getAllCategory();
+        categories = MenuService.getAllCategories();
         if (categories.length > 0 && selectedCategoryId === -1) {
             selectedCategoryId = categories[0].id;
             loadMenuItems(selectedCategoryId);

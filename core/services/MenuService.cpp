@@ -3,7 +3,7 @@
 MenuService::MenuService(MenuRepository &menuRepo, CategoryRepository &categoryRepo)
     : m_menuRepo(menuRepo), m_categoryRepo(categoryRepo) {}
 
-QVariantList MenuService::getAllCategory() const
+QVariantList MenuService::getAllCategories() const
 {
     QVariantList categoriesList;
 

@@ -15,7 +15,7 @@ class MenuService : public QObject
 public:
     explicit MenuService(MenuRepository &menuRepo, CategoryRepository &categoryRepo);
 
-    Q_INVOKABLE QVariantList getAllCategory() const;
+    Q_INVOKABLE QVariantList getAllCategories() const;
     Q_INVOKABLE bool addCategory(const QString &categoryName);
     Q_INVOKABLE bool renameCategory(const int &categoryId, const QString &newName);
     Q_INVOKABLE bool removeCategory(const int &categoryId);

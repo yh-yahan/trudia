@@ -43,6 +43,8 @@ Item {
             pageLoader.sourceComponent = taxSettingsPage
         } else if (index === 3) {
             pageLoader.sourceComponent = membershipSettingsPage
+        } else if (index === 4) {
+            pageLoader.sourceComponent = kitchenSettingsPage
         }
     }
 
@@ -64,5 +66,10 @@ Item {
     Component {
         id: membershipSettingsPage
         AdminMembershipSettings {}
+    }
+
+    Component {
+        id: kitchenSettingsPage
+        AdminKitchenSettings {}
     }
 }

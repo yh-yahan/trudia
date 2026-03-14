@@ -9,6 +9,7 @@
 #include "../data/PrinterSettingRepository.h"
 #include "../data/TaxSettingsRepository.h"
 #include "../data/MembershipSettingsRepository.h"
+#include "../data/KitchenSettingsRepository.h"
 
 class SettingService : public QObject
 {
@@ -21,7 +22,8 @@ public:
     explicit SettingService(RestaurantRepository &restaurantRepo,
                             PrinterSettingRepository &printerSettingRepo,
                             TaxSettingsRepository &taxSettingsRepo,
-                            MembershipSettingsRepository &membershipSettingsRepo);
+                            MembershipSettingsRepository &membershipSettingsRepo,
+                            KitchenSettingsRepository &kitchenSettingsRepo);
 
     bool membershipEnabled() const;
 
@@ -34,6 +36,8 @@ public:
     Q_INVOKABLE bool saveTaxSettings(const QVariantMap &map);
     Q_INVOKABLE QVariantMap getMembershipSettings();
     Q_INVOKABLE bool saveMembershipSettings(const QVariantMap &map);
+    Q_INVOKABLE QVariantMap getKitchenSettings();
+    Q_INVOKABLE bool saveKitchenSettings(const QVariantMap &map);
 
 signals:
     void membershipEnabledChanged();
@@ -43,6 +47,7 @@ private:
     PrinterSettingRepository &m_printerSettingRepo;
     TaxSettingsRepository &m_taxSettingsRepo;
     MembershipSettingsRepository &m_membershipSettingsRepo;
+    KitchenSettingsRepository &m_kitchenSettingsRepo;
     bool m_membershipEnabled = false;
 };
 

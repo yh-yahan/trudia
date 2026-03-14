@@ -29,6 +29,10 @@ Rectangle {
         ListElement {
             text: qsTr("Membership")
         }
+
+        ListElement {
+            text: qsTr("Kitchen")
+        }
     }
 
     ColumnLayout {

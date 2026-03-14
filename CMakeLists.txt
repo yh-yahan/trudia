@@ -33,6 +33,7 @@ qt_add_qml_module(appxeno
         qml/admin/management/AdminUserManagement.qml
         qml/admin/management/AdminManagement.qml
         qml/admin/management/AdminManagementSidebar.qml
+        qml/admin/settings/AdminKitchenSettings.qml
         qml/admin/settings/AdminStoreSettings.qml
         qml/admin/settings/AdminPrinterSettings.qml
         qml/admin/settings/AdminTaxSettings.qml

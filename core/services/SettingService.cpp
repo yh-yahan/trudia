@@ -3,11 +3,13 @@
 SettingService::SettingService(RestaurantRepository &restaurantRepo,
                                PrinterSettingRepository &printerSettingRepo,
                                TaxSettingsRepository &taxSettingsRepo,
-                               MembershipSettingsRepository &membershipSettingsRepo)
+                               MembershipSettingsRepository &membershipSettingsRepo,
+                               KitchenSettingsRepository &kitchenSettingsRepo)
     : m_restaurantRepo(restaurantRepo),
       m_printerSettingRepo(printerSettingRepo),
       m_taxSettingsRepo(taxSettingsRepo),
-      m_membershipSettingsRepo(membershipSettingsRepo)
+      m_membershipSettingsRepo(membershipSettingsRepo),
+      m_kitchenSettingsRepo(kitchenSettingsRepo)
 {
     auto result = m_membershipSettingsRepo.get();
     m_membershipEnabled = result.has_value() && result->enabled;
@@ -192,4 +194,40 @@ bool SettingService::saveMembershipSettings(const QVariantMap &map)
     }
 
     return true;
+}
+
+QVariantMap SettingService::getKitchenSettings()
+{
+    QVariantMap map;
+
+    auto kitchenSettingsOpt = m_kitchenSettingsRepo.get();
+    if (!kitchenSettingsOpt.has_value())
+        return map;
+
+    const KitchenSettings &ks = kitchenSettingsOpt.value();
+
+    map["id"] = ks.id;
+    map["mode"] = ks.mode;
+    map["ticket_print_timing"] = ks.ticket_print_timing;
+    map["require_ready_for_checkout"] = ks.require_ready_for_checkout;
+
+    return map;
+}
+
+bool SettingService::saveKitchenSettings(const QVariantMap &map)
+{
+    KitchenSettings kitchenSettings;
+
+    kitchenSettings.id = map.value("id", 1).toInt();
+    kitchenSettings.mode = map.value("mode").toString();
+    kitchenSettings.ticket_print_timing = map.value("ticket_print_timing").toString();
+    kitchenSettings.require_ready_for_checkout = map.value("require_ready_for_checkout").toBool();
+
+    try {
+        m_kitchenSettingsRepo.save(kitchenSettings);
+        return true;
+    } catch (const std::exception &e) {
+        qWarning() << "Failed to save kitchen settings:" << e.what();
+        return false;
+    }
 }

@@ -248,3 +248,51 @@ void OrderSessionRepository::markAsPaid(int orderId)
         qWarning() << "Failed to mark order as closed:" << query.lastError().text();
     }
 }
+
+std::vector<OrderSession> OrderSessionRepository::getRecentPaidSessions(int limit)
+{
+    std::vector<OrderSession> orderSessions;
+
+    QSqlQuery query(m_db);
+    query.prepare(R"(
+        SELECT *
+        FROM order_sessions
+        WHERE status = 'paid'
+        ORDER BY closed_at DESC
+        LIMIT :limit
+    )");
+
+    query.bindValue(":limit", limit);
+
+    if (!query.exec())
+    {
+        qWarning() << "Failed to get recent paid sessions:"
+                   << query.lastError().text();
+        return orderSessions;
+    }
+
+    while (query.next())
+    {
+        OrderSession orderSession;
+
+        orderSession.id = query.value("id").toInt();
+        orderSession.display_number = query.value("display_number").toInt();
+        orderSession.table_id = query.value("table_id").isNull()
+                                    ? std::nullopt
+                                    : std::make_optional(query.value("table_id").toInt());
+        orderSession.order_type = query.value("order_type").toString();
+        orderSession.status = query.value("status").toString();
+        orderSession.points_earned = query.value("points_earned").toInt();
+        orderSession.points_redeemed = query.value("points_redeemed").toInt();
+        orderSession.subtotal = query.value("subtotal").toDouble();
+        orderSession.tax = query.value("tax").toDouble();
+        orderSession.discount = query.value("discount").toDouble();
+        orderSession.total = query.value("total").toDouble();
+        orderSession.opened_at = query.value("opened_at").toString();
+        orderSession.closed_at = query.value("closed_at").toString();
+
+        orderSessions.push_back(orderSession);
+    }
+
+    return orderSessions;
+}

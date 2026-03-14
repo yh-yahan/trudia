@@ -254,3 +254,23 @@ bool CheckoutService::printReceipt(int orderSessionId)
         static_cast<quint16>(*printerOpt->port),
         builder.data());
 }
+
+QVariantList CheckoutService::getRecentPaidOrders() const
+{
+    QVariantList result;
+
+    auto sessions = m_orderSessionRepo.getRecentPaidSessions(20);
+
+    for (const auto &session : sessions)
+    {
+        QVariantMap map;
+
+        map["id"] = session.id;
+        map["display_number"] = session.display_number;
+        map["total"] = session.total / 100;
+
+        result.append(map);
+    }
+
+    return result;
+}

@@ -18,6 +18,7 @@ public:
     int create(const OrderSession &orderSession);
     void update(const OrderSession &orderSession);
     void markAsPaid(int orderId);
+    std::vector<OrderSession> getRecentPaidSessions(int limit);
 
 private:
     QSqlDatabase m_db;

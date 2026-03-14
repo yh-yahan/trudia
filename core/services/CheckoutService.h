@@ -47,6 +47,7 @@ public:
     bool recalculateSessionTotals(int orderSessionId);
     Q_INVOKABLE QVariantList getCheckoutDetails(const int &orderSessionId);
     Q_INVOKABLE bool printReceipt(int orderSessionId);
+    Q_INVOKABLE QVariantList getRecentPaidOrders() const;
 
 private:
     OrderSessionRepository &m_orderSessionRepo;

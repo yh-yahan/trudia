@@ -13,16 +13,24 @@ Item {
     property bool membershipChecked: false
     property bool membershipEnabled: SettingService.membershipEnabled
     property int earnedPointsPreview: 0
-    property var sessions: []
+
+    property var activeSessions: []
+    property var recentOrders: []
+
     property var selectedSession: null
+    property var selectedRecent: null
     property var checkoutDetails: []
 
     property bool canCheckout: false
 
-    function reloadSessions() {
-        sessions = CheckoutService.getActiveOrdersForCheckout()
+    function reloadData() {
+        activeSessions = CheckoutService.getActiveOrdersForCheckout()
+        recentOrders = CheckoutService.getRecentPaidOrders()
+
         selectedSession = null
+        selectedRecent = null
         checkoutDetails = []
+
         memberPhone = ""
         memberId = 0
         currentPoints = 0
@@ -42,11 +50,13 @@ Item {
     function sessionIsFullyServed(details) {
         if (!details || details.length === 0)
             return false
+
         for (var i = 0; i < details.length; i++) {
             if (!isOrderServed(details[i])) {
                 return false
             }
         }
+
         return true
     }
 
@@ -58,6 +68,7 @@ Item {
 
         if (!memberPhone || memberPhone.length === 0)
             return
+
         var member = MembershipService.getMemberByPhone(memberPhone)
 
         membershipChecked = true
@@ -73,9 +84,7 @@ Item {
         }
     }
 
-    Component.onCompleted: {
-        reloadSessions()
-    }
+    Component.onCompleted: reloadData()
 
     onCheckoutDetailsChanged: {
         canCheckout = sessionIsFullyServed(checkoutDetails)
@@ -85,16 +94,18 @@ Item {
         anchors.fill: parent
         spacing: 6
 
+        // active orders
         ListView {
-            Layout.preferredWidth: 420
+            Layout.preferredWidth: 360
             Layout.fillHeight: true
-            model: sessions
+            model: activeSessions
             spacing: 10
 
             delegate: Rectangle {
                 width: parent.width
                 height: 72
                 radius: 6
+
                 color: selectedSession === modelData ? "#2a2a2a" : "#1e1e1e"
                 border.color: selectedSession === modelData ? "#9a7bff" : "transparent"
                 border.width: 2
@@ -102,9 +113,7 @@ Item {
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
-                        if (selectedSession === modelData) {
-                            checkoutDetails = []
-                        }
+                        selectedRecent = null
                         selectedSession = modelData
                         checkoutDetails = CheckoutService.getCheckoutDetails(
                                     modelData.id)
@@ -122,6 +131,7 @@ Item {
                         color: "white"
                         font.bold: true
                     }
+
                     Text {
                         text: modelData.table_id ? "Table "
                                                    + modelData.table_id : modelData.order_type
@@ -143,193 +153,96 @@ Item {
                 anchors.margins: 16
                 spacing: 14
 
-                Text {
+                ColumnLayout {
                     visible: selectedSession !== null
-                    text: selectedSession ? "Order #" + selectedSession.display_number : ""
-                    color: "white"
-                    font.pixelSize: 20
-                    font.bold: true
-                }
-
-                ListView {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    Layout.minimumHeight: 120
-                    model: checkoutDetails
-                    spacing: 16
-                    clip: true
 
-                    delegate: Column {
-                        spacing: 8
-                        width: parent.width
+                    Text {
+                        text: "Order #" + selectedSession.display_number
+                        color: "white"
+                        font.pixelSize: 20
+                        font.bold: true
+                    }
 
-                        RowLayout {
-                            spacing: 12
+                    ListView {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        model: checkoutDetails
+                        spacing: 16
+                        clip: true
+
+                        delegate: Column {
+                            spacing: 8
                             width: parent.width
 
-                            Text {
-                                text: "Order " + modelData.display_number
-                                color: "#bbbbff"
-                                font.bold: true
-                                font.pixelSize: 16
-                                Layout.fillWidth: true
-                            }
-
-                            Text {
-                                visible: !isOrderServed(modelData)
-                                text: qsTr("PENDING")
-                                color: "#ffaa66"
-                                font.bold: true
-                                font.pixelSize: 15
-                            }
-
-                            Text {
-                                visible: isOrderServed(modelData)
-                                text: qsTr("SERVED")
-                                color: "#88ffaa"
-                                font.bold: true
-                                font.pixelSize: 15
-                            }
-                        }
-
-                        Repeater {
-                            model: modelData.items
-                            delegate: Row {
+                            RowLayout {
                                 spacing: 12
-                                width: parent ? parent.width : 0
+                                width: parent.width
 
                                 Text {
-                                    text: modelData.item_name + " ×" + modelData.quantity
-                                    color: isOrderServed(
-                                               modelData.parentModelData) ? "white" : "#888888"
+                                    text: "Order " + modelData.display_number
+                                    color: "#bbbbff"
+                                    font.bold: true
                                     font.pixelSize: 16
+                                    Layout.fillWidth: true
                                 }
 
                                 Text {
-                                    visible: modelData.notes
-                                             && modelData.notes.length > 0
-                                    text: "(" + modelData.notes + ")"
-                                    color: isOrderServed(
-                                               modelData.parentModelData) ? "#ffdd99" : "#aa8844"
-                                    font.pixelSize: 15
-                                }
-                            }
-                        }
-                    }
-                }
-
-                ColumnLayout {
-                    Layout.fillWidth: true
-                    Layout.alignment: Qt.AlignBottom
-                    spacing: 12
-
-                    Row {
-                        visible: selectedSession !== null
-                        spacing: 8
-
-                        Column {
-                            spacing: 6
-
-                            visible: selectedSession !== null
-                                     && membershipEnabled
-
-                            Text {
-                                text: "Member Phone (optional)"
-                                color: "#cccccc"
-                                font.pixelSize: 13
-                            }
-
-                            Row {
-                                spacing: 8
-
-                                TextField {
-                                    id: memberPhoneField
-                                    width: 200
-                                    text: memberPhone
-
-                                    onTextChanged: {
-                                        memberPhone = text.trim()
-                                        membershipChecked = false
-                                        memberId = 0
-                                        currentPoints = 0
-                                        earnedPointsPreview = 0
-                                    }
-                                    onAccepted: updateMembershipInfo()
-
-                                    background: Rectangle {
-                                        radius: 4
-                                        color: "#2a2a2a"
-                                        border.color: "#555555"
-                                    }
-
-                                    color: "white"
+                                    visible: !isOrderServed(modelData)
+                                    text: "PENDING"
+                                    color: "#ffaa66"
+                                    font.bold: true
                                 }
 
-                                Button {
-                                    text: qsTr("Check")
-                                    enabled: memberPhone.length > 0
-                                    background: Rectangle {
-                                        color: '#929292'
-                                        radius: 4
-                                    }
-                                    contentItem: Text {
-                                        text: qsTr("Check")
-                                        font.bold: true
-                                        anchors.centerIn: parent
-                                        horizontalAlignment: Text.AlignHCenter
-                                        verticalAlignment: Text.AlignVCenter
+                                Text {
+                                    visible: isOrderServed(modelData)
+                                    text: "SERVED"
+                                    color: "#88ffaa"
+                                    font.bold: true
+                                }
+                            }
+
+                            Repeater {
+                                model: modelData.items
+                                delegate: Row {
+                                    spacing: 12
+                                    width: parent.width
+
+                                    Text {
+                                        text: modelData.item_name + " ×" + modelData.quantity
                                         color: "white"
+                                        font.pixelSize: 16
                                     }
-                                    hoverEnabled: false
-                                    focusPolicy: Qt.NoFocus
-                                    onClicked: updateMembershipInfo()
-                                    height: memberPhoneField.height
-                                    anchors.verticalCenter: memberPhoneField.verticalCenter
+
+                                    Text {
+                                        visible: modelData.notes
+                                                 && modelData.notes.length > 0
+                                        text: "(" + modelData.notes + ")"
+                                        color: "#ffdd99"
+                                        font.pixelSize: 15
+                                    }
                                 }
                             }
                         }
                     }
 
                     Column {
-                        visible: selectedSession !== null && membershipChecked
-                        spacing: 4
-
-                        Text {
-                            text: memberId > 0 ? "Current Points: "
-                                                 + currentPoints : "New member will be created"
-                            color: memberId > 0 ? "#88ffaa" : "#ffaa66"
-                            font.pixelSize: 14
-                            font.bold: true
-                        }
-
-                        Text {
-                            visible: selectedSession !== null
-                            text: "Points to Earn: +" + earnedPointsPreview
-                            color: "#9a7bff"
-                            font.pixelSize: 14
-                            font.bold: true
-                        }
-                    }
-
-                    Column {
-                        visible: selectedSession !== null
                         spacing: 6
 
                         Text {
-                            text: qsTr("Subtotal: RM") + selectedSession.subtotal.toFixed(
+                            text: "Subtotal: RM" + selectedSession.subtotal.toFixed(
                                       2)
                             color: "white"
-                            font.pixelSize: 15
                         }
+
                         Text {
-                            text: qsTr("Tax: RM") + selectedSession.tax.toFixed(
-                                      2)
+                            text: "Tax: RM" + selectedSession.tax.toFixed(2)
                             color: "white"
-                            font.pixelSize: 15
                         }
+
                         Text {
-                            text: qsTr("Total: RM") + selectedSession.total.toFixed(
-                                      2)
+                            text: "Total: RM" + selectedSession.total.toFixed(2)
                             color: "white"
                             font.bold: true
                             font.pixelSize: 18
@@ -337,9 +250,7 @@ Item {
                     }
 
                     Button {
-                        visible: selectedSession !== null
-                        text: qsTr("Checkout")
-
+                        text: "Checkout"
                         enabled: canCheckout
 
                         background: Rectangle {
@@ -348,10 +259,9 @@ Item {
                         }
 
                         contentItem: Text {
-                            text: qsTr("Checkout")
+                            text: "Checkout"
                             color: "white"
                             font.bold: true
-                            font.pixelSize: 16
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
                         }
@@ -362,20 +272,116 @@ Item {
                         onClicked: {
                             if (!selectedSession)
                                 return
+
                             if (CheckoutService.markOrderPaid(
                                         selectedSession.id, memberPhone, 0)) {
+
                                 var printed = CheckoutService.printReceipt(
                                             selectedSession.id)
 
                                 if (!printed) {
-                                    console.log("Receipt printing failed for #"
-                                                + selectedSession.display_number)
+                                    console.log("Receipt printing failed")
                                 }
 
-                                reloadSessions()
-                                memberPhone = ""
+                                reloadData()
                             }
                         }
+                    }
+                }
+
+                Column {
+                    visible: selectedRecent !== null
+                    spacing: 10
+
+                    Text {
+                        text: "Recent Order #" + selectedRecent.display_number
+                        color: "white"
+                        font.pixelSize: 20
+                        font.bold: true
+                    }
+
+                    Button {
+                        text: "Reprint Receipt"
+
+                        background: Rectangle {
+                            radius: 6
+                            color: enabled ? "#9a7bff" : "#444444"
+                        }
+
+                        contentItem: Text {
+                            text: "Reprint Receipt"
+                            color: "white"
+                            font.bold: true
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                        }
+
+                        hoverEnabled: false
+                        focusPolicy: Qt.NoFocus
+
+                        onClicked: {
+                            var printed = CheckoutService.printReceipt(
+                                            selectedRecent.id)
+
+                            if (!printed) {
+                                console.log("Receipt printing failed")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // recent orders
+        ListView {
+            Layout.preferredWidth: 300
+            Layout.fillHeight: true
+            model: recentOrders
+            spacing: 10
+
+            header: Column {
+                spacing: 10
+
+                Label {
+                    text: qsTr("Recent Paid Orders")
+                    font.pixelSize: 26
+                    font.bold: true
+                    color: "white"
+                }
+            }
+
+            delegate: Rectangle {
+                width: parent.width
+                height: 72
+                radius: 6
+
+                color: selectedRecent === modelData ? "#2a2a2a" : "#1e1e1e"
+                border.color: selectedRecent === modelData ? "#66ddaa" : "transparent"
+                border.width: 2
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        selectedSession = null
+                        selectedRecent = modelData
+                    }
+                }
+
+                Column {
+                    anchors.fill: parent
+                    anchors.margins: 12
+                    spacing: 4
+
+                    Text {
+                        text: "#" + modelData.display_number
+                        color: "white"
+                        font.bold: true
+                    }
+
+                    Text {
+                        text: "RM " + modelData.total.toFixed(2)
+                        color: "#88ffaa"
+                        font.pixelSize: 13
                     }
                 }
             }

@@ -168,6 +168,7 @@ Item {
                     Button {
                         Layout.fillWidth: true
                         text: actionText
+                        Layout.preferredHeight: 38
 
                         background: Rectangle {
                             color: accentColor

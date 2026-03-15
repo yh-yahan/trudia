@@ -119,10 +119,11 @@ Item {
                             MenuItem {
                                 text: qsTr("Delete")
                                 onTriggered: {
-                                    confirmationDialog.title = qsTr("Delete Category")
+                                    confirmationDialog.title = qsTr(
+                                                "Delete Category")
                                     confirmationDialog.message = qsTr(
-                                        'Are you sure you want to delete "%1"? All menu items within "%1" will be deleted.'
-                                    ).arg(modelData.category)
+                                                'Are you sure you want to delete "%1"? All menu items within "%1" will be deleted.').arg(
+                                                modelData.category)
 
                                     confirmationDialog.confirmCallback = function (confirmed) {
                                         if (confirmed) {
@@ -516,11 +517,10 @@ Item {
                                             return
                                         }
 
-                                        if (isNaN(priceVal) || priceVal <= 0) {
-                                            console.warn("Price must be a number greater than 0")
-                                            return
+                                        if (isNaN(priceVal) || priceVal < 0) {
+                                            priceVal = 0.00
+                                            itemRect.editedPrice = priceVal
                                         }
-
                                         var success = MenuService.editMenuItem(
                                                     modelData.id,
                                                     itemNameTrimmed,
@@ -559,10 +559,11 @@ Item {
                                     anchors.centerIn: parent
                                 }
                                 onClicked: {
-                                    confirmationDialog.title = qsTr("Delete Item")
+                                    confirmationDialog.title = qsTr(
+                                                "Delete Item")
                                     confirmationDialog.message = qsTr(
-                                        'Are you sure you want to delete "%1"?'
-                                    ).arg(modelData.item)
+                                                'Are you sure you want to delete "%1"?').arg(
+                                                modelData.item)
                                     confirmationDialog.confirmCallback = function (confirmed) {
                                         if (confirmed) {
                                             MenuService.removeMenuItem(
@@ -720,9 +721,8 @@ Item {
                             }
 
                             var price = parseFloat(newItemPrice.text)
-                            if (isNaN(price) || price <= 0) {
-                                console.warn("Price must be a number greater than 0")
-                                return
+                            if (isNaN(price) || price < 0) {
+                                price = 0.00
                             }
 
                             MenuService.addMenuItem(itemNameTrimmed,

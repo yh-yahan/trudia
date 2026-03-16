@@ -210,6 +210,7 @@ QVariantMap SettingService::getKitchenSettings()
     map["mode"] = ks.mode;
     map["ticket_print_timing"] = ks.ticket_print_timing;
     map["require_ready_for_checkout"] = ks.require_ready_for_checkout;
+    map["allow_edit_after_send"] = ks.allow_edit_after_send;
 
     return map;
 }
@@ -222,6 +223,7 @@ bool SettingService::saveKitchenSettings(const QVariantMap &map)
     kitchenSettings.mode = map.value("mode").toString();
     kitchenSettings.ticket_print_timing = map.value("ticket_print_timing").toString();
     kitchenSettings.require_ready_for_checkout = map.value("require_ready_for_checkout").toBool();
+    kitchenSettings.allow_edit_after_send = map.value("allow_edit_after_send").toBool();
 
     try {
         m_kitchenSettingsRepo.save(kitchenSettings);

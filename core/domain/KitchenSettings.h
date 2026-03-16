@@ -8,7 +8,8 @@ public:
     int id = -1;
     QString mode;
     QString ticket_print_timing;
-    bool require_ready_for_checkout; // active/revoked
+    bool require_ready_for_checkout;
+    bool allow_edit_after_send;
 };
 
 #endif // KITCHENSETTINGS_H

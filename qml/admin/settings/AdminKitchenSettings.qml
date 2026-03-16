@@ -16,6 +16,8 @@ ScrollView {
         ticketPrintCombo.currentValue = kitchenData.ticket_print_timing
                 || "order_created"
         requireReadySwitch.checked = kitchenData.require_ready_for_checkout
+
+        allowEditSwitch.checked = kitchenData.allow_edit_after_send
     }
 
     anchors.fill: parent
@@ -163,6 +165,39 @@ ScrollView {
                 }
             }
         }
+
+        ColumnLayout {
+            spacing: 15
+
+            Text {
+                text: qsTr("Order Modification")
+                font.bold: true
+                color: "#c9c9c9"
+                font.pointSize: 16
+            }
+
+            ColumnLayout {
+                spacing: 15
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.leftMargin: 20
+
+                RowLayout {
+                    Layout.fillWidth: true
+
+                    Label {
+                        text: qsTr("Allow editing after sending to kitchen")
+                        color: "white"
+                        Layout.fillWidth: true
+                    }
+
+                    Switch {
+                        id: allowEditSwitch
+                        checked: false
+                    }
+                }
+            }
+        }
     }
 
     background: Rectangle {
@@ -207,6 +242,7 @@ ScrollView {
                 payload.mode = workflowCombo.currentValue
                 payload.ticket_print_timing = ticketPrintCombo.currentValue
                 payload.require_ready_for_checkout = requireReadySwitch.checked ? 1 : 0
+                payload.allow_edit_after_send = allowEditSwitch.checked ? 1 : 0
 
                 SettingService.saveKitchenSettings(payload)
             }

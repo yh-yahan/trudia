@@ -90,6 +90,7 @@ qt_add_qml_module(appxeno
     SOURCES core/data/AnalyticsRepository.h core/data/AnalyticsRepository.cpp
     SOURCES core/domain/KitchenSettings.h
     SOURCES core/data/KitchenSettingsRepository.h core/data/KitchenSettingsRepository.cpp
+    SOURCES core/domain/OpenOrderView.h
 )
 
 qt_add_translations(appxeno

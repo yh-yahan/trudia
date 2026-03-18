@@ -25,7 +25,16 @@ public:
         const QString &orderType,
         const QVariantList &items,
         const QVariantMap &options = {}
-        );
+    );
+    
+    Q_INVOKABLE QVariantList getOpenOrders();
+    Q_INVOKABLE QVariantList getOrderItems(int orderId);
+    Q_INVOKABLE int updateOrder(
+        int orderId,
+        const QString &orderType,
+        const QVariantList &items,
+        const QVariantMap &options
+    );
 
 private:
     OrderSessionRepository &m_orderSessionRepo;

@@ -14,16 +14,17 @@ Item {
     property string currentOrderType: ""
     property var tables: []
     property int selectedTableId: -1
+    property int currentOrderId: -1
 
     property real subtotal: 0
     property real total: 0
     property int totalItems: 0
     property real discount: 0
 
+    property bool showEditOrdersList: false
+    property var editOrdersList: []
+
     function changeOrderType(newType) {
-        if (currentOrderId < 0)
-            return
-        OrderService.updateOrderType(currentOrderId, newType)
         currentOrderType = newType
     }
 
@@ -111,6 +112,7 @@ Item {
                 rightPadding: 15
                 topPadding: 15
                 bottomPadding: 15
+                checked: currentOrderType === "dine_in"
 
                 background: Rectangle {
                     radius: 6
@@ -126,7 +128,7 @@ Item {
                 }
 
                 onClicked: {
-                    currentOrderType = "dine_in"
+                    changeOrderType("dine_in")
                 }
 
                 hoverEnabled: false
@@ -143,6 +145,7 @@ Item {
                 rightPadding: 15
                 topPadding: 15
                 bottomPadding: 15
+                checked: currentOrderType === "takeaway"
 
                 background: Rectangle {
                     radius: 6
@@ -158,7 +161,7 @@ Item {
                 }
 
                 onClicked: {
-                    currentOrderType = "takeaway"
+                    changeOrderType("takeaway")
                 }
 
                 hoverEnabled: false
@@ -175,6 +178,7 @@ Item {
                 rightPadding: 15
                 topPadding: 15
                 bottomPadding: 15
+                checked: currentOrderType === "takeaway"
 
                 background: Rectangle {
                     radius: 6
@@ -190,7 +194,7 @@ Item {
                 }
 
                 onClicked: {
-                    currentOrderType = "delivery"
+                    changeOrderType("delivery")
                 }
 
                 hoverEnabled: false
@@ -422,8 +426,44 @@ Item {
                     anchors.fill: parent
                     spacing: 2
 
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: 8
+
+                        Button {
+                            text: qsTr("Edit Orders")
+                            leftPadding: 12
+                            rightPadding: 12
+                            topPadding: 10
+                            bottomPadding: 10
+
+                            background: Rectangle {
+                                color: "#5F7DDC"
+                                radius: 4
+                                border.color: "#444"
+                                border.width: 1
+                            }
+
+                            contentItem: Text {
+                                text: qsTr("Edit Orders")
+                                anchors.centerIn: parent
+                                color: "white"
+                                font.bold: true
+                            }
+
+                            hoverEnabled: false
+                            focusPolicy: Qt.NoFocus
+
+                            onClicked: {
+                                editOrdersList = OrderService.getOpenOrders()
+                                showEditOrdersList = true
+                            }
+                        }
+                    }
+
                     Label {
                         text: qsTr("Current Order")
+                        visible: !showEditOrdersList
                         font.pixelSize: 18
                         color: "white"
                     }
@@ -431,6 +471,7 @@ Item {
                     // Table selection
                     ColumnLayout {
                         visible: currentOrderType === "dine_in"
+                                 && !showEditOrdersList
                         spacing: 8
 
                         Label {
@@ -492,6 +533,7 @@ Item {
                         Layout.fillHeight: true
                         spacing: 6
                         model: orderModel
+                        visible: !showEditOrdersList
 
                         delegate: Rectangle {
                             width: ListView.view.width
@@ -610,11 +652,70 @@ Item {
                         }
                     }
 
+                    ListView {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        visible: showEditOrdersList
+                        model: editOrdersList
+                        spacing: 6
+
+                        delegate: Rectangle {
+                            width: ListView.view.width
+                            height: 70
+                            radius: 4
+                            color: "#2a2a2a"
+
+                            Column {
+                                anchors.fill: parent
+                                anchors.margins: 6
+                                spacing: 2
+
+                                Text {
+                                    text: "Order #" + modelData.display_number
+                                          + " (" + modelData.type + ")"
+                                    color: "white"
+                                    font.bold: true
+                                }
+
+                                Text {
+                                    text: "Status: " + modelData.status
+                                    color: "#ccc"
+                                }
+
+                                Text {
+                                    text: (modelData.table_id !== undefined
+                                           && modelData.table_id
+                                           !== null) ? "Table: " + modelData.table_id : ""
+                                    visible: modelData.table_id !== undefined
+                                             && modelData.table_id !== null
+                                    color: "#aaa"
+                                    font.pixelSize: 12
+                                }
+                            }
+
+                            MouseArea {
+                                anchors.fill: parent
+                                onClicked: {
+                                    showEditOrdersList = false
+
+                                    currentOrderId = modelData.id
+                                    currentOrderType = modelData.type
+
+                                    selectedTableId = modelData.table_id !== undefined
+                                            && modelData.table_id !== null ? modelData.table_id : -1
+
+                                    reloadOrder()
+                                }
+                            }
+                        }
+                    }
+
                     ColumnLayout {
                         spacing: 4
                         anchors.left: parent.left
                         anchors.right: parent.right
                         anchors.margins: 8
+                        visible: !showEditOrdersList
 
                         function calculateMeta() {
                             var subtotal = 0
@@ -712,8 +813,10 @@ Item {
                     }
 
                     Button {
-                        text: qsTr("Place Order")
+                        text: currentOrderId >= 0 ? qsTr("Edit Order") : qsTr(
+                                                        "Place Order")
                         Layout.fillWidth: true
+                        visible: !showEditOrdersList
 
                         leftPadding: 15
                         rightPadding: 15
@@ -725,7 +828,8 @@ Item {
                             radius: 4
                         }
                         contentItem: Text {
-                            text: qsTr("Place Order")
+                            text: currentOrderId >= 0 ? qsTr("Edit Order") : qsTr(
+                                                            "Place Order")
                             font.bold: true
                             anchors.centerIn: parent
                             horizontalAlignment: Text.AlignHCenter
@@ -736,6 +840,7 @@ Item {
                         onClicked: {
                             if (orderModel.count === 0)
                                 return
+
                             var items = []
                             for (var i = 0; i < orderModel.count; i++) {
                                 var e = orderModel.get(i)
@@ -746,15 +851,25 @@ Item {
                                            })
                             }
 
-                            var orderId = OrderService.createOrder(
-                                        currentOrderType, items, {
-                                            "tableId": currentOrderType
-                                                       === "dine_in" ? selectedTableId : null
-                                        })
+                            var options = {
+                                "tableId": currentOrderType === "dine_in" ? selectedTableId : null,
+                                "notes": ""
+                            }
+
+                            if (currentOrderId >= 0) {
+                                OrderService.updateOrder(currentOrderId,
+                                                         currentOrderType,
+                                                         items, options)
+                            } else {
+                                currentOrderId = OrderService.createOrder(
+                                            currentOrderType, items, options)
+                            }
 
                             orderModel.clear()
                             currentOrderType = ""
                             selectedTableId = -1
+                            currentOrderId = -1
+
                             loadTables()
 
                             dineInBtn.checked = false

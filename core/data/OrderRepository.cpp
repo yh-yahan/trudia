@@ -68,6 +68,54 @@ std::vector<Order> OrderRepository::getOrdersByStatus(const QString &status)
     return orders;
 }
 
+std::vector<OpenOrderView> OrderRepository::getActiveOrderSessionOrders()
+{
+    std::vector<OpenOrderView> orders;
+
+    QSqlQuery query(m_db);
+
+    query.prepare(R"(
+        SELECT 
+            o.id AS order_id,
+            o.display_number AS order_display_number,
+            o.order_session_id,
+            o.status AS order_status,
+            o.notes AS order_notes,
+            s.order_type AS session_order_type,
+            s.table_id AS session_table_id
+        FROM orders o
+        JOIN order_sessions s ON o.order_session_id = s.id
+        WHERE s.status != 'paid'
+        ORDER BY o.created_at DESC
+    )");
+
+    if (!query.exec()) {
+        qCritical() << "Failed to get active order session orders:" << query.lastError().text();
+        return orders;
+    }
+
+    while (query.next()) {
+        OpenOrderView order;
+
+        order.id = query.value("order_id").toInt();
+        order.display_number = query.value("order_display_number").toInt();
+        order.order_session_id = query.value("order_session_id").toInt();
+        order.status = query.value("order_status").toString();
+        order.notes = query.value("order_notes").toString();
+
+        order.order_type = query.value("session_order_type").toString();
+
+        if (!query.value("session_table_id").isNull())
+            order.table_id = query.value("session_table_id").toInt();
+        else
+            order.table_id = std::nullopt;
+
+        orders.push_back(order);
+    }
+
+    return orders;
+}
+
 std::vector<Order> OrderRepository::getOrdersBySessionId(int orderSessionId)
 {
     std::vector<Order> orders;

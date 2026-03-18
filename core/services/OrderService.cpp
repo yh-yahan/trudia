@@ -138,6 +138,180 @@ int OrderService::createOrder(
     return orderId;
 }
 
+QVariantList OrderService::getOpenOrders()
+{
+    QVariantList result;
+
+    auto orders = m_orderRepo.getActiveOrderSessionOrders();
+
+    for (const auto &order : orders) {
+        QVariantMap map;
+
+        map["id"] = order.id;
+        map["display_number"] = order.display_number;
+        map["status"] = order.status;
+        map["notes"] = order.notes;
+        map["type"] = order.order_type;
+
+        if (order.table_id.has_value())
+            map["table_id"] = order.table_id.value();
+        else
+            map["table_id"] = QVariant();
+
+        result.append(map);
+    }
+
+    return result;
+}
+
+QVariantList OrderService::getOrderItems(int orderId)
+{
+    QVariantList result;
+
+    auto items = m_orderItemRepo.getOrderItemsByOrderId(orderId);
+
+    for (const auto &item : items) {
+        QVariantMap map;
+
+        map["id"] = item.id;
+        map["item_id"] = item.item_id;
+        map["item_name"] = item.item_name;
+        map["quantity"] = item.quantity;
+        map["price"] = item.price / 100;
+        map["status"] = item.item_status;
+        map["notes"] = item.notes;
+
+        result.append(map);
+    }
+
+    return result;
+}
+
+int OrderService::updateOrder(
+    int orderId,
+    const QString &orderType,
+    const QVariantList &items,
+    const QVariantMap &options)
+{
+    if (items.isEmpty())
+    {
+        qWarning() << "updateOrder failed: empty items";
+        return -1;
+    }
+
+    QSqlDatabase db = QSqlDatabase::database();
+    db.transaction();
+
+    // load order
+    auto orderOpt = m_orderRepo.getOrderById(orderId);
+    if (!orderOpt.has_value())
+    {
+        qWarning() << "updateOrder failed: order not found";
+        db.rollback();
+        return -1;
+    }
+
+    Order order = orderOpt.value();
+    int orderSessionId = order.order_session_id;
+
+    // load order session
+    auto sessionOpt = m_orderSessionRepo.getById(orderSessionId);
+    if (!sessionOpt.has_value())
+    {
+        qWarning() << "updateOrder failed: session not found";
+        db.rollback();
+        return -1;
+    }
+
+    OrderSession session = sessionOpt.value();
+
+    // table change
+    std::optional<int> newTableId;
+    if (options.contains("tableId") && !options["tableId"].isNull())
+        newTableId = options["tableId"].toInt();
+
+    if (session.table_id != newTableId)
+    {
+        if (session.table_id.has_value())
+            m_tableRepo.setTableState(session.table_id.value(), false);
+
+        if (newTableId.has_value())
+            m_tableRepo.setTableState(newTableId.value(), true);
+
+        session.table_id = newTableId;
+    }
+
+    // order type
+    session.order_type = orderType;
+
+    // order metadata
+    order.notes = options.value("notes").toString();
+    m_orderRepo.update(order);
+
+    // replace items
+    m_orderItemRepo.removeByOrderId(orderId);
+
+    for (const QVariant &v : items) {
+        QVariantMap m = v.toMap();
+
+        int menuId = m["menuItemId"].toInt();
+
+        auto menuOpt = m_menuRepo.getMenuItemById(menuId);
+        if (!menuOpt.has_value()) {
+            qWarning() << "Menu item not found:" << menuId;
+            continue;
+        }
+
+        const Menu &menu = menuOpt.value();
+
+        if (!menu.is_available) {
+            qWarning() << "Menu unavailable:" << menuId;
+            continue;
+        }
+
+        OrderItem item;
+        item.order_id = orderId;
+        item.item_id = menu.id;
+        item.item_name = menu.item;
+        item.quantity = m["qty"].toInt();
+        item.price = menu.price;
+        item.notes = m["notes"].toString();
+        item.item_status = "pending";
+
+        m_orderItemRepo.create(item);
+    }
+
+    // recompute session totals
+    auto orders = m_orderRepo.getOrdersBySessionId(orderSessionId);
+
+    double newSubtotal = 0.0;
+
+    for (const auto &o : orders)
+    {
+        auto orderItems = m_orderItemRepo.getOrderItemsByOrderId(o.id);
+
+        for (const auto &item : orderItems)
+        {
+            newSubtotal += item.quantity * item.price;
+        }
+    }
+
+    session.subtotal = newSubtotal;
+    session.tax = m_taxService.calculateTax(newSubtotal);
+    session.total = session.subtotal + session.tax - session.discount;
+
+    m_orderSessionRepo.update(session);
+
+    if (!db.commit())
+    {
+        qCritical() << "updateOrder commit failed";
+        db.rollback();
+        return -1;
+    }
+
+    return orderId;
+}
+
 int OrderService::generateOrderSessionDisplayNumber()
 {
     QString today = QDate::currentDate().toString("yyyy-MM-dd");

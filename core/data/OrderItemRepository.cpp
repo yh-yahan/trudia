@@ -207,3 +207,15 @@ void OrderItemRepository::remove(const OrderItem &orderItem)
         qWarning() << "remove failed:" << query.lastError();
     }
 }
+
+void OrderItemRepository::removeByOrderId(int orderId)
+{
+    QSqlQuery query(m_db);
+    query.prepare("DELETE FROM order_items WHERE order_id = ?");
+    query.addBindValue(orderId);
+
+    if (!query.exec())
+    {
+        qCritical() << "Failed to remove order items:" << query.lastError();
+    }
+}

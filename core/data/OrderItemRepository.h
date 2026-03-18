@@ -17,6 +17,7 @@ public:
     void create(const OrderItem &orderItem);
     void update(const OrderItem &orderItem);
     void remove(const OrderItem &orderItem);
+    void removeByOrderId(int orderId);
 
 private:
     QSqlDatabase m_db;

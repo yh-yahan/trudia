@@ -24,6 +24,9 @@ Item {
     property bool showEditOrdersList: false
     property var editOrdersList: []
 
+    property var kitchenSettings: ({})
+    property bool allowEditAfterSend: true
+
     function changeOrderType(newType) {
         currentOrderType = newType;
     }
@@ -86,6 +89,10 @@ Item {
         loadCategories();
         loadTables();
         recomputeMeta();
+        kitchenSettings = SettingService.getKitchenSettings();
+        if (kitchenSettings && kitchenSettings.hasOwnProperty("allow_edit_after_send")) {
+            allowEditAfterSend = kitchenSettings["allow_edit_after_send"];
+        }
     }
 
     ColumnLayout {
@@ -424,6 +431,7 @@ Item {
                         spacing: 8
 
                         Button {
+                            visible: allowEditAfterSend
                             text: qsTr("Edit Orders")
                             leftPadding: 12
                             rightPadding: 12

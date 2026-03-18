@@ -25,67 +25,67 @@ Item {
     property var editOrdersList: []
 
     function changeOrderType(newType) {
-        currentOrderType = newType
+        currentOrderType = newType;
     }
 
     function loadCategories() {
-        categories = MenuService.getAllCategories()
+        categories = MenuService.getAllCategories();
         if (categories.length > 0 && selectedCategoryId === -1) {
-            selectedCategoryId = categories[0].id
-            loadMenuItems(selectedCategoryId)
+            selectedCategoryId = categories[0].id;
+            loadMenuItems(selectedCategoryId);
         }
     }
 
     function loadMenuItems(categoryId) {
         if (categoryId >= 0) {
-            menuItems = MenuService.getMenuItemsByCategory(categoryId)
+            menuItems = MenuService.getMenuItemsByCategory(categoryId);
         } else {
-            menuItems = []
+            menuItems = [];
         }
     }
 
     function loadTables() {
-        tables = TableService.getAllTables()
+        tables = TableService.getAllTables();
     }
 
     function reloadOrder() {
         if (currentOrderId < 0)
-            return
-        orderModel.clear()
-        var items = OrderService.getOrderItems(currentOrderId)
+            return;
+        orderModel.clear();
+        var items = OrderService.getOrderItems(currentOrderId);
 
         for (var i = 0; i < items.length; i++) {
             orderModel.append({
-                                  "orderItemId": items[i].id,
-                                  "menuItemId": items[i].item_id,
-                                  "name": items[i].item_name,
-                                  "qty": items[i].quantity,
-                                  "price": items[i].price,
-                                  "notes": items[i].notes || ""
-                              })
+                "orderItemId": items[i].id,
+                "menuItemId": items[i].item_id,
+                "name": items[i].item_name,
+                "qty": items[i].quantity,
+                "price": items[i].price,
+                "notes": items[i].notes || ""
+            });
         }
     }
 
     function recomputeMeta() {
-        var s = 0
-        var items = 0
+        var s = 0;
+        var items = 0;
 
         for (var i = 0; i < orderModel.count; i++) {
-            var item = orderModel.get(i)
-            s += item.qty * item.price
-            items += item.qty
+            var item = orderModel.get(i);
+            s += item.qty * item.price;
+            items += item.qty;
         }
 
-        subtotal = s
-        discount = 0
-        total = subtotal - discount
-        totalItems = items
+        subtotal = s;
+        discount = 0;
+        total = subtotal - discount;
+        totalItems = items;
     }
 
     Component.onCompleted: {
-        loadCategories()
-        loadTables()
-        recomputeMeta()
+        loadCategories();
+        loadTables();
+        recomputeMeta();
     }
 
     ColumnLayout {
@@ -128,7 +128,7 @@ Item {
                 }
 
                 onClicked: {
-                    changeOrderType("dine_in")
+                    changeOrderType("dine_in");
                 }
 
                 hoverEnabled: false
@@ -161,7 +161,7 @@ Item {
                 }
 
                 onClicked: {
-                    changeOrderType("takeaway")
+                    changeOrderType("takeaway");
                 }
 
                 hoverEnabled: false
@@ -194,7 +194,7 @@ Item {
                 }
 
                 onClicked: {
-                    changeOrderType("delivery")
+                    changeOrderType("delivery");
                 }
 
                 hoverEnabled: false
@@ -253,9 +253,9 @@ Item {
                             MouseArea {
                                 anchors.fill: parent
                                 onClicked: {
-                                    categoryListView.currentIndex = index
-                                    selectedCategoryId = modelData.id
-                                    loadMenuItems(selectedCategoryId)
+                                    categoryListView.currentIndex = index;
+                                    selectedCategoryId = modelData.id;
+                                    loadMenuItems(selectedCategoryId);
                                 }
                             }
                         }
@@ -275,8 +275,7 @@ Item {
                     spacing: 12
 
                     Text {
-                        text: selectedCategoryId !== -1 ? qsTr("Menu Items") : qsTr(
-                                                              "Select a category")
+                        text: selectedCategoryId !== -1 ? qsTr("Menu Items") : qsTr("Select a category")
                         font.bold: true
                         font.pixelSize: 18
                         color: "white"
@@ -335,10 +334,8 @@ Item {
 
                             property bool isEditing: false
                             property string editedName: modelData.item
-                            property string editedPrice: modelData.price.toFixed(
-                                                             2)
-                            property string editedPortion: modelData.portion_size
-                                                           || ""
+                            property string editedPrice: modelData.price.toFixed(2)
+                            property string editedPortion: modelData.portion_size || ""
                             property bool editedAvailable: modelData.is_available
 
                             RowLayout {
@@ -384,26 +381,22 @@ Item {
                                         anchors.centerIn: parent
                                     }
                                     onClicked: {
-                                        var obj = modelData
+                                        var obj = modelData;
 
                                         for (var i = 0; i < orderModel.count; i++) {
-                                            if (orderModel.get(
-                                                        i).menuItemId === modelData.id) {
-                                                orderModel.setProperty(
-                                                            i, "qty",
-                                                            orderModel.get(
-                                                                i).qty + 1)
-                                                return
+                                            if (orderModel.get(i).menuItemId === modelData.id) {
+                                                orderModel.setProperty(i, "qty", orderModel.get(i).qty + 1);
+                                                return;
                                             }
                                         }
 
                                         orderModel.append({
-                                                              "menuItemId": obj["id"],
-                                                              "name": obj["item"],
-                                                              "qty": 1,
-                                                              "price": obj["price"],
-                                                              "notes": ""
-                                                          })
+                                            "menuItemId": obj["id"],
+                                            "name": obj["item"],
+                                            "qty": 1,
+                                            "price": obj["price"],
+                                            "notes": ""
+                                        });
                                     }
 
                                     hoverEnabled: false
@@ -455,8 +448,42 @@ Item {
                             focusPolicy: Qt.NoFocus
 
                             onClicked: {
-                                editOrdersList = OrderService.getOpenOrders()
-                                showEditOrdersList = true
+                                editOrdersList = OrderService.getOpenOrders();
+                                showEditOrdersList = true;
+                            }
+                        }
+
+                        Button {
+                            text: qsTr("New Order")
+                            leftPadding: 12
+                            rightPadding: 12
+                            topPadding: 10
+                            bottomPadding: 10
+
+                            background: Rectangle {
+                                color: "#4faba1"
+                                radius: 4
+                            }
+
+                            contentItem: Text {
+                                text: qsTr("New Order")
+                                anchors.centerIn: parent
+                                color: "white"
+                                font.bold: true
+                            }
+
+                            hoverEnabled: false
+                            focusPolicy: Qt.NoFocus
+
+                            onClicked: {
+                                orderModel.clear();
+                                currentOrderId = -1;
+                                currentOrderType = "";
+                                selectedTableId = -1;
+
+                                dineInBtn.checked = false;
+                                takeawayBtn.checked = false;
+                                deliveryBtn.checked = false;
                             }
                         }
                     }
@@ -470,8 +497,7 @@ Item {
 
                     // Table selection
                     ColumnLayout {
-                        visible: currentOrderType === "dine_in"
-                                 && !showEditOrdersList
+                        visible: currentOrderType === "dine_in" && !showEditOrdersList
                         spacing: 8
 
                         Label {
@@ -512,7 +538,7 @@ Item {
                                     enabled: currentOrderType === "dine_in"
 
                                     onClicked: {
-                                        selectedTableId = modelData.id
+                                        selectedTableId = modelData.id;
                                     }
                                 }
                             }
@@ -578,9 +604,7 @@ Item {
                                         enabled: qty > 1
 
                                         onClicked: {
-                                            orderModel.setProperty(index,
-                                                                   "qty",
-                                                                   qty - 1)
+                                            orderModel.setProperty(index, "qty", qty - 1);
                                         }
                                     }
                                     Label {
@@ -596,9 +620,7 @@ Item {
                                         padding: 0
 
                                         onClicked: {
-                                            orderModel.setProperty(index,
-                                                                   "qty",
-                                                                   qty + 1)
+                                            orderModel.setProperty(index, "qty", qty + 1);
                                         }
                                     }
 
@@ -622,9 +644,7 @@ Item {
                                         font.pixelSize: 16
 
                                         onTextEdited: {
-                                            orderModel.setProperty(index,
-                                                                   "notes",
-                                                                   text)
+                                            orderModel.setProperty(index, "notes", text);
                                         }
                                     }
 
@@ -641,7 +661,7 @@ Item {
                                         }
 
                                         onClicked: {
-                                            orderModel.remove(index)
+                                            orderModel.remove(index);
                                         }
 
                                         hoverEnabled: false
@@ -671,8 +691,7 @@ Item {
                                 spacing: 2
 
                                 Text {
-                                    text: "Order #" + modelData.display_number
-                                          + " (" + modelData.type + ")"
+                                    text: "Order #" + modelData.display_number + " (" + modelData.type + ")"
                                     color: "white"
                                     font.bold: true
                                 }
@@ -683,11 +702,8 @@ Item {
                                 }
 
                                 Text {
-                                    text: (modelData.table_id !== undefined
-                                           && modelData.table_id
-                                           !== null) ? "Table: " + modelData.table_id : ""
-                                    visible: modelData.table_id !== undefined
-                                             && modelData.table_id !== null
+                                    text: (modelData.table_id !== undefined && modelData.table_id !== null) ? "Table: " + modelData.table_id : ""
+                                    visible: modelData.table_id !== undefined && modelData.table_id !== null
                                     color: "#aaa"
                                     font.pixelSize: 12
                                 }
@@ -696,15 +712,14 @@ Item {
                             MouseArea {
                                 anchors.fill: parent
                                 onClicked: {
-                                    showEditOrdersList = false
+                                    showEditOrdersList = false;
 
-                                    currentOrderId = modelData.id
-                                    currentOrderType = modelData.type
+                                    currentOrderId = modelData.id;
+                                    currentOrderType = modelData.type;
 
-                                    selectedTableId = modelData.table_id !== undefined
-                                            && modelData.table_id !== null ? modelData.table_id : -1
+                                    selectedTableId = modelData.table_id !== undefined && modelData.table_id !== null ? modelData.table_id : -1;
 
-                                    reloadOrder()
+                                    reloadOrder();
                                 }
                             }
                         }
@@ -718,19 +733,19 @@ Item {
                         visible: !showEditOrdersList
 
                         function calculateMeta() {
-                            var subtotal = 0
-                            var totalItems = 0
+                            var subtotal = 0;
+                            var totalItems = 0;
                             for (var i = 0; i < orderModel.count; i++) {
-                                var item = orderModel.get(i)
-                                subtotal += item.qty * item.price
-                                totalItems += item.qty
+                                var item = orderModel.get(i);
+                                subtotal += item.qty * item.price;
+                                totalItems += item.qty;
                             }
                             return {
                                 "subtotal": subtotal,
                                 "total": subtotal,
                                 "totalItems": totalItems,
                                 "discount": 0
-                            }
+                            };
                         }
 
                         RowLayout {
@@ -780,14 +795,13 @@ Item {
                                 font.bold: true
                             }
                             Label {
-                                text: (currentOrderType === "dine_in"
-                                       && selectedTableId >= 0) ? (function () {
-                                           for (var i = 0; i < tables.length; i++) {
-                                               if (tables[i].id === selectedTableId)
-                                                   return tables[i].table_number
-                                           }
-                                           return "-"
-                                       })() : "-"
+                                text: (currentOrderType === "dine_in" && selectedTableId >= 0) ? (function () {
+                                        for (var i = 0; i < tables.length; i++) {
+                                            if (tables[i].id === selectedTableId)
+                                                return tables[i].table_number;
+                                        }
+                                        return "-";
+                                    })() : "-"
                                 color: "white"
                             }
                         }
@@ -813,8 +827,7 @@ Item {
                     }
 
                     Button {
-                        text: currentOrderId >= 0 ? qsTr("Edit Order") : qsTr(
-                                                        "Place Order")
+                        text: currentOrderId >= 0 ? qsTr("Edit Order") : qsTr("Place Order")
                         Layout.fillWidth: true
                         visible: !showEditOrdersList
 
@@ -828,8 +841,7 @@ Item {
                             radius: 4
                         }
                         contentItem: Text {
-                            text: currentOrderId >= 0 ? qsTr("Edit Order") : qsTr(
-                                                            "Place Order")
+                            text: currentOrderId >= 0 ? qsTr("Edit Order") : qsTr("Place Order")
                             font.bold: true
                             anchors.centerIn: parent
                             horizontalAlignment: Text.AlignHCenter
@@ -839,42 +851,38 @@ Item {
 
                         onClicked: {
                             if (orderModel.count === 0)
-                                return
-
-                            var items = []
+                                return;
+                            var items = [];
                             for (var i = 0; i < orderModel.count; i++) {
-                                var e = orderModel.get(i)
+                                var e = orderModel.get(i);
                                 items.push({
-                                               "menuItemId": e.menuItemId,
-                                               "qty": e.qty,
-                                               "notes": e.notes
-                                           })
+                                    "menuItemId": e.menuItemId,
+                                    "qty": e.qty,
+                                    "notes": e.notes
+                                });
                             }
 
                             var options = {
                                 "tableId": currentOrderType === "dine_in" ? selectedTableId : null,
                                 "notes": ""
-                            }
+                            };
 
                             if (currentOrderId >= 0) {
-                                OrderService.updateOrder(currentOrderId,
-                                                         currentOrderType,
-                                                         items, options)
+                                OrderService.updateOrder(currentOrderId, currentOrderType, items, options);
                             } else {
-                                currentOrderId = OrderService.createOrder(
-                                            currentOrderType, items, options)
+                                currentOrderId = OrderService.createOrder(currentOrderType, items, options);
                             }
 
-                            orderModel.clear()
-                            currentOrderType = ""
-                            selectedTableId = -1
-                            currentOrderId = -1
+                            orderModel.clear();
+                            currentOrderType = "";
+                            selectedTableId = -1;
+                            currentOrderId = -1;
 
-                            loadTables()
+                            loadTables();
 
-                            dineInBtn.checked = false
-                            takeawayBtn.checked = false
-                            deliveryBtn.checked = false
+                            dineInBtn.checked = false;
+                            takeawayBtn.checked = false;
+                            deliveryBtn.checked = false;
                         }
 
                         hoverEnabled: false

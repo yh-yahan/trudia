@@ -432,7 +432,7 @@ Item {
 
                         Button {
                             visible: allowEditAfterSend
-                            text: qsTr("Edit Orders")
+                            text: qsTr("Edit Order")
                             leftPadding: 12
                             rightPadding: 12
                             topPadding: 10
@@ -446,7 +446,7 @@ Item {
                             }
 
                             contentItem: Text {
-                                text: qsTr("Edit Orders")
+                                text: qsTr("Edit Order")
                                 anchors.centerIn: parent
                                 color: "white"
                                 font.bold: true

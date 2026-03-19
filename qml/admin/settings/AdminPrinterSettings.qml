@@ -19,7 +19,6 @@ ScrollView {
     property int stopBits: 0
     property string flowControl: ""
     property string paperWidth: "80mm"
-    property int charPerLine: 42
     property string cutMode: "Full Cut"
     property string errorMessage: ""
 
@@ -36,7 +35,6 @@ ScrollView {
         stopBits = data["stop_bits"] || 0
         flowControl = data["flow_control"] || ""
         paperWidth = data["paper_width"] || "80mm"
-        charPerLine = data["char_per_line"] || 42
         cutMode = data["cut_mode"] || "Full Cut"
         errorMessage = ""
     }
@@ -332,36 +330,6 @@ ScrollView {
 
                     onCurrentIndexChanged: {
                         root.paperWidth = model[currentIndex]
-
-                        charPerLineComboBox.model = root.paperWidth
-                                === "80mm" ? ["42", "48", "56"] : ["32", "36", "42"]
-
-                        if (!charPerLineComboBox.model.includes(
-                                    root.charPerLine.toString())) {
-                            root.charPerLine = parseInt(
-                                        charPerLineComboBox.model[0])
-                        }
-                    }
-
-                    leftPadding: 12
-                    rightPadding: 12
-                    topPadding: 8
-                    bottomPadding: 8
-                }
-
-                Label {
-                    text: qsTr("Characters Per Line")
-                    color: "white"
-                }
-
-                ComboBox {
-                    id: charPerLineComboBox
-                    Layout.fillWidth: true
-                    model: root.paperWidth === "80mm" ? ["42", "48", "56"] : ["32", "36", "42"]
-                    currentIndex: model.indexOf(root.charPerLine.toString())
-
-                    onCurrentIndexChanged: {
-                        root.charPerLine = parseInt(model[currentIndex])
                     }
 
                     leftPadding: 12
@@ -437,7 +405,6 @@ ScrollView {
                     "stop_bits": root.stopBits,
                     "flow_control": root.flowControl,
                     "paper_width": root.paperWidth,
-                    "char_per_line": root.charPerLine,
                     "cut_mode": root.cutMode
                 }
 

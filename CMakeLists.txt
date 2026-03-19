@@ -91,6 +91,7 @@ qt_add_qml_module(appxeno
     SOURCES core/domain/KitchenSettings.h
     SOURCES core/data/KitchenSettingsRepository.h core/data/KitchenSettingsRepository.cpp
     SOURCES core/domain/OpenOrderView.h
+    SOURCES core/printing/PrintLayoutHelper.h core/printing/PrintLayoutHelper.cpp
 )
 
 qt_add_translations(appxeno

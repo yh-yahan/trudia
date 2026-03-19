@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include "../printing/EscPosBuilder.h"
+#include "../printing/PrintLayoutHelper.h"
 
 constexpr qint64 CURRENCY_SCALE = 100; // cents
 
@@ -242,7 +243,8 @@ bool CheckoutService::printReceipt(int orderSessionId)
     data.tax = static_cast<double>(session.tax) / CURRENCY_SCALE;
     data.total = static_cast<double>(session.total) / CURRENCY_SCALE;
 
-    QString formattedText = m_formatter.format(data, printerOpt->char_per_line);
+    int lineWidth = PrintLayoutHelper::lineWidth(printerOpt->paper_width);
+    QString formattedText = m_formatter.format(data, lineWidth);
 
     EscPosBuilder builder;
     builder.initialize();

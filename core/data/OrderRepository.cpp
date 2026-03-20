@@ -86,6 +86,8 @@ std::vector<OpenOrderView> OrderRepository::getActiveOrderSessionOrders()
         FROM orders o
         JOIN order_sessions s ON o.order_session_id = s.id
         WHERE s.status != 'paid'
+        AND o.created_at >= DATETIME('now', 'localtime', 'start of day')
+        AND o.created_at < DATETIME('now', 'localtime', 'start of day', '+1 day')
         ORDER BY o.created_at DESC
     )");
 

@@ -98,20 +98,50 @@ bool SettingService::savePrinterSetting(const PrinterSetting &printerSetting)
 bool SettingService::savePrinterSettingMap(const QVariantMap &map)
 {
     PrinterSetting s;
-    s.id = map.value("id", -1).toInt();
-    s.printer_interface = map.value("printer_interface").toString();
-    s.connection_type = map.value("connection_type").toString();
-    s.ip_address = map.value("ip_address").toString();
-    s.port = map.value("port").toInt();
-    s.com_port = map.value("com_port").toString();
-    s.baud_rate = map.value("baud_rate").toInt();
-    s.parity = map.value("parity").toString();
-    s.data_bits = map.value("data_bits").toInt();
-    s.stop_bits = map.value("stop_bits").toInt();
-    s.flow_control = map.value("flow_control").toString();
-    s.paper_width = map.value("paper_width").toString();
-    s.char_per_line = map.value("char_per_line").toInt();
-    s.cut_mode = map.value("cut_mode").toString();
+
+    auto existingOpt = m_printerSettingRepo.get();
+    if (existingOpt.has_value()) {
+        s = existingOpt.value();
+    }
+
+    if (map.contains("printer_interface"))
+        s.printer_interface = map.value("printer_interface").toString();
+
+    if (map.contains("connection_type"))
+        s.connection_type = map.value("connection_type").toString();
+
+    if (map.contains("ip_address"))
+        s.ip_address = map.value("ip_address").toString();
+
+    if (map.contains("port"))
+        s.port = map.value("port").toInt();
+
+    if (map.contains("com_port"))
+        s.com_port = map.value("com_port").toString();
+
+    if (map.contains("baud_rate"))
+        s.baud_rate = map.value("baud_rate").toInt();
+
+    if (map.contains("parity"))
+        s.parity = map.value("parity").toString();
+
+    if (map.contains("data_bits"))
+        s.data_bits = map.value("data_bits").toInt();
+
+    if (map.contains("stop_bits"))
+        s.stop_bits = map.value("stop_bits").toInt();
+
+    if (map.contains("flow_control"))
+        s.flow_control = map.value("flow_control").toString();
+
+    if (map.contains("paper_width"))
+        s.paper_width = map.value("paper_width").toString();
+
+    if (map.contains("char_per_line"))
+        s.char_per_line = map.value("char_per_line").toInt();
+
+    if (map.contains("cut_mode"))
+        s.cut_mode = map.value("cut_mode").toString();
 
     return savePrinterSetting(s);
 }

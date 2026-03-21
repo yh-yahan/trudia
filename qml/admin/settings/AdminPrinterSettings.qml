@@ -23,20 +23,20 @@ ScrollView {
     property string errorMessage: ""
 
     function loadPrinterSettings() {
-        var data = SettingService.getPrinterSetting()
-        printerInterface = data["printer_interface"] || "ESC/POS (Raw)"
-        connectionType = data["connection_type"] || "Network (TCP/IP)"
-        ipAddress = data["ip_address"] || ""
-        port = data["port"] || 0
-        comPort = data["com_port"] || ""
-        baudRate = data["baud_rate"] || 0
-        parity = data["parity"] || ""
-        dataBits = data["data_bits"] || 0
-        stopBits = data["stop_bits"] || 0
-        flowControl = data["flow_control"] || ""
-        paperWidth = data["paper_width"] || "80mm"
-        cutMode = data["cut_mode"] || "Full Cut"
-        errorMessage = ""
+        var data = SettingService.getPrinterSetting();
+        printerInterface = data["printer_interface"] || "ESC/POS (Raw)";
+        connectionType = data["connection_type"] || "Network (TCP/IP)";
+        ipAddress = data["ip_address"] || "";
+        port = data["port"] || 0;
+        comPort = data["com_port"] || "";
+        baudRate = data["baud_rate"] || 0;
+        parity = data["parity"] || "";
+        dataBits = data["data_bits"] || 0;
+        stopBits = data["stop_bits"] || 0;
+        flowControl = data["flow_control"] || "";
+        paperWidth = data["paper_width"] || "80mm";
+        cutMode = data["cut_mode"] || "Full Cut";
+        errorMessage = "";
     }
 
     Component.onCompleted: loadPrinterSettings()
@@ -51,249 +51,6 @@ ScrollView {
             font.bold: true
             font.pixelSize: 26
             color: "white"
-        }
-
-        // printer configuration
-        ColumnLayout {
-            spacing: 15
-
-            Text {
-                Layout.fillWidth: true
-                text: qsTr("Printer Configuration")
-                font.bold: true
-                color: "#c9c9c9"
-                font.pointSize: 16
-            }
-
-            ColumnLayout {
-                anchors.left: parent.left
-                anchors.leftMargin: 20
-                anchors.right: parent.right
-                spacing: 10
-
-                Label {
-                    text: qsTr("Printer Interface")
-                    color: "white"
-                }
-
-                ComboBox {
-                    Layout.fillWidth: true
-                    model: ["ESC/POS (Raw)"]
-                    currentIndex: 0
-
-                    onCurrentIndexChanged: {
-                        root.printerInterface = model[currentIndex]
-                    }
-
-                    leftPadding: 12
-                    rightPadding: 12
-                    topPadding: 8
-                    bottomPadding: 8
-                }
-
-                Label {
-                    text: qsTr("Connection Type")
-                    color: "white"
-                }
-
-                ComboBox {
-                    id: connectionTypeComboBox
-                    Layout.fillWidth: true
-                    model: ["Network (TCP/IP)", "USB (Virtual COM)", "Serial (COM)"]
-                    currentIndex: 0
-
-                    onCurrentIndexChanged: {
-                        root.connectionType = model[currentIndex]
-                    }
-
-                    leftPadding: 12
-                    rightPadding: 12
-                    topPadding: 8
-                    bottomPadding: 8
-                }
-
-                RowLayout {
-                    Layout.fillWidth: true
-                    spacing: 15
-                    visible: connectionTypeComboBox.currentText === "Network (TCP/IP)"
-
-                    Label {
-                        text: qsTr("IP Address")
-                        color: "white"
-                    }
-
-                    TextField {
-                        Layout.fillWidth: true
-                        placeholderText: qsTr("IP Address")
-                        text: root.ipAddress
-                        onTextChanged: root.ipAddress = text
-                        leftPadding: 10
-                        rightPadding: 10
-                        topPadding: 10
-                        bottomPadding: 10
-                        color: "white"
-                        placeholderTextColor: "#b5b5b5"
-                        background: Rectangle {
-                            color: "#1f1f1f"
-                            radius: 4
-                            border.color: "#888888"
-                        }
-                    }
-
-                    Label {
-                        text: qsTr("Port")
-                        color: "white"
-                    }
-
-                    TextField {
-                        Layout.preferredWidth: 180
-                        placeholderText: qsTr("Port")
-                        text: root.port === 0 ? "" : root.port.toString()
-                        onTextChanged: root.port = parseInt(text) || 0
-                        leftPadding: 10
-                        rightPadding: 10
-                        topPadding: 10
-                        bottomPadding: 10
-                        color: "white"
-                        placeholderTextColor: "#b5b5b5"
-                        background: Rectangle {
-                            color: "#1f1f1f"
-                            radius: 4
-                            border.color: "#888888"
-                        }
-                    }
-                }
-
-                ColumnLayout {
-                    spacing: 10
-                    visible: connectionTypeComboBox.currentText !== "Network (TCP/IP)"
-
-                    Label {
-                        text: qsTr("COM Port")
-                        color: "white"
-                    }
-                    TextField {
-                        Layout.fillWidth: true
-                        placeholderText: qsTr("COM Port")
-                        text: root.comPort
-                        onTextChanged: root.comPort = text
-                        leftPadding: 10
-                        rightPadding: 10
-                        topPadding: 10
-                        bottomPadding: 10
-                        color: "white"
-                        placeholderTextColor: "#b5b5b5"
-                        background: Rectangle {
-                            color: "#1f1f1f"
-                            radius: 4
-                            border.color: "#888888"
-                        }
-                    }
-
-                    Label {
-                        text: qsTr("Baud Rate")
-                        color: "white"
-                    }
-                    TextField {
-                        Layout.fillWidth: true
-                        placeholderText: qsTr("Baud Rate")
-                        text: root.baudRate === 0 ? "" : root.baudRate.toString(
-                                                        )
-                        onTextChanged: root.baudRate = parseInt(text) || 0
-                        leftPadding: 10
-                        rightPadding: 10
-                        topPadding: 10
-                        bottomPadding: 10
-                        color: "white"
-                        placeholderTextColor: "#b5b5b5"
-                        background: Rectangle {
-                            color: "#1f1f1f"
-                            radius: 4
-                            border.color: "#888888"
-                        }
-                    }
-
-                    Label {
-                        text: qsTr("Parity")
-                        color: "white"
-                    }
-                    ComboBox {
-                        Layout.fillWidth: true
-                        model: ["None", "Even", "Odd", "Mark", "Space"]
-                        currentIndex: 0
-                        onCurrentIndexChanged: {
-                            root.parity = model[currentIndex]
-                        }
-                        leftPadding: 12
-                        rightPadding: 12
-                        topPadding: 8
-                        bottomPadding: 8
-                    }
-
-                    Label {
-                        text: qsTr("Data Bits")
-                        color: "white"
-                    }
-                    TextField {
-                        Layout.fillWidth: true
-                        placeholderText: qsTr("Data Bits")
-                        text: root.dataBits === 0 ? "" : root.dataBits.toString(
-                                                        )
-                        onTextChanged: root.dataBits = parseInt(text) || 0
-                        leftPadding: 10
-                        rightPadding: 10
-                        topPadding: 10
-                        bottomPadding: 10
-                        color: "white"
-                        placeholderTextColor: "#b5b5b5"
-                        background: Rectangle {
-                            color: "#1f1f1f"
-                            radius: 4
-                            border.color: "#888888"
-                        }
-                    }
-
-                    Label {
-                        text: qsTr("Stop Bits")
-                        color: "white"
-                    }
-                    TextField {
-                        Layout.fillWidth: true
-                        placeholderText: qsTr("Stop Bits")
-                        text: root.stopBits === 0 ? "" : root.stopBits.toString(
-                                                        )
-                        onTextChanged: root.stopBits = parseInt(text) || 0
-                        leftPadding: 10
-                        rightPadding: 10
-                        topPadding: 10
-                        bottomPadding: 10
-                        color: "white"
-                        placeholderTextColor: "#b5b5b5"
-                        background: Rectangle {
-                            color: "#1f1f1f"
-                            radius: 4
-                            border.color: "#888888"
-                        }
-                    }
-
-                    Label {
-                        text: qsTr("Flow Control")
-                        color: "white"
-                    }
-                    ComboBox {
-                        Layout.fillWidth: true
-                        model: ["None", "XON/XOFF", "RTS/CTS"]
-                        currentIndex: 0
-                        onCurrentIndexChanged: {
-                            root.flowControl = model[currentIndex]
-                        }
-                        leftPadding: 12
-                        rightPadding: 12
-                        topPadding: 8
-                        bottomPadding: 8
-                    }
-                }
-            }
         }
 
         // paper and format
@@ -324,12 +81,12 @@ ScrollView {
                     Layout.fillWidth: true
                     model: ["58mm", "80mm"]
                     Component.onCompleted: {
-                        var defaultIndex = model.indexOf(root.paperWidth)
-                        currentIndex = defaultIndex >= 0 ? defaultIndex : 1
+                        var defaultIndex = model.indexOf(root.paperWidth);
+                        currentIndex = defaultIndex >= 0 ? defaultIndex : 1;
                     }
 
                     onCurrentIndexChanged: {
-                        root.paperWidth = model[currentIndex]
+                        root.paperWidth = model[currentIndex];
                     }
 
                     leftPadding: 12
@@ -349,7 +106,7 @@ ScrollView {
                     currentIndex: model.indexOf(root.cutMode)
 
                     onCurrentIndexChanged: {
-                        root.cutMode = model[currentIndex]
+                        root.cutMode = model[currentIndex];
                     }
 
                     leftPadding: 12
@@ -406,13 +163,13 @@ ScrollView {
                     "flow_control": root.flowControl,
                     "paper_width": root.paperWidth,
                     "cut_mode": root.cutMode
-                }
+                };
 
                 if (SettingService.savePrinterSettingMap(map)) {
-                    root.errorMessage = ""
-                    loadPrinterSettings()
+                    root.errorMessage = "";
+                    loadPrinterSettings();
                 } else {
-                    root.errorMessage = "Failed to save printer settings."
+                    root.errorMessage = "Failed to save printer settings.";
                 }
             }
         }
@@ -423,6 +180,281 @@ ScrollView {
             font.bold: true
             wrapMode: Text.WordWrap
             Layout.fillWidth: true
+        }
+    }
+
+    Popup {
+        id: addPrinterPopup
+        modal: true
+        focus: true
+        x: parent.width / 2 - width / 2
+        y: parent.height / 2 - height / 2
+        width: 400
+        height: 300
+        background: Rectangle {
+            color: "#2b2b2b"
+            radius: 8
+        }
+
+        property string connectionType: "USB"
+        property int step: 0 // 0 = select type, 1 = configure
+
+        onOpened: {
+            step = 0;
+        }
+
+        ColumnLayout {
+            anchors.fill: parent
+            anchors.margins: 20
+            spacing: 20
+
+            ColumnLayout {
+                visible: addPrinterPopup.step === 0
+
+                Text {
+                    text: qsTr("Add Printer")
+                    font.bold: true
+                    font.pixelSize: 22
+                    color: "white"
+                    horizontalAlignment: Text.AlignHCenter
+                    Layout.alignment: Qt.AlignHCenter
+                }
+
+                Text {
+                    text: qsTr("Select Connection Type:")
+                    color: "white"
+                    font.pointSize: 14
+                }
+
+                ColumnLayout {
+                    id: connectionTypeGroup
+                    spacing: 10
+
+                    RadioButton {
+                        id: usbRadio
+                        text: qsTr("USB")
+                        checked: true
+                        contentItem: Text {
+                            text: qsTr("     USB")
+                            color: "white"
+                        }
+                        onClicked: addPrinterPopup.connectionType = "USB"
+                    }
+                }
+
+                // next button
+                RowLayout {
+                    Button {
+                        text: qsTr("Next")
+                        width: 80
+                        leftPadding: 12
+                        rightPadding: 12
+                        topPadding: 12
+                        bottomPadding: 12
+                        Layout.topMargin: 15
+                        Layout.fillWidth: true
+                        font.bold: true
+                        background: Rectangle {
+                            color: "#9a7bff"
+                            radius: 4
+                        }
+                        contentItem: Text {
+                            text: qsTr("Next")
+                            font.bold: true
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                            anchors.centerIn: parent
+                            color: "white"
+                        }
+                        hoverEnabled: false
+                        focusPolicy: Qt.NoFocus
+                        onClicked: {
+                            addPrinterPopup.step = 1;
+                        }
+                    }
+                }
+            }
+
+            Loader {
+                id: printerStepLoader
+                visible: addPrinterPopup.step === 1
+                sourceComponent: {
+                    if (addPrinterPopup.connectionType === "USB")
+                        return usbComponent;
+                    if (addPrinterPopup.connectionType === "Network")
+                        return networkComponent;
+                    if (addPrinterPopup.connectionType === "Serial")
+                        return serialComponent;
+                    return null;
+                }
+            }
+        }
+
+        Component {
+            id: usbComponent
+
+            Item {
+                width: 400
+                height: 300
+
+                property string selectedPort: ""
+                property string testStatus: ""
+
+                ListModel {
+                    id: portsModel
+                }
+
+                Component.onCompleted: {
+                    var list = USBPrinterService.getAvailablePrinters();
+
+                    portsModel.clear();
+
+                    for (var i = 0; i < list.length; i++) {
+                        portsModel.append(list[i]);
+                    }
+
+                    console.log("Loaded:", portsModel.count);
+                }
+
+                ColumnLayout {
+                    spacing: 10
+
+                    Text {
+                        text: "USB Printers"
+                        color: "white"
+                        font.bold: true
+                    }
+
+                    Text {
+                        text: portsModel.count === 0 ? "No printers found" : "Select a printer"
+                        color: "lightgray"
+                    }
+
+                    ListView {
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 150
+                        clip: true
+
+                        model: portsModel
+
+                        delegate: RadioButton {
+                            required property string name
+                            required property string port
+
+                            checked: port === selectedPort
+
+                            onClicked: selectedPort = port
+
+                            contentItem: Text {
+                                text: "     " + name + " (" + port + ")"
+                                color: "white"
+                            }
+                        }
+                    }
+
+                    RowLayout {
+                        spacing: 10
+
+                        Button {
+                            text: "Back"
+                            Layout.fillWidth: true
+                            background: Rectangle {
+                                color: 'transparent'
+                                border.color: "#9a7bff"
+                                border.width: 1
+                                radius: 4
+                            }
+                            contentItem: Text {
+                                text: qsTr("Back")
+                                font.bold: true
+                                anchors.centerIn: parent
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
+                                color: "#9a7bff"
+                            }
+
+                            hoverEnabled: false
+                            focusPolicy: Qt.NoFocus
+                            onClicked: addPrinterPopup.step = 0
+                        }
+
+                        Button {
+                            text: "Test Printer"
+                            Layout.fillWidth: true
+
+                            background: Rectangle {
+                                color: '#5F7DDC'
+                                radius: 4
+                            }
+                            contentItem: Text {
+                                text: qsTr("Test Printer")
+                                font.bold: true
+                                anchors.centerIn: parent
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
+                                color: "white"
+                            }
+                            hoverEnabled: false
+                            focusPolicy: Qt.NoFocus
+
+                            onClicked: {
+                                testStatus = "Testing...";
+                                var success = USBPrinterService.testPrint(selectedPort);
+                                testStatus = success ? "Success" : "Failed";
+                            }
+                        }
+
+                        Button {
+                            text: "Add Printer"
+                            Layout.fillWidth: true
+
+                            background: Rectangle {
+                                color: '#9a7bff'
+                                radius: 4
+                            }
+                            contentItem: Text {
+                                text: qsTr("Add Printer")
+                                font.bold: true
+                                anchors.centerIn: parent
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
+                                color: "white"
+                            }
+                            hoverEnabled: false
+                            focusPolicy: Qt.NoFocus
+
+                            onClicked: {
+                                if (!selectedPort || selectedPort.length === 0) {
+                                    testStatus = "No printer selected";
+                                    return;
+                                }
+
+                                var map = {
+                                    "connection_type": "USB",
+                                    "com_port": selectedPort
+                                };
+
+                                if (SettingService.savePrinterSettingMap(map)) {
+                                    addPrinterPopup.close();
+                                    root.loadPrinterSettings();
+                                } else {
+                                    testStatus = "Failed to save";
+                                }
+                            }
+                        }
+                    }
+
+                    RowLayout {
+                        Text {
+                            text: testStatus
+                            Layout.fillWidth: true
+                            horizontalAlignment: Text.AlignHCenter
+
+                            color: testStatus.indexOf("Success") !== -1 ? "lightgreen" : (testStatus === "Testing..." ? "orange" : "red")
+                        }
+                    }
+                }
+            }
         }
     }
 }

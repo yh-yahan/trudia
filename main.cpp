@@ -31,6 +31,7 @@
 #include "core/database/DatabaseManager.h"
 #include "core/printing/ReceiptFormatter.h"
 #include "core/printing/NetworkPrinterService.h"
+#include "core/printing/USBPrinterService.h"
 
 int main(int argc, char *argv[])
 {
@@ -64,6 +65,7 @@ int main(int argc, char *argv[])
 
     ReceiptFormatter receiptFormatter;
     NetworkPrinterService networkPrinterService;
+    USBPrinterService usbPrinterService;
     TaxCalculationService taxCalculationService(taxSettingsRepo);
     MembershipService membershipService(membershipRepo, membershipSettingsRepo, membershipTransactionRepo);
     AuthService authService(userRepo);
@@ -111,6 +113,7 @@ int main(int argc, char *argv[])
     qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "SettingService", &settingService);
     qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "MembershipService", &membershipService);
     qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "AnalyticsService", &analyticsService);
+    qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "USBPrinterService", &usbPrinterService);
 
     QQmlApplicationEngine engine;
     engine.loadFromModule("xeno", "Main");

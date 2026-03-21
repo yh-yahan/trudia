@@ -4,7 +4,9 @@ project(xeno VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Quick Sql LinguistTools Concurrent)
+set(CMAKE_PREFIX_PATH "C:/Qt/6.10.2/mingw_64")
+
+find_package(Qt6 REQUIRED COMPONENTS Quick Sql LinguistTools Concurrent SerialPort)
 
 qt_standard_project_setup(REQUIRES 6.8)
 
@@ -92,6 +94,7 @@ qt_add_qml_module(appxeno
     SOURCES core/data/KitchenSettingsRepository.h core/data/KitchenSettingsRepository.cpp
     SOURCES core/domain/OpenOrderView.h
     SOURCES core/printing/PrintLayoutHelper.h core/printing/PrintLayoutHelper.cpp
+    SOURCES core/printing/USBPrinterService.h core/printing/USBPrinterService.cpp
 )
 
 qt_add_translations(appxeno
@@ -115,6 +118,7 @@ target_link_libraries(appxeno
         Qt6::Quick
         Qt6::Sql
         Qt6::Concurrent
+        Qt6::SerialPort
 )
 
 include(GNUInstallDirs)

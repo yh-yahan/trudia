@@ -21,6 +21,18 @@ ScrollView {
     property string paperWidth: "80mm"
     property string cutMode: "Full Cut"
     property string errorMessage: ""
+    property var printerModel: []
+
+    function loadPrinter() {
+        var data = SettingService.getPrinterSetting();
+
+        if (!data || Object.keys(data).length === 0) {
+            printerModel = [];
+            return;
+        }
+
+        printerModel = [data];
+    }
 
     function loadPrinterSettings() {
         var data = SettingService.getPrinterSetting();
@@ -39,7 +51,10 @@ ScrollView {
         errorMessage = "";
     }
 
-    Component.onCompleted: loadPrinterSettings()
+    Component.onCompleted: {
+        loadPrinterSettings();
+        loadPrinter();
+    }
 
     ColumnLayout {
         width: parent.width
@@ -51,6 +66,158 @@ ScrollView {
             font.bold: true
             font.pixelSize: 26
             color: "white"
+        }
+
+        // printers
+        ColumnLayout {
+            spacing: 15
+
+            Text {
+                Layout.fillWidth: true
+                text: qsTr("Printers")
+                font.bold: true
+                color: "#c9c9c9"
+                font.pointSize: 16
+            }
+
+            // add printer
+            ColumnLayout {
+                anchors.left: parent.left
+                anchors.leftMargin: 20
+                anchors.right: parent.right
+                spacing: 10
+
+                Button {
+                    text: qsTr("+ Add Printer")
+                    leftPadding: 8
+                    rightPadding: 8
+                    topPadding: 8
+                    bottomPadding: 8
+                    background: Rectangle {
+                        color: '#6c7ddd'
+                        radius: 4
+                    }
+                    contentItem: Text {
+                        text: qsTr("+ Add Printer")
+                        font.bold: true
+                        anchors.centerIn: parent
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        color: "white"
+                    }
+                    hoverEnabled: false
+                    focusPolicy: Qt.NoFocus
+                    onClicked: {
+                        addPrinterPopup.open();
+                    }
+                }
+            }
+
+            // printers list
+            ListView {
+                width: parent.width
+                height: contentHeight
+                spacing: 12
+                clip: false
+                interactive: false
+
+                Layout.fillWidth: true
+                Layout.preferredHeight: contentHeight
+
+                model: printerModel
+
+                delegate: Rectangle {
+                    width: ListView.view.width
+                    height: contentColumn.implicitHeight + 24
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.topMargin: 8
+                    anchors.bottomMargin: 8
+
+                    ColumnLayout {
+                        id: contentColumn
+                        anchors.fill: parent
+                        anchors.topMargin: 12
+                        anchors.bottomMargin: 12
+                        anchors.leftMargin: 16
+                        anchors.rightMargin: 16
+                        spacing: 6
+
+                        Text {
+                            text: "Printer"
+                            font.bold: true
+                            color: "white"
+                        }
+
+                        Text {
+                            text: {
+                                if (modelData.connection_type === "USB")
+                                    return "USB - " + modelData.com_port;
+
+                                if (modelData.connection_type === "Network")
+                                    return "Network - " + modelData.ip_address + ":" + modelData.port;
+
+                                if (modelData.connection_type === "Serial")
+                                    return "Serial - " + modelData.com_port;
+
+                                return "Unknown";
+                            }
+                            color: "#aaaaaa"
+                        }
+
+                        RowLayout {
+                            spacing: 10
+                            Button {
+                                text: "Test"
+                                topPadding: 6
+                                bottomPadding: 6
+                                leftPadding: 12
+                                rightPadding: 12
+                                font.pointSize: 10
+                                background: Rectangle {
+                                    color: '#5aa2be'
+                                    radius: 4
+                                }
+                                contentItem: Text {
+                                    text: qsTr("Test")
+                                    font.bold: true
+                                    anchors.centerIn: parent
+                                    horizontalAlignment: Text.AlignHCenter
+                                    verticalAlignment: Text.AlignVCenter
+                                    color: "white"
+                                }
+                                hoverEnabled: false
+                                focusPolicy: Qt.NoFocus
+                                onClicked: {
+                                    UsbPrinterManager.testPrint(modelData.com_port);
+                                }
+                            }
+                            Button {
+                                text: "Edit"
+                                topPadding: 6
+                                bottomPadding: 6
+                                leftPadding: 12
+                                rightPadding: 12
+                                font.pointSize: 10
+                                background: Rectangle {
+                                    color: '#c553a1'
+                                    radius: 4
+                                }
+                                contentItem: Text {
+                                    text: qsTr("Edit")
+                                    font.bold: true
+                                    anchors.centerIn: parent
+                                    horizontalAlignment: Text.AlignHCenter
+                                    verticalAlignment: Text.AlignVCenter
+                                    color: "white"
+                                }
+                                hoverEnabled: false
+                                focusPolicy: Qt.NoFocus
+                                onClicked: {}
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         // paper and format
@@ -440,6 +607,8 @@ ScrollView {
                                 } else {
                                     testStatus = "Failed to save";
                                 }
+
+                                root.loadPrinter();
                             }
                         }
                     }

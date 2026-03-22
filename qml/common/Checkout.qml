@@ -22,72 +22,82 @@ Item {
     property var checkoutDetails: []
 
     property bool canCheckout: false
+    property bool requireReadyForCheckout: false
 
     function reloadData() {
-        activeSessions = CheckoutService.getActiveOrdersForCheckout()
-        recentOrders = CheckoutService.getRecentPaidOrders()
+        activeSessions = CheckoutService.getActiveOrdersForCheckout();
+        recentOrders = CheckoutService.getRecentPaidOrders();
 
-        selectedSession = null
-        selectedRecent = null
-        checkoutDetails = []
+        selectedSession = null;
+        selectedRecent = null;
+        checkoutDetails = [];
 
-        memberPhone = ""
-        memberId = 0
-        currentPoints = 0
-        earnedPointsPreview = 0
+        memberPhone = "";
+        memberId = 0;
+        currentPoints = 0;
+        earnedPointsPreview = 0;
     }
 
     function normalizeStatus(status) {
         if (!status)
-            return ""
-        return (status + "").trim().toLowerCase()
+            return "";
+        return (status + "").trim().toLowerCase();
     }
 
     function isOrderServed(order) {
-        return normalizeStatus(order ? order.status : "") === "served"
+        return normalizeStatus(order ? order.status : "") === "served";
     }
 
     function sessionIsFullyServed(details) {
         if (!details || details.length === 0)
-            return false
+            return false;
 
         for (var i = 0; i < details.length; i++) {
             if (!isOrderServed(details[i])) {
-                return false
+                return false;
             }
         }
 
-        return true
+        return true;
     }
 
     function updateMembershipInfo() {
-        memberId = 0
-        currentPoints = 0
-        earnedPointsPreview = 0
-        membershipChecked = false
+        memberId = 0;
+        currentPoints = 0;
+        earnedPointsPreview = 0;
+        membershipChecked = false;
 
         if (!memberPhone || memberPhone.length === 0)
-            return
+            return;
+        var member = MembershipService.getMemberByPhone(memberPhone);
 
-        var member = MembershipService.getMemberByPhone(memberPhone)
-
-        membershipChecked = true
+        membershipChecked = true;
 
         if (member && member.id) {
-            memberId = member.id
-            currentPoints = member.total_points
+            memberId = member.id;
+            currentPoints = member.total_points;
         }
 
         if (selectedSession) {
-            earnedPointsPreview = MembershipService.calculateEarnedPoints(
-                        selectedSession.total, "total")
+            earnedPointsPreview = MembershipService.calculateEarnedPoints(selectedSession.total, "total");
         }
     }
 
-    Component.onCompleted: reloadData()
+    Component.onCompleted: {
+        reloadData();
+
+        var kitchenSettings = SettingService.getKitchenSettings();
+        if (kitchenSettings && kitchenSettings.require_ready_for_checkout !== undefined) {
+            requireReadyForCheckout = kitchenSettings.require_ready_for_checkout;
+        }
+    }
 
     onCheckoutDetailsChanged: {
-        canCheckout = sessionIsFullyServed(checkoutDetails)
+        if (requireReadyForCheckout) {
+            canCheckout = sessionIsFullyServed(checkoutDetails);
+        } else {
+            canCheckout = true;
+        }
     }
 
     RowLayout {
@@ -113,11 +123,10 @@ Item {
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
-                        selectedRecent = null
-                        selectedSession = modelData
-                        checkoutDetails = CheckoutService.getCheckoutDetails(
-                                    modelData.id)
-                        updateMembershipInfo()
+                        selectedRecent = null;
+                        selectedSession = modelData;
+                        checkoutDetails = CheckoutService.getCheckoutDetails(modelData.id);
+                        updateMembershipInfo();
                     }
                 }
 
@@ -133,8 +142,7 @@ Item {
                     }
 
                     Text {
-                        text: modelData.table_id ? "Table "
-                                                   + modelData.table_id : modelData.order_type
+                        text: modelData.table_id ? "Table " + modelData.table_id : modelData.order_type
                         color: "#cccccc"
                         font.pixelSize: 12
                     }
@@ -216,8 +224,7 @@ Item {
                                     }
 
                                     Text {
-                                        visible: modelData.notes
-                                                 && modelData.notes.length > 0
+                                        visible: modelData.notes && modelData.notes.length > 0
                                         text: "(" + modelData.notes + ")"
                                         color: "#ffdd99"
                                         font.pixelSize: 15
@@ -231,8 +238,7 @@ Item {
                         spacing: 6
 
                         Text {
-                            text: "Subtotal: RM" + selectedSession.subtotal.toFixed(
-                                      2)
+                            text: "Subtotal: RM" + selectedSession.subtotal.toFixed(2)
                             color: "white"
                         }
 
@@ -271,19 +277,15 @@ Item {
 
                         onClicked: {
                             if (!selectedSession)
-                                return
-
-                            if (CheckoutService.markOrderPaid(
-                                        selectedSession.id, memberPhone, 0)) {
-
-                                var printed = CheckoutService.printReceipt(
-                                            selectedSession.id)
+                                return;
+                            if (CheckoutService.markOrderPaid(selectedSession.id, memberPhone, 0)) {
+                                var printed = CheckoutService.printReceipt(selectedSession.id);
 
                                 if (!printed) {
-                                    console.log("Receipt printing failed")
+                                    console.log("Receipt printing failed");
                                 }
 
-                                reloadData()
+                                reloadData();
                             }
                         }
                     }
@@ -320,11 +322,10 @@ Item {
                         focusPolicy: Qt.NoFocus
 
                         onClicked: {
-                            var printed = CheckoutService.printReceipt(
-                                            selectedRecent.id)
+                            var printed = CheckoutService.printReceipt(selectedRecent.id);
 
                             if (!printed) {
-                                console.log("Receipt printing failed")
+                                console.log("Receipt printing failed");
                             }
                         }
                     }
@@ -362,8 +363,8 @@ Item {
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
-                        selectedSession = null
-                        selectedRecent = modelData
+                        selectedSession = null;
+                        selectedRecent = modelData;
                     }
                 }
 

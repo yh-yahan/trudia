@@ -91,6 +91,7 @@ int main(int argc, char *argv[])
         membershipRepo,
         receiptFormatter,
         networkPrinterService,
+        usbPrinterService,
         taxCalculationService,
         membershipService
     );

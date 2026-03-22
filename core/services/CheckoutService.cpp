@@ -14,20 +14,22 @@ CheckoutService::CheckoutService(OrderSessionRepository &orderSessionRepo,
                                  TableRepository &tableRepo,
                                  MembershipRepository &membershipRepo,
                                  ReceiptFormatter &formatter,
-                                 NetworkPrinterService &printerService,
+                                 NetworkPrinterService &networkPrinterService,
+                                 USBPrinterService &usbPrinterService,
                                  TaxCalculationService &taxCalculationService,
                                  MembershipService &membershipService)
     : m_orderSessionRepo(orderSessionRepo),
-    m_orderRepo(orderRepo),
-    m_orderItemRepo(orderItemRepo),
-    m_restaurantRepo(restaurantRepo),
-    m_printerRepo(printerRepo),
-    m_membershipRepo(membershipRepo),
-    m_formatter(formatter),
-    m_printerService(printerService),
-    m_taxCalculationService(taxCalculationService),
-    m_tableRepo(tableRepo),
-    m_membershipService(membershipService) {}
+      m_orderRepo(orderRepo),
+      m_orderItemRepo(orderItemRepo),
+      m_restaurantRepo(restaurantRepo),
+      m_printerRepo(printerRepo),
+      m_membershipRepo(membershipRepo),
+      m_formatter(formatter),
+      m_networkPrinterService(networkPrinterService),
+      m_usbPrinterService(usbPrinterService),
+      m_taxCalculationService(taxCalculationService),
+      m_tableRepo(tableRepo),
+      m_membershipService(membershipService) {}
 
 QVariantList CheckoutService::getActiveOrdersForCheckout() const
 {
@@ -35,7 +37,8 @@ QVariantList CheckoutService::getActiveOrdersForCheckout() const
 
     auto activeSessions = m_orderSessionRepo.getAllActiveOrderSessions();
 
-    for (const auto &session : activeSessions) {
+    for (const auto &session : activeSessions)
+    {
         QVariantMap sessionMap;
         sessionMap["id"] = session.id;
         sessionMap["display_number"] = session.display_number;
@@ -76,7 +79,8 @@ bool CheckoutService::processMembershipPoints(int orderSessionId, const QString 
     OrderSession session = sessionOpt.value();
 
     double discountAmount = 0.0;
-    if (pointsToRedeem > 0 && m_membershipService.canRedeem(memberId, pointsToRedeem)) {
+    if (pointsToRedeem > 0 && m_membershipService.canRedeem(memberId, pointsToRedeem))
+    {
         discountAmount = m_membershipService.redeemPoints(memberId, pointsToRedeem);
         qint64 discountMinor = static_cast<qint64>(std::llround(discountAmount * CURRENCY_SCALE));
         session.discount += discountMinor;
@@ -84,7 +88,8 @@ bool CheckoutService::processMembershipPoints(int orderSessionId, const QString 
     }
 
     int earnedPoints = m_membershipService.calculateEarnedPoints(static_cast<double>(session.total) / CURRENCY_SCALE, "total");
-    if (earnedPoints > 0) {
+    if (earnedPoints > 0)
+    {
         m_membershipService.addTransaction(memberId, earnedPoints, "earn", orderSessionId);
         m_membershipRepo.adjustPoints(memberId, "add", earnedPoints);
     }
@@ -113,7 +118,8 @@ bool CheckoutService::recalculateSessionTotals(int orderSessionId)
     qint64 subtotal = 0;
 
     // Sum all items from all orders in minor units (cents)
-    for (const auto &item : items) {
+    for (const auto &item : items)
+    {
         subtotal += item.price * item.quantity;
     }
 
@@ -152,7 +158,8 @@ QVariantList CheckoutService::getCheckoutDetails(const int &orderSessionId)
 
     QMap<int, QVariantList> itemsByOrder;
 
-    for (const auto &item : items) {
+    for (const auto &item : items)
+    {
         QVariantMap itemMap;
         itemMap["id"] = item.id;
         itemMap["item_id"] = item.item_id;
@@ -167,7 +174,8 @@ QVariantList CheckoutService::getCheckoutDetails(const int &orderSessionId)
 
     bool totalsAttached = false;
 
-    for (const auto &order : orders) {
+    for (const auto &order : orders)
+    {
         QVariantMap orderMap;
         orderMap["id"] = order.id;
         orderMap["display_number"] = order.display_number;
@@ -176,7 +184,8 @@ QVariantList CheckoutService::getCheckoutDetails(const int &orderSessionId)
         orderMap["closed_at"] = order.closed_at.isEmpty() ? QVariant() : order.closed_at;
         orderMap["items"] = itemsByOrder.value(order.id);
 
-        if (!totalsAttached) {
+        if (!totalsAttached)
+        {
             // Convert minor units to RM for UI
             orderMap["subtotal"] = static_cast<double>(session.subtotal) / CURRENCY_SCALE;
             orderMap["tax"] = static_cast<double>(session.tax) / CURRENCY_SCALE;
@@ -207,7 +216,8 @@ bool CheckoutService::markOrderPaid(const int &orderSessionId, const QString &me
 
     m_orderSessionRepo.markAsPaid(orderSessionId);
 
-    if (session.table_id.has_value()) {
+    if (session.table_id.has_value())
+    {
         m_tableRepo.setTableState(session.table_id.value(), false);
     }
 
@@ -251,10 +261,19 @@ bool CheckoutService::printReceipt(int orderSessionId)
     builder.addText(formattedText);
     builder.cut(printerOpt->cut_mode);
 
-    return m_printerService.print(
-        *printerOpt->ip_address,
-        static_cast<quint16>(*printerOpt->port),
-        builder.data());
+    if (printerOpt->connection_type == "USB")
+    {
+        return m_usbPrinterService.print(
+            *printerOpt->com_port,
+            builder.data());
+    }
+    else if (printerOpt->connection_type == "Network")
+    {
+        return m_networkPrinterService.print(
+            *printerOpt->ip_address,
+            static_cast<quint16>(*printerOpt->port),
+            builder.data());
+    }
 }
 
 QVariantList CheckoutService::getRecentPaidOrders() const

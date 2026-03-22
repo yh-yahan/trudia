@@ -15,6 +15,7 @@
 #include "../data/MembershipRepository.h"
 #include "../printing/ReceiptFormatter.h"
 #include "../printing/NetworkPrinterService.h"
+#include "../printing/USBPrinterService.h"
 #include "./TaxCalculationService.h"
 #include "./MembershipService.h"
 
@@ -37,7 +38,8 @@ public:
                              TableRepository &tableRepo,
                              MembershipRepository &membershipRepo,
                              ReceiptFormatter &formatter,
-                             NetworkPrinterService &printerService,
+                             NetworkPrinterService &networkPrinterService,
+                             USBPrinterService &usbPrinterService,
                              TaxCalculationService &taxCalculationService,
                              MembershipService &membershipService);
 
@@ -57,7 +59,8 @@ private:
     PrinterSettingRepository &m_printerRepo;
     MembershipRepository &m_membershipRepo;
     ReceiptFormatter &m_formatter;
-    NetworkPrinterService &m_printerService;
+    NetworkPrinterService &m_networkPrinterService;
+    USBPrinterService &m_usbPrinterService;
     TaxCalculationService &m_taxCalculationService;
     TableRepository &m_tableRepo;
     MembershipService &m_membershipService;

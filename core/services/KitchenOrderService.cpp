@@ -71,6 +71,7 @@ bool KitchenOrderService::markState(const int &orderId, const QString state)
 
     if (state == "served") {
         order.closed_at = QDateTime::currentDateTime().toString(Qt::ISODate);
+        m_orderItemRepo.markItemsByOrderId(orderId, "served");
     }
 
     m_orderRepo.update(order);

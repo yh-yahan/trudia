@@ -146,6 +146,23 @@ std::vector<OrderItem> OrderItemRepository::getOrderItemsByOrderIds(const QList<
     return items;
 }
 
+void OrderItemRepository::markItemsByOrderId(int orderId, const QString &status)
+{
+    QSqlQuery query(m_db);
+    query.prepare(R"(
+        UPDATE order_items
+        SET item_status = :status
+        WHERE order_id = :order_id
+    )");
+
+    query.bindValue(":status", status);
+    query.bindValue(":order_id", orderId);
+
+    if (!query.exec()) {
+        qWarning() << "markItemsByOrderId failed:" << query.lastError();
+    }
+}
+
 void OrderItemRepository::create(const OrderItem &orderItem)
 {
     QSqlQuery query(m_db);

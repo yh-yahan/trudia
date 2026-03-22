@@ -14,6 +14,7 @@ public:
     std::optional<OrderItem> getOrderItemById(int orderItemId);
     std::vector<OrderItem> getOrderItemsByOrderId(int orderId);
     std::vector<OrderItem> getOrderItemsByOrderIds(const QList<int> &orderIds);
+    void markItemsByOrderId(int orderId, const QString &status);
     void create(const OrderItem &orderItem);
     void update(const OrderItem &orderItem);
     void remove(const OrderItem &orderItem);

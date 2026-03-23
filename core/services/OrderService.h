@@ -42,6 +42,8 @@ public:
         const QVariantMap &options
     );
 
+    Q_INVOKABLE bool printKitchenTicket(int orderId);
+
 private:
     OrderSessionRepository &m_orderSessionRepo;
     OrderRepository &m_orderRepo;

@@ -408,3 +408,37 @@ int OrderService::generateOrderDisplayNumber()
         return nextNumber;
     }
 }
+
+bool OrderService::printKitchenTicket(int orderId)
+{
+    auto orderOpt = m_orderRepo.getOrderById(orderId);
+    if (!orderOpt.has_value())
+    {
+        qWarning() << "printKitchenTicket: order not found" << orderId;
+        return false;
+    }
+
+    const Order &order = orderOpt.value();
+
+    auto sessionOpt = m_orderSessionRepo.getById(order.order_session_id);
+    if (!sessionOpt.has_value())
+    {
+        qWarning() << "printKitchenTicket: session not found" << order.order_session_id;
+        return false;
+    }
+
+    auto items = m_orderItemRepo.getOrderItemsByOrderId(orderId);
+    if (items.empty())
+    {
+        qWarning() << "printKitchenTicket: no items";
+        return false;
+    }
+
+    QByteArray data = m_kitchenTicketBuilder.build(
+        order,
+        sessionOpt.value(),
+        items
+    );
+
+    return m_kitchenPrinter.print(data);
+}

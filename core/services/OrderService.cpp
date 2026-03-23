@@ -144,7 +144,8 @@ int OrderService::createOrder(
 
     auto settings = m_settingService.getKitchenSettings();
 
-    if (settings["mode"].toString() == "tickets" &&
+    if ((settings["mode"].toString() == "tickets" || 
+        settings["mode"].toString() == "hybrid") &&
         settings["ticket_print_timing"].toString() == "order_created")
     {
         auto orderOpt = m_orderRepo.getOrderById(orderId);
@@ -347,7 +348,8 @@ int OrderService::updateOrder(
 
     auto settings = m_settingService.getKitchenSettings();
 
-    if (settings["mode"].toString() == "tickets" &&
+    if ((settings["mode"].toString() == "tickets" || 
+        settings["mode"].toString() == "hybrid") &&
         settings["ticket_print_timing"].toString() == "order_created")
     {
         auto orderOpt = m_orderRepo.getOrderById(orderId);

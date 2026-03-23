@@ -8,13 +8,19 @@ OrderService::OrderService(OrderSessionRepository &orderSessionRepo,
                            OrderItemRepository &orderItemRepo,
                            TableRepository &tableRepo,
                            MenuRepository &menuRepo,
-                           TaxCalculationService &taxService)
+                           TaxCalculationService &taxService,
+                           KitchenPrinterService &kitchenPrinter,
+                           KitchenTicketBuilder &kitchenTicketBuilder,
+                           SettingService &settingService)
     : m_orderSessionRepo(orderSessionRepo),
       m_orderRepo(orderRepo),
       m_orderItemRepo(orderItemRepo),
       m_tableRepo(tableRepo),
       m_menuRepo(menuRepo),
-      m_taxService(taxService) {}
+      m_taxService(taxService),
+      m_kitchenPrinter(kitchenPrinter),
+      m_kitchenTicketBuilder(kitchenTicketBuilder),
+      m_settingService(settingService) {}
 
 int OrderService::createOrder(
     const QString &orderType,
@@ -135,6 +141,31 @@ int OrderService::createOrder(
 
     m_orderSessionRepo.update(orderSession);
 
+
+    auto settings = m_settingService.getKitchenSettings();
+
+    if (settings["mode"].toString() == "tickets" &&
+        settings["ticket_print_timing"].toString() == "order_created")
+    {
+        auto orderOpt = m_orderRepo.getOrderById(orderId);
+        if (orderOpt.has_value())
+        {
+            auto sessionOpt = m_orderSessionRepo.getById(orderSessionId);
+            if (sessionOpt.has_value())
+            {
+                auto items = m_orderItemRepo.getOrderItemsByOrderId(orderId);
+
+                QByteArray data = m_kitchenTicketBuilder.build(
+                    orderOpt.value(),
+                    sessionOpt.value(),
+                    items);
+
+                qDebug() << orderOpt.value().display_number;
+
+                m_kitchenPrinter.print(data);
+            }
+        }
+    }
     return orderId;
 }
 
@@ -144,7 +175,8 @@ QVariantList OrderService::getOpenOrders()
 
     auto orders = m_orderRepo.getActiveOrderSessionOrders();
 
-    for (const auto &order : orders) {
+    for (const auto &order : orders)
+    {
         QVariantMap map;
 
         map["id"] = order.id;
@@ -170,7 +202,8 @@ QVariantList OrderService::getOrderItems(int orderId)
 
     auto items = m_orderItemRepo.getOrderItemsByOrderId(orderId);
 
-    for (const auto &item : items) {
+    for (const auto &item : items)
+    {
         QVariantMap map;
 
         map["id"] = item.id;
@@ -251,20 +284,23 @@ int OrderService::updateOrder(
     // replace items
     m_orderItemRepo.removeByOrderId(orderId);
 
-    for (const QVariant &v : items) {
+    for (const QVariant &v : items)
+    {
         QVariantMap m = v.toMap();
 
         int menuId = m["menuItemId"].toInt();
 
         auto menuOpt = m_menuRepo.getMenuItemById(menuId);
-        if (!menuOpt.has_value()) {
+        if (!menuOpt.has_value())
+        {
             qWarning() << "Menu item not found:" << menuId;
             continue;
         }
 
         const Menu &menu = menuOpt.value();
 
-        if (!menu.is_available) {
+        if (!menu.is_available)
+        {
             qWarning() << "Menu unavailable:" << menuId;
             continue;
         }
@@ -307,6 +343,29 @@ int OrderService::updateOrder(
         qCritical() << "updateOrder commit failed";
         db.rollback();
         return -1;
+    }
+
+    auto settings = m_settingService.getKitchenSettings();
+
+    if (settings["mode"].toString() == "tickets" &&
+        settings["ticket_print_timing"].toString() == "order_created")
+    {
+        auto orderOpt = m_orderRepo.getOrderById(orderId);
+        if (orderOpt.has_value())
+        {
+            auto sessionOpt = m_orderSessionRepo.getById(orderSessionId);
+            if (sessionOpt.has_value())
+            {
+                auto items = m_orderItemRepo.getOrderItemsByOrderId(orderId);
+
+                QByteArray data = m_kitchenTicketBuilder.build(
+                    orderOpt.value(),
+                    sessionOpt.value(),
+                    items);
+
+                m_kitchenPrinter.print(data);
+            }
+        }
     }
 
     return orderId;

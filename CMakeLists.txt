@@ -95,6 +95,8 @@ qt_add_qml_module(appxeno
     SOURCES core/domain/OpenOrderView.h
     SOURCES core/printing/PrintLayoutHelper.h core/printing/PrintLayoutHelper.cpp
     SOURCES core/printing/USBPrinterService.h core/printing/USBPrinterService.cpp
+    SOURCES core/printing/KitchenTicketBuilder.h core/printing/KitchenTicketBuilder.cpp
+    SOURCES core/printing/KitchenPrinterService.h core/printing/KitchenPrinterService.cpp
 )
 
 qt_add_translations(appxeno

@@ -9,6 +9,9 @@
 #include "../data/TableRepository.h"
 #include "../data/MenuRepository.h"
 #include "./TaxCalculationService.h"
+#include "./SettingService.h"
+#include "../printing/KitchenPrinterService.h"
+#include "../printing/KitchenTicketBuilder.h"
 
 class OrderService : public QObject
 {
@@ -19,7 +22,10 @@ public:
                           OrderItemRepository &orderItemRepo,
                           TableRepository &tableRepo,
                           MenuRepository &menuRepo,
-                          TaxCalculationService &taxService);
+                          TaxCalculationService &taxService,
+                          KitchenPrinterService &kitchenPrinter,
+                          KitchenTicketBuilder &kitchenTicketBuilder,
+                          SettingService &settingService);
 
     Q_INVOKABLE int createOrder(
         const QString &orderType,
@@ -43,6 +49,9 @@ private:
     TableRepository &m_tableRepo;
     MenuRepository &m_menuRepo;
     TaxCalculationService &m_taxService;
+    KitchenPrinterService &m_kitchenPrinter;
+    KitchenTicketBuilder &m_kitchenTicketBuilder;
+    SettingService &m_settingService;
     int generateOrderSessionDisplayNumber();
     int generateOrderDisplayNumber();
 };

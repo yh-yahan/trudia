@@ -10,7 +10,7 @@ OrderRepository::OrderRepository(QSqlDatabase db): m_db(db) {}
 std::optional<Order> OrderRepository::getOrderById(int orderId)
 {
     QSqlQuery query(m_db);
-    query.prepare(R"(SELECT id, order_session_id, status, notes, closed_at
+    query.prepare(R"(SELECT id, order_session_id, display_number, status, notes, closed_at
         FROM orders
         WHERE id = :id)");
     query.bindValue(":id", orderId);
@@ -27,6 +27,7 @@ std::optional<Order> OrderRepository::getOrderById(int orderId)
     Order order;
     order.id = query.value("id").toInt();
     order.order_session_id = query.value("order_session_id").toInt();
+    order.display_number = query.value("display_number").toInt();
     order.status = query.value("status").toString();
     order.notes = query.value("notes").toString();
     order.closed_at = query.value("closed_at").toString();

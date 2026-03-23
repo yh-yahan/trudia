@@ -32,6 +32,8 @@
 #include "core/printing/ReceiptFormatter.h"
 #include "core/printing/NetworkPrinterService.h"
 #include "core/printing/USBPrinterService.h"
+#include "core/printing/KitchenPrinterService.h"
+#include "core/printing/KitchenTicketBuilder.h"
 
 int main(int argc, char *argv[])
 {
@@ -72,13 +74,29 @@ int main(int argc, char *argv[])
     UserService userService(userRepo);
     MenuService menuService(menuRepo, categoryRepo);
     TableService tableService(tableRepo);
+    SettingService settingService(
+        restaurantRepo,
+        printerSettingRepo,
+        taxSettingsRepo,
+        membershipSettingsRepo,
+        kitchenSettingsRepo
+    );
+    KitchenPrinterService kitchenPrinterService(
+        settingService,
+        usbPrinterService,
+        networkPrinterService
+    );
+    KitchenTicketBuilder kitchenTicketBuilder(settingService);
     OrderService orderService(
         orderSessionRepo,
         orderRepo,
         orderItemRepo,
         tableRepo,
         menuRepo,
-        taxCalculationService
+        taxCalculationService,
+        kitchenPrinterService,
+        kitchenTicketBuilder,
+        settingService
     );
     KitchenOrderService kitchenOrderService(orderSessionRepo, orderRepo, orderItemRepo);
     CheckoutService checkoutService(
@@ -94,13 +112,6 @@ int main(int argc, char *argv[])
         usbPrinterService,
         taxCalculationService,
         membershipService
-    );
-    SettingService settingService(
-        restaurantRepo,
-        printerSettingRepo,
-        taxSettingsRepo,
-        membershipSettingsRepo,
-        kitchenSettingsRepo
     );
     AnalyticsService analyticsService(analyticsRepo);
 

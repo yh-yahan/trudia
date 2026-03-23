@@ -23,6 +23,7 @@ Item {
 
     property bool canCheckout: false
     property bool requireReadyForCheckout: false
+    property string kitchenMode: ""
 
     function reloadData() {
         activeSessions = CheckoutService.getActiveOrdersForCheckout();
@@ -87,12 +88,24 @@ Item {
         reloadData();
 
         var kitchenSettings = SettingService.getKitchenSettings();
-        if (kitchenSettings && kitchenSettings.require_ready_for_checkout !== undefined) {
-            requireReadyForCheckout = kitchenSettings.require_ready_for_checkout;
+
+        if (kitchenSettings) {
+            if (kitchenSettings.require_ready_for_checkout !== undefined) {
+                requireReadyForCheckout = kitchenSettings.require_ready_for_checkout;
+            }
+
+            if (kitchenSettings.mode !== undefined) {
+                kitchenMode = kitchenSettings.mode;
+            }
         }
     }
 
     onCheckoutDetailsChanged: {
+        if (kitchenMode === "tickets") {
+            canCheckout = true;
+            return;
+        }
+
         if (requireReadyForCheckout) {
             canCheckout = sessionIsFullyServed(checkoutDetails);
         } else {

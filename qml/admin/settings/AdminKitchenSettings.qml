@@ -186,7 +186,7 @@ ScrollView {
                     Layout.fillWidth: true
 
                     Label {
-                        text: qsTr("Allow editing after sending to kitchen")
+                        text: qsTr("Allow edits after order creation")
                         color: "white"
                         Layout.fillWidth: true
                     }

@@ -1,50 +1,87 @@
 #include "DatabaseManager.h"
-#include <QStandardPaths>
+
 #include <QDir>
+#include <QFile>
+#include <QFileInfo>
+#include <QSqlError>
+#include <QSqlQuery>
+#include <QDateTime>
 #include <QDebug>
 
-bool DatabaseManager::initialize()
+namespace
 {
-    QString path = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-    QDir().mkpath(path);
+    const QString MAIN_CONN = "main_connection";
+}
 
-    QString dbPath = path + "/xeno.db";
+bool DatabaseManager::initialize(const QString &dbPath)
+{
+    if (QSqlDatabase::contains(MAIN_CONN))
+    {
+        QSqlDatabase::removeDatabase(MAIN_CONN);
+    }
 
-    QSqlDatabase database = QSqlDatabase::addDatabase("QSQLITE");
+    QSqlDatabase database = QSqlDatabase::addDatabase("QSQLITE", MAIN_CONN);
+
+    // ensure directory exists
+    QFileInfo info(dbPath);
+    QDir().mkpath(info.absolutePath());
+
     database.setDatabaseName(dbPath);
 
-    if (!database.open()) {
+    if (!database.open())
+    {
         qCritical() << "Cannot open database:" << database.lastError().text();
-
         return false;
     }
 
-    QSqlQuery q;
-    q.exec("PRAGMA foreign_keys = ON;");
-    q.exec("PRAGMA journal_mode = WAL;");
-    while (q.next()) {}
-    q.finish();
+    QSqlQuery q(database);
+
+    if (!q.exec("PRAGMA foreign_keys = ON;"))
+    {
+        qWarning() << "Failed to enable foreign keys:" << q.lastError().text();
+    }
+
+    if (!q.exec("PRAGMA journal_mode = WAL;"))
+    {
+        qWarning() << "Failed to enable WAL:" << q.lastError().text();
+    }
+    else
+    {
+        while (q.next())
+        {
+        }
+        q.finish();
+    }
 
     return runMigrations();
 }
 
 bool DatabaseManager::runMigrations()
 {
-    QSqlDatabase db = QSqlDatabase::database();
+    QSqlDatabase db = QSqlDatabase::database(MAIN_CONN);
 
-    if (!db.transaction()) {
+    if (!db.isOpen())
+    {
+        qCritical() << "Database is not open.";
+        return false;
+    }
+
+    if (!db.transaction())
+    {
         qCritical() << "Failed to begin transaction:" << db.lastError().text();
         return false;
     }
 
+    // ensure migrations table exists
     {
-        QSqlQuery q;
+        QSqlQuery q(db);
         if (!q.exec(R"(
             CREATE TABLE IF NOT EXISTS applied_migrations (
                 migration_name TEXT PRIMARY KEY,
                 applied_at TEXT NOT NULL
             )
-        )")) {
+        )"))
+        {
             qCritical() << "Failed to create applied_migrations:" << q.lastError().text();
             db.rollback();
             return false;
@@ -68,23 +105,31 @@ bool DatabaseManager::runMigrations()
         "core/database/migrations/014_create_kitchen_settings.sql",
     };
 
-    for (const QString &fileName : migrationFiles) {
+    for (const QString &fileName : migrationFiles)
+    {
+        bool alreadyApplied = false;
+
         {
-            QSqlQuery check;
+            QSqlQuery check(db);
             check.prepare("SELECT 1 FROM applied_migrations WHERE migration_name = ?");
             check.addBindValue(fileName);
 
-            if (!check.exec()) {
+            if (!check.exec())
+            {
                 qCritical() << "Failed to check migration:" << check.lastError().text();
                 db.rollback();
                 return false;
             }
 
-            if (check.next()) continue;
+            alreadyApplied = check.next();
         }
 
-        QFile file(QString(":/migrations/" + fileName));
-        if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        if (alreadyApplied)
+            continue;
+
+        QFile file(":/migrations/" + fileName);
+        if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+        {
             qCritical() << "Cannot open migration file:" << fileName;
             db.rollback();
             return false;
@@ -92,38 +137,75 @@ bool DatabaseManager::runMigrations()
 
         QString sql = QString::fromUtf8(file.readAll());
 
-        QSqlQuery migrate;
-        if (!migrate.exec(sql)) {
-            qCritical() << "Migration failed:" << fileName << migrate.lastError().text();
-            db.rollback();
-            return false;
+        QStringList statements = sql.split(';', Qt::SkipEmptyParts);
+
+        for (QString stmt : statements)
+        {
+            stmt = stmt.trimmed();
+
+            if (stmt.isEmpty())
+                continue;
+
+            QSqlQuery q(db);
+            if (!q.exec(stmt))
+            {
+                qCritical() << "Migration failed:" << fileName
+                            << "\nStatement:" << stmt
+                            << "\nError:" << q.lastError().text();
+                db.rollback();
+                return false;
+            }
         }
 
-        QSqlQuery insert;
-        insert.prepare(
-            "INSERT INTO applied_migrations (migration_name, applied_at) VALUES (?, ?)"
-        );
-        insert.addBindValue(fileName);
-        insert.addBindValue(QDateTime::currentDateTimeUtc().toString(Qt::ISODate));
+        {
+            QSqlQuery insert(db);
+            insert.prepare(
+                "INSERT INTO applied_migrations (migration_name, applied_at) VALUES (?, ?)");
+            insert.addBindValue(fileName);
+            insert.addBindValue(QDateTime::currentDateTimeUtc().toString(Qt::ISODate));
 
-        if (!insert.exec()) {
-            qCritical() << "Failed to record migration:" << insert.lastError().text();
-            db.rollback();
-            return false;
+            if (!insert.exec())
+            {
+                qCritical() << "Failed to record migration:" << insert.lastError().text();
+                db.rollback();
+                return false;
+            }
         }
 
         qDebug() << "Migration applied:" << fileName;
     }
 
-    if (!db.commit()) {
+    if (!db.commit())
+    {
         qCritical() << "Failed to commit transaction:" << db.lastError().text();
         return false;
     }
 
     return true;
 }
+bool DatabaseManager::canOpen(const QString &dbPath)
+{
+    const QString connName = "test_connection";
+
+    if (QSqlDatabase::contains(connName))
+    {
+        QSqlDatabase::removeDatabase(connName);
+    }
+
+    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", connName);
+    db.setDatabaseName(dbPath);
+
+    bool ok = db.open();
+    db.close();
+
+    db = QSqlDatabase();
+
+    QSqlDatabase::removeDatabase(connName);
+
+    return ok;
+}
 
 QSqlDatabase DatabaseManager::db()
 {
-    return QSqlDatabase::database();
+    return QSqlDatabase::database(MAIN_CONN);
 }

@@ -20,10 +20,21 @@ Window {
     }
 
     Component.onCompleted: {
-        if (AuthService.isFirstAdminSetupNeeded()) {
-            stackView.push("auth/FirstAdminRegister.qml")
-        } else {
+        let state = AppService.determineState()
+
+        switch (state) {
+        case AppService.NeedsSetup:
+            stackView.push("setup/SetupDBLocation.qml")
+            break
+        case AppService.NeedsAdminSetup:
+            stackView.push("setup/SetupAdmin.qml")
+            break
+        case AppService.Ready:
             stackView.push("auth/Login.qml")
+            break
+        default:
+            stackView.push("auth/Login.qml")
+            break
         }
     }
 }

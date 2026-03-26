@@ -22,11 +22,12 @@ qt_add_qml_module(appxeno
     QML_FILES
         qml/Main.qml
         qml/components/ConfirmationDialog.qml
+        qml/setup/SetupAdmin.qml
+        qml/setup/SetupDBLocation.qml
         qml/common/OrderTaking.qml
         qml/common/Checkout.qml
         qml/common/KitchenOrders.qml
         qml/auth/Login.qml
-        qml/auth/FirstAdminRegister.qml
         qml/admin/AdminHome.qml
         qml/admin/AdminSidebar.qml
         qml/admin/AdminAnalytics.qml
@@ -97,6 +98,8 @@ qt_add_qml_module(appxeno
     SOURCES core/printing/USBPrinterService.h core/printing/USBPrinterService.cpp
     SOURCES core/printing/KitchenTicketBuilder.h core/printing/KitchenTicketBuilder.cpp
     SOURCES core/printing/KitchenPrinterService.h core/printing/KitchenPrinterService.cpp
+    SOURCES core/services/AppService.h core/services/AppService.cpp
+    SOURCES core/services/SetupService.h core/services/SetupService.cpp
 )
 
 qt_add_translations(appxeno

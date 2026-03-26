@@ -28,6 +28,8 @@
 #include "core/services/MembershipService.h"
 #include "core/services/UserService.h"
 #include "core/services/AnalyticsService.h"
+#include "core/services/AppService.h"
+#include "core/services/SetupService.h"
 #include "core/database/DatabaseManager.h"
 #include "core/printing/ReceiptFormatter.h"
 #include "core/printing/NetworkPrinterService.h"
@@ -39,14 +41,24 @@ int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
 
+    QCoreApplication::setOrganizationName("Xeno");
+    QCoreApplication::setApplicationName("XenoPOS");
+
     QTranslator translator;
     if (translator.load(QLocale(), "app", "_", ":/i18n")) {
         app.installTranslator(&translator);
     }
 
-    if (!DatabaseManager::initialize()){
-        qWarning() << "Database initialization failed";
-        return -1;
+    DatabaseManager dbManager;
+
+    AppService appService;
+
+    QString dbPath = appService.databasePath();
+
+    bool dbReady = false;
+
+    if (!dbPath.isEmpty()) {
+        dbReady = dbManager.initialize(dbPath);
     }
 
     UserRepository userRepo(DatabaseManager::db());
@@ -114,6 +126,7 @@ int main(int argc, char *argv[])
         membershipService
     );
     AnalyticsService analyticsService(analyticsRepo);
+    SetupService setupService(appService, dbManager);
 
     qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "AuthService", &authService);
     qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "UserService", &userService);
@@ -126,6 +139,8 @@ int main(int argc, char *argv[])
     qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "MembershipService", &membershipService);
     qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "AnalyticsService", &analyticsService);
     qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "USBPrinterService", &usbPrinterService);
+    qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "AppService", &appService);
+    qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "SetupService", &setupService);
 
     QQmlApplicationEngine engine;
     engine.loadFromModule("xeno", "Main");

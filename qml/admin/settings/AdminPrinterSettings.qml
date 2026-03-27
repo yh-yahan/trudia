@@ -143,7 +143,7 @@ ScrollView {
                         spacing: 6
 
                         Text {
-                            text: "Printer"
+                            text: qsTr("Printer")
                             font.bold: true
                             color: "white"
                         }
@@ -159,7 +159,7 @@ ScrollView {
                                 if (modelData.connection_type === "Serial")
                                     return "Serial - " + modelData.com_port;
 
-                                return "Unknown";
+                                return qsTr("Unknown");
                             }
                             color: "#aaaaaa"
                         }
@@ -269,11 +269,28 @@ ScrollView {
 
                 ComboBox {
                     Layout.fillWidth: true
-                    model: ["Full Cut", "Partial Cut", "No Cut"]
-                    currentIndex: model.indexOf(root.cutMode)
+
+                    model: [
+                        {
+                            text: qsTr("Full Cut"),
+                            value: "Full Cut"
+                        },
+                        {
+                            text: qsTr("Partial Cut"),
+                            value: "Partial Cut"
+                        },
+                        {
+                            text: qsTr("No Cut"),
+                            value: "No Cut"
+                        }
+                    ]
+
+                    textRole: "text"
+
+                    currentIndex: model.findIndex(item => item.value === root.cutMode)
 
                     onCurrentIndexChanged: {
-                        root.cutMode = model[currentIndex];
+                        root.cutMode = model[currentIndex].value;
                     }
 
                     leftPadding: 12
@@ -336,7 +353,7 @@ ScrollView {
                     root.errorMessage = "";
                     loadPrinterSettings();
                 } else {
-                    root.errorMessage = "Failed to save printer settings.";
+                    root.errorMessage = qsTr("Failed to save printer settings.");
                 }
             }
         }
@@ -399,10 +416,10 @@ ScrollView {
 
                     RadioButton {
                         id: usbRadio
-                        text: qsTr("USB")
+                        text: "USB"
                         checked: true
                         contentItem: Text {
-                            text: qsTr("     USB")
+                            text: "     USB"
                             color: "white"
                         }
                         onClicked: addPrinterPopup.connectionType = "USB"
@@ -487,13 +504,13 @@ ScrollView {
                     spacing: 10
 
                     Text {
-                        text: "USB Printers"
+                        text: qsTr("USB Printers")
                         color: "white"
                         font.bold: true
                     }
 
                     Text {
-                        text: portsModel.count === 0 ? "No printers found" : "Select a printer"
+                        text: portsModel.count === 0 ? qsTr("No printers found") : qsTr("Select a printer")
                         color: "lightgray"
                     }
 
@@ -565,7 +582,7 @@ ScrollView {
                             focusPolicy: Qt.NoFocus
 
                             onClicked: {
-                                testStatus = "Testing...";
+                                testStatus = qsTr("Testing...");
                                 var success = USBPrinterService.testPrint(selectedPort);
                                 testStatus = success ? "Success" : "Failed";
                             }
@@ -592,7 +609,7 @@ ScrollView {
 
                             onClicked: {
                                 if (!selectedPort || selectedPort.length === 0) {
-                                    testStatus = "No printer selected";
+                                    testStatus = qsTr("No printer selected");
                                     return;
                                 }
 
@@ -605,7 +622,7 @@ ScrollView {
                                     addPrinterPopup.close();
                                     root.loadPrinterSettings();
                                 } else {
-                                    testStatus = "Failed to save";
+                                    testStatus = qsTr("Failed to add printer");
                                 }
 
                                 root.loadPrinter();

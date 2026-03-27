@@ -7,7 +7,7 @@ Window {
     width: 850
     height: 480
     visible: true
-    title: qsTr("Xeno")
+    title: "Xeno"
 
     Rectangle {
         anchors.fill: parent

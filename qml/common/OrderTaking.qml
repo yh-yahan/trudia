@@ -711,7 +711,7 @@ Item {
                                             radius: 4
                                         }
                                         contentItem: Text {
-                                            text: "Remove"
+                                            text: qsTr("Remove")
                                             color: "white"
                                             anchors.centerIn: parent
                                         }

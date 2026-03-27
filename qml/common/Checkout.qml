@@ -155,7 +155,7 @@ Item {
                     }
 
                     Text {
-                        text: modelData.table_id ? "Table " + modelData.table_id : modelData.order_type
+                        text: modelData.table_id ? qsTr("Table ") + modelData.table_id : modelData.order_type
                         color: "#cccccc"
                         font.pixelSize: 12
                     }
@@ -180,7 +180,7 @@ Item {
                     Layout.fillHeight: true
 
                     Text {
-                        text: "Order #" + selectedSession.display_number
+                        text: qsTr("Order #") + selectedSession.display_number
                         color: "white"
                         font.pixelSize: 20
                         font.bold: true
@@ -202,7 +202,7 @@ Item {
                                 width: parent.width
 
                                 Text {
-                                    text: "Order " + modelData.display_number
+                                    text: qsTr("Order ") + modelData.display_number
                                     color: "#bbbbff"
                                     font.bold: true
                                     font.pixelSize: 16
@@ -211,14 +211,14 @@ Item {
 
                                 Text {
                                     visible: !isOrderServed(modelData)
-                                    text: "PENDING"
+                                    text: qsTr("PENDING")
                                     color: "#ffaa66"
                                     font.bold: true
                                 }
 
                                 Text {
                                     visible: isOrderServed(modelData)
-                                    text: "SERVED"
+                                    text: qsTr("SERVED")
                                     color: "#88ffaa"
                                     font.bold: true
                                 }
@@ -231,7 +231,7 @@ Item {
                                     width: parent.width
 
                                     Text {
-                                        text: modelData.item_name + " ×" + modelData.quantity
+                                        text: modelData.item_name + " x" + modelData.quantity
                                         color: "white"
                                         font.pixelSize: 16
                                     }
@@ -251,17 +251,17 @@ Item {
                         spacing: 6
 
                         Text {
-                            text: "Subtotal: RM" + selectedSession.subtotal.toFixed(2)
+                            text: qsTr("Subtotal: RM") + selectedSession.subtotal.toFixed(2)
                             color: "white"
                         }
 
                         Text {
-                            text: "Tax: RM" + selectedSession.tax.toFixed(2)
+                            text: qsTr("Tax: RM") + selectedSession.tax.toFixed(2)
                             color: "white"
                         }
 
                         Text {
-                            text: "Total: RM" + selectedSession.total.toFixed(2)
+                            text: qsTr("Total: RM") + selectedSession.total.toFixed(2)
                             color: "white"
                             font.bold: true
                             font.pixelSize: 18
@@ -269,7 +269,7 @@ Item {
                     }
 
                     Button {
-                        text: "Checkout"
+                        text: qsTr("Checkout")
                         enabled: canCheckout
 
                         background: Rectangle {
@@ -278,7 +278,7 @@ Item {
                         }
 
                         contentItem: Text {
-                            text: "Checkout"
+                            text: qsTr("Checkout")
                             color: "white"
                             font.bold: true
                             horizontalAlignment: Text.AlignHCenter
@@ -309,14 +309,14 @@ Item {
                     spacing: 10
 
                     Text {
-                        text: "Recent Order #" + selectedRecent.display_number
+                        text: qsTr("Recent Order #") + selectedRecent.display_number
                         color: "white"
                         font.pixelSize: 20
                         font.bold: true
                     }
 
                     Button {
-                        text: "Reprint Receipt"
+                        text: qsTr("Reprint Receipt")
 
                         background: Rectangle {
                             radius: 6
@@ -324,7 +324,7 @@ Item {
                         }
 
                         contentItem: Text {
-                            text: "Reprint Receipt"
+                            text: qsTr("Reprint Receipt")
                             color: "white"
                             font.bold: true
                             horizontalAlignment: Text.AlignHCenter

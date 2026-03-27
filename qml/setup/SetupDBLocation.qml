@@ -136,7 +136,7 @@ Item {
         }
 
         Text {
-            text: running ? qsTr("Setting up system...") : errorText
+            text: running ? qsTr("Setting up...") : errorText
             color: running ? "lightgray" : "red"
             visible: running || errorText.length > 0
             wrapMode: Text.WordWrap

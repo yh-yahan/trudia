@@ -36,7 +36,7 @@ Item {
                         spacing: 6
 
                         Label {
-                            text: "Revenue Today"
+                            text: qsTr("Revenue Today")
                             color: "#ffffff"
                             opacity: 0.7
                         }
@@ -62,7 +62,7 @@ Item {
                         spacing: 6
 
                         Label {
-                            text: "Orders"
+                            text: qsTr("Orders")
                             color: "#ffffff"
                             opacity: 0.7
                         }
@@ -87,7 +87,7 @@ Item {
                         spacing: 6
 
                         Label {
-                            text: "Average Order"
+                            text: qsTr("Average Order")
                             color: "#ffffff"
                             opacity: 0.7
                         }
@@ -113,7 +113,7 @@ Item {
                         spacing: 6
 
                         Label {
-                            text: "Items Sold"
+                            text: qsTr("Items Sold")
                             color: "#ffffff"
                             opacity: 0.7
                         }
@@ -144,7 +144,7 @@ Item {
                         spacing: 12
 
                         Label {
-                            text: "Top Items Today"
+                            text: qsTr("Top Items Today")
                             font.pixelSize: 18
                             font.bold: true
                             color: "#ffffff"
@@ -184,7 +184,7 @@ Item {
                         spacing: 12
 
                         Label {
-                            text: "Revenue by Hour"
+                            text: qsTr("Revenue by Hour")
                             font.pixelSize: 18
                             font.bold: true
                             color: "#ffffff"
@@ -226,7 +226,7 @@ Item {
                     spacing: 12
 
                     Label {
-                        text: "Last 7 Days Revenue"
+                        text: qsTr("Last 7 Days Revenue")
                         font.pixelSize: 18
                         font.bold: true
                         color: "#ffffff"

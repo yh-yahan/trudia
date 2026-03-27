@@ -466,6 +466,7 @@ Item {
                                 currentOrderId = -1
                                 currentOrderType = ""
                                 selectedTableId = -1
+                                showEditOrdersList = false
 
                                 dineInBtn.checked = false
                                 takeawayBtn.checked = false

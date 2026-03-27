@@ -217,7 +217,7 @@ Item {
 
             // Categories
             Rectangle {
-                width: 280
+                width: 220
                 color: "#181818"
                 Layout.fillHeight: true
 

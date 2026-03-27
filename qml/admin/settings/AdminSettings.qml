@@ -10,7 +10,7 @@ Item {
 
         AdminSettingsSidebar {
             id: settingsSidebar
-            Layout.preferredWidth: 220
+            Layout.preferredWidth: 150
             Layout.fillHeight: true
         }
 

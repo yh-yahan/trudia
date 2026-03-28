@@ -11,17 +11,16 @@ ScrollView {
 
         if (!membershipData || Object.keys(membershipData).length === 0)
             return;
+
         enableLoyaltySwitch.checked = membershipData.enabled;
 
-        earnRateField.text = membershipData.earn_rate || "";
+        earnPointsField.text = membershipData.earn_points || "";
+        earnSpendField.text = membershipData.earn_spend;
 
-        minSpendField.text = membershipData.min_spend ? (membershipData.min_spend / 100).toFixed(2) : "";
+        redeemPointsField.text = membershipData.redeem_points || "";
+        redeemValueField.text = membershipData.redeem_value;
 
         earnBaseCombo.currentValue = membershipData.earn_on || "subtotal";
-
-        conversionRateField.text = membershipData.conversion || "";
-        minRedeemField.text = membershipData.redeem_min_point || "";
-        partialRedeemSwitch.checked = membershipData.partial_redemption;
     }
 
     anchors.fill: parent
@@ -91,48 +90,55 @@ ScrollView {
 
                 RowLayout {
                     Layout.fillWidth: true
+                    spacing: 10
 
                     Label {
-                        text: qsTr("Earn Rate (points per RM1)")
+                        text: qsTr("Earn")
                         color: "white"
                         Layout.preferredWidth: 230
                     }
 
-                    TextField {
-                        id: earnRateField
-                        Layout.preferredWidth: 150
-                        inputMethodHints: Qt.ImhDigitsOnly
-                        placeholderText: "1"
-                        color: "white"
-                        placeholderTextColor: "#AAAAAA"
+                    RowLayout {
+                        spacing: 6
 
-                        background: Rectangle {
-                            color: "#3A3A3A"
-                            radius: 6
+                        TextField {
+                            id: earnPointsField
+                            width: 60
+                            inputMethodHints: Qt.ImhDigitsOnly
+                            placeholderText: "1"
+                            placeholderTextColor: "#AAAAAA"
+                            color: "white"
+                            horizontalAlignment: Text.AlignHCenter
+
+                            background: Rectangle {
+                                color: "#3A3A3A"
+                                radius: 6
+                            }
                         }
-                    }
-                }
 
-                RowLayout {
-                    Layout.fillWidth: true
+                        Label {
+                            text: qsTr("point(s) for every RM")
+                            color: "white"
+                        }
 
-                    Label {
-                        text: qsTr("Minimum Spend (RM)")
-                        color: "white"
-                        Layout.preferredWidth: 230
-                    }
+                        TextField {
+                            id: earnSpendField
+                            width: 80
+                            inputMethodHints: Qt.ImhFormattedNumbersOnly
+                            placeholderText: "1.00"
+                            placeholderTextColor: "#AAAAAA"
+                            color: "white"
+                            horizontalAlignment: Text.AlignHCenter
 
-                    TextField {
-                        id: minSpendField
-                        Layout.preferredWidth: 150
-                        inputMethodHints: Qt.ImhFormattedNumbersOnly
-                        placeholderText: "0.00"
-                        color: "white"
-                        placeholderTextColor: "#AAAAAA"
+                            background: Rectangle {
+                                color: "#3A3A3A"
+                                radius: 6
+                            }
+                        }
 
-                        background: Rectangle {
-                            color: "#3A3A3A"
-                            radius: 6
+                        Label {
+                            text: qsTr("spent")
+                            color: "white"
                         }
                     }
                 }
@@ -185,64 +191,51 @@ ScrollView {
 
                 RowLayout {
                     Layout.fillWidth: true
+                    spacing: 10
 
                     Label {
-                        text: qsTr("Conversion (points = RM1)")
+                        text: qsTr("Redemption")
                         color: "white"
                         Layout.preferredWidth: 230
                     }
 
-                    TextField {
-                        id: conversionRateField
-                        Layout.preferredWidth: 150
-                        inputMethodHints: Qt.ImhDigitsOnly
-                        placeholderText: "100"
-                        color: "white"
-                        placeholderTextColor: "#AAAAAA"
+                    RowLayout {
+                        spacing: 6
 
-                        background: Rectangle {
-                            color: "#3A3A3A"
-                            radius: 6
+                        TextField {
+                            id: redeemPointsField
+                            width: 80
+                            inputMethodHints: Qt.ImhDigitsOnly
+                            placeholderText: "100"
+                            placeholderTextColor: "#AAAAAA"
+                            color: "white"
+                            horizontalAlignment: Text.AlignHCenter
+
+                            background: Rectangle {
+                                color: "#3A3A3A"
+                                radius: 6
+                            }
                         }
-                    }
-                }
 
-                RowLayout {
-                    Layout.fillWidth: true
-
-                    Label {
-                        text: qsTr("Minimum Points to Redeem")
-                        color: "white"
-                        Layout.preferredWidth: 230
-                    }
-
-                    TextField {
-                        id: minRedeemField
-                        Layout.preferredWidth: 150
-                        inputMethodHints: Qt.ImhDigitsOnly
-                        placeholderText: "100"
-                        color: "white"
-                        placeholderTextColor: "#AAAAAA"
-
-                        background: Rectangle {
-                            color: "#3A3A3A"
-                            radius: 6
+                        Label {
+                            text: qsTr("points = RM")
+                            color: "white"
                         }
-                    }
-                }
 
-                RowLayout {
-                    Layout.fillWidth: true
+                        TextField {
+                            id: redeemValueField
+                            width: 80
+                            inputMethodHints: Qt.ImhFormattedNumbersOnly
+                            placeholderText: "1.00"
+                            placeholderTextColor: "#AAAAAA"
+                            color: "white"
+                            horizontalAlignment: Text.AlignHCenter
 
-                    Label {
-                        text: qsTr("Allow Partial Redemption")
-                        color: "white"
-                        Layout.fillWidth: true
-                    }
-
-                    Switch {
-                        id: partialRedeemSwitch
-                        checked: false
+                            background: Rectangle {
+                                color: "#3A3A3A"
+                                radius: 6
+                            }
+                        }
                     }
                 }
             }
@@ -290,18 +283,13 @@ ScrollView {
                 payload.id = membershipData.id || 1;
                 payload.enabled = enableLoyaltySwitch.checked;
 
-                payload.earn_rate = parseInt(earnRateField.text || 0);
+                payload.earn_points = parseInt(earnPointsField.text || 0);
+                payload.earn_spend = parseFloat(earnSpendField.text || 0);
 
-                // convert RM → cents
-                var minSpend = parseFloat(minSpendField.text || 0);
-                payload.min_spend = Math.round(minSpend * 100);
+                payload.redeem_points = parseInt(redeemPointsField.text || 0);
+                payload.redeem_value = parseFloat(redeemValueField.text || 0);
 
                 payload.earn_on = earnBaseCombo.currentValue;
-
-                payload.conversion = parseInt(conversionRateField.text || 0);
-                payload.redeem_min_point = parseInt(minRedeemField.text || 0);
-
-                payload.partial_redemption = partialRedeemSwitch.checked ? 1 : 0;
 
                 SettingService.saveMembershipSettings(payload);
             }

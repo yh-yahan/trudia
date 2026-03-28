@@ -78,19 +78,30 @@ bool CheckoutService::processMembershipPoints(int orderSessionId, const QString 
 
     OrderSession session = sessionOpt.value();
 
-    double discountAmount = 0.0;
-    if (pointsToRedeem > 0 && m_membershipService.canRedeem(memberId, pointsToRedeem))
+    if (pointsToRedeem > 0 &&
+        m_membershipService.canRedeem(memberId, pointsToRedeem))
     {
-        discountAmount = m_membershipService.redeemPoints(memberId, pointsToRedeem);
-        qint64 discountMinor = static_cast<qint64>(std::llround(discountAmount * CURRENCY_SCALE));
-        session.discount += discountMinor;
-        session.total -= discountMinor;
+        double discountRM =
+            m_membershipService.redeemPoints(memberId, pointsToRedeem);
+
+        qint64 discountCents =
+            static_cast<qint64>(std::llround(discountRM * CURRENCY_SCALE));
+
+        if (discountCents > session.total)
+            discountCents = session.total;
+
+        session.discount += discountCents;
+        session.total -= discountCents;
     }
 
-    int earnedPoints = m_membershipService.calculateEarnedPoints(static_cast<double>(session.total) / CURRENCY_SCALE, "total");
+    int earnedPoints =
+        m_membershipService.calculateEarnedPoints(session.subtotal, session.total);
+
     if (earnedPoints > 0)
     {
-        m_membershipService.addTransaction(memberId, earnedPoints, "earn", orderSessionId);
+        m_membershipService.addTransaction(
+            memberId, earnedPoints, "earn", orderSessionId);
+
         m_membershipRepo.adjustPoints(memberId, "add", earnedPoints);
     }
 

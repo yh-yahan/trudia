@@ -103,7 +103,7 @@ qt_add_qml_module(appxeno
 )
 
 qt_add_translations(appxeno
-    # TS_FILES translations/app_zh_CN.ts
+    TS_FILES translations/app_zh_CN.ts
     RESOURCE_PREFIX "/i18n"
 )
 

@@ -191,14 +191,15 @@ QVariantMap SettingService::getMembershipSettings()
         return map;
 
     const MembershipSettings &ms = membershipSettingsOpt.value();
+
     map["id"] = ms.id;
     map["enabled"] = ms.enabled;
-    map["earn_rate"] = ms.earn_rate;
-    map["min_spend"] = ms.min_spend;
+    map["earn_points"] = ms.earn_points;
+    map["earn_spend"] = ms.earn_spend / 100.0;
+    map["redeem_points"] = ms.redeem_points;
+    map["redeem_value"] = ms.redeem_value / 100.0;
+
     map["earn_on"] = ms.earn_on;
-    map["conversion"] = ms.conversion;
-    map["redeem_min_point"] = ms.redeem_min_point;
-    map["partial_redemption"] = ms.partial_redemption;
 
     return map;
 }
@@ -209,12 +210,16 @@ bool SettingService::saveMembershipSettings(const QVariantMap &map)
 
     membershipSettings.id = 1;
     membershipSettings.enabled = map["enabled"].toBool();
-    membershipSettings.earn_rate = map["earn_rate"].toInt();
-    membershipSettings.min_spend = map["min_spend"].toInt();
+
+    membershipSettings.earn_points = map["earn_points"].toInt();
+
+    membershipSettings.earn_spend = map["earn_spend"].toDouble() * 100.0;
+
+    membershipSettings.redeem_points = map["redeem_points"].toInt();
+
+    membershipSettings.redeem_value = map["redeem_value"].toDouble() * 100.0;
+
     membershipSettings.earn_on = map["earn_on"].toString();
-    membershipSettings.conversion = map["conversion"].toInt();
-    membershipSettings.redeem_min_point = map["redeem_min_point"].toInt();
-    membershipSettings.partial_redemption = map["partial_redemption"].toInt();
 
     m_membershipSettingsRepo.save(membershipSettings);
 

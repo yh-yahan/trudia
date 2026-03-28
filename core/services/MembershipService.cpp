@@ -37,37 +37,46 @@ bool MembershipService::createMember(const QString &phone)
     return m_membershipRepo.create(newMember);
 }
 
-int MembershipService::calculateEarnedPoints(double orderAmount, const QString &earnOn)
+int MembershipService::calculateEarnedPoints(int subtotalCents, int totalCents)
 {
     auto settingsOpt = m_membershipSettingsRepo.get();
     if (!settingsOpt.has_value())
         return 0;
 
-    MembershipSettings settings = settingsOpt.value();
-    int rate = settings.earn_rate;
+    const auto &s = settingsOpt.value();
 
-    int points = static_cast<int>(std::floor(orderAmount * rate));
-    return points;
+    if (!s.enabled || s.earn_spend <= 0)
+        return 0;
+
+    int baseAmount = (s.earn_on == "subtotal")
+            ? subtotalCents
+            : totalCents;
+
+    return (baseAmount / s.earn_spend) * s.earn_points;
 }
 
 double MembershipService::redeemPoints(int memberId, int pointsToRedeem)
 {
     if (!canRedeem(memberId, pointsToRedeem))
-    return 0.0;
+        return 0.0;
 
     auto settingsOpt = m_membershipSettingsRepo.get();
     if (!settingsOpt.has_value())
         return 0.0;
 
-    MembershipSettings settings = settingsOpt.value();
+    const MembershipSettings &s = settingsOpt.value();
+
+    if (s.redeem_points <= 0)
+        return 0.0;
+
+    int discountCents = (pointsToRedeem * s.redeem_value) / s.redeem_points;
 
     if (!m_membershipRepo.adjustPoints(memberId, "subtract", pointsToRedeem))
         return 0.0;
 
     addTransaction(memberId, pointsToRedeem, "redeem", 0);
 
-    double discount = static_cast<double>(pointsToRedeem) / settings.conversion;
-    return discount;
+    return discountCents / 100.0;
 }
 
 bool MembershipService::addTransaction(int memberId, int points, const QString &type, int orderSessionId)
@@ -89,13 +98,9 @@ int MembershipService::getAvailablePoints(int memberId)
 
 bool MembershipService::canRedeem(int memberId, int pointsToRedeem)
 {
-    int available = getAvailablePoints(memberId);
-    auto settingsOpt = m_membershipSettingsRepo.get();
-
-    if (!settingsOpt.has_value())
+    if (pointsToRedeem <= 0)
         return false;
 
-    MembershipSettings settings = settingsOpt.value();
-
-    return available >= pointsToRedeem && pointsToRedeem >= settings.redeem_min_point;
+    int available = getAvailablePoints(memberId);
+    return available >= pointsToRedeem;
 }

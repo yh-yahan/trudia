@@ -80,7 +80,7 @@ Item {
         }
 
         if (selectedSession) {
-            earnedPointsPreview = MembershipService.calculateEarnedPoints(selectedSession.total, "total");
+            earnedPointsPreview = MembershipService.calculateEarnedPoints(selectedSession.subtotal * 100, selectedSession.total * 100);
         }
     }
 
@@ -244,6 +244,98 @@ Item {
                                     }
                                 }
                             }
+                        }
+                    }
+
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignBottom
+                        spacing: 12
+
+                        Row {
+                            visible: selectedSession !== null
+                            spacing: 8
+
+                            Column {
+                                spacing: 6
+
+                                visible: selectedSession !== null && membershipEnabled
+
+                                Text {
+                                    text: "Member Phone (optional)"
+                                    color: "#cccccc"
+                                    font.pixelSize: 13
+                                }
+
+                                Row {
+                                    spacing: 8
+
+                                    TextField {
+                                        id: memberPhoneField
+                                        width: 200
+                                        text: memberPhone
+
+                                        onTextChanged: {
+                                            memberPhone = text.trim();
+                                            membershipChecked = false;
+                                            memberId = 0;
+                                            currentPoints = 0;
+                                            earnedPointsPreview = 0;
+                                        }
+                                        onAccepted: updateMembershipInfo()
+
+                                        background: Rectangle {
+                                            radius: 4
+                                            color: "#2a2a2a"
+                                            border.color: "#555555"
+                                        }
+
+                                        color: "white"
+                                    }
+
+                                    Button {
+                                        text: qsTr("Check")
+                                        enabled: memberPhone.length > 0
+                                        background: Rectangle {
+                                            color: '#4faba1'
+                                            radius: 4
+                                        }
+                                        contentItem: Text {
+                                            text: qsTr("Check")
+                                            font.bold: true
+                                            anchors.centerIn: parent
+                                            horizontalAlignment: Text.AlignHCenter
+                                            verticalAlignment: Text.AlignVCenter
+                                            color: "white"
+                                        }
+                                        hoverEnabled: false
+                                        focusPolicy: Qt.NoFocus
+                                        onClicked: updateMembershipInfo()
+                                        height: memberPhoneField.height
+                                        anchors.verticalCenter: memberPhoneField.verticalCenter
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    Column {
+                        visible: selectedSession !== null && membershipChecked
+                        spacing: 4
+
+                        Text {
+                            text: memberId > 0 ? "Current Points: " + currentPoints : "New member will be created"
+                            color: memberId > 0 ? "#88ffaa" : "#ffaa66"
+                            font.pixelSize: 14
+                            font.bold: true
+                        }
+
+                        Text {
+                            visible: selectedSession !== null
+                            text: "Points to Earn: +" + earnedPointsPreview
+                            color: "#9a7bff"
+                            font.pixelSize: 14
+                            font.bold: true
                         }
                     }
 

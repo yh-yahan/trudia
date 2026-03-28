@@ -210,14 +210,14 @@ Item {
                                 }
 
                                 Text {
-                                    visible: !isOrderServed(modelData)
+                                    visible: requireReadyForCheckout && !isOrderServed(modelData)
                                     text: qsTr("PENDING")
                                     color: "#ffaa66"
                                     font.bold: true
                                 }
 
                                 Text {
-                                    visible: isOrderServed(modelData)
+                                    visible: requireReadyForCheckout && isOrderServed(modelData)
                                     text: qsTr("SERVED")
                                     color: "#88ffaa"
                                     font.bold: true

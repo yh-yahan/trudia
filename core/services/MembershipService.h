@@ -18,10 +18,9 @@ public:
     Q_INVOKABLE QVariantMap getMemberByPhone(const QString &phone);
     Q_INVOKABLE bool createMember(const QString &phone);
     Q_INVOKABLE int calculateEarnedPoints(int subtotalCents, int totalCents);
-    Q_INVOKABLE double redeemPoints(int memberId, int pointsToRedeem);
+    Q_INVOKABLE double redeemPoints(int memberId, int pointsToRedeem, int orderTotalCents);
     Q_INVOKABLE bool addTransaction(int memberId, int points, const QString &type, int orderSessionId);
     Q_INVOKABLE int getAvailablePoints(int memberId);
-    Q_INVOKABLE bool canRedeem(int memberId, int pointsToRedeem);
 
 private:
     MembershipRepository &m_membershipRepo;

@@ -92,20 +92,22 @@ bool CheckoutService::processMembershipPoints(int orderSessionId, const QString 
 
     OrderSession session = sessionOpt.value();
 
-    if (pointsToRedeem > 0 &&
-        m_membershipService.canRedeem(memberId, pointsToRedeem))
-    {
+    if (pointsToRedeem > 0) {
         double discountRM =
-            m_membershipService.redeemPoints(memberId, pointsToRedeem);
+            m_membershipService.redeemPoints(
+                memberId,
+                pointsToRedeem,
+                session.total
+            );
 
         qint64 discountCents =
             static_cast<qint64>(std::llround(discountRM * CURRENCY_SCALE));
 
-        if (discountCents > session.total)
-            discountCents = session.total;
-
-        session.discount += discountCents;
-        session.total -= discountCents;
+        if (discountCents > 0)
+        {
+            session.discount += discountCents;
+            session.total -= discountCents;
+        }
     }
 
     int earnedPoints =
@@ -142,18 +144,20 @@ bool CheckoutService::recalculateSessionTotals(int orderSessionId)
 
     qint64 subtotal = 0;
 
-    // Sum all items from all orders in minor units (cents)
     for (const auto &item : items)
     {
         subtotal += item.price * item.quantity;
     }
 
-    // Calculate tax using the TaxCalculationService
     qint64 tax = m_taxCalculationService.calculateTax(subtotal);
 
     session.subtotal = subtotal;
     session.tax = tax;
-    session.total = subtotal + tax;
+
+    session.total = subtotal + tax - session.discount;
+
+    if (session.total < 0)
+        session.total = 0;
 
     m_orderSessionRepo.update(session);
 

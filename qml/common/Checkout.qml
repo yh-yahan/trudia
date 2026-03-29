@@ -13,6 +13,9 @@ Item {
     property bool membershipChecked: false
     property bool membershipEnabled: SettingService.membershipEnabled
     property int earnedPointsPreview: 0
+    property int redeemPointsRequested: 0
+    property double redeemDiscountPreview: 0
+    property double finalTotalPreview: 0
 
     property var activeSessions: []
     property var recentOrders: []
@@ -68,6 +71,8 @@ Item {
         earnedPointsPreview = 0;
         membershipChecked = false;
 
+        redeemPointsRequested = 0;
+
         if (!memberPhone || memberPhone.length === 0)
             return;
         var member = MembershipService.getMemberByPhone(memberPhone);
@@ -81,7 +86,35 @@ Item {
 
         if (selectedSession) {
             earnedPointsPreview = MembershipService.calculateEarnedPoints(selectedSession.subtotal * 100, selectedSession.total * 100);
+            updateRedemptionPreview();
         }
+    }
+
+    function updateRedemptionPreview() {
+        redeemDiscountPreview = 0;
+        finalTotalPreview = selectedSession ? selectedSession.total : 0;
+
+        if (!selectedSession || memberId <= 0 || currentPoints <= 0)
+            return;
+
+        var settings = SettingService.getMembershipSettings();
+        if (!settings || settings.redeem_points <= 0)
+            return;
+
+        var points = redeemPointsRequested;
+
+        if (points <= 0) {
+            redeemDiscountPreview = 0;
+            finalTotalPreview = selectedSession.total;
+            return;
+        }
+
+        var valuePerPoint = settings.redeem_value / settings.redeem_points;
+
+        var maxDiscount = points * valuePerPoint;
+
+        redeemDiscountPreview = Math.min(maxDiscount, selectedSession.total);
+        finalTotalPreview = selectedSession.total - redeemDiscountPreview;
     }
 
     Component.onCompleted: {
@@ -111,6 +144,10 @@ Item {
         } else {
             canCheckout = true;
         }
+    }
+
+    onSelectedSessionChanged: {
+        updateRedemptionPreview();
     }
 
     RowLayout {
@@ -340,6 +377,63 @@ Item {
                     }
 
                     Column {
+                        visible: selectedSession !== null && memberId > 0 && currentPoints > 0
+                        spacing: 6
+
+                        Row {
+                            spacing: 8
+
+                            Button {
+                                text: qsTr("Redeem All")
+
+                                background: Rectangle {
+                                    radius: 4
+                                    color: "#ffaa66"
+                                }
+
+                                contentItem: Text {
+                                    text: qsTr("Redeem All")
+                                    anchors.centerIn: parent
+                                    color: "black"
+                                    font.bold: true
+                                }
+
+                                hoverEnabled: false
+                                focusPolicy: Qt.NoFocus
+
+                                onClicked: {
+                                    redeemPointsRequested = currentPoints;
+                                    updateRedemptionPreview();
+                                }
+                            }
+
+                            Button {
+                                text: qsTr("Clear")
+
+                                background: Rectangle {
+                                    radius: 4
+                                    color: "#5F7DDC"
+                                }
+
+                                contentItem: Text {
+                                    text: qsTr("Clear")
+                                    anchors.centerIn: parent
+                                    color: "white"
+                                    font.bold: true
+                                }
+
+                                hoverEnabled: false
+                                focusPolicy: Qt.NoFocus
+
+                                onClicked: {
+                                    redeemPointsRequested = 0;
+                                    updateRedemptionPreview();
+                                }
+                            }
+                        }
+                    }
+
+                    Column {
                         spacing: 6
 
                         Text {
@@ -353,7 +447,14 @@ Item {
                         }
 
                         Text {
-                            text: qsTr("Total: RM") + selectedSession.total.toFixed(2)
+                            visible: redeemDiscountPreview > 0
+                            text: qsTr("Discount: -RM") + redeemDiscountPreview.toFixed(2)
+                            color: "#ffaa66"
+                            font.bold: true
+                        }
+
+                        Text {
+                            text: qsTr("Total: RM") + finalTotalPreview.toFixed(2)
                             color: "white"
                             font.bold: true
                             font.pixelSize: 18
@@ -383,7 +484,7 @@ Item {
                         onClicked: {
                             if (!selectedSession)
                                 return;
-                            if (CheckoutService.markOrderPaid(selectedSession.id, memberPhone, 0)) {
+                            if (CheckoutService.markOrderPaid(selectedSession.id, memberPhone, redeemPointsRequested)) {
                                 var printed = CheckoutService.printReceipt(selectedSession.id);
 
                                 if (!printed) {

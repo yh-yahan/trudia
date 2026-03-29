@@ -55,26 +55,37 @@ int MembershipService::calculateEarnedPoints(int subtotalCents, int totalCents)
     return (baseAmount / s.earn_spend) * s.earn_points;
 }
 
-double MembershipService::redeemPoints(int memberId, int pointsToRedeem)
+double MembershipService::redeemPoints(int memberId, int pointsToRedeem, int orderTotalCents)
 {
-    if (!canRedeem(memberId, pointsToRedeem))
-        return 0.0;
-
     auto settingsOpt = m_membershipSettingsRepo.get();
     if (!settingsOpt.has_value())
         return 0.0;
 
     const MembershipSettings &s = settingsOpt.value();
 
-    if (s.redeem_points <= 0)
+    if (s.redeem_points <= 0 || s.redeem_value <= 0)
         return 0.0;
 
-    int discountCents = (pointsToRedeem * s.redeem_value) / s.redeem_points;
-
-    if (!m_membershipRepo.adjustPoints(memberId, "subtract", pointsToRedeem))
+    int availablePoints = getAvailablePoints(memberId);
+    if (availablePoints <= 0)
         return 0.0;
 
-    addTransaction(memberId, pointsToRedeem, "redeem", 0);
+    int points = std::min(pointsToRedeem, availablePoints);
+    int discountCents = (points * s.redeem_value) / s.redeem_points;
+
+    if (discountCents > orderTotalCents) {
+        discountCents = orderTotalCents;
+
+        points = (orderTotalCents * s.redeem_points) / s.redeem_value;
+    }
+
+    if (points <= 0 || discountCents <= 0)
+        return 0.0;
+
+    if (!m_membershipRepo.adjustPoints(memberId, "subtract", points))
+        return 0.0;
+
+    addTransaction(memberId, points, "redeem", 0);
 
     return discountCents / 100.0;
 }
@@ -94,13 +105,4 @@ int MembershipService::getAvailablePoints(int memberId)
 {
     Membership member = m_membershipRepo.getMembershipById(memberId);
     return member.id > 0 ? member.total_points : 0;
-}
-
-bool MembershipService::canRedeem(int memberId, int pointsToRedeem)
-{
-    if (pointsToRedeem <= 0)
-        return false;
-
-    int available = getAvailablePoints(memberId);
-    return available >= pointsToRedeem;
 }

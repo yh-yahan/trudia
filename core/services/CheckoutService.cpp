@@ -37,12 +37,26 @@ QVariantList CheckoutService::getActiveOrdersForCheckout() const
 
     auto activeSessions = m_orderSessionRepo.getAllActiveOrderSessions();
 
+    auto tables = m_tableRepo.getAllTables();
+    QMap<int, QString> tableMap;
+
+    for (const auto &table : tables) {
+        tableMap[table.id] = table.table_number;
+    }
+
     for (const auto &session : activeSessions)
     {
         QVariantMap sessionMap;
         sessionMap["id"] = session.id;
         sessionMap["display_number"] = session.display_number;
-        sessionMap["table_id"] = session.table_id.has_value() ? session.table_id.value() : QVariant();
+
+        if (session.table_id.has_value()) {
+            int tableId = session.table_id.value();
+            sessionMap["table_number"] = tableMap.value(tableId);
+        } else {
+            sessionMap["table_number"] = QVariant();
+        }
+
         sessionMap["order_type"] = session.order_type;
         sessionMap["status"] = session.status;
         sessionMap["subtotal"] = static_cast<double>(session.subtotal) / CURRENCY_SCALE;

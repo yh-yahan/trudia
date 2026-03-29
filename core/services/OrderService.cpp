@@ -176,6 +176,13 @@ QVariantList OrderService::getOpenOrders()
 
     auto orders = m_orderRepo.getActiveOrderSessionOrders();
 
+    auto tables = m_tableRepo.getAllTables();
+    QMap<int, QString> tableMap;
+
+    for (const auto &table : tables) {
+        tableMap[table.id] = table.table_number;
+    }
+
     for (const auto &order : orders)
     {
         QVariantMap map;
@@ -186,10 +193,12 @@ QVariantList OrderService::getOpenOrders()
         map["notes"] = order.notes;
         map["type"] = order.order_type;
 
-        if (order.table_id.has_value())
-            map["table_id"] = order.table_id.value();
-        else
-            map["table_id"] = QVariant();
+        if (order.table_id.has_value()) {
+            int tableId = order.table_id.value();
+            map["table_number"] = tableMap.value(tableId);
+        } else {
+            map["table_number"] = QVariant();
+        }
 
         result.append(map);
     }

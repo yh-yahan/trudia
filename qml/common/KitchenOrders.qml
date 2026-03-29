@@ -124,8 +124,8 @@ Item {
                         }
 
                         Text {
-                            visible: modelData.table_id !== null
-                            text: "Table " + modelData.table_id
+                            visible: modelData.table_number !== null
+                            text: "Table " + modelData.table_number
                             color: textColor
                             font.pixelSize: 12
                         }

@@ -155,7 +155,7 @@ Item {
                     }
 
                     Text {
-                        text: modelData.table_id ? qsTr("Table ") + modelData.table_id : modelData.order_type
+                        text: modelData.table_number ? qsTr("Table ") + modelData.table_number : modelData.order_type
                         color: "#cccccc"
                         font.pixelSize: 12
                     }

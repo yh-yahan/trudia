@@ -4,8 +4,12 @@
 
 KitchenOrderService::KitchenOrderService(OrderSessionRepository &orderSessionRepo,
                                          OrderRepository &orderRepo,
-                                         OrderItemRepository &orderItemRepo)
-    : m_orderSessionRepo(orderSessionRepo), m_orderRepo(orderRepo), m_orderItemRepo(orderItemRepo) {}
+                                         OrderItemRepository &orderItemRepo,
+                                         TableRepository &tableRepo)
+    : m_orderSessionRepo(orderSessionRepo), 
+      m_orderRepo(orderRepo), 
+      m_orderItemRepo(orderItemRepo),
+      m_tableRepo(tableRepo) {}
 
 QVariantList KitchenOrderService::getOrdersByStatus(const QString &status) const
 {
@@ -33,6 +37,13 @@ QVariantList KitchenOrderService::getOrdersByStatus(const QString &status) const
         itemsByOrder[item.order_id].append(itemMap);
     }
 
+    auto tables = m_tableRepo.getAllTables();
+    QMap<int, QString> tableMap;
+
+    for (const auto &table : tables) {
+        tableMap[table.id] = table.table_number;
+    }
+
     for (const auto &order : orders) {
         QVariantMap orderMap;
         orderMap["id"] = order.id;
@@ -45,9 +56,14 @@ QVariantList KitchenOrderService::getOrdersByStatus(const QString &status) const
         auto sessionOpt = m_orderSessionRepo.getById(order.order_session_id);
         if (sessionOpt.has_value()) {
             const auto &session = sessionOpt.value();
-            orderMap["table_id"] = session.table_id.has_value()
-                                       ? QVariant(session.table_id.value())
-                                       : QVariant();
+
+            if (session.table_id.has_value()) {
+                int tableId = session.table_id.value();
+                orderMap["table_number"] = tableMap.value(tableId);
+            } else {
+                orderMap["table_number"] = QVariant();
+            }
+
             orderMap["order_type"] = session.order_type;
         }
 

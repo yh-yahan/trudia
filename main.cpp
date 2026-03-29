@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
         kitchenTicketBuilder,
         settingService
     );
-    KitchenOrderService kitchenOrderService(orderSessionRepo, orderRepo, orderItemRepo);
+    KitchenOrderService kitchenOrderService(orderSessionRepo, orderRepo, orderItemRepo, tableRepo);
     CheckoutService checkoutService(
         orderSessionRepo,
         orderRepo,

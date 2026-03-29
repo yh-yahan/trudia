@@ -760,11 +760,11 @@ Item {
                                 }
 
                                 Text {
-                                    text: (modelData.table_id !== undefined
-                                           && modelData.table_id
-                                           !== null) ? "Table: " + modelData.table_id : ""
-                                    visible: modelData.table_id !== undefined
-                                             && modelData.table_id !== null
+                                    text: (modelData.table_number !== undefined
+                                           && modelData.table_number
+                                           !== null) ? "Table: " + modelData.table_number : ""
+                                    visible: modelData.table_number !== undefined
+                                             && modelData.table_number !== null
                                     color: "#aaa"
                                     font.pixelSize: 12
                                 }

@@ -145,7 +145,7 @@ ScrollView {
                         Text {
                             text: qsTr("Printer")
                             font.bold: true
-                            color: "white"
+                            color: "black"
                         }
 
                         Text {
@@ -161,7 +161,7 @@ ScrollView {
 
                                 return qsTr("Unknown");
                             }
-                            color: "#aaaaaa"
+                            color: '#575757'
                         }
 
                         RowLayout {
@@ -174,7 +174,7 @@ ScrollView {
                                 rightPadding: 12
                                 font.pointSize: 10
                                 background: Rectangle {
-                                    color: '#5aa2be'
+                                    color: '#4faba1'
                                     radius: 4
                                 }
                                 contentItem: Text {
@@ -188,22 +188,22 @@ ScrollView {
                                 hoverEnabled: false
                                 focusPolicy: Qt.NoFocus
                                 onClicked: {
-                                    UsbPrinterManager.testPrint(modelData.com_port);
+                                    USBPrinterService.testPrint(modelData.com_port);
                                 }
                             }
                             Button {
-                                text: "Edit"
+                                text: "Remove"
                                 topPadding: 6
                                 bottomPadding: 6
                                 leftPadding: 12
                                 rightPadding: 12
                                 font.pointSize: 10
                                 background: Rectangle {
-                                    color: '#c553a1'
+                                    color: '#e53935'
                                     radius: 4
                                 }
                                 contentItem: Text {
-                                    text: qsTr("Edit")
+                                    text: qsTr("Remove")
                                     font.bold: true
                                     anchors.centerIn: parent
                                     horizontalAlignment: Text.AlignHCenter
@@ -212,7 +212,14 @@ ScrollView {
                                 }
                                 hoverEnabled: false
                                 focusPolicy: Qt.NoFocus
-                                onClicked: {}
+                                onClicked: {
+                                    if (SettingService.removePrinterSetting()) {
+                                        root.printerModel = [];
+                                        root.loadPrinterSettings();
+                                    } else {
+                                        root.errorMessage = qsTr("Failed to remove printer");
+                                    }
+                                }
                             }
                         }
                     }

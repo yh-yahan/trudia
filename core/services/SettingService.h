@@ -32,6 +32,7 @@ public:
     Q_INVOKABLE bool saveRestaurantSetting(const QVariantMap &map);
     bool savePrinterSetting(const PrinterSetting &printerSetting);
     Q_INVOKABLE bool savePrinterSettingMap(const QVariantMap &map);
+    Q_INVOKABLE bool removePrinterSetting();
     Q_INVOKABLE QVariantMap getTaxSettings();
     Q_INVOKABLE bool saveTaxSettings(const QVariantMap &map);
     Q_INVOKABLE QVariantMap getMembershipSettings();

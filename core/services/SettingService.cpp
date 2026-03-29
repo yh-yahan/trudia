@@ -146,6 +146,12 @@ bool SettingService::savePrinterSettingMap(const QVariantMap &map)
     return savePrinterSetting(s);
 }
 
+bool SettingService::removePrinterSetting()
+{
+    PrinterSetting empty;
+    return savePrinterSetting(empty);
+}
+
 QVariantMap SettingService::getTaxSettings()
 {
     QVariantMap map;

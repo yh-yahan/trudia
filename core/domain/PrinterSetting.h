@@ -7,7 +7,7 @@ class PrinterSetting
 {
 public:
     int id = -1;
-    QString printer_interface;
+    QString printer_interface = "ESC/POS";
     std::optional<QString> connection_type;
     std::optional<QString> ip_address;
     std::optional<int> port;

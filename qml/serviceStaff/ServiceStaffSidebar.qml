@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls 2.15
 import QtQuick.Layouts
+import Xeno.Services 1.0
 
 Rectangle {
     id: sidebarBackground
@@ -9,6 +10,12 @@ Rectangle {
     color: "#121212"
 
     property int selectedIndex: 0
+    property string kitchenMode: "none"
+
+    Component.onCompleted: {
+        const settings = SettingService.getKitchenSettings()
+        kitchenMode = settings.mode || "none"
+    }
 
     signal selectionChanged(int index)
 
@@ -33,6 +40,9 @@ Rectangle {
         Repeater {
             model: buttonModel
             delegate: Button {
+                enabled: !(model.text === "Kitchen"
+                           && (sidebarBackground.kitchenMode === "none"
+                               || sidebarBackground.kitchenMode === "tickets"))
                 Layout.fillWidth: true
                 Layout.preferredHeight: 50
                 clip: true
@@ -49,7 +59,7 @@ Rectangle {
                     anchors.centerIn: parent
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
-                    color: "white"
+                    color: enabled ? "white" : "#888888"
                     elide: Text.ElideRight
                 }
 

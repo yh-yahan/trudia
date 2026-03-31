@@ -31,7 +31,7 @@
 #include "core/services/AppService.h"
 #include "core/services/SetupService.h"
 #include "core/database/DatabaseManager.h"
-#include "core/printing/ReceiptFormatter.h"
+#include "core/printing/ReceiptBuilder.h"
 #include "core/printing/NetworkPrinterService.h"
 #include "core/printing/USBPrinterService.h"
 #include "core/printing/KitchenPrinterService.h"
@@ -77,7 +77,6 @@ int main(int argc, char *argv[])
     AnalyticsRepository analyticsRepo(DatabaseManager::db());
     KitchenSettingsRepository kitchenSettingsRepo(DatabaseManager::db());
 
-    ReceiptFormatter receiptFormatter;
     NetworkPrinterService networkPrinterService;
     USBPrinterService usbPrinterService;
     TaxCalculationService taxCalculationService(taxSettingsRepo);
@@ -99,6 +98,7 @@ int main(int argc, char *argv[])
         networkPrinterService
     );
     KitchenTicketBuilder kitchenTicketBuilder(settingService);
+    ReceiptBuilder receiptBuilder(settingService);
     OrderService orderService(
         orderSessionRepo,
         orderRepo,
@@ -119,11 +119,13 @@ int main(int argc, char *argv[])
         printerSettingRepo,
         tableRepo,
         membershipRepo,
-        receiptFormatter,
+        membershipTransactionRepo,
+        receiptBuilder,
         networkPrinterService,
         usbPrinterService,
         taxCalculationService,
-        membershipService
+        membershipService,
+        settingService
     );
     AnalyticsService analyticsService(analyticsRepo);
     SetupService setupService(appService, dbManager);

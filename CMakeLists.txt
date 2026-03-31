@@ -75,7 +75,6 @@ qt_add_qml_module(appxeno
     SOURCES core/domain/Restaurant.h
     SOURCES core/services/SettingService.h core/services/SettingService.cpp
     SOURCES core/printing/EscPosBuilder.h core/printing/EscPosBuilder.cpp
-    SOURCES core/printing/ReceiptFormatter.h core/printing/ReceiptFormatter.cpp
     SOURCES core/printing/NetworkPrinterService.h core/printing/NetworkPrinterService.cpp
     SOURCES core/domain/TaxSettings.h
     SOURCES core/data/TaxSettingsRepository.h core/data/TaxSettingsRepository.cpp
@@ -100,6 +99,8 @@ qt_add_qml_module(appxeno
     SOURCES core/printing/KitchenPrinterService.h core/printing/KitchenPrinterService.cpp
     SOURCES core/services/AppService.h core/services/AppService.cpp
     SOURCES core/services/SetupService.h core/services/SetupService.cpp
+    SOURCES core/printing/ReceiptBuilder.h core/printing/ReceiptBuilder.cpp
+    SOURCES core/domain/ReceiptData.h
 )
 
 qt_add_translations(appxeno

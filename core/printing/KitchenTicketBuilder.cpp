@@ -76,7 +76,8 @@ QByteArray KitchenTicketBuilder::build(const Order &order,
     b.newLine();
     b.newLine();
 
-    b.cut("Full Cut");
+    QString cutMode = printerOpt.value("cut_mode", "Full Cut").toString();
+    b.cut(cutMode);
 
     return b.data();
 }

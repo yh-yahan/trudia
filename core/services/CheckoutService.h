@@ -13,11 +13,13 @@
 #include "../data/TaxSettingsRepository.h"
 #include "../data/TableRepository.h"
 #include "../data/MembershipRepository.h"
-#include "../printing/ReceiptFormatter.h"
+#include "../data/MembershipTransactionRepository.h"
+#include "../printing/ReceiptBuilder.h"
 #include "../printing/NetworkPrinterService.h"
 #include "../printing/USBPrinterService.h"
 #include "./TaxCalculationService.h"
 #include "./MembershipService.h"
+#include "./SettingService.h"
 
 struct TaxComputationResult {
     double subtotal = 0.0;
@@ -37,11 +39,13 @@ public:
                              PrinterSettingRepository &printerRepo,
                              TableRepository &tableRepo,
                              MembershipRepository &membershipRepo,
-                             ReceiptFormatter &formatter,
+                             MembershipTransactionRepository &membershipTransactionRepo,
+                             ReceiptBuilder &receiptBuilder,
                              NetworkPrinterService &networkPrinterService,
                              USBPrinterService &usbPrinterService,
                              TaxCalculationService &taxCalculationService,
-                             MembershipService &membershipService);
+                             MembershipService &membershipService,
+                             SettingService &settingService);
 
     Q_INVOKABLE QVariantList getActiveOrdersForCheckout() const;
     Q_INVOKABLE bool processMembershipPoints(int orderSessionId, const QString &memberPhone, int pointsToRedeem);
@@ -58,10 +62,12 @@ private:
     RestaurantRepository &m_restaurantRepo;
     PrinterSettingRepository &m_printerRepo;
     MembershipRepository &m_membershipRepo;
-    ReceiptFormatter &m_formatter;
+    MembershipTransactionRepository &m_membershipTransactionRepository;
+    ReceiptBuilder &m_receiptBuilder;
     NetworkPrinterService &m_networkPrinterService;
     USBPrinterService &m_usbPrinterService;
     TaxCalculationService &m_taxCalculationService;
+    SettingService &m_settingService;
     TableRepository &m_tableRepo;
     MembershipService &m_membershipService;
 };

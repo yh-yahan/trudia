@@ -199,3 +199,55 @@ std::vector<MembershipTransaction> MembershipTransactionRepository::getByType(co
 
     return transactions;
 }
+
+int MembershipTransactionRepository::getPointsByType(int orderSessionId, const QString &type)
+{
+    if (orderSessionId <= 0)
+        return 0;
+
+    QSqlQuery query(m_db);
+    query.prepare(R"(
+        SELECT COALESCE(SUM(points), 0)
+        FROM membership_transactions
+        WHERE order_session_id = :order_session_id
+          AND type = :type
+    )");
+
+    query.bindValue(":order_session_id", orderSessionId);
+    query.bindValue(":type", type);
+
+    if (!query.exec() || !query.next()) {
+        qDebug() << "Failed to sum points:" << query.lastError().text();
+        return 0;
+    }
+
+    return query.value(0).toInt();
+}
+
+int MembershipTransactionRepository::getMembershipIdBySession(int orderSessionId)
+{
+    QSqlQuery query(m_db);
+    query.prepare(R"(
+        SELECT membership_id
+        FROM membership_transactions
+        WHERE order_session_id = :order_session_id
+        LIMIT 1
+    )");
+
+    query.bindValue(":order_session_id", orderSessionId);
+
+    if (!query.exec() || !query.next())
+        return 0;
+
+    return query.value(0).toInt();
+}
+
+int MembershipTransactionRepository::getRedeemedPoints(int orderSessionId)
+{
+    return getPointsByType(orderSessionId, "redeem");
+}
+
+int MembershipTransactionRepository::getEarnedPoints(int orderSessionId)
+{
+    return getPointsByType(orderSessionId, "earn");
+}

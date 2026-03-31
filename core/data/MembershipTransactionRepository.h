@@ -15,6 +15,10 @@ public:
     std::vector<MembershipTransaction> getByMembershipId(int membershipId);
     std::vector<MembershipTransaction> getByOrderSessionId(int orderSessionId);
     std::vector<MembershipTransaction> getByType(const QString &type);
+    int getPointsByType(int orderSessionId, const QString &type);
+    int getMembershipIdBySession(int orderSessionId);
+    int getRedeemedPoints(int orderSessionId);
+    int getEarnedPoints(int orderSessionId);
 
 private:
     QSqlDatabase m_db;

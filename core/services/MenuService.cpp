@@ -137,7 +137,7 @@ bool MenuService::addMenuItem(const QString &itemName,
     Menu newItem;
     newItem.item = itemName;
     newItem.category_id = categoryId;
-    newItem.price = price * 100.0;
+    newItem.price = qRound(price * 100.0);
     newItem.is_available = isAvailable;
     newItem.is_taxable = isTaxable;
 
@@ -177,7 +177,7 @@ bool MenuService::editMenuItem(const int &menuItemId,
     }
 
     menuItem.category_id = categoryId;
-    menuItem.price = price * 100.0;
+    menuItem.price = qRound(price * 100.0);
     menuItem.is_available = isAvailable;
     menuItem.is_taxable = isTaxable;
     menuItem.portion_size = portionSize.isEmpty() ? "" : portionSize;

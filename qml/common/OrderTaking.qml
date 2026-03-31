@@ -467,10 +467,6 @@ Item {
                                 currentOrderType = ""
                                 selectedTableId = -1
                                 showEditOrdersList = false
-
-                                dineInBtn.checked = false
-                                takeawayBtn.checked = false
-                                deliveryBtn.checked = false
                             }
                         }
 
@@ -947,10 +943,6 @@ Item {
                             currentOrderId = -1
 
                             loadTables()
-
-                            dineInBtn.checked = false
-                            takeawayBtn.checked = false
-                            deliveryBtn.checked = false
                         }
 
                         hoverEnabled: false

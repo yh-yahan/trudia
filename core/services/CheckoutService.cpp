@@ -104,7 +104,8 @@ bool CheckoutService::processMembershipPoints(int orderSessionId, const QString 
             m_membershipService.redeemPoints(
                 memberId,
                 pointsToRedeem,
-                session.total);
+                session.total,
+                orderSessionId);
 
         qint64 discountCents =
             static_cast<qint64>(std::llround(discountRM * CURRENCY_SCALE));

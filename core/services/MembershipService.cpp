@@ -55,7 +55,7 @@ int MembershipService::calculateEarnedPoints(int subtotalCents, int totalCents)
     return (baseAmount / s.earn_spend) * s.earn_points;
 }
 
-double MembershipService::redeemPoints(int memberId, int pointsToRedeem, int orderTotalCents)
+double MembershipService::redeemPoints(int memberId, int pointsToRedeem, int orderTotalCents, int orderSessionId)
 {
     auto settingsOpt = m_membershipSettingsRepo.get();
     if (!settingsOpt.has_value())
@@ -85,7 +85,7 @@ double MembershipService::redeemPoints(int memberId, int pointsToRedeem, int ord
     if (!m_membershipRepo.adjustPoints(memberId, "subtract", points))
         return 0.0;
 
-    addTransaction(memberId, points, "redeem", 0);
+    addTransaction(memberId, points, "redeem", orderSessionId);
 
     return discountCents / 100.0;
 }

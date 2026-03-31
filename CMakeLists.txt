@@ -12,6 +12,7 @@ qt_standard_project_setup(REQUIRES 6.8)
 
 qt_add_executable(appxeno
     main.cpp
+    app.rc
 )
 
 qt_add_resources(app_resources resources.qrc)

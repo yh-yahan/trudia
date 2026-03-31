@@ -299,7 +299,7 @@ Item {
                                 visible: selectedSession !== null && membershipEnabled
 
                                 Text {
-                                    text: "Member Phone (optional)"
+                                    text: qsTr("Member Phone (optional)")
                                     color: "#cccccc"
                                     font.pixelSize: 13
                                 }
@@ -361,7 +361,7 @@ Item {
                         spacing: 4
 
                         Text {
-                            text: memberId > 0 ? "Current Points: " + currentPoints : "New member will be created"
+                            text: memberId > 0 ? qsTr("Current Points: ") + currentPoints : qsTr("New member will be created")
                             color: memberId > 0 ? "#88ffaa" : "#ffaa66"
                             font.pixelSize: 14
                             font.bold: true
@@ -369,7 +369,7 @@ Item {
 
                         Text {
                             visible: selectedSession !== null
-                            text: "Points to Earn: +" + earnedPointsPreview
+                            text: qsTr("Points to Earn: +") + earnedPointsPreview
                             color: "#9a7bff"
                             font.pixelSize: 14
                             font.bold: true

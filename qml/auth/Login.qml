@@ -20,14 +20,26 @@ Item {
             Layout.fillHeight: true
             color: "#181818"
 
-            Text {
+            Column {
                 anchors.centerIn: parent
-                text: "Xeno"
-                font.bold: true
-                font.pixelSize: 32
-                color: "white"
-                horizontalAlignment: Text.AlignHCenter
-                wrapMode: Text.WordWrap
+                spacing: 6
+
+                Text {
+                    text: "Xeno"
+                    font.bold: true
+                    font.pixelSize: 32
+                    color: "white"
+                    horizontalAlignment: Text.AlignHCenter
+                    anchors.horizontalCenter: parent.horizontalCenter
+                }
+
+                Text {
+                    text: "v0.1.0-beta"
+                    font.pixelSize: 12
+                    color: "#aaaaaa"
+                    horizontalAlignment: Text.AlignHCenter
+                    anchors.horizontalCenter: parent.horizontalCenter
+                }
             }
         }
 
@@ -95,24 +107,21 @@ Item {
                     hoverEnabled: false
                     focusPolicy: Qt.NoFocus
                     onClicked: {
-                        var username = usernameField.text
-                        var password = passwordField.text
+                        var username = usernameField.text;
+                        var password = passwordField.text;
                         if (AuthService.login(username, password)) {
-                            var userRole = AuthService.currentUserRole
+                            var userRole = AuthService.currentUserRole;
                             if (userRole === "admin") {
-                                stackView.push("../admin/AdminHome.qml")
+                                stackView.push("../admin/AdminHome.qml");
                             } else if (userRole === "service_staff") {
-                                stackView.push(
-                                            "../serviceStaff/ServiceStaffHome.qml")
+                                stackView.push("../serviceStaff/ServiceStaffHome.qml");
                             } else if (userRole === "kitchen_staff") {
-                                stackView.push(
-                                            "../kitchenStaff/KitchenStaffHome.qml")
+                                stackView.push("../kitchenStaff/KitchenStaffHome.qml");
                             }
 
-                            Window.window.showMaximized()
+                            Window.window.showMaximized();
                         } else {
-                            errorMessage.text = qsTr(
-                                        "Invalid username or password.")
+                            errorMessage.text = qsTr("Invalid username or password.");
                         }
                     }
                 }

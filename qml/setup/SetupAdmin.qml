@@ -12,20 +12,20 @@ Item {
         target: UserService
 
         function onCreateUserFinished(success) {
-            running = false
+            running = false;
 
             if (!success) {
-                errorMessage.text = "Could not create account"
-                return
+                errorMessage.text = "Could not create account";
+                return;
             }
 
             if (!AuthService.login(usernameField.text, passwordField.text)) {
-                errorMessage.text = "Login failed after registration"
-                return
+                errorMessage.text = "Login failed after registration";
+                return;
             }
 
-            stackView.push("../admin/AdminHome.qml")
-            Window.window.showMaximized()
+            stackView.push("../admin/AdminHome.qml");
+            Window.window.showMaximized();
         }
     }
 
@@ -43,14 +43,26 @@ Item {
             Layout.fillHeight: true
             color: "#181818"
 
-            Text {
+            Column {
                 anchors.centerIn: parent
-                text: "Xeno"
-                font.bold: true
-                font.pixelSize: 32
-                color: "white"
-                horizontalAlignment: Text.AlignHCenter
-                wrapMode: Text.WordWrap
+                spacing: 6
+
+                Text {
+                    text: "Xeno"
+                    font.bold: true
+                    font.pixelSize: 32
+                    color: "white"
+                    horizontalAlignment: Text.AlignHCenter
+                    anchors.horizontalCenter: parent.horizontalCenter
+                }
+
+                Text {
+                    text: "v0.1.0-beta"
+                    font.pixelSize: 12
+                    color: "#aaaaaa"
+                    horizontalAlignment: Text.AlignHCenter
+                    anchors.horizontalCenter: parent.horizontalCenter
+                }
             }
         }
 
@@ -143,24 +155,24 @@ Item {
                     hoverEnabled: false
                     focusPolicy: Qt.NoFocus
                     onClicked: {
-                        let username = usernameField.text.trim()
-                        let pw = passwordField.text
-                        let pw2 = passwordConfirmField.text
+                        let username = usernameField.text.trim();
+                        let pw = passwordField.text;
+                        let pw2 = passwordConfirmField.text;
 
                         if (username === "" || pw === "") {
-                            errorMessage.text = "Please fill in all fields"
-                            return
+                            errorMessage.text = "Please fill in all fields";
+                            return;
                         }
 
                         if (pw !== pw2) {
-                            errorMessage.text = "Passwords do not match"
-                            return
+                            errorMessage.text = "Passwords do not match";
+                            return;
                         }
 
-                        errorMessage.text = ""
-                        running = true
+                        errorMessage.text = "";
+                        running = true;
 
-                        UserService.createUser(username, pw, pw2, "admin")
+                        UserService.createUser(username, pw, pw2, "admin");
                     }
                 }
 

@@ -13,17 +13,16 @@ Item {
     property string errorText: ""
 
     Component.onCompleted: {
-        let docsUrl = StandardPaths.writableLocation(
-                StandardPaths.DocumentsLocation)
+        let docsUrl = StandardPaths.writableLocation(StandardPaths.DocumentsLocation);
 
-        let path = docsUrl.toString()
+        let path = docsUrl.toString();
 
         if (path.startsWith("file:///"))
-            path = path.substring(8)
+            path = path.substring(8);
         else if (path.startsWith("file://"))
-            path = path.substring(7)
+            path = path.substring(7);
 
-        root.selectedPath = path + "/XenoPOS/data"
+        root.selectedPath = path + "/XenoPOS/data";
     }
 
     ColumnLayout {
@@ -115,22 +114,22 @@ Item {
                 focusPolicy: Qt.NoFocus
 
                 onClicked: {
-                    errorText = ""
-                    running = true
+                    errorText = "";
+                    running = true;
 
-                    let fullPath = root.selectedPath + "/xeno.db"
+                    let fullPath = root.selectedPath + "/xeno.db";
 
-                    let success = SetupService.initializeSystem(fullPath)
+                    let success = SetupService.initializeSystem(fullPath);
 
                     if (!success) {
-                        running = false
-                        errorText = qsTr("Setup failed. Please try again.")
-                        return
+                        running = false;
+                        errorText = qsTr("Setup failed. Please try again.");
+                        return;
                     }
 
                     Qt.callLater(function () {
-                        SetupService.restartApp()
-                    })
+                        SetupService.restartApp();
+                    });
                 }
             }
         }
@@ -144,20 +143,30 @@ Item {
         }
     }
 
+    Text {
+        text: "v0.1.0-beta"
+        font.pixelSize: 12
+        color: "#aaaaaa"
+
+        anchors.bottom: parent.bottom
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottomMargin: 12
+    }
+
     FolderDialog {
         id: folderDialog
         title: qsTr("Select Database Folder")
 
         onAccepted: {
             if (folderDialog.selectedFolder) {
-                let url = folderDialog.selectedFolder.toString()
+                let url = folderDialog.selectedFolder.toString();
 
                 if (url.startsWith("file:///"))
-                    root.selectedPath = url.substring(8)
+                    root.selectedPath = url.substring(8);
                 else if (url.startsWith("file://"))
-                    root.selectedPath = url.substring(7)
+                    root.selectedPath = url.substring(7);
                 else
-                    root.selectedPath = url
+                    root.selectedPath = url;
             }
         }
     }
@@ -168,4 +177,3 @@ Item {
         z: -1
     }
 }
-

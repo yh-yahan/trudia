@@ -1,6 +1,10 @@
 # Qt Creator user files
-*.user
-*.user.*
+*.pro.user
+*.creator
+*.qmlproject.user
+*.autosave
+*.layout
+.qtcreator/
 
 # Build directories
 build/

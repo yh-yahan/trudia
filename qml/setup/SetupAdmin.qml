@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
-import Xeno.Services 1.0
+import Trudia.Services 1.0
 
 Item {
     visible: true
@@ -48,7 +48,7 @@ Item {
                 spacing: 6
 
                 Text {
-                    text: "Xeno"
+                    text: "Trudia"
                     font.bold: true
                     font.pixelSize: 32
                     color: "white"

@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import Xeno.Services 1.0
+import Trudia.Services 1.0
 
 ScrollView {
     property var kitchenData: ({})

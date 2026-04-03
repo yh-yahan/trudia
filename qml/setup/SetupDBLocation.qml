@@ -3,7 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Dialogs
 import QtCore
-import Xeno.Services 1.0
+import Trudia.Services 1.0
 
 Item {
     id: root
@@ -22,7 +22,7 @@ Item {
         else if (path.startsWith("file://"))
             path = path.substring(7);
 
-        root.selectedPath = path + "/XenoPOS/data";
+        root.selectedPath = path + "/TrudiaPOS/data";
     }
 
     ColumnLayout {
@@ -117,7 +117,7 @@ Item {
                     errorText = "";
                     running = true;
 
-                    let fullPath = root.selectedPath + "/xeno.db";
+                    let fullPath = root.selectedPath + "/Trudia.db";
 
                     let success = SetupService.initializeSystem(fullPath);
 

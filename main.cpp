@@ -41,8 +41,8 @@ int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
 
-    QCoreApplication::setOrganizationName("Xeno");
-    QCoreApplication::setApplicationName("XenoPOS");
+    QCoreApplication::setOrganizationName("Trudia");
+    QCoreApplication::setApplicationName("TrudiaPOS");
 
     QTranslator translator;
     if (translator.load(QLocale(), "app", "_", ":/i18n")) {
@@ -130,22 +130,22 @@ int main(int argc, char *argv[])
     AnalyticsService analyticsService(analyticsRepo);
     SetupService setupService(appService, dbManager);
 
-    qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "AuthService", &authService);
-    qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "UserService", &userService);
-    qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "MenuService", &menuService);
-    qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "TableService", &tableService);
-    qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "OrderService", &orderService);
-    qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "KitchenOrderService", &kitchenOrderService);
-    qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "CheckoutService", &checkoutService);
-    qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "SettingService", &settingService);
-    qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "MembershipService", &membershipService);
-    qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "AnalyticsService", &analyticsService);
-    qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "USBPrinterService", &usbPrinterService);
-    qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "AppService", &appService);
-    qmlRegisterSingletonInstance("Xeno.Services", 1, 0, "SetupService", &setupService);
+    qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "AuthService", &authService);
+    qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "UserService", &userService);
+    qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "MenuService", &menuService);
+    qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "TableService", &tableService);
+    qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "OrderService", &orderService);
+    qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "KitchenOrderService", &kitchenOrderService);
+    qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "CheckoutService", &checkoutService);
+    qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "SettingService", &settingService);
+    qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "MembershipService", &membershipService);
+    qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "AnalyticsService", &analyticsService);
+    qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "USBPrinterService", &usbPrinterService);
+    qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "AppService", &appService);
+    qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "SetupService", &setupService);
 
     QQmlApplicationEngine engine;
-    engine.loadFromModule("xeno", "Main");
+    engine.loadFromModule("trudia", "Main");
 
     if (engine.rootObjects().isEmpty()) {
         return -1;

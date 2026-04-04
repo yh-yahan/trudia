@@ -8,6 +8,12 @@ set(CMAKE_PREFIX_PATH "C:/Qt/6.10.2/mingw_64")
 
 find_package(Qt6 REQUIRED COMPONENTS Quick Sql LinguistTools Concurrent SerialPort)
 
+set(LIBSODIUM_ROOT "C:/libsodium/libsodium-win64")
+
+include_directories("${LIBSODIUM_ROOT}/include")
+
+link_directories("${LIBSODIUM_ROOT}/lib")
+
 qt_standard_project_setup(REQUIRES 6.8)
 
 qt_add_executable(apptrudia
@@ -126,6 +132,7 @@ target_link_libraries(apptrudia
         Qt6::Sql
         Qt6::Concurrent
         Qt6::SerialPort
+        sodium
 )
 
 include(GNUInstallDirs)

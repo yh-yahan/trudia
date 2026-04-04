@@ -92,5 +92,7 @@ bool KitchenOrderService::markState(const int &orderId, const QString state)
 
     m_orderRepo.update(order);
 
+    emit ordersChanged();
+
     return true;
 }

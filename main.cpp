@@ -130,6 +130,12 @@ int main(int argc, char *argv[])
     AnalyticsService analyticsService(analyticsRepo);
     SetupService setupService(appService, dbManager);
 
+    QObject::connect(&orderService, &OrderService::orderCreated,
+                 &kitchenOrderService, &KitchenOrderService::ordersChanged);
+
+    QObject::connect(&orderService, &OrderService::orderUpdated,
+                 &kitchenOrderService, &KitchenOrderService::ordersChanged);
+
     qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "AuthService", &authService);
     qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "UserService", &userService);
     qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "MenuService", &menuService);

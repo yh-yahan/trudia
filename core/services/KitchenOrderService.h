@@ -14,6 +14,9 @@ class KitchenOrderService : public QObject
 {
     Q_OBJECT
 
+signals:
+    void ordersChanged();
+
 public:
     explicit KitchenOrderService(OrderSessionRepository &orderSessionRepo,
                                  OrderRepository &orderRepo,

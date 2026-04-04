@@ -16,6 +16,11 @@
 class OrderService : public QObject
 {
     Q_OBJECT
+
+signals:
+    void orderCreated(int orderId);
+    void orderUpdated(int orderId);
+
 public:
     explicit OrderService(OrderSessionRepository &orderSessionRepo,
                           OrderRepository &orderRepo,

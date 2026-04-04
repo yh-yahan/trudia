@@ -167,6 +167,9 @@ int OrderService::createOrder(
             }
         }
     }
+
+    emit orderCreated(orderId);
+
     return orderId;
 }
 
@@ -378,6 +381,8 @@ int OrderService::updateOrder(
             }
         }
     }
+
+    emit orderUpdated(orderId);
 
     return orderId;
 }

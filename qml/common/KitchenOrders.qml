@@ -23,6 +23,14 @@ Item {
         readyOrders = KitchenOrderService.getOrdersByStatus("ready")
     }
 
+    Connections {
+        target: KitchenOrderService
+
+        function onOrdersChanged() {
+            loadOrders()
+        }
+    }
+
     Component.onCompleted: loadOrders()
 
     Rectangle {
@@ -40,7 +48,6 @@ Item {
             model: pendingOrders
             actionText: qsTr("START")
             nextState: "in_progress"
-            onActionDone: loadOrders()
         }
 
         KitchenColumn {
@@ -48,7 +55,6 @@ Item {
             model: preparingOrders
             actionText: qsTr("MARK READY")
             nextState: "ready"
-            onActionDone: loadOrders()
         }
 
         KitchenColumn {
@@ -56,7 +62,6 @@ Item {
             model: readyOrders
             actionText: qsTr("SERVE")
             nextState: "served"
-            onActionDone: loadOrders()
         }
     }
 
@@ -65,7 +70,6 @@ Item {
         property var model
         property string actionText
         property string nextState
-        signal actionDone
 
         Layout.fillWidth: true
         Layout.fillHeight: true
@@ -189,7 +193,6 @@ Item {
                         onClicked: {
                             KitchenOrderService.markState(modelData.id,
                                                           nextState)
-                            actionDone()
                         }
                     }
                 }

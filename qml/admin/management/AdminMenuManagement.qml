@@ -19,26 +19,6 @@ Item {
     }
 
     property int selectedCategoryId: -1
-    property var categories: []
-    property var menuItems: []
-
-    function loadCategories() {
-        categories = MenuService.getAllCategories()
-        if (categories.length > 0 && selectedCategoryId === -1) {
-            selectedCategoryId = categories[0].id
-            loadMenuItems(selectedCategoryId)
-        }
-    }
-
-    function loadMenuItems(categoryId) {
-        if (categoryId >= 0) {
-            menuItems = MenuService.getMenuItemsByCategory(categoryId)
-        } else {
-            menuItems = []
-        }
-    }
-
-    Component.onCompleted: loadCategories()
 
     RowLayout {
         anchors.fill: parent
@@ -65,15 +45,20 @@ Item {
                     id: categoryListView
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    model: categories
+
+                    model: MenuService.categoryModel
                     clip: true
 
                     delegate: Rectangle {
                         id: itemRect
 
+                        required property int id
+                        required property string name
+                        required property int index
+
                         property bool isEditing: false
-                        property string editedCategory: modelData.category
-                        property string originalCategory: modelData.category
+                        property string editedCategory: name
+                        property string originalCategory: name
 
                         width: parent.width
                         height: 44
@@ -88,13 +73,11 @@ Item {
                                 isEditing = false
                                 return
                             }
-                            var success = MenuService.renameCategory(
-                                        modelData.id, newName)
-                            console.log("renameCategory success:", success,
-                                        "new name:", newName)
-                            if (success) {
-                                loadCategories()
-                            }
+
+                            var success = MenuService.renameCategory(id,
+                                                                     newName)
+                            console.log("renameCategory success:", success)
+
                             isEditing = false
                         }
 
@@ -105,17 +88,20 @@ Item {
 
                         Menu {
                             id: categoryMenu
+
                             MenuItem {
                                 text: qsTr("Rename")
                                 onTriggered: {
                                     categoryListView.currentIndex = index
-                                    itemRect.originalCategory = modelData.category
-                                    itemRect.editedCategory = modelData.category
+                                    itemRect.originalCategory = name
+                                    itemRect.editedCategory = name
                                     itemRect.isEditing = true
+
                                     editField.forceActiveFocus()
                                     editField.selectAll()
                                 }
                             }
+
                             MenuItem {
                                 text: qsTr("Delete")
                                 onTriggered: {
@@ -123,15 +109,14 @@ Item {
                                                 "Delete Category")
                                     confirmationDialog.message = qsTr(
                                                 'Are you sure you want to delete "%1"? All menu items within "%1" will be deleted.').arg(
-                                                modelData.category)
+                                                name)
 
                                     confirmationDialog.confirmCallback = function (confirmed) {
                                         if (confirmed) {
-                                            MenuService.removeCategory(
-                                                        modelData.id)
-                                            loadCategories()
+                                            MenuService.removeCategory(id)
                                         }
                                     }
+
                                     confirmationDialog.open()
                                 }
                             }
@@ -139,7 +124,7 @@ Item {
 
                         Text {
                             visible: !itemRect.isEditing
-                            text: modelData.category
+                            text: name
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: parent.left
                             anchors.leftMargin: 12
@@ -150,10 +135,12 @@ Item {
                             id: editField
                             visible: itemRect.isEditing
                             text: itemRect.editedCategory
+
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: parent.left
                             anchors.leftMargin: 12
                             width: parent.width - 24
+
                             color: "white"
                             selectByMouse: true
                             focus: true
@@ -170,11 +157,6 @@ Item {
                                 if (!activeFocus && itemRect.isEditing) {
                                     itemRect.commitEdit()
                                 }
-                            }
-
-                            onFocusChanged: {
-                                if (focus)
-                                    selectAll()
                             }
 
                             Keys.onReturnPressed: {
@@ -198,8 +180,9 @@ Item {
                                     categoryMenu.popup(itemRect)
                                 } else {
                                     categoryListView.currentIndex = index
-                                    selectedCategoryId = modelData.id
-                                    loadMenuItems(selectedCategoryId)
+                                    selectedCategoryId = id
+
+                                    MenuService.setCurrentCategory(id)
                                 }
                             }
                         }
@@ -270,7 +253,6 @@ Item {
                             var success = MenuService.addCategory(
                                         newCategoryField.text)
                             if (success) {
-                                loadCategories()
                                 newCategoryField.text = ""
                             }
                         }
@@ -355,7 +337,8 @@ Item {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                     visible: selectedCategoryId !== -1
-                    model: menuItems
+
+                    model: MenuService.menuItemModel
                     clip: true
                     spacing: 4
 
@@ -367,13 +350,19 @@ Item {
                         color: "#1f1f1f"
                         border.color: "#2a2a2a"
 
+                        required property int id
+                        required property string item
+                        required property double price
+                        required property string portion
+                        required property bool available
+                        required property bool taxable
+
                         property bool isEditing: false
-                        property string editedName: modelData.item
-                        property string editedPrice: modelData.price.toFixed(2)
-                        property string editedPortion: modelData.portion_size
-                                                       || ""
-                        property bool editedAvailable: modelData.is_available
-                        property bool editedTaxable: modelData.is_taxable
+                        property string editedName: item
+                        property string editedPrice: price.toFixed(2)
+                        property string editedPortion: portion || ""
+                        property bool editedAvailable: available
+                        property bool editedTaxable: taxable
 
                         RowLayout {
                             anchors.fill: parent
@@ -403,7 +392,7 @@ Item {
 
                                 Text {
                                     visible: !itemRect.isEditing
-                                    text: modelData.item
+                                    text: item
                                     color: "white"
                                     elide: Text.ElideRight
                                     anchors.verticalCenter: parent.verticalCenter
@@ -435,7 +424,7 @@ Item {
 
                                 Text {
                                     visible: !itemRect.isEditing
-                                    text: modelData.price.toFixed(2)
+                                    text: price.toFixed(2)
                                     horizontalAlignment: Text.AlignRight
                                     anchors.verticalCenter: parent.verticalCenter
                                     width: parent.width
@@ -467,7 +456,7 @@ Item {
 
                                 Text {
                                     visible: !itemRect.isEditing
-                                    text: modelData.portion_size || "-"
+                                    text: portion || "-"
                                     anchors.verticalCenter: parent.verticalCenter
                                     width: parent.width
                                     color: "#d0d0d0"
@@ -476,14 +465,14 @@ Item {
 
                             CheckBox {
                                 Layout.preferredWidth: 100
-                                checked: itemRect.isEditing ? itemRect.editedAvailable : modelData.is_available
+                                checked: itemRect.isEditing ? itemRect.editedAvailable : available
                                 enabled: itemRect.isEditing
                                 onCheckedChanged: itemRect.editedAvailable = checked
                             }
 
                             CheckBox {
                                 Layout.preferredWidth: 100
-                                checked: itemRect.isEditing ? itemRect.editedTaxable : modelData.is_taxable
+                                checked: itemRect.isEditing ? itemRect.editedTaxable : taxable
                                 enabled: itemRect.isEditing
                                 onCheckedChanged: itemRect.editedTaxable = checked
                             }
@@ -522,8 +511,7 @@ Item {
                                             itemRect.editedPrice = priceVal
                                         }
                                         var success = MenuService.editMenuItem(
-                                                    modelData.id,
-                                                    itemNameTrimmed,
+                                                    id, itemNameTrimmed,
                                                     selectedCategoryId,
                                                     priceVal,
                                                     itemRect.editedAvailable,
@@ -531,7 +519,6 @@ Item {
                                                     portionTrimmed)
 
                                         if (success) {
-                                            loadMenuItems(selectedCategoryId)
                                             itemRect.isEditing = false
                                         }
                                     } else {
@@ -563,12 +550,10 @@ Item {
                                                 "Delete Item")
                                     confirmationDialog.message = qsTr(
                                                 'Are you sure you want to delete "%1"?').arg(
-                                                modelData.item)
+                                                item)
                                     confirmationDialog.confirmCallback = function (confirmed) {
                                         if (confirmed) {
-                                            MenuService.removeMenuItem(
-                                                        modelData.id)
-                                            loadMenuItems(selectedCategoryId)
+                                            MenuService.removeMenuItem(id)
                                         }
                                     }
                                     confirmationDialog.open()
@@ -736,8 +721,6 @@ Item {
                             newItemPortion.text = ""
                             newItemAvailable.checked = true
                             newItemTaxable.checked = true
-
-                            loadMenuItems(selectedCategoryId)
                         }
                     }
                 }

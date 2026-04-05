@@ -1,23 +1,38 @@
 #include "MenuService.h"
 
-MenuService::MenuService(MenuRepository &menuRepo, CategoryRepository &categoryRepo)
-    : m_menuRepo(menuRepo), m_categoryRepo(categoryRepo) {}
+#include "../models/CategoryModel.h"
+#include "../models/MenuItemModel.h"
 
-QVariantList MenuService::getAllCategories() const
+MenuService::MenuService(MenuRepository &menuRepo, 
+                         CategoryRepository &categoryRepo,
+                         QObject *parent)
+    : QObject(parent), 
+      m_menuRepo(menuRepo), 
+      m_categoryRepo(categoryRepo)
 {
-    QVariantList categoriesList;
+    m_categoryModel = new CategoryModel(m_categoryRepo, this);
+    m_menuItemModel = new MenuItemModel(m_menuRepo, this);
+}
 
-    const auto categories = m_categoryRepo.getAllCategories();
+CategoryModel* MenuService::categoryModel() const
+{
+    return m_categoryModel;
+}
 
-    for (const auto &category : categories) {
-        QVariantMap categoryMap;
-        categoryMap["id"] = category.id;
-        categoryMap["category"] = category.category;
+MenuItemModel* MenuService::menuItemModel() const
+{
+    return m_menuItemModel;
+}
 
-        categoriesList.append(categoryMap);
-    }
+void MenuService::setCurrentCategory(int categoryId)
+{
+    if (m_currentCategoryId == categoryId)
+        return;
 
-    return categoriesList;
+    m_currentCategoryId = categoryId;
+    m_menuItemModel->setCategory(categoryId);
+
+    emit menuItemsChanged();
 }
 
 bool MenuService::addCategory(const QString &categoryName)
@@ -31,6 +46,8 @@ bool MenuService::addCategory(const QString &categoryName)
     category.category = categoryName;
 
     m_categoryRepo.create(category);
+
+    m_categoryModel->reload();
 
     return true;
 }
@@ -52,6 +69,9 @@ bool MenuService::renameCategory(const int &categoryId, const QString &newName)
     category.category = newName;
 
     m_categoryRepo.update(category);
+
+    m_categoryModel->reload();
+
     return true;
 }
 
@@ -65,56 +85,14 @@ bool MenuService::removeCategory(const int &categoryId)
 
     m_categoryRepo.remove(categoryOpt.value());
 
+    m_categoryModel->reload();
+
+    if (m_currentCategoryId == categoryId) {
+        m_currentCategoryId = -1;
+        m_menuItemModel->clear();
+    }
+
     return true;
-}
-
-QVariantList MenuService::getAllMenuItems() const
-{
-    QVariantList menuList;
-
-    const auto menuItems = m_menuRepo.getAllMenuItems();
-
-    for (const auto &item : menuItems) {
-        QVariantMap itemMap;
-        itemMap["id"] = item.id;
-        itemMap["item"] = item.item;
-        itemMap["category_id"] = item.category_id;
-        itemMap["price"] = item.price / 100.0;
-        itemMap["is_available"] = item.is_available;
-        itemMap["is_taxable"] = item.is_taxable;
-
-        if (item.portion_size.has_value()) {
-            itemMap["portion_size"] = item.portion_size.value();
-        } else {
-            itemMap["portion_size"] = QVariant();
-        }
-
-        menuList.append(itemMap);
-    }
-
-    return menuList;
-}
-
-QVariantList MenuService::getMenuItemsByCategory(int categoryId) const
-{
-    QVariantList list;
-    const auto items = m_menuRepo.getMenuItemsByCategory(categoryId);
-
-    for (const auto &item : items) {
-        QVariantMap map;
-        map["id"] = item.id;
-        map["item"] = item.item;
-        map["category_id"] = item.category_id;
-        map["price"] = item.price / 100.0;
-        map["is_available"] = item.is_available;
-        map["is_taxable"] = item.is_taxable;
-
-        map["portion_size"] = item.portion_size.has_value() ? item.portion_size.value() : QVariant();
-
-        list.append(map);
-    }
-
-    return list;
 }
 
 bool MenuService::addMenuItem(const QString &itemName,
@@ -145,6 +123,9 @@ bool MenuService::addMenuItem(const QString &itemName,
 
     m_menuRepo.create(newItem);
 
+    if (categoryId == m_currentCategoryId)
+        m_menuItemModel->reload(categoryId);
+
     return true;
 }
 
@@ -162,7 +143,7 @@ bool MenuService::editMenuItem(const int &menuItemId,
         return false;
     }
 
-    Menu &menuItem = menuItemOpt.value();
+    Menu menuItem = menuItemOpt.value();
 
     if (!itemName.trimmed().isEmpty()) {
         menuItem.item = itemName;
@@ -184,6 +165,8 @@ bool MenuService::editMenuItem(const int &menuItemId,
 
     m_menuRepo.update(menuItem);
 
+    m_menuItemModel->reload(m_currentCategoryId);
+
     return true;
 }
 
@@ -195,7 +178,12 @@ bool MenuService::removeMenuItem(const int &menuItemId)
         return false;
     }
 
-    m_menuRepo.remove(menuItemOpt.value());
+    auto menuItem = menuItemOpt.value();
+    int categoryId = menuItem.category_id;
+
+    m_menuRepo.remove(menuItem);
+
+    m_menuItemModel->reload(m_currentCategoryId);
 
     return true;
 }

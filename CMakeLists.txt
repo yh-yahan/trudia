@@ -108,6 +108,8 @@ qt_add_qml_module(apptrudia
     SOURCES core/services/SetupService.h core/services/SetupService.cpp
     SOURCES core/printing/ReceiptBuilder.h core/printing/ReceiptBuilder.cpp
     SOURCES core/domain/ReceiptData.h
+    SOURCES core/models/CategoryModel.h core/models/CategoryModel.cpp
+    SOURCES core/models/MenuItemModel.h core/models/MenuItemModel.cpp
 )
 
 qt_add_translations(apptrudia

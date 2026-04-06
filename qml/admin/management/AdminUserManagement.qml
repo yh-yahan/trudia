@@ -8,14 +8,6 @@ Item {
     width: 900
     height: 600
 
-    property var users: []
-
-    function loadUsers() {
-        users = UserService.getAllUsers()
-    }
-
-    Component.onCompleted: loadUsers()
-
     Connections {
         target: UserService
 
@@ -26,7 +18,6 @@ Item {
 
             if (success) {
                 createDialog.close()
-                loadUsers()
             } else {
                 console.log("Create user failed")
             }
@@ -121,7 +112,7 @@ Item {
         ListView {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            model: users
+            model: UserService.userModel
             clip: true
             spacing: 4
 
@@ -138,27 +129,27 @@ Item {
                     spacing: 10
 
                     Text {
-                        text: modelData.username
+                        text: username
                         color: "white"
                         Layout.fillWidth: true
                         elide: Text.ElideRight
                     }
 
                     Text {
-                        text: modelData.role
+                        text: role
                         color: "#d0d0d0"
                         Layout.preferredWidth: 140
                     }
 
                     Text {
-                        text: modelData.active ? qsTr("Yes") : qsTr("No")
-                        color: modelData.active ? "#7ed957" : "#ff6b6b"
+                        text: active ? qsTr("Yes") : qsTr("No")
+                        color: active ? "#7ed957" : "#ff6b6b"
                         Layout.preferredWidth: 100
                     }
 
                     Button {
                         text: qsTr("Edit")
-                        visible: modelData.active
+                        visible: active
 
                         background: Rectangle {
                             color: "#9a7bff"
@@ -175,16 +166,16 @@ Item {
                         focusPolicy: Qt.NoFocus
 
                         onClicked: {
-                            editDialog.userId = modelData.id
-                            editDialog.username = modelData.username
-                            editDialog.role = modelData.role
+                            editDialog.userId = id
+                            editDialog.username = username
+                            editDialog.role = role
                             editDialog.open()
                         }
                     }
 
                     Button {
                         text: qsTr("Password")
-                        visible: modelData.active
+                        visible: active
 
                         background: Rectangle {
                             color: "#444"
@@ -201,14 +192,14 @@ Item {
                         focusPolicy: Qt.NoFocus
 
                         onClicked: {
-                            passwordDialog.userId = modelData.id
+                            passwordDialog.userId = id
                             passwordDialog.open()
                         }
                     }
 
                     Button {
                         text: qsTr("Deactivate")
-                        visible: modelData.active
+                        visible: active
 
                         background: Rectangle {
                             color: "red"
@@ -227,13 +218,11 @@ Item {
                         onClicked: {
                             confirmationDialog.title = qsTr("Deactivate User")
                             confirmationDialog.message = qsTr(
-                                'Deactivate "%1"?'
-                            ).arg(modelData.username)
+                                        'Deactivate "%1"?').arg(username)
 
                             confirmationDialog.confirmCallback = function (confirmed) {
                                 if (confirmed) {
-                                    UserService.deactivateUser(modelData.id)
-                                    loadUsers()
+                                    UserService.deactivateUser(id)
                                 }
                             }
 
@@ -382,12 +371,10 @@ Item {
                     }
 
                     onClicked: {
-                        UserService.createUser(
-                            newUsername.text,
-                            newPassword.text,
-                            newPasswordConfirm.text,
-                            newRole.currentText
-                        )
+                        UserService.createUser(newUsername.text,
+                                               newPassword.text,
+                                               newPasswordConfirm.text,
+                                               newRole.currentText)
                     }
                 }
 
@@ -513,7 +500,6 @@ Item {
 
                         if (ok) {
                             editDialog.close()
-                            loadUsers()
                         }
                     }
                 }

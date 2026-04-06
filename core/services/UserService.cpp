@@ -1,29 +1,20 @@
 #include "UserService.h"
 
 #include "../utilities/PasswordHasher.h"
+#include "../models/UserModel.h"
 #include <QtConcurrentRun>
 
-UserService::UserService(UserRepository &userRepo)
-    : m_userRepo(userRepo) {}
-
-QVariantList UserService::getAllUsers()
+UserService::UserService(UserRepository &userRepo, QObject *parent)
+    : QObject(parent),
+      m_userRepo(userRepo) 
 {
-    QVariantList list;
+    m_userModel = new UserModel(m_userRepo, this);
+    m_userModel->reload();
+}
 
-    QList<User> users = m_userRepo.getAll();
-
-    for (const User &u : users) {
-        QVariantMap item;
-        item["id"] = u.id;
-        item["username"] = u.username;
-        item["role"] = u.role;
-        item["deactivated_at"] = u.deactivated_at;
-        item["active"] = u.deactivated_at.isEmpty();
-
-        list.append(item);
-    }
-
-    return list;
+UserModel* UserService::userModel() const
+{
+    return m_userModel;
 }
 
 void UserService::createUser(QString username,
@@ -34,6 +25,11 @@ void UserService::createUser(QString username,
     QtConcurrent::run([=]() {
 
         bool success = createUserInternal(username, password, confirm, role);
+
+        if (success) {
+            m_userModel->reload();
+            emit usersChanged();
+        }
 
         QMetaObject::invokeMethod(
             this,
@@ -62,6 +58,9 @@ bool UserService::updateUser(
     user.role = role;
 
     m_userRepo.update(user);
+
+    m_userModel->reload();
+    emit usersChanged();
 
     return true;
 }
@@ -101,6 +100,9 @@ bool UserService::deactivateUser(int userId)
         return false;
 
     m_userRepo.remove(userId);
+
+    m_userModel->reload();
+    emit usersChanged();
 
     return true;
 }

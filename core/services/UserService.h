@@ -7,14 +7,18 @@
 #include <QtConcurrent>
 #include "../data/UserRepository.h"
 
+class UserModel;
+
 class UserService : public QObject
 {
     Q_OBJECT
 
-public:
-    explicit UserService(UserRepository &userRepo);
+    Q_PROPERTY(UserModel* userModel READ userModel CONSTANT)
 
-    Q_INVOKABLE QVariantList getAllUsers();
+public:
+    explicit UserService(UserRepository &userRepo, QObject *parent = nullptr);
+
+    UserModel* userModel() const;
 
     Q_INVOKABLE void createUser(QString username,
                                 QString password,
@@ -34,6 +38,7 @@ public:
 
 signals:
     void createUserFinished(bool success);
+    void usersChanged();
 
 private:
     bool createUserInternal(const QString &username,
@@ -43,6 +48,7 @@ private:
 
 private:
     UserRepository &m_userRepo;
+    UserModel *m_userModel;
 };
 
 #endif

@@ -1,5 +1,6 @@
 #ifndef MENUITEMMODEL_H
 #define MENUITEMMODEL_H
+
 #include <QAbstractListModel>
 #include <QVector>
 #include "../domain/Menu.h"

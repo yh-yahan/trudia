@@ -18,14 +18,6 @@ Item {
         color: "#121212"
     }
 
-    property var tables: []
-
-    function loadTables() {
-        tables = TableService.getAllTables()
-    }
-
-    Component.onCompleted: loadTables()
-
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: 16
@@ -70,7 +62,7 @@ Item {
         ListView {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            model: tables
+            model: TableService.tableModel
             clip: true
             spacing: 4
 
@@ -83,10 +75,10 @@ Item {
                 border.color: "#2a2a2a"
 
                 property bool isEditing: false
-                property string editedName: modelData.table_number
-                property int editedCapacity: modelData.capacity
-                property string originalName: modelData.table_number
-                property int originalCapacity: modelData.capacity
+                property string editedName: name
+                property int editedCapacity: capacity
+                property string originalName: name
+                property int originalCapacity: capacity
 
                 RowLayout {
                     anchors.fill: parent
@@ -121,7 +113,7 @@ Item {
 
                     Text {
                         visible: !tableRect.isEditing
-                        text: modelData.table_number
+                        text: name
                         Layout.fillWidth: true
                         color: "white"
                     }
@@ -137,7 +129,7 @@ Item {
 
                     Text {
                         visible: !tableRect.isEditing
-                        text: modelData.capacity
+                        text: capacity
                         width: 80
                         color: "#d0d0d0"
                     }
@@ -186,11 +178,10 @@ Item {
                             confirmationDialog.title = "Delete Table"
                             confirmationDialog.message = qsTr(
                                         'Are you sure you want to delete table "%1"?').arg(
-                                        modelData.table_number)
+                                        name)
                             confirmationDialog.confirmCallback = function (confirmed) {
                                 if (confirmed) {
-                                    TableService.removeTable(modelData.id)
-                                    loadTables()
+                                    TableService.removeTable(id)
                                 }
                             }
                             confirmationDialog.open()
@@ -207,11 +198,9 @@ Item {
                         isEditing = false
                         return
                     }
-                    var success = TableService.editTable(modelData.id,
+                    var success = TableService.editTable(id,
                                                          editedName,
                                                          editedCapacity)
-                    if (success)
-                        loadTables()
                     isEditing = false
                 }
 
@@ -294,7 +283,6 @@ Item {
                     var success = TableService.addTable(newTableName.text,
                                                         newTableCapacity.value)
                     if (success) {
-                        loadTables()
                         newTableName.text = ""
                         newTableCapacity.value = 4
                     }

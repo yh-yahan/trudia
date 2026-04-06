@@ -1,24 +1,19 @@
 #include "TableService.h"
 
-TableService::TableService(TableRepository &tableRepo): m_tableRepo(tableRepo) {}
+#include "../models/TableModel.h"
 
-QVariantList TableService::getAllTables() const
+TableService::TableService(TableRepository &tableRepo, QObject *parent)
+    : QObject(parent),
+      m_tableRepo(tableRepo) 
 {
-    QVariantList tablesList;
+    m_tableModel = new TableModel(m_tableRepo, this);
 
-    const auto tables = m_tableRepo.getAllTables();
+    m_tableModel->reload();
+}
 
-    for (const auto &table : tables) {
-        QVariantMap categoryMap;
-        categoryMap["id"] = table.id;
-        categoryMap["table_number"] = table.table_number;
-        categoryMap["capacity"] = table.capacity;
-        categoryMap["is_active"] = table.is_active;
-
-        tablesList.append(categoryMap);
-    }
-
-    return tablesList;
+TableModel* TableService::tableModel() const
+{
+    return m_tableModel;
 }
 
 bool TableService::addTable(const QString &tableName, const int capacity)
@@ -28,7 +23,7 @@ bool TableService::addTable(const QString &tableName, const int capacity)
         return false;
     }
 
-    if (capacity == NULL) {
+    if (capacity <= 0) {
         qWarning() << "Cannot add table with empty capacity";
         return false;
     }
@@ -38,6 +33,9 @@ bool TableService::addTable(const QString &tableName, const int capacity)
     table.capacity = capacity;
 
     m_tableRepo.create(table);
+
+    m_tableModel->reload();
+    emit tablesChanged();
 
     return true;
 }
@@ -65,6 +63,9 @@ bool TableService::editTable(const int &tableId,
 
     m_tableRepo.update(table);
 
+    m_tableModel->reload();
+    emit tablesChanged();
+
     return true;
 }
 
@@ -77,6 +78,9 @@ bool TableService::removeTable(const int &tableId)
     }
 
     m_tableRepo.remove(tableOpt.value());
+
+    m_tableModel->reload();
+    emit tablesChanged();
 
     return true;
 }

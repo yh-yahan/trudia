@@ -24,15 +24,9 @@ MenuItemModel* MenuService::menuItemModel() const
     return m_menuItemModel;
 }
 
-void MenuService::setCurrentCategory(int categoryId)
+int MenuService::currentCategoryId() const
 {
-    if (m_currentCategoryId == categoryId)
-        return;
-
-    m_currentCategoryId = categoryId;
-    m_menuItemModel->setCategory(categoryId);
-
-    emit menuItemsChanged();
+    return m_currentCategoryId;
 }
 
 bool MenuService::addCategory(const QString &categoryName)
@@ -88,8 +82,7 @@ bool MenuService::removeCategory(const int &categoryId)
     m_categoryModel->reload();
 
     if (m_currentCategoryId == categoryId) {
-        m_currentCategoryId = -1;
-        m_menuItemModel->clear();
+        setCurrentCategoryId(-1);
     }
 
     return true;
@@ -165,7 +158,7 @@ bool MenuService::editMenuItem(const int &menuItemId,
 
     m_menuRepo.update(menuItem);
 
-    m_menuItemModel->reload(m_currentCategoryId);
+    m_menuItemModel->setCategory(m_currentCategoryId);
 
     return true;
 }
@@ -183,7 +176,20 @@ bool MenuService::removeMenuItem(const int &menuItemId)
 
     m_menuRepo.remove(menuItem);
 
-    m_menuItemModel->reload(m_currentCategoryId);
+    m_menuItemModel->setCategory(m_currentCategoryId);
 
     return true;
+}
+
+void MenuService::setCurrentCategoryId(int categoryId)
+{
+    if (m_currentCategoryId == categoryId)
+        return;
+
+    m_currentCategoryId = categoryId;
+    emit currentCategoryIdChanged();
+
+    m_menuItemModel->setCategory(categoryId);
+
+    emit menuItemsChanged();
 }

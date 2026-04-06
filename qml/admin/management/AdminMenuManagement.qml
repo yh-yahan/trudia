@@ -18,8 +18,6 @@ Item {
         color: "#121212"
     }
 
-    property int selectedCategoryId: -1
-
     RowLayout {
         anchors.fill: parent
         spacing: 0
@@ -63,7 +61,7 @@ Item {
                         width: parent.width
                         height: 44
                         radius: 4
-                        color: ListView.isCurrentItem ? "#9a7bff" : "#1f1f1f"
+                        color: MenuService.currentCategoryId === id ? "#9a7bff" : "#1f1f1f"
                         border.color: "#2a2a2a"
 
                         function commitEdit() {
@@ -92,7 +90,6 @@ Item {
                             MenuItem {
                                 text: qsTr("Rename")
                                 onTriggered: {
-                                    categoryListView.currentIndex = index
                                     itemRect.originalCategory = name
                                     itemRect.editedCategory = name
                                     itemRect.isEditing = true
@@ -128,7 +125,7 @@ Item {
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: parent.left
                             anchors.leftMargin: 12
-                            color: ListView.isCurrentItem ? "white" : "#d0d0d0"
+                            color: MenuService.currentCategoryId === id ? "white" : "#d0d0d0"
                         }
 
                         TextField {
@@ -179,10 +176,7 @@ Item {
                                 if (mouse.button === Qt.RightButton) {
                                     categoryMenu.popup(itemRect)
                                 } else {
-                                    categoryListView.currentIndex = index
-                                    selectedCategoryId = id
-
-                                    MenuService.setCurrentCategory(id)
+                                    MenuService.currentCategoryId = id
                                 }
                             }
                         }
@@ -272,7 +266,7 @@ Item {
                 spacing: 12
 
                 Text {
-                    text: selectedCategoryId !== -1 ? qsTr("Menu Items") : qsTr(
+                    text: MenuService.currentCategoryId !== -1 ? qsTr("Menu Items") : qsTr(
                                                           "Select a category")
                     font.bold: true
                     font.pixelSize: 18
@@ -280,7 +274,7 @@ Item {
                 }
 
                 Rectangle {
-                    visible: selectedCategoryId !== -1
+                    visible: MenuService.currentCategoryId !== -1
                     Layout.fillWidth: true
                     height: 40
                     color: "#1f1f1f"
@@ -336,7 +330,7 @@ Item {
                 ListView {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    visible: selectedCategoryId !== -1
+                    visible: MenuService.currentCategoryId !== -1
 
                     model: MenuService.menuItemModel
                     clip: true
@@ -512,7 +506,7 @@ Item {
                                         }
                                         var success = MenuService.editMenuItem(
                                                     id, itemNameTrimmed,
-                                                    selectedCategoryId,
+                                                    MenuService.currentCategoryId,
                                                     priceVal,
                                                     itemRect.editedAvailable,
                                                     itemRect.editedTaxable,
@@ -566,7 +560,7 @@ Item {
                 }
 
                 ColumnLayout {
-                    visible: selectedCategoryId !== -1
+                    visible: MenuService.currentCategoryId !== -1
                     Layout.fillWidth: true
                     spacing: 8
 
@@ -700,7 +694,7 @@ Item {
 
                             if (itemNameTrimmed.length === 0
                                     || newItemPrice.text.length === 0
-                                    || selectedCategoryId === -1) {
+                                    || MenuService.currentCategoryId === -1) {
                                 console.warn("Item name, price, and category are required")
                                 return
                             }
@@ -711,7 +705,7 @@ Item {
                             }
 
                             MenuService.addMenuItem(itemNameTrimmed,
-                                                    selectedCategoryId, price,
+                                                    MenuService.currentCategoryId, price,
                                                     newItemAvailable.checked,
                                                     newItemTaxable.checked,
                                                     portionTrimmed)

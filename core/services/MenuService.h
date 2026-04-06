@@ -21,11 +21,12 @@ public:
 
     Q_PROPERTY(CategoryModel* categoryModel READ categoryModel CONSTANT)
     Q_PROPERTY(MenuItemModel* menuItemModel READ menuItemModel NOTIFY menuItemsChanged)
+    Q_PROPERTY(int currentCategoryId READ currentCategoryId WRITE setCurrentCategoryId NOTIFY currentCategoryIdChanged)
 
     CategoryModel* categoryModel() const;
     MenuItemModel* menuItemModel() const;
 
-    Q_INVOKABLE void setCurrentCategory(int categoryId);
+    int currentCategoryId() const;
 
     Q_INVOKABLE bool addCategory(const QString &categoryName);
     Q_INVOKABLE bool renameCategory(const int &categoryId, const QString &newName);
@@ -46,8 +47,12 @@ public:
                      const QString &portionSize = QString());
     Q_INVOKABLE bool removeMenuItem(const int &menuItemId);
 
+public slots:
+    void setCurrentCategoryId(int categoryId);
+
 signals:
     void menuItemsChanged();
+    void currentCategoryIdChanged();
 
 private:
     CategoryRepository &m_categoryRepo;

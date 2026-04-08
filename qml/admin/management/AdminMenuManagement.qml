@@ -156,14 +156,14 @@ Item {
                                 }
                             }
 
-                            Keys.onReturnPressed: {
-                                itemRect.commitEdit()
-                                event.accepted = true
-                            }
-
-                            Keys.onEscapePressed: {
-                                itemRect.cancelEdit()
-                                event.accepted = true
+                            Keys.onPressed: (event) => {
+                                if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+                                    itemRect.commitEdit()
+                                    event.accepted = true
+                                } else if (event.key === Qt.Key_Escape) {
+                                    itemRect.cancelEdit()
+                                    event.accepted = true
+                                }
                             }
                         }
 

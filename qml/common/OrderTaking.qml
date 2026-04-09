@@ -8,11 +8,7 @@ Item {
     width: 800
     height: 600
 
-    property int selectedCategoryId: -1
-    property var categories: []
-    property var menuItems: []
     property string currentOrderType: ""
-    property var tables: []
     property int selectedTableId: -1
     property int currentOrderId: -1
 
@@ -29,26 +25,6 @@ Item {
 
     function changeOrderType(newType) {
         currentOrderType = newType
-    }
-
-    function loadCategories() {
-        categories = MenuService.getAllCategories()
-        if (categories.length > 0 && selectedCategoryId === -1) {
-            selectedCategoryId = categories[0].id
-            loadMenuItems(selectedCategoryId)
-        }
-    }
-
-    function loadMenuItems(categoryId) {
-        if (categoryId >= 0) {
-            menuItems = MenuService.getMenuItemsByCategory(categoryId)
-        } else {
-            menuItems = []
-        }
-    }
-
-    function loadTables() {
-        tables = TableService.getAllTables()
     }
 
     function reloadOrder() {
@@ -86,8 +62,6 @@ Item {
     }
 
     Component.onCompleted: {
-        loadCategories()
-        loadTables()
         recomputeMeta()
         kitchenSettings = SettingService.getKitchenSettings()
         if (kitchenSettings && kitchenSettings.hasOwnProperty(
@@ -186,7 +160,7 @@ Item {
                 rightPadding: 15
                 topPadding: 15
                 bottomPadding: 15
-                checked: currentOrderType === "takeaway"
+                checked: currentOrderType === "delivery"
 
                 background: Rectangle {
                     radius: 6
@@ -237,7 +211,7 @@ Item {
                         id: categoryListView
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        model: categories
+                        model: MenuService.categoryModel
                         clip: true
 
                         delegate: Rectangle {
@@ -251,7 +225,7 @@ Item {
 
                             Text {
                                 visible: true
-                                text: modelData.category
+                                text: name
                                 anchors.verticalCenter: parent.verticalCenter
                                 anchors.left: parent.left
                                 anchors.leftMargin: 12
@@ -262,8 +236,7 @@ Item {
                                 anchors.fill: parent
                                 onClicked: {
                                     categoryListView.currentIndex = index
-                                    selectedCategoryId = modelData.id
-                                    loadMenuItems(selectedCategoryId)
+                                    MenuService.currentCategoryId = id
                                 }
                             }
                         }
@@ -283,7 +256,7 @@ Item {
                     spacing: 12
 
                     Text {
-                        text: selectedCategoryId !== -1 ? qsTr("Menu Items") : qsTr(
+                        text: MenuService.currentCategoryId !== -1 ? qsTr("Menu Items") : qsTr(
                                                               "Select a category")
                         font.bold: true
                         font.pixelSize: 18
@@ -291,7 +264,7 @@ Item {
                     }
 
                     Rectangle {
-                        visible: selectedCategoryId !== -1
+                        visible: MenuService.currentCategoryId !== -1
                         Layout.fillWidth: true
                         height: 36
                         color: "#1f1f1f"
@@ -328,8 +301,8 @@ Item {
                     ListView {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        visible: selectedCategoryId !== -1
-                        model: menuItems
+                        visible: MenuService.currentCategoryId !== -1
+                        model: MenuService.menuItemModel
                         clip: true
                         spacing: 4
 
@@ -342,12 +315,12 @@ Item {
                             border.color: "#2a2a2a"
 
                             property bool isEditing: false
-                            property string editedName: modelData.item
-                            property string editedPrice: modelData.price.toFixed(
+                            property string editedName: item
+                            property string editedPrice: price.toFixed(
                                                              2)
-                            property string editedPortion: modelData.portion_size
+                            property string editedPortion: portion
                                                            || ""
-                            property bool editedAvailable: modelData.is_available
+                            property bool editedAvailable: available
 
                             RowLayout {
                                 anchors.fill: parent
@@ -356,28 +329,28 @@ Item {
 
                                 Text {
                                     visible: true
-                                    text: modelData.item
+                                    text: item
                                     Layout.fillWidth: true
                                     color: "white"
                                 }
 
                                 Text {
                                     visible: true
-                                    text: "RM " + modelData.price.toFixed(2)
+                                    text: "RM " + price.toFixed(2)
                                     width: 70
                                     color: "#d0d0d0"
                                 }
 
                                 Text {
                                     visible: true
-                                    text: modelData.portion_size || "-"
+                                    text: portion || "-"
                                     width: 100
                                     color: "#d0d0d0"
                                 }
 
                                 Button {
                                     text: qsTr("Add")
-                                    enabled: modelData.is_available
+                                    enabled: available
                                     background: Rectangle {
                                         color: "#9a7bff"
                                         radius: 4
@@ -396,7 +369,7 @@ Item {
 
                                         for (var i = 0; i < orderModel.count; i++) {
                                             if (orderModel.get(
-                                                        i).menuItemId === modelData.id) {
+                                                        i).menuItemId === id) {
                                                 orderModel.setProperty(
                                                             i, "qty",
                                                             orderModel.get(
@@ -406,10 +379,10 @@ Item {
                                         }
 
                                         orderModel.append({
-                                                              "menuItemId": obj["id"],
-                                                              "name": obj["item"],
+                                                              "menuItemId": id,
+                                                              "name": item,
                                                               "qty": 1,
-                                                              "price": obj["price"],
+                                                              "price": price,
                                                               "notes": ""
                                                           })
                                     }
@@ -558,7 +531,7 @@ Item {
                             Layout.preferredHeight: 98
                             clip: true
 
-                            model: tables
+                            model: TableService.tableModel
 
                             cellWidth: 80
                             cellHeight: 48
@@ -568,14 +541,14 @@ Item {
                                 height: 40
                                 radius: 4
 
-                                color: modelData.is_active ? "#ff4d4d" : "#4caf50"
+                                color: is_active ? "#ff4d4d" : "#4caf50"
 
                                 border.width: 3
-                                border.color: selectedTableId === modelData.id ? "#9a7bff" : "#222"
+                                border.color: selectedTableId === id ? "#9a7bff" : "#222"
 
                                 Label {
                                     anchors.centerIn: parent
-                                    text: modelData.table_number
+                                    text: name
                                     color: "white"
                                     font.bold: true
                                 }
@@ -585,7 +558,7 @@ Item {
                                     enabled: currentOrderType === "dine_in"
 
                                     onClicked: {
-                                        selectedTableId = modelData.id
+                                        selectedTableId = id
                                     }
                                 }
                             }
@@ -756,11 +729,8 @@ Item {
                                 }
 
                                 Text {
-                                    text: (modelData.table_number !== undefined
-                                           && modelData.table_number
-                                           !== null) ? "Table: " + modelData.table_number : ""
-                                    visible: modelData.table_number !== undefined
-                                             && modelData.table_number !== null
+                                    text: modelData.table_number ? "Table: " + modelData.table_number : ""
+                                    visible: modelData.table_number !== undefined && modelData.table_number !== null
                                     color: "#aaa"
                                     font.pixelSize: 12
                                 }
@@ -809,6 +779,19 @@ Item {
                         RowLayout {
                             spacing: 8
                             Label {
+                                text: qsTr("Total Items:")
+                                color: "white"
+                                font.bold: true
+                            }
+                            Label {
+                                text: totalItems
+                                color: "white"
+                            }
+                        }
+
+                        RowLayout {
+                            spacing: 8
+                            Label {
                                 text: qsTr("Subtotal:")
                                 color: "white"
                                 font.bold: true
@@ -828,52 +811,6 @@ Item {
                             }
                             Label {
                                 text: "RM " + total.toFixed(2)
-                                color: "white"
-                            }
-                        }
-
-                        RowLayout {
-                            spacing: 8
-                            Label {
-                                text: qsTr("Total Items:")
-                                color: "white"
-                                font.bold: true
-                            }
-                            Label {
-                                text: totalItems
-                                color: "white"
-                            }
-                        }
-
-                        RowLayout {
-                            spacing: 8
-                            Label {
-                                text: qsTr("Table:")
-                                color: "white"
-                                font.bold: true
-                            }
-                            Label {
-                                text: (currentOrderType === "dine_in"
-                                       && selectedTableId >= 0) ? (function () {
-                                           for (var i = 0; i < tables.length; i++) {
-                                               if (tables[i].id === selectedTableId)
-                                                   return tables[i].table_number
-                                           }
-                                           return "-"
-                                       })() : "-"
-                                color: "white"
-                            }
-                        }
-
-                        RowLayout {
-                            spacing: 8
-                            Label {
-                                text: qsTr("Discount:")
-                                color: "white"
-                                font.bold: true
-                            }
-                            Label {
-                                text: "RM " + discount.toFixed(2)
                                 color: "white"
                             }
                         }
@@ -941,8 +878,6 @@ Item {
                             currentOrderType = ""
                             selectedTableId = -1
                             currentOrderId = -1
-
-                            loadTables()
                         }
 
                         hoverEnabled: false

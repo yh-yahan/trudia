@@ -4,6 +4,7 @@ import QtQuick.Layouts
 import QtQuick.Dialogs
 import QtCore
 import Trudia.Services 1.0
+import trudia.Theme 1.0
 
 Item {
     id: root
@@ -34,13 +35,13 @@ Item {
             text: qsTr("Choose database location")
             font.pixelSize: 28
             font.bold: true
-            color: "white"
+            color: Theme.text
             wrapMode: Text.WordWrap
         }
 
         Text {
             text: qsTr("Select where the database file will be stored.")
-            color: "lightgray"
+            color: Theme.secondaryText
             wrapMode: Text.WordWrap
         }
 
@@ -97,7 +98,7 @@ Item {
                 Layout.topMargin: 8
 
                 background: Rectangle {
-                    color: "#9a7bff"
+                    color: Theme.primary()
                     radius: 4
                 }
 
@@ -173,7 +174,7 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        color: "#181818"
+        color: Theme.background
         z: -1
     }
 }

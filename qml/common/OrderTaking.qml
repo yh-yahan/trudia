@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import Trudia.Services 1.0
+import trudia.Theme 1.0
 import "../components"
 
 Item {
@@ -98,12 +99,12 @@ Item {
 
                 background: Rectangle {
                     radius: 6
-                    color: dineInBtn.checked ? "#9a7bff" : "#2a2a2a"
+                    color: dineInBtn.checked ? Theme.primary() : Theme.surface
                 }
 
                 contentItem: Label {
                     text: qsTr("Dine In")
-                    color: "white"
+                    color: dineInBtn.checked ? "white" : Theme.text
                     font.bold: true
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
@@ -131,12 +132,12 @@ Item {
 
                 background: Rectangle {
                     radius: 6
-                    color: takeawayBtn.checked ? "#9a7bff" : "#2a2a2a"
+                    color: takeawayBtn.checked ? Theme.primary() : Theme.surface
                 }
 
                 contentItem: Label {
                     text: qsTr("Takeaway")
-                    color: "white"
+                    color: takeawayBtn.checked ? "white" : Theme.text
                     font.bold: true
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
@@ -164,12 +165,12 @@ Item {
 
                 background: Rectangle {
                     radius: 6
-                    color: deliveryBtn.checked ? "#9a7bff" : "#2a2a2a"
+                    color: deliveryBtn.checked ? Theme.primary() : Theme.surface
                 }
 
                 contentItem: Label {
                     text: qsTr("Delivery")
-                    color: "white"
+                    color: deliveryBtn.checked ? "white" : Theme.text
                     font.bold: true
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
@@ -192,7 +193,7 @@ Item {
             // Categories
             Rectangle {
                 width: 220
-                color: "#181818"
+                color: Theme.background
                 Layout.fillHeight: true
 
                 ColumnLayout {
@@ -204,7 +205,7 @@ Item {
                         text: qsTr("Categories")
                         font.bold: true
                         font.pixelSize: 18
-                        color: "white"
+                        color: Theme.text
                     }
 
                     ListView {
@@ -220,8 +221,7 @@ Item {
                             width: parent.width
                             height: 44
                             radius: 4
-                            color: ListView.isCurrentItem ? "#9a7bff" : "#1f1f1f"
-                            border.color: "#2a2a2a"
+                            color: ListView.isCurrentItem ? Theme.primary() : Theme.background
 
                             Text {
                                 visible: true
@@ -229,7 +229,7 @@ Item {
                                 anchors.verticalCenter: parent.verticalCenter
                                 anchors.left: parent.left
                                 anchors.leftMargin: 12
-                                color: ListView.isCurrentItem ? "white" : "#d0d0d0"
+                                color: categoryListView.currentIndex === index ? "white" : Theme.text
                             }
 
                             MouseArea {
@@ -248,7 +248,7 @@ Item {
             Rectangle {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                color: "#181818"
+                color: Theme.background
 
                 ColumnLayout {
                     anchors.fill: parent
@@ -260,14 +260,14 @@ Item {
                                                               "Select a category")
                         font.bold: true
                         font.pixelSize: 18
-                        color: "white"
+                        color: Theme.text
                     }
 
                     Rectangle {
                         visible: MenuService.currentCategoryId !== -1
                         Layout.fillWidth: true
                         height: 36
-                        color: "#1f1f1f"
+                        color: Theme.background
                         radius: 4
 
                         RowLayout {
@@ -277,19 +277,19 @@ Item {
                             Text {
                                 text: qsTr("Item")
                                 Layout.fillWidth: true
-                                color: "#b0b0b0"
+                                color: Theme.secondaryText
                                 font.bold: true
                             }
                             Text {
                                 text: qsTr("Price")
                                 width: 70
-                                color: "#b0b0b0"
+                                color: Theme.secondaryText
                                 font.bold: true
                             }
                             Text {
                                 text: qsTr("Portion")
                                 width: 100
-                                color: "#b0b0b0"
+                                color: Theme.secondaryText
                                 font.bold: true
                             }
                             Item {
@@ -311,8 +311,7 @@ Item {
                             height: 44
                             width: ListView.view.width
                             radius: 4
-                            color: "#1f1f1f"
-                            border.color: "#2a2a2a"
+                            color: Theme.background
 
                             property bool isEditing: false
                             property string editedName: item
@@ -331,28 +330,28 @@ Item {
                                     visible: true
                                     text: item
                                     Layout.fillWidth: true
-                                    color: "white"
+                                    color: Theme.text
                                 }
 
                                 Text {
                                     visible: true
                                     text: "RM " + price.toFixed(2)
                                     width: 70
-                                    color: "#d0d0d0"
+                                    color: Theme.secondaryText
                                 }
 
                                 Text {
                                     visible: true
                                     text: portion || "-"
                                     width: 100
-                                    color: "#d0d0d0"
+                                    color: Theme.secondaryText
                                 }
 
                                 Button {
                                     text: qsTr("Add")
                                     enabled: available
                                     background: Rectangle {
-                                        color: "#9a7bff"
+                                        color: Theme.primary()
                                         radius: 4
                                     }
                                     leftPadding: 15
@@ -401,7 +400,7 @@ Item {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 radius: 6
-                color: "#1e1e1e"
+                color: Theme.background
 
                 ColumnLayout {
                     anchors.fill: parent
@@ -484,7 +483,7 @@ Item {
                             bottomPadding: 10
 
                             background: Rectangle {
-                                color: "#9a7bff"
+                                color: Theme.primary()
                                 radius: 4
                             }
 
@@ -511,7 +510,7 @@ Item {
                         text: qsTr("Current Order")
                         visible: !showEditOrdersList
                         font.pixelSize: 18
-                        color: "white"
+                        color: Theme.text
                     }
 
                     // Table selection
@@ -522,7 +521,7 @@ Item {
 
                         Label {
                             text: "Table"
-                            color: "white"
+                            color: Theme.text
                             font.bold: true
                         }
 
@@ -544,7 +543,7 @@ Item {
                                 color: is_active ? "#ff4d4d" : "#4caf50"
 
                                 border.width: 3
-                                border.color: selectedTableId === id ? "#9a7bff" : "#222"
+                                border.color: selectedTableId === id ? Theme.primary() : Theme.background
 
                                 Label {
                                     anchors.centerIn: parent
@@ -585,7 +584,7 @@ Item {
                             width: ListView.view.width
                             height: 56
                             radius: 4
-                            color: "#2a2a2a"
+                            color: Theme.surface
 
                             property string notes: ""
 
@@ -599,12 +598,12 @@ Item {
 
                                     Label {
                                         text: name
-                                        color: "white"
+                                        color: Theme.text
                                     }
                                     Label {
                                         text: "RM " + price.toFixed(2)
                                         font.pixelSize: 12
-                                        color: "#ccc"
+                                        color: Theme.secondaryText
                                     }
                                 }
 
@@ -631,7 +630,7 @@ Item {
                                     }
                                     Label {
                                         text: qty
-                                        color: "white"
+                                        color: Theme.text
                                         horizontalAlignment: Text.AlignHCenter
                                         Layout.preferredWidth: 24
                                     }
@@ -657,14 +656,14 @@ Item {
                                         rightPadding: 5
                                         topPadding: 5
                                         bottomPadding: 5
-                                        placeholderTextColor: "#b5b5b5"
+                                        placeholderTextColor: Theme.secondaryText
                                         background: Rectangle {
-                                            color: "#1f1f1f"
+                                            color: Theme.background
                                             radius: 4
-                                            border.color: "#888888"
+                                            border.color: Theme.border
                                             border.width: 1
                                         }
-                                        color: "white"
+                                        color: Theme.text
                                         font.pixelSize: 16
 
                                         onTextEdited: {
@@ -709,7 +708,7 @@ Item {
                             width: ListView.view.width
                             height: 70
                             radius: 4
-                            color: "#2a2a2a"
+                            color: Theme.surface
 
                             Column {
                                 anchors.fill: parent
@@ -725,13 +724,13 @@ Item {
 
                                 Text {
                                     text: "Status: " + modelData.status
-                                    color: "#ccc"
+                                    color: Theme.secondaryText
                                 }
 
                                 Text {
                                     text: modelData.table_number ? "Table: " + modelData.table_number : ""
                                     visible: modelData.table_number !== undefined && modelData.table_number !== null
-                                    color: "#aaa"
+                                    color: Theme.secondaryText
                                     font.pixelSize: 12
                                 }
                             }
@@ -780,12 +779,12 @@ Item {
                             spacing: 8
                             Label {
                                 text: qsTr("Total Items:")
-                                color: "white"
+                                color: Theme.text
                                 font.bold: true
                             }
                             Label {
                                 text: totalItems
-                                color: "white"
+                                color: Theme.text
                             }
                         }
 
@@ -793,12 +792,12 @@ Item {
                             spacing: 8
                             Label {
                                 text: qsTr("Subtotal:")
-                                color: "white"
+                                color: Theme.text
                                 font.bold: true
                             }
                             Label {
                                 text: "RM " + subtotal.toFixed(2)
-                                color: "white"
+                                color: Theme.text
                             }
                         }
 
@@ -806,12 +805,12 @@ Item {
                             spacing: 8
                             Label {
                                 text: qsTr("Total:")
-                                color: "white"
+                                color: Theme.text
                                 font.bold: true
                             }
                             Label {
                                 text: "RM " + total.toFixed(2)
-                                color: "white"
+                                color: Theme.text
                             }
                         }
 
@@ -834,7 +833,7 @@ Item {
                         bottomPadding: 15
                         Layout.topMargin: 15
                         background: Rectangle {
-                            color: "#9a7bff"
+                            color: Theme.primary()
                             radius: 4
                         }
                         contentItem: Text {

@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import Trudia.Services 1.0
+import trudia.Theme 1.0
 
 ScrollView {
     id: root
@@ -65,7 +66,7 @@ ScrollView {
             text: qsTr("Printing")
             font.bold: true
             font.pixelSize: 26
-            color: "white"
+            color: Theme.text
         }
 
         // printers
@@ -76,7 +77,7 @@ ScrollView {
                 Layout.fillWidth: true
                 text: qsTr("Printers")
                 font.bold: true
-                color: "#c9c9c9"
+                color: Theme.secondaryText
                 font.pointSize: 16
             }
 
@@ -145,7 +146,7 @@ ScrollView {
                         Text {
                             text: qsTr("Printer")
                             font.bold: true
-                            color: "black"
+                            color: Theme.text
                         }
 
                         Text {
@@ -161,7 +162,7 @@ ScrollView {
 
                                 return qsTr("Unknown");
                             }
-                            color: '#575757'
+                            color: Theme.text
                         }
 
                         RowLayout {
@@ -235,7 +236,7 @@ ScrollView {
                 Layout.fillWidth: true
                 text: qsTr("Paper and Format")
                 font.bold: true
-                color: "#c9c9c9"
+                color: Theme.secondaryText
                 font.pointSize: 16
             }
 
@@ -247,7 +248,7 @@ ScrollView {
 
                 Label {
                     text: qsTr("Paper Width")
-                    color: "white"
+                    color: Theme.text
                 }
 
                 ComboBox {
@@ -327,7 +328,7 @@ ScrollView {
             Layout.topMargin: 10
             Layout.leftMargin: 20
             background: Rectangle {
-                color: "#9a7bff"
+                color: Theme.primary()
                 radius: 4
             }
             contentItem: Text {
@@ -383,7 +384,7 @@ ScrollView {
         width: 400
         height: 300
         background: Rectangle {
-            color: "#2b2b2b"
+            color: Theme.background
             radius: 8
         }
 
@@ -406,14 +407,14 @@ ScrollView {
                     text: qsTr("Add Printer")
                     font.bold: true
                     font.pixelSize: 22
-                    color: "white"
+                    color: Theme.text
                     horizontalAlignment: Text.AlignHCenter
                     Layout.alignment: Qt.AlignHCenter
                 }
 
                 Text {
                     text: qsTr("Select Connection Type:")
-                    color: "white"
+                    color: Theme.text
                     font.pointSize: 14
                 }
 
@@ -427,7 +428,7 @@ ScrollView {
                         checked: true
                         contentItem: Text {
                             text: "     USB"
-                            color: "white"
+                            color: Theme.text
                         }
                         onClicked: addPrinterPopup.connectionType = "USB"
                     }
@@ -446,7 +447,7 @@ ScrollView {
                         Layout.fillWidth: true
                         font.bold: true
                         background: Rectangle {
-                            color: "#9a7bff"
+                            color: Theme.primary()
                             radius: 4
                         }
                         contentItem: Text {
@@ -512,13 +513,13 @@ ScrollView {
 
                     Text {
                         text: qsTr("USB Printers")
-                        color: "white"
+                        color: Theme.text
                         font.bold: true
                     }
 
                     Text {
                         text: portsModel.count === 0 ? qsTr("No printers found") : qsTr("Select a printer")
-                        color: "lightgray"
+                        color: Theme.secondaryText
                     }
 
                     ListView {
@@ -538,7 +539,7 @@ ScrollView {
 
                             contentItem: Text {
                                 text: "     " + name + " (" + port + ")"
-                                color: "white"
+                                color: Theme.text
                             }
                         }
                     }
@@ -551,7 +552,7 @@ ScrollView {
                             Layout.fillWidth: true
                             background: Rectangle {
                                 color: 'transparent'
-                                border.color: "#9a7bff"
+                                border.color: Theme.primary()
                                 border.width: 1
                                 radius: 4
                             }
@@ -561,7 +562,7 @@ ScrollView {
                                 anchors.centerIn: parent
                                 horizontalAlignment: Text.AlignHCenter
                                 verticalAlignment: Text.AlignVCenter
-                                color: "#9a7bff"
+                                color: Theme.primary()
                             }
 
                             hoverEnabled: false
@@ -600,7 +601,7 @@ ScrollView {
                             Layout.fillWidth: true
 
                             background: Rectangle {
-                                color: '#9a7bff'
+                                color: Theme.primary()
                                 radius: 4
                             }
                             contentItem: Text {

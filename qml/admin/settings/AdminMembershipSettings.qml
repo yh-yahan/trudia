@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import Trudia.Services 1.0
+import trudia.Theme 1.0
 
 ScrollView {
     property var membershipData: ({})
@@ -35,7 +36,7 @@ ScrollView {
             text: qsTr("Membership Settings")
             font.pixelSize: 26
             font.bold: true
-            color: "white"
+            color: Theme.text
         }
 
         ColumnLayout {
@@ -44,7 +45,7 @@ ScrollView {
             Text {
                 text: qsTr("General")
                 font.bold: true
-                color: "#c9c9c9"
+                color: Theme.secondaryText
                 font.pointSize: 16
             }
 
@@ -59,7 +60,7 @@ ScrollView {
 
                     Label {
                         text: qsTr("Enable Points Loyalty")
-                        color: "white"
+                        color: Theme.text
                         Layout.fillWidth: true
                     }
 
@@ -78,7 +79,7 @@ ScrollView {
             Text {
                 text: qsTr("Earning Rules")
                 font.bold: true
-                color: "#c9c9c9"
+                color: Theme.secondaryText
                 font.pointSize: 16
             }
 
@@ -94,7 +95,7 @@ ScrollView {
 
                     Label {
                         text: qsTr("Earn")
-                        color: "white"
+                        color: Theme.text
                         Layout.preferredWidth: 230
                     }
 
@@ -106,19 +107,19 @@ ScrollView {
                             width: 60
                             inputMethodHints: Qt.ImhDigitsOnly
                             placeholderText: "1"
-                            placeholderTextColor: "#AAAAAA"
-                            color: "white"
+                            placeholderTextColor: Theme.secondaryText
+                            color: Theme.text
                             horizontalAlignment: Text.AlignHCenter
 
                             background: Rectangle {
-                                color: "#3A3A3A"
+                                color: Theme.background
                                 radius: 6
                             }
                         }
 
                         Label {
                             text: qsTr("point(s) for every RM")
-                            color: "white"
+                            color: Theme.text
                         }
 
                         TextField {
@@ -126,19 +127,19 @@ ScrollView {
                             width: 80
                             inputMethodHints: Qt.ImhFormattedNumbersOnly
                             placeholderText: "1.00"
-                            placeholderTextColor: "#AAAAAA"
-                            color: "white"
+                            placeholderTextColor: Theme.secondaryText
+                            color: Theme.text
                             horizontalAlignment: Text.AlignHCenter
 
                             background: Rectangle {
-                                color: "#3A3A3A"
+                                color: Theme.surface
                                 radius: 6
                             }
                         }
 
                         Label {
                             text: qsTr("spent")
-                            color: "white"
+                            color: Theme.text
                         }
                     }
                 }
@@ -148,7 +149,7 @@ ScrollView {
 
                     Label {
                         text: qsTr("Earn Based On")
-                        color: "white"
+                        color: Theme.text
                         Layout.preferredWidth: 230
                     }
 
@@ -179,7 +180,7 @@ ScrollView {
             Text {
                 text: qsTr("Redemption Rules")
                 font.bold: true
-                color: "#c9c9c9"
+                color: Theme.secondaryText
                 font.pointSize: 16
             }
 
@@ -195,7 +196,7 @@ ScrollView {
 
                     Label {
                         text: qsTr("Redemption")
-                        color: "white"
+                        color: Theme.text
                         Layout.preferredWidth: 230
                     }
 
@@ -207,19 +208,19 @@ ScrollView {
                             width: 80
                             inputMethodHints: Qt.ImhDigitsOnly
                             placeholderText: "100"
-                            placeholderTextColor: "#AAAAAA"
-                            color: "white"
+                            placeholderTextColor: Theme.secondaryText
+                            color: Theme.text
                             horizontalAlignment: Text.AlignHCenter
 
                             background: Rectangle {
-                                color: "#3A3A3A"
+                                color: Theme.surface
                                 radius: 6
                             }
                         }
 
                         Label {
                             text: qsTr("points = RM")
-                            color: "white"
+                            color: Theme.text
                         }
 
                         TextField {
@@ -227,12 +228,12 @@ ScrollView {
                             width: 80
                             inputMethodHints: Qt.ImhFormattedNumbersOnly
                             placeholderText: "1.00"
-                            placeholderTextColor: "#AAAAAA"
-                            color: "white"
+                            placeholderTextColor: Theme.secondaryText
+                            color: Theme.text
                             horizontalAlignment: Text.AlignHCenter
 
                             background: Rectangle {
-                                color: "#3A3A3A"
+                                color: Theme.background
                                 radius: 6
                             }
                         }
@@ -243,7 +244,7 @@ ScrollView {
     }
 
     background: Rectangle {
-        color: "#1E1E1E"
+        color: Theme.background
     }
 
     RowLayout {
@@ -263,7 +264,7 @@ ScrollView {
             bottomPadding: 10
 
             background: Rectangle {
-                color: "#9a7bff"
+                color: Theme.primary()
                 radius: 4
             }
 

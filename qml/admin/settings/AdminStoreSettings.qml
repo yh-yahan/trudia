@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import Trudia.Services 1.0
+import trudia.Theme 1.0
 
 ScrollView {
     id: root
@@ -35,7 +36,7 @@ ScrollView {
             text: qsTr("Restaurant Settings")
             font.bold: true
             font.pixelSize: 26
-            color: "white"
+            color: Theme.text
         }
 
         // basic information
@@ -46,7 +47,7 @@ ScrollView {
                 Layout.fillWidth: true
                 text: qsTr("Basic Information")
                 font.bold: true
-                color: "#c9c9c9"
+                color: Theme.secondaryText
                 font.pointSize: 16
             }
 
@@ -58,7 +59,7 @@ ScrollView {
 
                 Label {
                     text: qsTr("Restaurant Name")
-                    color: "white"
+                    color: Theme.text
                 }
 
                 TextField {
@@ -70,18 +71,18 @@ ScrollView {
                     rightPadding: 10
                     topPadding: 10
                     bottomPadding: 10
-                    color: "white"
-                    placeholderTextColor: "#b5b5b5"
+                    color: Theme.text
+                    placeholderTextColor: Theme.secondaryText
                     background: Rectangle {
-                        color: "#1f1f1f"
+                        color: Theme.background
                         radius: 4
-                        border.color: "#888888"
+                        border.color: Theme.border
                     }
                 }
 
                 Label {
                     text: qsTr("Address")
-                    color: "white"
+                    color: Theme.text
                 }
 
                 TextField {
@@ -93,18 +94,18 @@ ScrollView {
                     rightPadding: 10
                     topPadding: 10
                     bottomPadding: 10
-                    color: "white"
-                    placeholderTextColor: "#b5b5b5"
+                    color: Theme.text
+                    placeholderTextColor: Theme.secondaryText
                     background: Rectangle {
-                        color: "#1f1f1f"
+                        color: Theme.background
                         radius: 4
-                        border.color: "#888888"
+                        border.color: Theme.border
                     }
                 }
 
                 Label {
                     text: qsTr("Phone Number (optional)")
-                    color: "white"
+                    color: Theme.text
                 }
 
                 TextField {
@@ -116,18 +117,18 @@ ScrollView {
                     rightPadding: 10
                     topPadding: 10
                     bottomPadding: 10
-                    color: "white"
-                    placeholderTextColor: "#b5b5b5"
+                    color: Theme.text
+                    placeholderTextColor: Theme.secondaryText
                     background: Rectangle {
-                        color: "#1f1f1f"
+                        color: Theme.background
                         radius: 4
-                        border.color: "#888888"
+                        border.color: Theme.border
                     }
                 }
 
                 Label {
                     text: qsTr("Email (optional)")
-                    color: "white"
+                    color: Theme.text
                 }
 
                 TextField {
@@ -139,18 +140,18 @@ ScrollView {
                     rightPadding: 10
                     topPadding: 10
                     bottomPadding: 10
-                    color: "white"
-                    placeholderTextColor: "#b5b5b5"
+                    color: Theme.text
+                    placeholderTextColor: Theme.secondaryText
                     background: Rectangle {
-                        color: "#1f1f1f"
+                        color: Theme.background
                         radius: 4
-                        border.color: "#888888"
+                        border.color: Theme.border
                     }
                 }
 
                 Label {
                     text: qsTr("Website (optional)")
-                    color: "white"
+                    color: Theme.text
                 }
 
                 TextField {
@@ -162,12 +163,12 @@ ScrollView {
                     rightPadding: 10
                     topPadding: 10
                     bottomPadding: 10
-                    color: "white"
-                    placeholderTextColor: "#b5b5b5"
+                    color: Theme.text
+                    placeholderTextColor: Theme.secondaryText
                     background: Rectangle {
-                        color: "#1f1f1f"
+                        color: Theme.background
                         radius: 4
-                        border.color: "#888888"
+                        border.color: Theme.border
                     }
                 }
             }
@@ -193,7 +194,7 @@ ScrollView {
             Layout.bottomMargin: 10
             Layout.leftMargin: 20
             background: Rectangle {
-                color: "#9a7bff"
+                color: Theme.primary()
                 radius: 4
             }
             contentItem: Text {

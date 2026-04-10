@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 import Trudia.Services 1.0
+import trudia.Theme 1.0
 
 Item {
     visible: true
@@ -31,7 +32,7 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        color: "#181818"
+        color: Theme.background
     }
 
     RowLayout {
@@ -41,7 +42,7 @@ Item {
         Rectangle {
             Layout.preferredWidth: 300
             Layout.fillHeight: true
-            color: "#181818"
+            color: Theme.background
 
             Column {
                 anchors.centerIn: parent
@@ -51,7 +52,7 @@ Item {
                     text: "Trudia"
                     font.bold: true
                     font.pixelSize: 32
-                    color: "white"
+                    color: Theme.text
                     horizontalAlignment: Text.AlignHCenter
                     anchors.horizontalCenter: parent.horizontalCenter
                 }
@@ -59,7 +60,7 @@ Item {
                 Text {
                     text: "v0.1.1-dev"
                     font.pixelSize: 12
-                    color: "#aaaaaa"
+                    color: Theme.secondaryText
                     horizontalAlignment: Text.AlignHCenter
                     anchors.horizontalCenter: parent.horizontalCenter
                 }
@@ -69,7 +70,7 @@ Item {
         Rectangle {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            color: "#181818"
+            color: Theme.background
 
             ColumnLayout {
                 anchors.centerIn: parent
@@ -80,13 +81,13 @@ Item {
                     text: qsTr("Create your admin account")
                     font.bold: true
                     font.pixelSize: 28
-                    color: "white"
+                    color: Theme.text
                     wrapMode: Text.WordWrap
                 }
 
                 Label {
                     text: qsTr("Username")
-                    color: "white"
+                    color: Theme.text
                 }
 
                 TextField {
@@ -101,7 +102,7 @@ Item {
 
                 Label {
                     text: qsTr("Password")
-                    color: "white"
+                    color: Theme.text
                 }
 
                 TextField {
@@ -117,7 +118,7 @@ Item {
 
                 Label {
                     text: qsTr("Confirm password")
-                    color: "white"
+                    color: Theme.text
                 }
 
                 TextField {
@@ -141,7 +142,7 @@ Item {
                     bottomPadding: 15
                     Layout.topMargin: 15
                     background: Rectangle {
-                        color: "#9a7bff"
+                        color: Theme.primary()
                         radius: 4
                     }
                     contentItem: Text {

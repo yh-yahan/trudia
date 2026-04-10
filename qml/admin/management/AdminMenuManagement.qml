@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import Trudia.Services 1.0
+import trudia.Theme 1.0
 import "../../components"
 
 Item {
@@ -15,7 +16,7 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        color: "#121212"
+        color: Theme.background
     }
 
     RowLayout {
@@ -24,7 +25,7 @@ Item {
 
         Rectangle {
             width: 220
-            color: "#181818"
+            color: Theme.background
             Layout.fillHeight: true
 
             ColumnLayout {
@@ -36,7 +37,7 @@ Item {
                     text: qsTr("Categories")
                     font.bold: true
                     font.pixelSize: 18
-                    color: "white"
+                    color: Theme.text
                 }
 
                 ListView {
@@ -61,8 +62,7 @@ Item {
                         width: parent.width
                         height: 44
                         radius: 4
-                        color: MenuService.currentCategoryId === id ? "#9a7bff" : "#1f1f1f"
-                        border.color: "#2a2a2a"
+                        color: MenuService.currentCategoryId === id ? Theme.primary() : Theme.background
 
                         function commitEdit() {
                             var newName = editedCategory.trim()
@@ -125,7 +125,7 @@ Item {
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: parent.left
                             anchors.leftMargin: 12
-                            color: MenuService.currentCategoryId === id ? "white" : "#d0d0d0"
+                            color: MenuService.currentCategoryId === id ? "white" : Theme.text
                         }
 
                         TextField {
@@ -138,14 +138,14 @@ Item {
                             anchors.leftMargin: 12
                             width: parent.width - 24
 
-                            color: "white"
+                            color: Theme.text
                             selectByMouse: true
                             focus: true
 
                             background: Rectangle {
-                                color: "#292929"
+                                color: Theme.background
                                 radius: 4
-                                border.color: "#9a7bff"
+                                border.color: Theme.primary
                             }
 
                             onTextChanged: itemRect.editedCategory = text
@@ -194,28 +194,23 @@ Item {
                         Layout.fillWidth: true
                         height: 40
                         font.pixelSize: 14
-                        color: "white"
+                        color: Theme.text
                         leftPadding: 10
                         rightPadding: 10
                         topPadding: 10
                         bottomPadding: 10
-                        placeholderTextColor: "#b5b5b5"
+                        placeholderTextColor: Theme.secondaryText
 
                         background: Rectangle {
-                            color: "#1f1f1f"
+                            color: Theme.background
                             radius: 4
-                            border.color: "#888888"
+                            border.color: Theme.border
                             border.width: 1
                         }
 
                         Component.onCompleted: {
                             if (itemRect.isEditing)
                                 forceActiveFocus()
-                        }
-
-                        onActiveFocusChanged: {
-                            background.border.color = activeFocus ? "#9a7bff" : "#888888"
-                            background.color = activeFocus ? "#292929" : "#1f1f1f"
                         }
                     }
 
@@ -228,7 +223,7 @@ Item {
                         topPadding: 15
                         bottomPadding: 15
                         background: Rectangle {
-                            color: "#9a7bff"
+                            color: Theme.primary()
                             radius: 4
                         }
                         contentItem: Text {
@@ -258,7 +253,7 @@ Item {
         Rectangle {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            color: "#181818"
+            color: Theme.background
 
             ColumnLayout {
                 anchors.fill: parent
@@ -270,14 +265,14 @@ Item {
                                                           "Select a category")
                     font.bold: true
                     font.pixelSize: 18
-                    color: "white"
+                    color: Theme.text
                 }
 
                 Rectangle {
                     visible: MenuService.currentCategoryId !== -1
                     Layout.fillWidth: true
                     height: 40
-                    color: "#1f1f1f"
+                    color: Theme.background
                     radius: 6
 
                     RowLayout {
@@ -288,14 +283,14 @@ Item {
                         Text {
                             text: qsTr("Item")
                             font.bold: true
-                            color: "#b0b0b0"
+                            color: Theme.secondaryText
                             Layout.fillWidth: true
                         }
 
                         Text {
                             text: qsTr("Price")
                             font.bold: true
-                            color: "#b0b0b0"
+                            color: Theme.secondaryText
                             Layout.preferredWidth: 90
                             horizontalAlignment: Text.AlignRight
                         }
@@ -303,21 +298,21 @@ Item {
                         Text {
                             text: qsTr("Portion")
                             font.bold: true
-                            color: "#b0b0b0"
+                            color: Theme.secondaryText
                             Layout.preferredWidth: 120
                         }
 
                         Text {
                             text: qsTr("Available")
                             font.bold: true
-                            color: "#b0b0b0"
+                            color: Theme.secondaryText
                             Layout.preferredWidth: 100
                         }
 
                         Text {
                             text: qsTr("Taxable")
                             font.bold: true
-                            color: "#b0b0b0"
+                            color: Theme.secondaryText
                             Layout.preferredWidth: 100
                         }
 
@@ -341,8 +336,8 @@ Item {
                         height: 44
                         width: ListView.view.width
                         radius: 4
-                        color: "#1f1f1f"
-                        border.color: "#2a2a2a"
+                        color: Theme.background
+                        border.color: Theme.surface
 
                         required property int id
                         required property string item
@@ -371,14 +366,14 @@ Item {
                                     visible: itemRect.isEditing
                                     text: itemRect.editedName
                                     anchors.fill: parent
-                                    color: "white"
+                                    color: Theme.text
                                     placeholderText: qsTr("Item Name")
                                     font.pixelSize: 14
-                                    placeholderTextColor: "#b5b5b5"
+                                    placeholderTextColor: Theme.secondaryText
                                     background: Rectangle {
-                                        color: "#292929"
+                                        color: Theme.background
                                         radius: 4
-                                        border.color: "#888888"
+                                        border.color: Theme.border
                                     }
 
                                     onTextChanged: itemRect.editedName = text
@@ -387,7 +382,7 @@ Item {
                                 Text {
                                     visible: !itemRect.isEditing
                                     text: item
-                                    color: "white"
+                                    color: Theme.text
                                     elide: Text.ElideRight
                                     anchors.verticalCenter: parent.verticalCenter
                                     width: parent.width
@@ -403,14 +398,14 @@ Item {
                                     text: itemRect.editedPrice
                                     anchors.fill: parent
                                     horizontalAlignment: Text.AlignRight
-                                    color: "white"
+                                    color: Theme.text
                                     placeholderText: qsTr("Price")
                                     font.pixelSize: 14
-                                    placeholderTextColor: "#b5b5b5"
+                                    placeholderTextColor: Theme.secondaryText
                                     background: Rectangle {
-                                        color: "#292929"
+                                        color: Theme.background
                                         radius: 4
-                                        border.color: "#888888"
+                                        border.color: Theme.border
                                     }
 
                                     onTextChanged: itemRect.editedPrice = text
@@ -422,7 +417,7 @@ Item {
                                     horizontalAlignment: Text.AlignRight
                                     anchors.verticalCenter: parent.verticalCenter
                                     width: parent.width
-                                    color: "#d0d0d0"
+                                    color: Theme.secondaryText
                                 }
                             }
 
@@ -434,14 +429,14 @@ Item {
                                     visible: itemRect.isEditing
                                     text: itemRect.editedPortion
                                     anchors.fill: parent
-                                    color: "white"
+                                    color: Theme.text
                                     placeholderText: qsTr("Portion")
                                     font.pixelSize: 14
-                                    placeholderTextColor: "#b5b5b5"
+                                    placeholderTextColor: Theme.secondaryText
                                     background: Rectangle {
-                                        color: "#1f1f1f"
+                                        color: Theme.background
                                         radius: 4
-                                        border.color: "#888888"
+                                        border.color: Theme.border
                                         border.width: 1
                                     }
 
@@ -453,7 +448,7 @@ Item {
                                     text: portion || "-"
                                     anchors.verticalCenter: parent.verticalCenter
                                     width: parent.width
-                                    color: "#d0d0d0"
+                                    color: Theme.secondaryText
                                 }
                             }
 
@@ -475,7 +470,7 @@ Item {
                                 text: itemRect.isEditing ? qsTr("Save") : qsTr(
                                                                "Edit")
                                 background: Rectangle {
-                                    color: "#9a7bff"
+                                    color: Theme.primary()
                                     radius: 4
                                 }
                                 leftPadding: 15
@@ -577,18 +572,14 @@ Item {
                             topPadding: 10
                             bottomPadding: 10
                             font.pixelSize: 14
-                            color: "white"
-                            placeholderTextColor: "#b5b5b5"
+                            color: Theme.text
+                            placeholderTextColor: Theme.secondaryText
                             padding: 10
                             background: Rectangle {
-                                color: "#1f1f1f"
+                                color: Theme.background
                                 radius: 4
-                                border.color: "#888888"
+                                border.color: Theme.border
                                 border.width: 1
-                            }
-                            onActiveFocusChanged: {
-                                background.border.color = activeFocus ? "#9a7bff" : "#888888"
-                                background.color = activeFocus ? "#292929" : "#1f1f1f"
                             }
                         }
 
@@ -599,21 +590,17 @@ Item {
                             inputMethodHints: Qt.ImhFormattedNumbersOnly
                             height: 40
                             font.pixelSize: 14
-                            color: "white"
+                            color: Theme.text
                             leftPadding: 10
                             rightPadding: 10
                             topPadding: 10
                             bottomPadding: 10
-                            placeholderTextColor: "#b5b5b5"
+                            placeholderTextColor: Theme.secondaryText
                             background: Rectangle {
-                                color: "#1f1f1f"
+                                color: Theme.background
                                 radius: 4
-                                border.color: "#888888"
+                                border.color: Theme.border
                                 border.width: 1
-                            }
-                            onActiveFocusChanged: {
-                                background.border.color = activeFocus ? "#9a7bff" : "#888888"
-                                background.color = activeFocus ? "#292929" : "#1f1f1f"
                             }
                         }
 
@@ -627,17 +614,13 @@ Item {
                             rightPadding: 10
                             topPadding: 10
                             bottomPadding: 10
-                            color: "white"
-                            placeholderTextColor: "#b5b5b5"
+                            color: Theme.text
+                            placeholderTextColor: Theme.secondaryText
                             background: Rectangle {
-                                color: "#1f1f1f"
+                                color: Theme.background
                                 radius: 4
-                                border.color: "#888888"
+                                border.color: Theme.border
                                 border.width: 1
-                            }
-                            onActiveFocusChanged: {
-                                background.border.color = activeFocus ? "#9a7bff" : "#888888"
-                                background.color = activeFocus ? "#292929" : "#1f1f1f"
                             }
                         }
 
@@ -649,7 +632,7 @@ Item {
                             Layout.alignment: Qt.AlignVCenter
                             contentItem: Text {
                                 text: qsTr("Available")
-                                color: "white"
+                                color: Theme.text
                                 anchors.verticalCenter: parent.verticalCenter
                             }
                         }
@@ -662,7 +645,7 @@ Item {
                             Layout.alignment: Qt.AlignVCenter
                             contentItem: Text {
                                 text: qsTr("Taxable")
-                                color: "white"
+                                color: Theme.text
                                 anchors.verticalCenter: parent.verticalCenter
                             }
                         }
@@ -677,7 +660,7 @@ Item {
                         topPadding: 15
                         bottomPadding: 15
                         background: Rectangle {
-                            color: "#9a7bff"
+                            color: Theme.primary()
                             radius: 4
                         }
                         contentItem: Text {

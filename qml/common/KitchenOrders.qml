@@ -2,16 +2,13 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import Trudia.Services 1.0
+import trudia.Theme 1.0
 
 Item {
     width: 1200
     height: 600
 
-    readonly property color bgColor: "#121212"
-    readonly property color cardColor: "#1e1e1e"
-    readonly property color accentColor: "#9a7bff"
-    readonly property color textColor: "white"
-    readonly property color noteColor: "#ffcc80"
+    readonly property color noteColor: '#ecb056'
 
     property var pendingOrders: []
     property var preparingOrders: []
@@ -35,7 +32,7 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        color: bgColor
+        color: Theme.background
     }
 
     RowLayout {
@@ -77,7 +74,7 @@ Item {
 
         Text {
             text: title
-            color: textColor
+            color: Theme.text
             font.pixelSize: 22
             font.bold: true
         }
@@ -85,7 +82,7 @@ Item {
         Rectangle {
             height: 2
             width: parent.width
-            color: accentColor
+            color: Theme.primary()
         }
 
         ListView {
@@ -97,7 +94,7 @@ Item {
 
             delegate: Rectangle {
                 width: ListView.view.width
-                color: cardColor
+                color: Theme.surface
                 radius: 6
                 implicitHeight: content.implicitHeight + 24
 
@@ -112,14 +109,14 @@ Item {
 
                         Text {
                             text: "#" + modelData.display_number
-                            color: textColor
+                            color: Theme.text
                             font.pixelSize: 18
                             font.bold: true
                         }
 
                         Text {
                             text: modelData.order_type.toUpperCase()
-                            color: textColor
+                            color: Theme.text
                             font.pixelSize: 12
                         }
 
@@ -130,7 +127,7 @@ Item {
                         Text {
                             visible: modelData.table_number !== null
                             text: "Table " + modelData.table_number
-                            color: textColor
+                            color: Theme.text
                             font.pixelSize: 12
                         }
                     }
@@ -145,15 +142,15 @@ Item {
                                 spacing: 2
 
                                 Text {
-                                    text: modelData.item_name + " ×" + modelData.quantity
-                                    color: textColor
+                                    text: modelData.item_name + " x" + modelData.quantity
+                                    color: Theme.Text
                                     font.pixelSize: 14
                                 }
 
                                 Text {
                                     visible: modelData.notes
                                              && modelData.notes.length > 0
-                                    text: "– " + modelData.notes
+                                    text: "- " + modelData.notes
                                     color: noteColor
                                     font.pixelSize: 12
                                 }
@@ -175,7 +172,7 @@ Item {
                         Layout.preferredHeight: 38
 
                         background: Rectangle {
-                            color: accentColor
+                            color: Theme.primary()
                             radius: 4
                         }
 

@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import trudia.Theme 1.0
 
 Popup {
     id: confirmDialog
@@ -17,9 +18,9 @@ Popup {
     property var confirmCallback: null
 
     background: Rectangle {
-        color: "#1f1f1f"
+        color: Theme.background
         radius: 8
-        border.color: "#2a2a2a"
+        border.color: Theme.border
     }
 
     ColumnLayout {
@@ -31,12 +32,12 @@ Popup {
             text: confirmDialog.title
             font.pixelSize: 18
             font.bold: true
-            color: "white"
+            color: Theme.text
         }
 
         Text {
             text: confirmDialog.message
-            color: "#d0d0d0"
+            color: Theme.secondaryText
             wrapMode: Text.WordWrap
             Layout.fillWidth: true
         }
@@ -53,13 +54,13 @@ Popup {
                 text: qsTr("Cancel")
 
                 background: Rectangle {
-                    color: "#2b2b2b"
+                    color: Theme.surface
                     radius: 4
                 }
 
                 contentItem: Text {
                     text: qsTr("Cancel")
-                    color: "white"
+                    color: Theme.text
                     anchors.centerIn: parent
                 }
 

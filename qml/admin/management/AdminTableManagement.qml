@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import Trudia.Services 1.0
+import trudia.Theme 1.0
 import "../../components"
 
 Item {
@@ -15,7 +16,7 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        color: "#121212"
+        color: Theme.background
     }
 
     ColumnLayout {
@@ -27,13 +28,13 @@ Item {
             text: qsTr("Table Management")
             font.bold: true
             font.pixelSize: 18
-            color: "white"
+            color: Theme.text
         }
 
         Rectangle {
             Layout.fillWidth: true
             height: 36
-            color: "#1f1f1f"
+            color: Theme.surface
             radius: 4
 
             RowLayout {
@@ -44,13 +45,13 @@ Item {
                 Text {
                     text: qsTr("Table Name")
                     Layout.fillWidth: true
-                    color: "#b0b0b0"
+                    color: Theme.secondaryText
                     font.bold: true
                 }
                 Text {
                     text: qsTr("Capacity")
                     width: 80
-                    color: "#b0b0b0"
+                    color: Theme.secondaryText
                     font.bold: true
                 }
                 Item {
@@ -71,8 +72,7 @@ Item {
                 height: 44
                 width: ListView.view.width
                 radius: 4
-                color: "#1f1f1f"
-                border.color: "#2a2a2a"
+                color: Theme.background
 
                 property bool isEditing: false
                 property string editedName: name
@@ -89,17 +89,17 @@ Item {
                         visible: tableRect.isEditing
                         text: tableRect.editedName
                         Layout.fillWidth: true
-                        color: "white"
+                        color: Theme.text
                         background: Rectangle {
-                            color: "#292929"
+                            color: Theme.background
                             radius: 4
-                            border.color: "#888888"
+                            border.color: Theme.border
                             border.width: 1
                         }
                         onTextChanged: tableRect.editedName = text
                         onActiveFocusChanged: {
-                            background.border.color = activeFocus ? "#9a7bff" : "#888888"
-                            background.color = activeFocus ? "#292929" : "#1f1f1f"
+                            background.border.color = activeFocus ? Theme.primary() : Theme.secondaryText
+                            background.color = activeFocus ? Theme.surface : Theme.background
                         }
                         Keys.onReturnPressed: {
                             commitEdit()
@@ -115,7 +115,7 @@ Item {
                         visible: !tableRect.isEditing
                         text: name
                         Layout.fillWidth: true
-                        color: "white"
+                        color: Theme.text
                     }
 
                     SpinBox {
@@ -131,13 +131,13 @@ Item {
                         visible: !tableRect.isEditing
                         text: capacity
                         width: 80
-                        color: "#d0d0d0"
+                        color: Theme.secondaryText
                     }
 
                     Button {
                         text: tableRect.isEditing ? qsTr("Save") : qsTr("Edit")
                         background: Rectangle {
-                            color: "#9a7bff"
+                            color: Theme.primary()
                             radius: 4
                         }
                         contentItem: Text {
@@ -228,16 +228,16 @@ Item {
                     rightPadding: 10
                     topPadding: 10
                     bottomPadding: 10
-                    color: "white"
-                    placeholderTextColor: "#b5b5b5"
+                    color: Theme.text
+                    placeholderTextColor: Theme.secondaryText
                     background: Rectangle {
-                        color: "#1f1f1f"
+                        color: Theme.surface
                         radius: 4
-                        border.color: "#888888"
+                        border.color: Theme.border
                     }
                     onActiveFocusChanged: {
-                        background.border.color = activeFocus ? "#9a7bff" : "#888888"
-                        background.color = activeFocus ? "#292929" : "#1f1f1f"
+                        background.border.color = activeFocus ? Theme.primary() : Theme.secondaryText
+                        background.color = activeFocus ? Theme.surface : Theme.background
                     }
                 }
 
@@ -250,9 +250,9 @@ Item {
                     topPadding: 10
                     bottomPadding: 10
                     background: Rectangle {
-                        color: "#1f1f1f"
+                        color: Theme.background
                         radius: 4
-                        border.color: "#888888"
+                        border.color: Theme.border
                     }
                 }
             }
@@ -266,7 +266,7 @@ Item {
                 topPadding: 15
                 bottomPadding: 15
                 background: Rectangle {
-                    color: "#9a7bff"
+                    color: Theme.primary()
                     radius: 4
                 }
                 contentItem: Text {

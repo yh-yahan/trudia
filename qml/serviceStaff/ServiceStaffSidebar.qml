@@ -2,12 +2,13 @@ import QtQuick
 import QtQuick.Controls 2.15
 import QtQuick.Layouts
 import Trudia.Services 1.0
+import trudia.Theme 1.0
 
 Rectangle {
     id: sidebarBackground
     width: parent.width * 0.20
     height: parent.height
-    color: "#121212"
+    color: Theme.background
 
     property int selectedIndex: 0
     property string kitchenMode: "none"
@@ -50,7 +51,7 @@ Rectangle {
                 property int index: model.index
 
                 background: Rectangle {
-                    color: sidebarBackground.selectedIndex === index ? "#9a7bff" : "#121212"
+                    color: sidebarBackground.selectedIndex === index ? Theme.primary() : Theme.background
                 }
 
                 contentItem: Text {
@@ -59,7 +60,9 @@ Rectangle {
                     anchors.centerIn: parent
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
-                    color: enabled ? "white" : "#888888"
+                    color: sidebarBackground.selectedIndex === index
+                        ? "white"
+                        : (enabled ? Theme.text : Theme.secondaryText)
                     elide: Text.ElideRight
                 }
 

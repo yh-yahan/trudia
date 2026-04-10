@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import Trudia.Services 1.0
+import trudia.Theme 1.0
 
 ScrollView {
     anchors.fill: parent
@@ -29,7 +30,7 @@ ScrollView {
             text: qsTr("Tax Settings")
             font.pixelSize: 26
             font.bold: true
-            color: "white"
+            color: Theme.text
         }
 
         ColumnLayout {
@@ -38,7 +39,7 @@ ScrollView {
             Text {
                 text: qsTr("General")
                 font.bold: true
-                color: "#c9c9c9"
+                color: Theme.secondaryText
                 font.pointSize: 16
             }
 
@@ -53,7 +54,7 @@ ScrollView {
 
                     Label {
                         text: qsTr("Enable Tax")
-                        color: "white"
+                        color: Theme.text
                         Layout.fillWidth: true
                     }
 
@@ -69,7 +70,7 @@ ScrollView {
 
                     Label {
                         text: qsTr("Tax Name")
-                        color: "white"
+                        color: Theme.text
                         Layout.preferredWidth: 200
                     }
 
@@ -77,11 +78,11 @@ ScrollView {
                         id: taxNameField
                         Layout.fillWidth: true
                         placeholderText: qsTr("e.g. Sales Tax")
-                        color: "white"
-                        placeholderTextColor: "#AAAAAA"
+                        color: Theme.text
+                        placeholderTextColor: Theme.secondaryText
 
                         background: Rectangle {
-                            color: "#3A3A3A"
+                            color: Theme.surface
                             radius: 6
                         }
                     }
@@ -93,7 +94,7 @@ ScrollView {
 
                     Label {
                         text: qsTr("Tax Rate (%)")
-                        color: "white"
+                        color: Theme.text
                         Layout.preferredWidth: 200
                     }
 
@@ -101,10 +102,10 @@ ScrollView {
                         id: taxRateField
                         Layout.preferredWidth: 150
                         inputMethodHints: Qt.ImhFormattedNumbersOnly
-                        color: "white"
+                        color: Theme.text
 
                         background: Rectangle {
-                            color: "#3A3A3A"
+                            color: Theme.surface
                             radius: 6
                         }
                     }
@@ -116,7 +117,7 @@ ScrollView {
 
                     Label {
                         text: qsTr("Registration Number")
-                        color: "white"
+                        color: Theme.text
                         Layout.preferredWidth: 200
                     }
 
@@ -124,11 +125,11 @@ ScrollView {
                         id: registrationField
                         Layout.fillWidth: true
                         placeholderText: qsTr("Optional")
-                        color: "white"
-                        placeholderTextColor: "#AAAAAA"
+                        color: Theme.text
+                        placeholderTextColor: Theme.secondaryText
 
                         background: Rectangle {
-                            color: "#3A3A3A"
+                            color: Theme.surface
                             radius: 6
                         }
                     }
@@ -138,7 +139,7 @@ ScrollView {
     }
 
     background: Rectangle {
-        color: "#1E1E1E"
+        color: Theme.background
     }
 
     RowLayout {
@@ -160,7 +161,7 @@ ScrollView {
             Layout.bottomMargin: 10
             Layout.leftMargin: 20
             background: Rectangle {
-                color: "#9a7bff"
+                color: Theme.primary()
                 radius: 4
             }
             contentItem: Text {

@@ -112,6 +112,8 @@ qt_add_qml_module(apptrudia
     SOURCES core/models/MenuItemModel.h core/models/MenuItemModel.cpp
     SOURCES core/models/TableModel.h core/models/TableModel.cpp
     SOURCES core/models/UserModel.h core/models/UserModel.cpp
+    SOURCES core/utilities/SystemTheme.h core/utilities/SystemTheme.cpp
+    SOURCES core/utilities/Theme.h
 )
 
 qt_add_translations(apptrudia

@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import Trudia.Services 1.0
+import trudia.Theme 1.0
 import "../../components"
 
 Item {
@@ -31,7 +32,7 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        color: "#121212"
+        color: Theme.background
     }
 
     ColumnLayout {
@@ -46,7 +47,7 @@ Item {
                 text: qsTr("User Management")
                 font.pixelSize: 20
                 font.bold: true
-                color: "white"
+                color: Theme.text
                 Layout.fillWidth: true
             }
 
@@ -56,7 +57,7 @@ Item {
                 focusPolicy: Qt.NoFocus
 
                 background: Rectangle {
-                    color: "#9a7bff"
+                    color: Theme.primary()
                     radius: 4
                 }
 
@@ -74,7 +75,7 @@ Item {
         Rectangle {
             Layout.fillWidth: true
             height: 40
-            color: "#1f1f1f"
+            color: Theme.background
             radius: 6
 
             RowLayout {
@@ -84,21 +85,21 @@ Item {
 
                 Text {
                     text: qsTr("Username")
-                    color: "#b0b0b0"
+                    color: Theme.secondaryText
                     font.bold: true
                     Layout.fillWidth: true
                 }
 
                 Text {
                     text: qsTr("Role")
-                    color: "#b0b0b0"
+                    color: Theme.secondaryText
                     font.bold: true
                     Layout.preferredWidth: 140
                 }
 
                 Text {
                     text: qsTr("Active")
-                    color: "#b0b0b0"
+                    color: Theme.secondaryText
                     font.bold: true
                     Layout.preferredWidth: 100
                 }
@@ -120,8 +121,7 @@ Item {
                 height: 44
                 width: ListView.view.width
                 radius: 4
-                color: "#1f1f1f"
-                border.color: "#2a2a2a"
+                color: Theme.background
 
                 RowLayout {
                     anchors.fill: parent
@@ -130,14 +130,14 @@ Item {
 
                     Text {
                         text: username
-                        color: "white"
+                        color: Theme.text
                         Layout.fillWidth: true
                         elide: Text.ElideRight
                     }
 
                     Text {
                         text: role
-                        color: "#d0d0d0"
+                        color: Theme.secondaryText
                         Layout.preferredWidth: 140
                     }
 
@@ -152,7 +152,7 @@ Item {
                         visible: active
 
                         background: Rectangle {
-                            color: "#9a7bff"
+                            color: Theme.primary()
                             radius: 4
                         }
 
@@ -178,13 +178,13 @@ Item {
                         visible: active
 
                         background: Rectangle {
-                            color: "#444"
+                            color: Theme.surface
                             radius: 4
                         }
 
                         contentItem: Text {
                             text: qsTr("Password")
-                            color: "white"
+                            color: Theme.text
                             anchors.centerIn: parent
                         }
 
@@ -246,9 +246,9 @@ Item {
         padding: 0
 
         background: Rectangle {
-            color: "#1f1f1f"
+            color: Theme.background
             radius: 8
-            border.color: "#2a2a2a"
+            border.color: Theme.border
         }
 
         contentItem: ColumnLayout {
@@ -260,23 +260,23 @@ Item {
                 text: qsTr("Create User")
                 font.pixelSize: 18
                 font.bold: true
-                color: "white"
+                color: Theme.text
             }
 
             Label {
                 text: qsTr("Username")
-                color: "white"
+                color: Theme.text
             }
 
             TextField {
                 id: newUsername
                 placeholderText: qsTr("Username")
                 background: Rectangle {
-                    color: "#292929"
+                    color: Theme.surface
                     radius: 4
                 }
-                color: "white"
-                placeholderTextColor: "#b5b5b5"
+                color: Theme.text
+                placeholderTextColor: Theme.secondaryText
                 leftPadding: 10
                 rightPadding: 10
                 topPadding: 10
@@ -286,18 +286,18 @@ Item {
 
             Label {
                 text: qsTr("Password")
-                color: "white"
+                color: Theme.text
             }
 
             TextField {
                 id: newPassword
                 placeholderText: qsTr("Password")
                 background: Rectangle {
-                    color: "#292929"
+                    color: Theme.surface
                     radius: 4
                 }
-                color: "white"
-                placeholderTextColor: "#b5b5b5"
+                color: Theme.text
+                placeholderTextColor: Theme.secondaryText
                 leftPadding: 10
                 rightPadding: 10
                 topPadding: 10
@@ -308,18 +308,18 @@ Item {
 
             Label {
                 text: qsTr("Confirm Password")
-                color: "white"
+                color: Theme.text
             }
 
             TextField {
                 id: newPasswordConfirm
                 placeholderText: qsTr("Confirm Password")
                 background: Rectangle {
-                    color: "#292929"
+                    color: Theme.surface
                     radius: 4
                 }
-                color: "white"
-                placeholderTextColor: "#b5b5b5"
+                color: Theme.text
+                placeholderTextColor: Theme.secondaryText
                 leftPadding: 10
                 rightPadding: 10
                 topPadding: 10
@@ -330,7 +330,7 @@ Item {
 
             Label {
                 text: qsTr("Role")
-                color: "white"
+                color: Theme.text
             }
 
             ComboBox {
@@ -351,7 +351,7 @@ Item {
                     text: qsTr("Create")
 
                     background: Rectangle {
-                        color: "#9a7bff"
+                        color: Theme.primary()
                         radius: 4
                     }
 
@@ -424,23 +424,23 @@ Item {
                 text: qsTr("Edit User")
                 font.bold: true
                 font.pixelSize: 16
-                color: "white"
+                color: Theme.text
             }
 
             Label {
                 text: qsTr("Username")
-                color: "white"
+                color: Theme.text
             }
 
             TextField {
                 id: editUsername
                 placeholderText: qsTr("Username")
                 background: Rectangle {
-                    color: "#292929"
+                    color: Theme.surface
                     radius: 4
                 }
-                color: "white"
-                placeholderTextColor: "#b5b5b5"
+                color: Theme.text
+                placeholderTextColor: Theme.secondaryText
                 leftPadding: 10
                 rightPadding: 10
                 topPadding: 10
@@ -451,7 +451,7 @@ Item {
 
             Label {
                 text: qsTr("Role")
-                color: "white"
+                color: Theme.text
             }
 
             ComboBox {
@@ -478,7 +478,7 @@ Item {
                 Button {
                     text: qsTr("Save")
                     background: Rectangle {
-                        color: "#9a7bff"
+                        color: Theme.primary()
                         radius: 4
                     }
                     leftPadding: 15
@@ -528,7 +528,7 @@ Item {
         }
 
         background: Rectangle {
-            color: "#1f1f1f"
+            color: Theme.background
             radius: 6
         }
     }
@@ -551,23 +551,23 @@ Item {
                 text: qsTr("Change Password")
                 font.bold: true
                 font.pixelSize: 16
-                color: "white"
+                color: Theme.text
             }
 
             Label {
                 text: qsTr("Old Password")
-                color: "white"
+                color: Theme.text
             }
 
             TextField {
                 id: oldPass
                 placeholderText: qsTr("Old Password")
                 background: Rectangle {
-                    color: "#292929"
+                    color: Theme.surface
                     radius: 4
                 }
-                color: "white"
-                placeholderTextColor: "#b5b5b5"
+                color: Theme.text
+                placeholderTextColor: Theme.secondaryText
                 leftPadding: 10
                 rightPadding: 10
                 topPadding: 10
@@ -578,18 +578,18 @@ Item {
 
             Label {
                 text: qsTr("New Password")
-                color: "white"
+                color: Theme.text
             }
 
             TextField {
                 id: newPass
                 placeholderText: qsTr("New Password")
                 background: Rectangle {
-                    color: "#292929"
+                    color: Theme.surface
                     radius: 4
                 }
-                color: "white"
-                placeholderTextColor: "#b5b5b5"
+                color: Theme.text
+                placeholderTextColor: Theme.secondaryText
                 echoMode: TextInput.Password
                 leftPadding: 10
                 rightPadding: 10
@@ -600,18 +600,18 @@ Item {
 
             Label {
                 text: qsTr("Confirm New Password")
-                color: "white"
+                color: Theme.text
             }
 
             TextField {
                 id: newPassConfirm
                 placeholderText: qsTr("Confirm New Password")
                 background: Rectangle {
-                    color: "#292929"
+                    color: Theme.surface
                     radius: 4
                 }
-                color: "white"
-                placeholderTextColor: "#b5b5b5"
+                color: Theme.text
+                placeholderTextColor: Theme.secondaryText
                 echoMode: TextInput.Password
                 leftPadding: 10
                 rightPadding: 10
@@ -627,7 +627,7 @@ Item {
                 Button {
                     text: qsTr("Change Password")
                     background: Rectangle {
-                        color: "#9a7bff"
+                        color: Theme.primary()
                         radius: 4
                     }
 
@@ -680,7 +680,7 @@ Item {
         }
 
         background: Rectangle {
-            color: "#1f1f1f"
+            color: Theme.background
             radius: 6
         }
     }

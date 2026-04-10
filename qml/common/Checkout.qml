@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import Trudia.Services 1.0
+import trudia.Theme 1.0
 
 Item {
     width: 1200
@@ -166,8 +167,8 @@ Item {
                 height: 72
                 radius: 6
 
-                color: selectedSession === modelData ? "#2a2a2a" : "#1e1e1e"
-                border.color: selectedSession === modelData ? "#9a7bff" : "transparent"
+                color: selectedSession === modelData ? Theme.surface : Theme.background
+                border.color: selectedSession === modelData ? Theme.primary() : "transparent"
                 border.width: 2
 
                 MouseArea {
@@ -187,13 +188,13 @@ Item {
 
                     Text {
                         text: "#" + modelData.display_number
-                        color: "white"
+                        color: Theme.text
                         font.bold: true
                     }
 
                     Text {
                         text: modelData.table_number ? qsTr("Table ") + modelData.table_number : modelData.order_type
-                        color: "#cccccc"
+                        color: Theme.secondaryText
                         font.pixelSize: 12
                     }
                 }
@@ -204,7 +205,7 @@ Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
             radius: 6
-            color: "#1e1e1e"
+            color: Theme.background
 
             ColumnLayout {
                 anchors.fill: parent
@@ -218,7 +219,7 @@ Item {
 
                     Text {
                         text: qsTr("Order #") + selectedSession.display_number
-                        color: "white"
+                        color: Theme.text
                         font.pixelSize: 20
                         font.bold: true
                     }
@@ -269,7 +270,7 @@ Item {
 
                                     Text {
                                         text: modelData.item_name + " x" + modelData.quantity
-                                        color: "white"
+                                        color: Theme.text
                                         font.pixelSize: 16
                                     }
 
@@ -300,7 +301,7 @@ Item {
 
                                 Text {
                                     text: qsTr("Member Phone (optional)")
-                                    color: "#cccccc"
+                                    color: Theme.secondaryText
                                     font.pixelSize: 13
                                 }
 
@@ -323,11 +324,11 @@ Item {
 
                                         background: Rectangle {
                                             radius: 4
-                                            color: "#2a2a2a"
-                                            border.color: "#555555"
+                                            color: Theme.background
+                                            border.color: Theme.border
                                         }
 
-                                        color: "white"
+                                        color: Theme.text
                                     }
 
                                     Button {
@@ -370,7 +371,7 @@ Item {
                         Text {
                             visible: selectedSession !== null
                             text: qsTr("Points to Earn: +") + earnedPointsPreview
-                            color: "#9a7bff"
+                            color: Theme.primary()
                             font.pixelSize: 14
                             font.bold: true
                         }
@@ -438,12 +439,12 @@ Item {
 
                         Text {
                             text: qsTr("Subtotal: RM") + selectedSession.subtotal.toFixed(2)
-                            color: "white"
+                            color: Theme.text
                         }
 
                         Text {
                             text: qsTr("Tax: RM") + selectedSession.tax.toFixed(2)
-                            color: "white"
+                            color: Theme.text
                         }
 
                         Text {
@@ -455,7 +456,7 @@ Item {
 
                         Text {
                             text: qsTr("Total: RM") + finalTotalPreview.toFixed(2)
-                            color: "white"
+                            color: Theme.text
                             font.bold: true
                             font.pixelSize: 18
                         }
@@ -467,12 +468,12 @@ Item {
 
                         background: Rectangle {
                             radius: 6
-                            color: enabled ? "#9a7bff" : "#444444"
+                            color: enabled ? Theme.primary() : Theme.surface
                         }
 
                         contentItem: Text {
                             text: qsTr("Checkout")
-                            color: "white"
+                            color: enabled ? "white" : Theme.secondaryText
                             font.bold: true
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
@@ -503,7 +504,7 @@ Item {
 
                     Text {
                         text: qsTr("Recent Order #") + selectedRecent.display_number
-                        color: "white"
+                        color: Theme.text
                         font.pixelSize: 20
                         font.bold: true
                     }
@@ -513,12 +514,12 @@ Item {
 
                         background: Rectangle {
                             radius: 6
-                            color: enabled ? "#9a7bff" : "#444444"
+                            color: enabled ? Theme.primary() : Theme.surface
                         }
 
                         contentItem: Text {
                             text: qsTr("Reprint Receipt")
-                            color: "white"
+                            color: enabled ? "white" : Theme.secondaryText
                             font.bold: true
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
@@ -553,7 +554,7 @@ Item {
                     text: qsTr("Recent Paid Orders")
                     font.pixelSize: 26
                     font.bold: true
-                    color: "white"
+                    color: Theme.text
                 }
             }
 
@@ -562,7 +563,7 @@ Item {
                 height: 72
                 radius: 6
 
-                color: selectedRecent === modelData ? "#2a2a2a" : "#1e1e1e"
+                color: selectedRecent === modelData ? Theme.surface : Theme.background
                 border.color: selectedRecent === modelData ? "#66ddaa" : "transparent"
                 border.width: 2
 
@@ -581,13 +582,13 @@ Item {
 
                     Text {
                         text: "#" + modelData.display_number
-                        color: "white"
+                        color: Theme.text
                         font.bold: true
                     }
 
                     Text {
                         text: "RM " + modelData.total.toFixed(2)
-                        color: "#88ffaa"
+                        color: "#5fcc9d"
                         font.pixelSize: 13
                     }
                 }

@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import Trudia.Services 1.0
+import trudia.Theme 1.0
 
 Item {
     id: analyticsPage
@@ -28,8 +29,8 @@ Item {
                     Layout.fillWidth: true
                     height: 100
                     radius: 6
-                    color: "#181818"
-                    border.color: "#2c2c2c"
+                    color: Theme.background
+                    border.color: Theme.border
 
                     Column {
                         anchors.centerIn: parent
@@ -37,7 +38,7 @@ Item {
 
                         Label {
                             text: qsTr("Revenue Today")
-                            color: "#ffffff"
+                            color: Theme.text
                             opacity: 0.7
                         }
                         Label {
@@ -45,7 +46,7 @@ Item {
                                       snapshot.revenueToday).toFixed(2)
                             font.pixelSize: 28
                             font.bold: true
-                            color: "#9a7bff"
+                            color: Theme.primary()
                         }
                     }
                 }
@@ -54,8 +55,8 @@ Item {
                     Layout.fillWidth: true
                     height: 100
                     radius: 6
-                    color: "#181818"
-                    border.color: "#2c2c2c"
+                    color: Theme.background
+                    border.color: Theme.border
 
                     Column {
                         anchors.centerIn: parent
@@ -63,14 +64,14 @@ Item {
 
                         Label {
                             text: qsTr("Orders")
-                            color: "#ffffff"
+                            color: Theme.text
                             opacity: 0.7
                         }
                         Label {
                             text: snapshot.ordersToday
                             font.pixelSize: 28
                             font.bold: true
-                            color: "#ffffff"
+                            color: Theme.text
                         }
                     }
                 }
@@ -79,8 +80,8 @@ Item {
                     Layout.fillWidth: true
                     height: 100
                     radius: 6
-                    color: "#181818"
-                    border.color: "#2c2c2c"
+                    color: Theme.background
+                    border.color: Theme.border
 
                     Column {
                         anchors.centerIn: parent
@@ -88,7 +89,7 @@ Item {
 
                         Label {
                             text: qsTr("Average Order")
-                            color: "#ffffff"
+                            color: Theme.Text
                             opacity: 0.7
                         }
                         Label {
@@ -96,7 +97,7 @@ Item {
                                       snapshot.averageOrder).toFixed(2)
                             font.pixelSize: 28
                             font.bold: true
-                            color: "#ffffff"
+                            color: Theme.Text
                         }
                     }
                 }
@@ -105,8 +106,8 @@ Item {
                     Layout.fillWidth: true
                     height: 100
                     radius: 6
-                    color: "#181818"
-                    border.color: "#2c2c2c"
+                    color: Theme.background
+                    border.color: Theme.border
 
                     Column {
                         anchors.centerIn: parent
@@ -114,14 +115,14 @@ Item {
 
                         Label {
                             text: qsTr("Items Sold")
-                            color: "#ffffff"
+                            color: Theme.Text
                             opacity: 0.7
                         }
                         Label {
                             text: snapshot.itemsSold
                             font.pixelSize: 28
                             font.bold: true
-                            color: "#ffffff"
+                            color: Theme.Text
                         }
                     }
                 }
@@ -134,8 +135,8 @@ Item {
                 Rectangle {
                     Layout.fillWidth: true
                     radius: 6
-                    color: "#181818"
-                    border.color: "#2c2c2c"
+                    color: Theme.background
+                    border.color: Theme.border
                     implicitHeight: 220
 
                     ColumnLayout {
@@ -147,7 +148,7 @@ Item {
                             text: qsTr("Top Items Today")
                             font.pixelSize: 18
                             font.bold: true
-                            color: "#ffffff"
+                            color: Theme.text
                         }
 
                         Repeater {
@@ -158,13 +159,13 @@ Item {
                                 Label {
                                     text: (index + 1) + ". " + modelData.name
                                     Layout.fillWidth: true
-                                    color: "#ffffff"
+                                    color: Theme.text
                                 }
 
                                 Label {
                                     text: modelData.count
                                     font.bold: true
-                                    color: "#ffffff"
+                                    color: Theme.text
                                 }
                             }
                         }
@@ -174,8 +175,8 @@ Item {
                 Rectangle {
                     Layout.fillWidth: true
                     radius: 6
-                    color: "#181818"
-                    border.color: "#2c2c2c"
+                    color: Theme.background
+                    border.color: Theme.border
                     implicitHeight: 220
 
                     ColumnLayout {
@@ -187,7 +188,7 @@ Item {
                             text: qsTr("Revenue by Hour")
                             font.pixelSize: 18
                             font.bold: true
-                            color: "#ffffff"
+                            color: Theme.text
                         }
 
                         Repeater {
@@ -198,14 +199,14 @@ Item {
                                 Label {
                                     text: modelData.hour + ":00"
                                     Layout.fillWidth: true
-                                    color: "#ffffff"
+                                    color: Theme.text
                                 }
 
                                 Label {
                                     text: "RM " + Number(
                                               modelData.amount).toFixed(2)
                                     font.bold: true
-                                    color: "#ffffff"
+                                    color: Theme.text
                                 }
                             }
                         }
@@ -216,8 +217,8 @@ Item {
             Rectangle {
                 Layout.fillWidth: true
                 radius: 6
-                color: "#181818"
-                border.color: "#2c2c2c"
+                color: Theme.background
+                border.color: Theme.border
                 implicitHeight: 260
 
                 ColumnLayout {
@@ -229,7 +230,7 @@ Item {
                         text: qsTr("Last 7 Days Revenue")
                         font.pixelSize: 18
                         font.bold: true
-                        color: "#ffffff"
+                        color: Theme.text
                     }
 
                     Repeater {
@@ -240,14 +241,14 @@ Item {
                             Label {
                                 text: modelData.day
                                 Layout.fillWidth: true
-                                color: "#ffffff"
+                                color: Theme.text
                             }
 
                             Label {
                                 text: "RM " + Number(
                                           modelData.amount).toFixed(2)
                                 font.bold: true
-                                color: "#ffffff"
+                                color: Theme.text
                             }
                         }
                     }

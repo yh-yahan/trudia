@@ -2,13 +2,14 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 import Trudia.Services 1.0
+import trudia.Theme 1.0
 
 Item {
     visible: true
 
     Rectangle {
         anchors.fill: parent
-        color: "#121212"
+        color: Theme.background
     }
 
     RowLayout {
@@ -18,7 +19,7 @@ Item {
         Rectangle {
             Layout.preferredWidth: 300
             Layout.fillHeight: true
-            color: "#181818"
+            color: Theme.background
 
             Column {
                 anchors.centerIn: parent
@@ -28,7 +29,7 @@ Item {
                     text: "Trudia"
                     font.bold: true
                     font.pixelSize: 32
-                    color: "white"
+                    color: Theme.text
                     horizontalAlignment: Text.AlignHCenter
                     anchors.horizontalCenter: parent.horizontalCenter
                 }
@@ -36,7 +37,7 @@ Item {
                 Text {
                     text: "v0.1.1-dev"
                     font.pixelSize: 12
-                    color: "#aaaaaa"
+                    color: Theme.secondaryText
                     horizontalAlignment: Text.AlignHCenter
                     anchors.horizontalCenter: parent.horizontalCenter
                 }
@@ -46,7 +47,7 @@ Item {
         Rectangle {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            color: "#181818"
+            color: Theme.background
 
             ColumnLayout {
                 anchors.centerIn: parent
@@ -55,7 +56,7 @@ Item {
 
                 Label {
                     text: qsTr("Username")
-                    color: "white"
+                    color: Theme.text
                 }
 
                 TextField {
@@ -70,7 +71,7 @@ Item {
 
                 Label {
                     text: qsTr("Password")
-                    color: "white"
+                    color: Theme.text
                 }
 
                 TextField {
@@ -93,7 +94,7 @@ Item {
                     bottomPadding: 15
                     Layout.topMargin: 15
                     background: Rectangle {
-                        color: "#9a7bff"
+                        color: Theme.primary()
                         radius: 4
                     }
                     contentItem: Text {
@@ -107,21 +108,24 @@ Item {
                     hoverEnabled: false
                     focusPolicy: Qt.NoFocus
                     onClicked: {
-                        var username = usernameField.text;
-                        var password = passwordField.text;
+                        var username = usernameField.text
+                        var password = passwordField.text
                         if (AuthService.login(username, password)) {
-                            var userRole = AuthService.currentUserRole;
+                            var userRole = AuthService.currentUserRole
                             if (userRole === "admin") {
-                                stackView.push("../admin/AdminHome.qml");
+                                stackView.push("../admin/AdminHome.qml")
                             } else if (userRole === "service_staff") {
-                                stackView.push("../serviceStaff/ServiceStaffHome.qml");
+                                stackView.push(
+                                            "../serviceStaff/ServiceStaffHome.qml")
                             } else if (userRole === "kitchen_staff") {
-                                stackView.push("../kitchenStaff/KitchenStaffHome.qml");
+                                stackView.push(
+                                            "../kitchenStaff/KitchenStaffHome.qml")
                             }
 
-                            Window.window.showMaximized();
+                            Window.window.showMaximized()
                         } else {
-                            errorMessage.text = qsTr("Invalid username or password.");
+                            errorMessage.text = qsTr(
+                                        "Invalid username or password.")
                         }
                     }
                 }
@@ -129,7 +133,7 @@ Item {
                 Text {
                     id: errorMessage
                     text: ""
-                    color: "red"
+                    color: Theme.error()
                     font.pixelSize: 14
                     anchors.top: button.bottom
                     anchors.topMargin: 10

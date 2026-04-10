@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Window
 import QtQuick.Controls 2.15
 import Trudia.Services 1.0
+import trudia.Theme 1.0
 
 Window {
     width: 850
@@ -11,7 +12,7 @@ Window {
 
     Rectangle {
         anchors.fill: parent
-        color: "#181818"
+        color: Theme.background
 
         StackView {
             id: stackView

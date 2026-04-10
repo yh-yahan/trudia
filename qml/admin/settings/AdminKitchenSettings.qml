@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import Trudia.Services 1.0
+import trudia.Theme 1.0
 
 ScrollView {
     property var kitchenData: ({})
@@ -32,7 +33,7 @@ ScrollView {
             text: qsTr("Kitchen Settings")
             font.pixelSize: 26
             font.bold: true
-            color: "white"
+            color: Theme.text
         }
 
         ColumnLayout {
@@ -41,7 +42,7 @@ ScrollView {
             Text {
                 text: qsTr("Kitchen Workflow")
                 font.bold: true
-                color: "#c9c9c9"
+                color: Theme.secondaryText
                 font.pointSize: 16
             }
 
@@ -56,7 +57,7 @@ ScrollView {
 
                     Label {
                         text: qsTr("Kitchen Mode")
-                        color: "white"
+                        color: Theme.text
                         Layout.preferredWidth: 230
                     }
 
@@ -93,7 +94,7 @@ ScrollView {
             Text {
                 text: qsTr("Kitchen Ticket Printing")
                 font.bold: true
-                color: "#c9c9c9"
+                color: Theme.secondaryText
                 font.pointSize: 16
             }
 
@@ -108,7 +109,7 @@ ScrollView {
 
                     Label {
                         text: qsTr("Print Ticket When")
-                        color: "white"
+                        color: Theme.text
                         Layout.preferredWidth: 230
                     }
 
@@ -139,7 +140,7 @@ ScrollView {
             Text {
                 text: qsTr("Checkout Rules")
                 font.bold: true
-                color: "#c9c9c9"
+                color: Theme.secondaryText
                 font.pointSize: 16
             }
 
@@ -154,7 +155,7 @@ ScrollView {
 
                     Label {
                         text: qsTr("Require kitchen ready before checkout")
-                        color: "white"
+                        color: Theme.text
                         Layout.fillWidth: true
                     }
 
@@ -172,7 +173,7 @@ ScrollView {
             Text {
                 text: qsTr("Order Modification")
                 font.bold: true
-                color: "#c9c9c9"
+                color: Theme.secondaryText
                 font.pointSize: 16
             }
 
@@ -187,7 +188,7 @@ ScrollView {
 
                     Label {
                         text: qsTr("Allow edits after order creation")
-                        color: "white"
+                        color: Theme.text
                         Layout.fillWidth: true
                     }
 
@@ -201,7 +202,7 @@ ScrollView {
     }
 
     background: Rectangle {
-        color: "#1E1E1E"
+        color: Theme.background
     }
 
     RowLayout {
@@ -221,7 +222,7 @@ ScrollView {
             bottomPadding: 10
 
             background: Rectangle {
-                color: "#9a7bff"
+                color: Theme.primary()
                 radius: 4
             }
 

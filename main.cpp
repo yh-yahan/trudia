@@ -2,6 +2,8 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QSqlDatabase>
+#include "core/utilities/Theme.h"
+#include "core/utilities/SystemTheme.h"
 #include "core/data/UserRepository.h"
 #include "core/data/MenuRepository.h"
 #include "core/data/CategoryRepository.h"
@@ -60,6 +62,9 @@ int main(int argc, char *argv[])
     if (!dbPath.isEmpty()) {
         dbReady = dbManager.initialize(dbPath);
     }
+
+    SystemTheme systemTheme;
+    Theme theme(&systemTheme);
 
     UserRepository userRepo(DatabaseManager::db());
     MenuRepository menuRepo(DatabaseManager::db());
@@ -135,6 +140,9 @@ int main(int argc, char *argv[])
 
     QObject::connect(&orderService, &OrderService::orderUpdated,
                  &kitchenOrderService, &KitchenOrderService::ordersChanged);
+
+    qmlRegisterSingletonInstance("trudia.System", 1, 0, "SystemTheme", &systemTheme);
+    qmlRegisterSingletonInstance("trudia.Theme", 1, 0, "Theme", &theme);
 
     qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "AuthService", &authService);
     qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "UserService", &userService);

@@ -1,12 +1,13 @@
 import QtQuick
 import QtQuick.Controls 2.15
 import QtQuick.Layouts
+import trudia.Theme 1.0
 
 Rectangle {
     id: sidebarBackground
     width: parent.width * 0.20
     height: parent.height
-    color: "#2D2D2D"
+    color: Theme.background
 
     property int selectedIndex: 0
 
@@ -38,7 +39,7 @@ Rectangle {
                 Layout.preferredHeight: 50
 
                 background: Rectangle {
-                    color: sidebarBackground.selectedIndex === index ? "#9a7bff" : "#383838"
+                    color: sidebarBackground.selectedIndex === index ? Theme.primary() : Theme.surface
                     radius: 4
                 }
 
@@ -46,7 +47,7 @@ Rectangle {
                     text: model.text
                     font.bold: true
                     anchors.centerIn: parent
-                    color: "white"
+                    color: sidebarBackground.selectedIndex === index ? "white" : Theme.text
                     font.family: "Arial"
                     font.pixelSize: 14
                     elide: Text.ElideRight

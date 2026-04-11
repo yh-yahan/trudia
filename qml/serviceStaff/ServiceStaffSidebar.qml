@@ -11,12 +11,6 @@ Rectangle {
     color: Theme.background
 
     property int selectedIndex: 0
-    property string kitchenMode: "none"
-
-    Component.onCompleted: {
-        const settings = SettingService.getKitchenSettings()
-        kitchenMode = settings.mode || "none"
-    }
 
     signal selectionChanged(int index)
 
@@ -42,8 +36,8 @@ Rectangle {
             model: buttonModel
             delegate: Button {
                 enabled: !(model.text === "Kitchen"
-                           && (sidebarBackground.kitchenMode === "none"
-                               || sidebarBackground.kitchenMode === "tickets"))
+                    && (SettingService.kitchenMode === "none"
+                    || SettingService.kitchenMode === "tickets"))
                 Layout.fillWidth: true
                 Layout.preferredHeight: 50
                 clip: true

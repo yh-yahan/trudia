@@ -13,11 +13,19 @@ SettingService::SettingService(RestaurantRepository &restaurantRepo,
 {
     auto result = m_membershipSettingsRepo.get();
     m_membershipEnabled = result.has_value() && result->enabled;
+
+    auto settings = m_kitchenSettingsRepo.get();
+    m_kitchenMode = settings->mode;
 }
 
 bool SettingService::membershipEnabled() const
 {
     return m_membershipEnabled;
+}
+
+QString SettingService::kitchenMode() const
+{
+    return m_kitchenMode;
 }
 
 QVariantMap SettingService::getRestaurant()
@@ -268,6 +276,12 @@ bool SettingService::saveKitchenSettings(const QVariantMap &map)
 
     try {
         m_kitchenSettingsRepo.save(kitchenSettings);
+
+        if (m_kitchenMode != kitchenSettings.mode) {
+            m_kitchenMode = kitchenSettings.mode;
+            emit kitchenModeChanged();
+        }
+
         return true;
     } catch (const std::exception &e) {
         qWarning() << "Failed to save kitchen settings:" << e.what();

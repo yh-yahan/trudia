@@ -17,6 +17,7 @@ class SettingService : public QObject
     Q_PROPERTY(bool membershipEnabled
             READ membershipEnabled
             NOTIFY membershipEnabledChanged)
+    Q_PROPERTY(QString kitchenMode READ kitchenMode NOTIFY kitchenModeChanged)
 
 public:
     explicit SettingService(RestaurantRepository &restaurantRepo,
@@ -26,6 +27,7 @@ public:
                             KitchenSettingsRepository &kitchenSettingsRepo);
 
     bool membershipEnabled() const;
+    QString kitchenMode() const;
 
     Q_INVOKABLE QVariantMap getRestaurant();
     Q_INVOKABLE QVariantMap getPrinterSetting();
@@ -42,6 +44,7 @@ public:
 
 signals:
     void membershipEnabledChanged();
+    void kitchenModeChanged();
 
 private:
     RestaurantRepository &m_restaurantRepo;
@@ -50,6 +53,7 @@ private:
     MembershipSettingsRepository &m_membershipSettingsRepo;
     KitchenSettingsRepository &m_kitchenSettingsRepo;
     bool m_membershipEnabled = false;
+    QString m_kitchenMode = "none";
 };
 
 #endif // SETTINGSERVICE_H

@@ -22,7 +22,7 @@ Item {
     property var editOrdersList: []
 
     property var kitchenSettings: ({})
-    property bool allowEditAfterSend: true
+    property bool allowEditAfterSend: false
 
     function changeOrderType(newType) {
         currentOrderType = newType

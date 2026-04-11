@@ -143,7 +143,7 @@ Item {
 
                                 Text {
                                     text: modelData.item_name + " x" + modelData.quantity
-                                    color: Theme.Text
+                                    color: Theme.text
                                     font.pixelSize: 14
                                 }
 

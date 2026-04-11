@@ -89,7 +89,7 @@ Item {
 
                         Label {
                             text: qsTr("Average Order")
-                            color: Theme.Text
+                            color: Theme.text
                             opacity: 0.7
                         }
                         Label {
@@ -97,7 +97,7 @@ Item {
                                       snapshot.averageOrder).toFixed(2)
                             font.pixelSize: 28
                             font.bold: true
-                            color: Theme.Text
+                            color: Theme.text
                         }
                     }
                 }
@@ -115,14 +115,14 @@ Item {
 
                         Label {
                             text: qsTr("Items Sold")
-                            color: Theme.Text
+                            color: Theme.text
                             opacity: 0.7
                         }
                         Label {
                             text: snapshot.itemsSold
                             font.pixelSize: 28
                             font.bold: true
-                            color: Theme.Text
+                            color: Theme.text
                         }
                     }
                 }

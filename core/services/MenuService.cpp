@@ -81,6 +81,8 @@ bool MenuService::removeCategory(const int &categoryId)
 
     m_categoryModel->reload();
 
+    m_menuItemModel->reload(m_currentCategoryId);
+
     if (m_currentCategoryId == categoryId) {
         setCurrentCategoryId(-1);
     }
@@ -158,7 +160,9 @@ bool MenuService::editMenuItem(const int &menuItemId,
 
     m_menuRepo.update(menuItem);
 
-    m_menuItemModel->setCategory(m_currentCategoryId);
+    m_menuItemModel->reload(m_currentCategoryId);
+
+    emit menuItemsChanged();
 
     return true;
 }
@@ -176,7 +180,7 @@ bool MenuService::removeMenuItem(const int &menuItemId)
 
     m_menuRepo.remove(menuItem);
 
-    m_menuItemModel->setCategory(m_currentCategoryId);
+    m_menuItemModel->reload(m_currentCategoryId);
 
     return true;
 }

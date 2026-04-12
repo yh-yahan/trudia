@@ -13,6 +13,8 @@ class Theme : public QObject {
     Q_PROPERTY(QColor border READ border NOTIFY themeChanged)
     Q_PROPERTY(QColor text READ text NOTIFY themeChanged)
     Q_PROPERTY(QColor secondaryText READ secondaryText NOTIFY themeChanged)
+    Q_PROPERTY(QColor orange READ orange NOTIFY themeChanged)
+    Q_PROPERTY(QColor green READ green NOTIFY themeChanged)
 
 public:
     explicit Theme(SystemTheme *systemTheme, QObject *parent = nullptr)
@@ -51,6 +53,18 @@ public:
         return m_systemTheme->darkMode()
             ? QColor("#AAAAAA")
             : QColor("#555555");
+    }
+
+    Q_INVOKABLE QColor orange() const {
+        return m_systemTheme->darkMode()
+            ? QColor("#FFB74D")
+            : QColor("#F57C00");
+    }
+
+    Q_INVOKABLE QColor green() const {
+        return m_systemTheme->darkMode()
+            ? QColor("#66BB6A")
+            : QColor("#2E7D32");
     }
 
     Q_INVOKABLE QColor primary() const {

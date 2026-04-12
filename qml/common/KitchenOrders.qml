@@ -8,8 +8,6 @@ Item {
     width: 1200
     height: 600
 
-    readonly property color noteColor: '#ecb056'
-
     property var pendingOrders: []
     property var preparingOrders: []
     property var readyOrders: []
@@ -151,7 +149,7 @@ Item {
                                     visible: modelData.notes
                                              && modelData.notes.length > 0
                                     text: "- " + modelData.notes
-                                    color: noteColor
+                                    color: Theme.orange
                                     font.pixelSize: 12
                                 }
                             }
@@ -161,7 +159,7 @@ Item {
                     Text {
                         visible: modelData.notes && modelData.notes.length > 0
                         text: qsTr("NOTE: ") + modelData.notes
-                        color: noteColor
+                        color: Theme.orange
                         font.pixelSize: 12
                         wrapMode: Text.Wrap
                     }

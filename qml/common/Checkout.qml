@@ -241,7 +241,7 @@ Item {
 
                                 Text {
                                     text: qsTr("Order ") + modelData.display_number
-                                    color: "#bbbbff"
+                                    color: '#9f9fff'
                                     font.bold: true
                                     font.pixelSize: 16
                                     Layout.fillWidth: true
@@ -250,14 +250,14 @@ Item {
                                 Text {
                                     visible: requireReadyForCheckout && !isOrderServed(modelData)
                                     text: qsTr("PENDING")
-                                    color: "#ffaa66"
+                                    color: Theme.orange
                                     font.bold: true
                                 }
 
                                 Text {
                                     visible: requireReadyForCheckout && isOrderServed(modelData)
                                     text: qsTr("SERVED")
-                                    color: "#88ffaa"
+                                    color: Theme.green
                                     font.bold: true
                                 }
                             }
@@ -277,7 +277,7 @@ Item {
                                     Text {
                                         visible: modelData.notes && modelData.notes.length > 0
                                         text: "(" + modelData.notes + ")"
-                                        color: "#ffdd99"
+                                        color: Theme.orange
                                         font.pixelSize: 15
                                     }
                                 }
@@ -363,7 +363,7 @@ Item {
 
                         Text {
                             text: memberId > 0 ? qsTr("Current Points: ") + currentPoints : qsTr("New member will be created")
-                            color: memberId > 0 ? "#88ffaa" : "#ffaa66"
+                            color: memberId > 0 ? Theme.green : Theme.orange
                             font.pixelSize: 14
                             font.bold: true
                         }
@@ -450,7 +450,7 @@ Item {
                         Text {
                             visible: redeemDiscountPreview > 0
                             text: qsTr("Discount: -RM") + redeemDiscountPreview.toFixed(2)
-                            color: "#ffaa66"
+                            color: Theme.orange
                             font.bold: true
                         }
 
@@ -588,7 +588,7 @@ Item {
 
                     Text {
                         text: "RM " + modelData.total.toFixed(2)
-                        color: "#5fcc9d"
+                        color: Theme.green
                         font.pixelSize: 13
                     }
                 }

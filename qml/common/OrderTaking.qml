@@ -718,7 +718,7 @@ Item {
                                 Text {
                                     text: "Order #" + modelData.display_number
                                           + " (" + modelData.type + ")"
-                                    color: "white"
+                                    color: Theme.text
                                     font.bold: true
                                 }
 
@@ -826,6 +826,9 @@ Item {
                                                         "Place Order")
                         Layout.fillWidth: true
                         visible: !showEditOrdersList
+
+                        enabled: orderModel.count > 0 &&
+                            (currentOrderType !== "dine_in" || selectedTableId >= 0)
 
                         leftPadding: 15
                         rightPadding: 15

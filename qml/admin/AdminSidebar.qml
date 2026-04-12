@@ -16,24 +16,12 @@ Rectangle {
 
     ListModel {
         id: buttonModel
-        ListElement {
-            text: qsTr("Take Order")
-        }
-        ListElement {
-            text: qsTr("Checkout")
-        }
-        ListElement {
-            text: qsTr("Kitchen")
-        }
-        ListElement {
-            text: qsTr("Analytics")
-        }
-        ListElement {
-            text: qsTr("Management")
-        }
-        ListElement {
-            text: qsTr("Settings")
-        }
+        ListElement { key: "takeOrder"; text: qsTr("Take Order") }
+        ListElement { key: "checkout"; text: qsTr("Checkout") }
+        ListElement { key: "kitchen"; text: qsTr("Kitchen") }
+        ListElement { key: "analytics"; text: qsTr("Analytics") }
+        ListElement { key: "management"; text: qsTr("Management") }
+        ListElement { key: "settings"; text: qsTr("Settings") }
     }
 
     ColumnLayout {
@@ -44,7 +32,7 @@ Rectangle {
         Repeater {
             model: buttonModel
             delegate: Button {
-                enabled: !(model.text === "Kitchen"
+                enabled: !(model.key === "kitchen"
                     && (SettingService.kitchenMode === "none"
                     || SettingService.kitchenMode === "tickets"))
                 Layout.fillWidth: true

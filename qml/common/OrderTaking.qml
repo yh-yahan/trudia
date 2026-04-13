@@ -221,7 +221,7 @@ Item {
                             width: parent.width
                             height: 44
                             radius: 4
-                            color: ListView.isCurrentItem ? Theme.primary() : Theme.background
+                            color: MenuService.currentCategoryId === id ? Theme.primary() : Theme.background
 
                             Text {
                                 visible: true

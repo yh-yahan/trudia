@@ -14,9 +14,8 @@ public:
     explicit USBPrinterService();
 
     Q_INVOKABLE bool print(const QString &portName, const QByteArray &data);
-    Q_INVOKABLE static QStringList availablePorts();
     Q_INVOKABLE QVariantList getAvailablePrinters();
-    Q_INVOKABLE bool testPrint(const QString &portName);
+    Q_INVOKABLE bool testPrint(const QString &printerName);
 };
 
 #endif // USBPRINTERSERVICE_H

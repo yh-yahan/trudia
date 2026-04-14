@@ -25,36 +25,36 @@ ScrollView {
     property var printerModel: []
 
     function loadPrinter() {
-        var data = SettingService.getPrinterSetting();
+        var data = SettingService.getPrinterSetting()
 
         if (!data || Object.keys(data).length === 0) {
-            printerModel = [];
-            return;
+            printerModel = []
+            return
         }
 
-        printerModel = [data];
+        printerModel = [data]
     }
 
     function loadPrinterSettings() {
-        var data = SettingService.getPrinterSetting();
-        printerInterface = data["printer_interface"] || "ESC/POS (Raw)";
-        connectionType = data["connection_type"] || "Network (TCP/IP)";
-        ipAddress = data["ip_address"] || "";
-        port = data["port"] || 0;
-        comPort = data["com_port"] || "";
-        baudRate = data["baud_rate"] || 0;
-        parity = data["parity"] || "";
-        dataBits = data["data_bits"] || 0;
-        stopBits = data["stop_bits"] || 0;
-        flowControl = data["flow_control"] || "";
-        paperWidth = data["paper_width"] || "80mm";
-        cutMode = data["cut_mode"] || "Full Cut";
-        errorMessage = "";
+        var data = SettingService.getPrinterSetting()
+        printerInterface = data["printer_interface"] || "ESC/POS (Raw)"
+        connectionType = data["connection_type"] || "Network (TCP/IP)"
+        ipAddress = data["ip_address"] || ""
+        port = data["port"] || 0
+        comPort = data["com_port"] || ""
+        baudRate = data["baud_rate"] || 0
+        parity = data["parity"] || ""
+        dataBits = data["data_bits"] || 0
+        stopBits = data["stop_bits"] || 0
+        flowControl = data["flow_control"] || ""
+        paperWidth = data["paper_width"] || "80mm"
+        cutMode = data["cut_mode"] || "Full Cut"
+        errorMessage = ""
     }
 
     Component.onCompleted: {
-        loadPrinterSettings();
-        loadPrinter();
+        loadPrinterSettings()
+        loadPrinter()
     }
 
     ColumnLayout {
@@ -109,7 +109,7 @@ ScrollView {
                     hoverEnabled: false
                     focusPolicy: Qt.NoFocus
                     onClicked: {
-                        addPrinterPopup.open();
+                        addPrinterPopup.open()
                     }
                 }
             }
@@ -150,18 +150,7 @@ ScrollView {
                         }
 
                         Text {
-                            text: {
-                                if (modelData.connection_type === "USB")
-                                    return "USB - " + modelData.com_port;
-
-                                if (modelData.connection_type === "Network")
-                                    return "Network - " + modelData.ip_address + ":" + modelData.port;
-
-                                if (modelData.connection_type === "Serial")
-                                    return "Serial - " + modelData.com_port;
-
-                                return qsTr("Unknown");
-                            }
+                            text: modelData.com_port || qsTr("Unknown printer")
                             color: Theme.text
                         }
 
@@ -189,7 +178,10 @@ ScrollView {
                                 hoverEnabled: false
                                 focusPolicy: Qt.NoFocus
                                 onClicked: {
-                                    USBPrinterService.testPrint(modelData.com_port);
+                                    console.log("modelData:", JSON.stringify(modelData))
+                                    console.log("com_port:", modelData.com_port)
+                                    USBPrinterService.testPrint(
+                                                modelData.com_port)
                                 }
                             }
                             Button {
@@ -215,10 +207,11 @@ ScrollView {
                                 focusPolicy: Qt.NoFocus
                                 onClicked: {
                                     if (SettingService.removePrinterSetting()) {
-                                        root.printerModel = [];
-                                        root.loadPrinterSettings();
+                                        root.printerModel = []
+                                        root.loadPrinterSettings()
                                     } else {
-                                        root.errorMessage = qsTr("Failed to remove printer");
+                                        root.errorMessage = qsTr(
+                                                    "Failed to remove printer")
                                     }
                                 }
                             }
@@ -256,12 +249,12 @@ ScrollView {
                     Layout.fillWidth: true
                     model: ["58mm", "80mm"]
                     Component.onCompleted: {
-                        var defaultIndex = model.indexOf(root.paperWidth);
-                        currentIndex = defaultIndex >= 0 ? defaultIndex : 1;
+                        var defaultIndex = model.indexOf(root.paperWidth)
+                        currentIndex = defaultIndex >= 0 ? defaultIndex : 1
                     }
 
                     onCurrentIndexChanged: {
-                        root.paperWidth = model[currentIndex];
+                        root.paperWidth = model[currentIndex]
                     }
 
                     leftPadding: 12
@@ -278,27 +271,24 @@ ScrollView {
                 ComboBox {
                     Layout.fillWidth: true
 
-                    model: [
-                        {
-                            text: qsTr("Full Cut"),
-                            value: "Full Cut"
-                        },
-                        {
-                            text: qsTr("Partial Cut"),
-                            value: "Partial Cut"
-                        },
-                        {
-                            text: qsTr("No Cut"),
-                            value: "No Cut"
-                        }
-                    ]
+                    model: [{
+                            "text": qsTr("Full Cut"),
+                            "value": "Full Cut"
+                        }, {
+                            "text": qsTr("Partial Cut"),
+                            "value": "Partial Cut"
+                        }, {
+                            "text": qsTr("No Cut"),
+                            "value": "No Cut"
+                        }]
 
                     textRole: "text"
 
-                    currentIndex: model.findIndex(item => item.value === root.cutMode)
+                    currentIndex: model.findIndex(
+                                      item => item.value === root.cutMode)
 
                     onCurrentIndexChanged: {
-                        root.cutMode = model[currentIndex].value;
+                        root.cutMode = model[currentIndex].value
                     }
 
                     leftPadding: 12
@@ -355,13 +345,13 @@ ScrollView {
                     "flow_control": root.flowControl,
                     "paper_width": root.paperWidth,
                     "cut_mode": root.cutMode
-                };
+                }
 
                 if (SettingService.savePrinterSettingMap(map)) {
-                    root.errorMessage = "";
-                    loadPrinterSettings();
+                    root.errorMessage = ""
+                    loadPrinterSettings()
                 } else {
-                    root.errorMessage = qsTr("Failed to save printer settings.");
+                    root.errorMessage = qsTr("Failed to save printer settings.")
                 }
             }
         }
@@ -388,108 +378,14 @@ ScrollView {
             radius: 8
         }
 
-        property string connectionType: "USB"
-        property int step: 0 // 0 = select type, 1 = configure
-
-        onOpened: {
-            step = 0;
-        }
-
         ColumnLayout {
-            anchors.fill: parent
-            anchors.margins: 20
-            spacing: 20
-
-            ColumnLayout {
-                visible: addPrinterPopup.step === 0
-
-                Text {
-                    text: qsTr("Add Printer")
-                    font.bold: true
-                    font.pixelSize: 22
-                    color: Theme.text
-                    horizontalAlignment: Text.AlignHCenter
-                    Layout.alignment: Qt.AlignHCenter
-                }
-
-                Text {
-                    text: qsTr("Select Connection Type:")
-                    color: Theme.text
-                    font.pointSize: 14
-                }
-
-                ColumnLayout {
-                    id: connectionTypeGroup
-                    spacing: 10
-
-                    RadioButton {
-                        id: usbRadio
-                        text: "USB"
-                        checked: true
-                        contentItem: Text {
-                            text: "     USB"
-                            color: Theme.text
-                        }
-                        onClicked: addPrinterPopup.connectionType = "USB"
-                    }
-                }
-
-                // next button
-                RowLayout {
-                    Button {
-                        text: qsTr("Next")
-                        width: 80
-                        leftPadding: 12
-                        rightPadding: 12
-                        topPadding: 12
-                        bottomPadding: 12
-                        Layout.topMargin: 15
-                        Layout.fillWidth: true
-                        font.bold: true
-                        background: Rectangle {
-                            color: Theme.primary()
-                            radius: 4
-                        }
-                        contentItem: Text {
-                            text: qsTr("Next")
-                            font.bold: true
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.centerIn: parent
-                            color: "white"
-                        }
-                        hoverEnabled: false
-                        focusPolicy: Qt.NoFocus
-                        onClicked: {
-                            addPrinterPopup.step = 1;
-                        }
-                    }
-                }
-            }
-
-            Loader {
-                id: printerStepLoader
-                visible: addPrinterPopup.step === 1
-                sourceComponent: {
-                    if (addPrinterPopup.connectionType === "USB")
-                        return usbComponent;
-                    if (addPrinterPopup.connectionType === "Network")
-                        return networkComponent;
-                    if (addPrinterPopup.connectionType === "Serial")
-                        return serialComponent;
-                    return null;
-                }
-            }
-        }
-
-        Component {
-            id: usbComponent
-
             Item {
+                id: printerRoot
+
                 width: 400
                 height: 300
 
-                property string selectedPort: ""
+                property string selectedPrinter: ""
                 property string testStatus: ""
 
                 ListModel {
@@ -497,15 +393,15 @@ ScrollView {
                 }
 
                 Component.onCompleted: {
-                    var list = USBPrinterService.getAvailablePrinters();
+                    var list = USBPrinterService.getAvailablePrinters()
 
-                    portsModel.clear();
+                    portsModel.clear()
 
                     for (var i = 0; i < list.length; i++) {
-                        portsModel.append(list[i]);
+                        portsModel.append(list[i])
                     }
 
-                    console.log("Loaded:", portsModel.count);
+                    console.log("Loaded:", portsModel.count)
                 }
 
                 ColumnLayout {
@@ -518,13 +414,15 @@ ScrollView {
                     }
 
                     Text {
-                        text: portsModel.count === 0 ? qsTr("No printers found") : qsTr("Select a printer")
+                        text: portsModel.count === 0 ? qsTr("No printers found") : qsTr(
+                                                           "Select a printer")
                         color: Theme.secondaryText
                     }
 
                     ListView {
                         Layout.fillWidth: true
                         Layout.preferredHeight: 150
+                        Layout.preferredWidth: 130
                         clip: true
 
                         model: portsModel
@@ -533,12 +431,12 @@ ScrollView {
                             required property string name
                             required property string port
 
-                            checked: port === selectedPort
+                            checked: name === printerRoot.selectedPrinter
 
-                            onClicked: selectedPort = port
+                            onClicked: printerRoot.selectedPrinter = name
 
                             contentItem: Text {
-                                text: "     " + name + " (" + port + ")"
+                                text: "     " + name
                                 color: Theme.text
                             }
                         }
@@ -567,7 +465,6 @@ ScrollView {
 
                             hoverEnabled: false
                             focusPolicy: Qt.NoFocus
-                            onClicked: addPrinterPopup.step = 0
                         }
 
                         Button {
@@ -590,9 +487,10 @@ ScrollView {
                             focusPolicy: Qt.NoFocus
 
                             onClicked: {
-                                testStatus = qsTr("Testing...");
-                                var success = USBPrinterService.testPrint(selectedPort);
-                                testStatus = success ? "Success" : "Failed";
+                                printerRoot.testStatus = qsTr("Testing...")
+                                var success = USBPrinterService.testPrint(
+                                            printerRoot.selectedPrinter)
+                                printerRoot.testStatus = success ? "Success" : "Failed"
                             }
                         }
 
@@ -616,24 +514,27 @@ ScrollView {
                             focusPolicy: Qt.NoFocus
 
                             onClicked: {
-                                if (!selectedPort || selectedPort.length === 0) {
-                                    testStatus = qsTr("No printer selected");
-                                    return;
+                                if (!printerRoot.selectedPrinter
+                                        || printerRoot.selectedPrinter.length === 0) {
+                                    printerRoot.testStatus = qsTr(
+                                                "No printer selected")
+                                    return
                                 }
 
                                 var map = {
                                     "connection_type": "USB",
-                                    "com_port": selectedPort
-                                };
-
-                                if (SettingService.savePrinterSettingMap(map)) {
-                                    addPrinterPopup.close();
-                                    root.loadPrinterSettings();
-                                } else {
-                                    testStatus = qsTr("Failed to add printer");
+                                    "com_port": printerRoot.selectedPrinter
                                 }
 
-                                root.loadPrinter();
+                                if (SettingService.savePrinterSettingMap(map)) {
+                                    addPrinterPopup.close()
+                                    root.loadPrinterSettings()
+                                } else {
+                                    printerRoot.testStatus = qsTr(
+                                                "Failed to add printer")
+                                }
+
+                                root.loadPrinter()
                             }
                         }
                     }
@@ -644,7 +545,9 @@ ScrollView {
                             Layout.fillWidth: true
                             horizontalAlignment: Text.AlignHCenter
 
-                            color: testStatus.indexOf("Success") !== -1 ? "lightgreen" : (testStatus === "Testing..." ? "orange" : "red")
+                            color: printerRoot.testStatus.indexOf("Success")
+                                   !== -1 ? "lightgreen" : (printerRoot.testStatus
+                                                            === "Testing..." ? "orange" : "red")
                         }
                     }
                 }

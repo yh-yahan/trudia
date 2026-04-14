@@ -1,111 +1,140 @@
 #include "USBPrinterService.h"
 
-#include <QSerialPort>
-#include <QSerialPortInfo>
 #include <QVariantMap>
 #include <QDebug>
+#ifdef Q_OS_WIN
+#include <windows.h>
+#endif
 #include "./EscPosBuilder.h"
 
 USBPrinterService::USBPrinterService() {}
 
-QStringList USBPrinterService::availablePorts()
+bool USBPrinterService::print(const QString &printerName, const QByteArray &data)
 {
-    QStringList ports;
-    for (const QSerialPortInfo &info : QSerialPortInfo::availablePorts())
+    #ifdef Q_OS_WIN
+    if (printerName.isEmpty())
     {
-        ports.append(info.portName());
-    }
-    return ports;
-}
-
-bool USBPrinterService::print(const QString &portName, const QByteArray &data)
-{
-    if (portName.isEmpty())
-    {
-        qWarning() << "USB print failed: empty port name";
+        qWarning() << "Print failed: empty printer name";
         return false;
     }
 
-    QSerialPort serial;
-    serial.setPortName(portName);
+    HANDLE hPrinter;
 
-    serial.setBaudRate(QSerialPort::Baud9600);
-    serial.setDataBits(QSerialPort::Data8);
-    serial.setParity(QSerialPort::NoParity);
-    serial.setStopBits(QSerialPort::OneStop);
-    serial.setFlowControl(QSerialPort::NoFlowControl);
-
-    if (!serial.open(QIODevice::WriteOnly))
+    if (!OpenPrinterW((LPWSTR)printerName.utf16(), &hPrinter, NULL))
     {
-        qWarning() << "Cannot open USB printer on" << portName << ":" << serial.errorString();
+        qWarning() << "Failed to open printer:" << printerName;
         return false;
     }
 
-    qint64 totalWritten = 0;
-    const int timeoutMs = 3000;
+    DOC_INFO_1W docInfo;
+    docInfo.pDocName = (LPWSTR)L"Trudia Receipt/Kitchen Ticket";
+    docInfo.pOutputFile = NULL;
+    docInfo.pDatatype = (LPWSTR)L"RAW";
 
-    while (totalWritten < data.size())
+    if (StartDocPrinterW(hPrinter, 1, (LPBYTE)&docInfo) == 0)
     {
-        qint64 written = serial.write(data.constData() + totalWritten,
-                                      data.size() - totalWritten);
-
-        if (written == -1)
-        {
-            qWarning() << "Write error:" << serial.errorString();
-            serial.close();
-            return false;
-        }
-
-        if (!serial.waitForBytesWritten(timeoutMs))
-        {
-            qWarning() << "Timeout while writing to printer:" << serial.errorString();
-            serial.close();
-            return false;
-        }
-
-        totalWritten += written;
+        qWarning() << "StartDocPrinter failed";
+        ClosePrinter(hPrinter);
+        return false;
     }
 
-    serial.flush();
-    serial.close();
+    if (!StartPagePrinter(hPrinter))
+    {
+        qWarning() << "StartPagePrinter failed";
+        EndDocPrinter(hPrinter);
+        ClosePrinter(hPrinter);
+        return false;
+    }
 
-    return true;
+    DWORD bytesWritten = 0;
+    BOOL success = WritePrinter(
+        hPrinter,
+        (LPVOID)data.constData(),
+        data.size(),
+        &bytesWritten
+    );
+
+    if (!success || bytesWritten != (DWORD)data.size())
+    {
+        qWarning() << "WritePrinter failed";
+    }
+
+    EndPagePrinter(hPrinter);
+    EndDocPrinter(hPrinter);
+    ClosePrinter(hPrinter);
+
+    return success;
+#else
+    Q_UNUSED(printerName)
+    Q_UNUSED(data)
+    qWarning() << "Windows printing only supported on Windows";
+    return false;
+#endif
 }
 
 QVariantList USBPrinterService::getAvailablePrinters()
 {
     QVariantList list;
 
-    for (const QSerialPortInfo &info : QSerialPortInfo::availablePorts())
+#ifdef Q_OS_WIN
+    DWORD needed = 0;
+    DWORD returned = 0;
+
+    EnumPrinters(
+        PRINTER_ENUM_LOCAL | PRINTER_ENUM_CONNECTIONS,
+        NULL,
+        2,
+        NULL,
+        0,
+        &needed,
+        &returned
+    );
+
+    if (needed == 0)
+        return list;
+
+    QByteArray buffer;
+    buffer.resize(needed);
+
+    PRINTER_INFO_2 *printers = (PRINTER_INFO_2*)buffer.data();
+
+    if (EnumPrinters(
+            PRINTER_ENUM_LOCAL | PRINTER_ENUM_CONNECTIONS,
+            NULL,
+            2,
+            (LPBYTE)printers,
+            needed,
+            &needed,
+            &returned))
     {
-        QVariantMap item;
-
-        QString name = info.description();
-        if (name.isEmpty())
-            name = info.manufacturer();
-
-        if (name.isEmpty())
-            name = "Unknown Printer";
-
-        item["name"] = name;
-        item["port"] = info.portName();
-
-        list.append(item);
+        for (DWORD i = 0; i < returned; ++i)
+        {
+            QVariantMap item;
+            item["name"] = QString::fromWCharArray(printers[i].pPrinterName);
+            item["port"] = QString::fromWCharArray(printers[i].pPortName);
+            list.append(item);
+        }
     }
+#endif
 
     return list;
 }
 
-bool USBPrinterService::testPrint(const QString &portName)
+bool USBPrinterService::testPrint(const QString &printerName)
 {
     EscPosBuilder builder;
     builder.initialize();
     builder.setAlignCenter();
-    builder.setBold(true);
-    builder.addText("TEST PRINT\n");
-    builder.setBold(false);
-    builder.addText("USB Printer OK\n\n");
+    builder.addText("TEST PRINT");
+    builder.newLine();
+    builder.addText("1234567890");
+    builder.newLine();
+    builder.addText("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+    builder.newLine();
+    builder.addText("abcdefghijklmnopqrstuvwxyz");
+    builder.newLine();
+    builder.addText("!@#$%^&*()_+-=[]{}|;':\",.<>/?");
     builder.cut("Full Cut");
 
-    return print(portName, builder.data());
+    return print(printerName, builder.data());
 }

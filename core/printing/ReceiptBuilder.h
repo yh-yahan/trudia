@@ -18,6 +18,7 @@ private:
     SettingService &m_settingService;
 
     QString formatAmount(double amount) const;
+    QString padLeftRight(const QString &left, const QString &right, int width);
 };
 
 #endif // RECEIPTBUILDER_H

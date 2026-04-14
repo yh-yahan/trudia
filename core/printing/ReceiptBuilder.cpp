@@ -62,26 +62,25 @@ QByteArray ReceiptBuilder::build(const ReceiptData &data)
 
     for (const auto &item : data.items)
     {
+        QString left = QString("%1 x %2")
+                       .arg(item.quantity)
+                       .arg(item.name);
+
+        QString right = formatAmount(item.total());
+
         b.setBold(true);
-        b.addText(QString("%1 x %2")
-                      .arg(item.quantity)
-                      .arg(item.name));
+        b.addText(padLeftRight(left, right, width));
         b.newLine();
         b.setBold(false);
 
-        b.addText(QString("  @ %1")
-                      .arg(formatAmount(item.price)));
-        b.newLine();
-
-        b.addText(QString("  = %1")
-                      .arg(formatAmount(item.total())));
-        b.newLine();
-
+        b.addText(QString("   @ %1").arg(formatAmount(item.price)));
         b.newLine();
     }
 
     b.addText(QString(width, '-'));
     b.newLine();
+
+    b.setAlignRight();
 
     b.addText("Subtotal: " + formatAmount(data.subtotal));
     b.newLine();
@@ -99,12 +98,12 @@ QByteArray ReceiptBuilder::build(const ReceiptData &data)
         b.addText("Discount: 0");
         b.newLine();
     }
-
+    b.setAlignRight();
     b.setBold(true);
     b.addText("Total: " + formatAmount(data.total));
     b.setBold(false);
-    b.newLine();
 
+    b.newLine();
     b.addText(QString(width, '-'));
     b.newLine();
 
@@ -113,8 +112,6 @@ QByteArray ReceiptBuilder::build(const ReceiptData &data)
         b.newLine();
 
         b.setAlignLeft();
-        b.addText("Member: " + data.memberPhone);
-        b.newLine();
 
         if (data.pointsRedeemed > 0)
         {
@@ -160,4 +157,15 @@ QByteArray ReceiptBuilder::build(const ReceiptData &data)
 QString ReceiptBuilder::formatAmount(double amount) const
 {
     return QLocale().toString(amount, 'f', 2);
+}
+
+QString ReceiptBuilder::padLeftRight(const QString &left, const QString &right, int width)
+{
+    int leftLen = left.length();
+    int rightLen = right.length();
+
+    int spaces = width - leftLen - rightLen;
+    if (spaces < 1) spaces = 1;
+
+    return left + QString(spaces, ' ') + right;
 }

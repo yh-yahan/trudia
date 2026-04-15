@@ -409,7 +409,7 @@ ScrollView {
                     spacing: 10
 
                     Text {
-                        text: qsTr("USB Printers")
+                        text: qsTr("Printers")
                         color: Theme.text
                         font.bold: true
                     }
@@ -447,7 +447,7 @@ ScrollView {
                         spacing: 10
 
                         Button {
-                            text: "Back"
+                            text: "Cancel"
                             Layout.fillWidth: true
                             background: Rectangle {
                                 color: 'transparent'
@@ -456,7 +456,7 @@ ScrollView {
                                 radius: 4
                             }
                             contentItem: Text {
-                                text: qsTr("Back")
+                                text: qsTr("Cancel")
                                 font.bold: true
                                 anchors.centerIn: parent
                                 horizontalAlignment: Text.AlignHCenter
@@ -466,6 +466,10 @@ ScrollView {
 
                             hoverEnabled: false
                             focusPolicy: Qt.NoFocus
+
+                            onClicked: {
+                                addPrinterPopup.close()
+                            }
                         }
 
                         Button {

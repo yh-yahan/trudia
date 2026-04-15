@@ -23,23 +23,22 @@ QByteArray KitchenTicketBuilder::build(const Order &order,
     EscPosBuilder b;
     b.initialize();
 
-    b.setAlignCenter();
-    b.setBold(true);
+    b.setAlignLeft();
     b.addText("ORDER #" + QString::number(order.display_number));
     b.newLine();
-    b.setBold(false);
 
     b.setAlignLeft();
     if (orderSession.order_type == "dine_in")
     {
-        b.addText("DINE IN");
-        b.newLine();
+        QString line = "DINE IN";
 
         if (orderSession.table_id.has_value())
         {
-            b.addText("Table: " + QString::number(orderSession.table_id.value()));
-            b.newLine();
+            line += " | TABLE " + QString::number(orderSession.table_id.value());
         }
+
+        b.addText(line);
+        b.newLine();
     }
     else
     {
@@ -52,16 +51,22 @@ QByteArray KitchenTicketBuilder::build(const Order &order,
 
     for (const auto &item : items)
     {
-        QString line = QString::number(item.quantity) + "x " + item.item_name;
+        QString qty = QString::number(item.quantity) + "x";
+        QString name = item.item_name;
 
-        b.setBold(true);
+        int spaceWidth = width - name.length() - qty.length();
+
+        if (spaceWidth < 1) spaceWidth = 1;
+
+        QString line = name + QString(spaceWidth, ' ') + qty;
+
+        b.setAlignLeft();
         b.addText(line);
         b.newLine();
-        b.setBold(false);
 
         if (!item.notes.isEmpty())
         {
-            b.addText("  * " + item.notes);
+            b.addText("  - " + item.notes);
             b.newLine();
         }
 
@@ -72,7 +77,9 @@ QByteArray KitchenTicketBuilder::build(const Order &order,
     b.newLine();
 
     b.setAlignRight();
-    b.addText(QDateTime::currentDateTime().toString("HH:mm"));
+    b.addText(QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm"));
+    b.newLine();
+
     b.newLine();
     b.newLine();
 

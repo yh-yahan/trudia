@@ -32,7 +32,7 @@ QByteArray ReceiptBuilder::build(const ReceiptData &data)
 
     if (!data.address.isEmpty())
     {
-        b.addText(data.address);
+        b.addText(" " + data.address);
         b.newLine();
     }
 
@@ -102,6 +102,7 @@ QByteArray ReceiptBuilder::build(const ReceiptData &data)
     b.setBold(true);
     b.addText("Total: " + formatAmount(data.total));
     b.setBold(false);
+    b.newLine();
 
     b.newLine();
     b.addText(QString(width, '-'));
@@ -109,13 +110,11 @@ QByteArray ReceiptBuilder::build(const ReceiptData &data)
 
     if (data.membershipEnabled && !data.memberPhone.isEmpty())
     {
-        b.newLine();
-
         b.setAlignLeft();
 
         if (data.pointsRedeemed > 0)
         {
-            b.addText(QString("Points Redeemed: -%1")
+            b.addText(QString(" Points Redeemed: -%1")
                           .arg(data.pointsRedeemed));
             b.newLine();
         }

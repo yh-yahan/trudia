@@ -24,13 +24,13 @@ QByteArray KitchenTicketBuilder::build(const Order &order,
     b.initialize();
 
     b.setAlignLeft();
-    b.addText("ORDER #" + QString::number(order.display_number));
+    b.addText(" ORDER #" + QString::number(order.display_number));
     b.newLine();
 
     b.setAlignLeft();
     if (orderSession.order_type == "dine_in")
     {
-        QString line = "DINE IN";
+        QString line = " DINE IN";
 
         if (orderSession.table_id.has_value())
         {
@@ -42,7 +42,7 @@ QByteArray KitchenTicketBuilder::build(const Order &order,
     }
     else
     {
-        b.addText(orderSession.order_type.toUpper());
+        b.addText(" " + orderSession.order_type.toUpper());
         b.newLine();
     }
 
@@ -52,7 +52,7 @@ QByteArray KitchenTicketBuilder::build(const Order &order,
     for (const auto &item : items)
     {
         QString qty = QString::number(item.quantity) + "x";
-        QString name = item.item_name;
+        QString name = " " + item.item_name;
 
         int spaceWidth = width - name.length() - qty.length();
 

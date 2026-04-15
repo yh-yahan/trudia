@@ -133,6 +133,7 @@ ScrollView {
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.topMargin: 8
                     anchors.bottomMargin: 8
+                    color: Theme.surface
 
                     ColumnLayout {
                         id: contentColumn

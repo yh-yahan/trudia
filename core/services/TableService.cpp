@@ -7,12 +7,14 @@ TableService::TableService(TableRepository &tableRepo, QObject *parent)
       m_tableRepo(tableRepo) 
 {
     m_tableModel = new TableModel(m_tableRepo, this);
-
-    m_tableModel->reload();
 }
 
 TableModel* TableService::tableModel() const
 {
+    if (m_tableModel->rowCount() == 0) {
+        const_cast<TableModel*>(m_tableModel)->reload();
+    }
+
     return m_tableModel;
 }
 

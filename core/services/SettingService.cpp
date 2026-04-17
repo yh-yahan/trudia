@@ -15,7 +15,11 @@ SettingService::SettingService(RestaurantRepository &restaurantRepo,
     m_membershipEnabled = result.has_value() && result->enabled;
 
     auto settings = m_kitchenSettingsRepo.get();
-    m_kitchenMode = settings->mode;
+    if (settings.has_value()) {
+        m_kitchenMode = settings->mode;
+    } else {
+        m_kitchenMode = "none";
+    }
 }
 
 bool SettingService::membershipEnabled() const

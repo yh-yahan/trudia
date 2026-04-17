@@ -145,7 +145,7 @@ Item {
     }
 
     Text {
-        text: "v0.1.1-dev"
+        text: "v0.1.1"
         font.pixelSize: 12
         color: "#aaaaaa"
 

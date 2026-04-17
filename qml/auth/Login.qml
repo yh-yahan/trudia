@@ -86,6 +86,7 @@ Item {
                 }
 
                 Button {
+                    id: button
                     text: qsTr("Login")
                     Layout.fillWidth: true
                     leftPadding: 15

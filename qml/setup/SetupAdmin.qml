@@ -58,7 +58,7 @@ Item {
                 }
 
                 Text {
-                    text: "v0.1.1"
+                    text: "v0.2.0-dev"
                     font.pixelSize: 12
                     color: Theme.secondaryText
                     horizontalAlignment: Text.AlignHCenter

@@ -158,12 +158,12 @@ ScrollView {
                         Layout.preferredWidth: 220
                         model: [
                             {
-                                value: "subtotal",
-                                label: qsTr("Subtotal (Before Tax)")
+                                value: "total",
+                                label: qsTr("Total")
                             },
                             {
-                                value: "total",
-                                label: qsTr("Total (After Tax)")
+                                value: "subtotal",
+                                label: qsTr("Subtotal")
                             }
                         ]
                         textRole: "label"

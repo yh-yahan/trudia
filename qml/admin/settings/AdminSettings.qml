@@ -45,6 +45,8 @@ Item {
             pageLoader.sourceComponent = membershipSettingsPage
         } else if (index === 4) {
             pageLoader.sourceComponent = kitchenSettingsPage
+        } else if (index === 5) {
+            pageLoader.sourceComponent = regionalSettingsPage
         }
     }
 
@@ -71,5 +73,10 @@ Item {
     Component {
         id: kitchenSettingsPage
         AdminKitchenSettings {}
+    }
+
+    Component {
+        id: regionalSettingsPage
+        AdminRegionalSettings {}
     }
 }

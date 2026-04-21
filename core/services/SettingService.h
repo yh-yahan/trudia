@@ -10,6 +10,8 @@
 #include "../data/TaxSettingsRepository.h"
 #include "../data/MembershipSettingsRepository.h"
 #include "../data/KitchenSettingsRepository.h"
+#include "../data/RegionalSettingsRepository.h"
+#include "./CurrencyService.h"
 
 class SettingService : public QObject
 {
@@ -24,7 +26,9 @@ public:
                             PrinterSettingRepository &printerSettingRepo,
                             TaxSettingsRepository &taxSettingsRepo,
                             MembershipSettingsRepository &membershipSettingsRepo,
-                            KitchenSettingsRepository &kitchenSettingsRepo);
+                            KitchenSettingsRepository &kitchenSettingsRepo,
+                            RegionalSettingsRepository &regionalSettingsRepo,
+                            CurrencyService &currencyService);
 
     bool membershipEnabled() const;
     QString kitchenMode() const;
@@ -41,6 +45,8 @@ public:
     Q_INVOKABLE bool saveMembershipSettings(const QVariantMap &map);
     Q_INVOKABLE QVariantMap getKitchenSettings();
     Q_INVOKABLE bool saveKitchenSettings(const QVariantMap &map);
+    Q_INVOKABLE QVariantMap getRegionalSettings();
+    Q_INVOKABLE bool saveRegionalSettings(const QVariantMap &map);
 
 signals:
     void membershipEnabledChanged();
@@ -52,6 +58,8 @@ private:
     TaxSettingsRepository &m_taxSettingsRepo;
     MembershipSettingsRepository &m_membershipSettingsRepo;
     KitchenSettingsRepository &m_kitchenSettingsRepo;
+    RegionalSettingsRepository &m_regionalSettingsRepo;
+    CurrencyService &m_currencyService;
     bool m_membershipEnabled = false;
     QString m_kitchenMode = "none";
 };

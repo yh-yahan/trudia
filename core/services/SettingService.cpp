@@ -4,12 +4,16 @@ SettingService::SettingService(RestaurantRepository &restaurantRepo,
                                PrinterSettingRepository &printerSettingRepo,
                                TaxSettingsRepository &taxSettingsRepo,
                                MembershipSettingsRepository &membershipSettingsRepo,
-                               KitchenSettingsRepository &kitchenSettingsRepo)
+                               KitchenSettingsRepository &kitchenSettingsRepo,
+                               RegionalSettingsRepository &regionalSettingsRepo,
+                               CurrencyService &currencyService)
     : m_restaurantRepo(restaurantRepo),
       m_printerSettingRepo(printerSettingRepo),
       m_taxSettingsRepo(taxSettingsRepo),
       m_membershipSettingsRepo(membershipSettingsRepo),
-      m_kitchenSettingsRepo(kitchenSettingsRepo)
+      m_kitchenSettingsRepo(kitchenSettingsRepo),
+      m_regionalSettingsRepo(regionalSettingsRepo),
+      m_currencyService(currencyService)
 {
     auto result = m_membershipSettingsRepo.get();
     m_membershipEnabled = result.has_value() && result->enabled;
@@ -289,6 +293,50 @@ bool SettingService::saveKitchenSettings(const QVariantMap &map)
         return true;
     } catch (const std::exception &e) {
         qWarning() << "Failed to save kitchen settings:" << e.what();
+        return false;
+    }
+}
+
+QVariantMap SettingService::getRegionalSettings()
+{
+    QVariantMap map;
+
+    auto opt = m_regionalSettingsRepo.get();
+    if (!opt.has_value())
+        return map;
+
+    const auto &rs = opt.value();
+
+    map["id"] = rs.id;
+
+    map["locale"] = rs.locale;
+    map["currency_code"] = rs.currency_code;
+    map["timezone"] = rs.timezone;
+    map["date_format"] = rs.date_format;
+    map["time_format"] = rs.time_format;
+
+    auto currency = m_currencyService.get(rs.currency_code);
+    map["currency_symbol"] = currency.symbol;
+
+    return map;
+}
+
+bool SettingService::saveRegionalSettings(const QVariantMap &map)
+{
+    RegionalSettings rs;
+
+    rs.id = map.value("id", 1).toInt();
+    rs.locale = map.value("locale", "en_US").toString();
+    rs.currency_code = map.value("currency_code", "USD").toString();
+    rs.timezone = map.value("timezone", "America/New_York").toString();
+    rs.date_format = map.value("date_format", "").toString();
+    rs.time_format = map.value("time_format", "").toString();
+
+    try {
+        m_regionalSettingsRepo.save(rs);
+        return true;
+    } catch (const std::exception &e) {
+        qWarning() << "Failed to save regional settings:" << e.what();
         return false;
     }
 }

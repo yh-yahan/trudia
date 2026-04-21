@@ -34,6 +34,10 @@ Rectangle {
         ListElement {
             text: qsTr("Kitchen")
         }
+
+        ListElement {
+            text: qsTr("Region & Formats")
+        }
     }
 
     ColumnLayout {

@@ -43,6 +43,7 @@ qt_add_qml_module(apptrudia
         qml/admin/management/AdminUserManagement.qml
         qml/admin/management/AdminManagement.qml
         qml/admin/management/AdminManagementSidebar.qml
+        qml/admin/settings/AdminRegionalSettings.qml
         qml/admin/settings/AdminKitchenSettings.qml
         qml/admin/settings/AdminStoreSettings.qml
         qml/admin/settings/AdminPrinterSettings.qml
@@ -114,6 +115,9 @@ qt_add_qml_module(apptrudia
     SOURCES core/models/UserModel.h core/models/UserModel.cpp
     SOURCES core/utilities/SystemTheme.h core/utilities/SystemTheme.cpp
     SOURCES core/utilities/Theme.h
+    SOURCES core/data/RegionalSettingsRepository.h core/data/RegionalSettingsRepository.cpp
+    SOURCES core/domain/RegionalSettings.h
+    SOURCES core/services/CurrencyService.h core/services/CurrencyService.cpp
 )
 
 qt_add_translations(apptrudia

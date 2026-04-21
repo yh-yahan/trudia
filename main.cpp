@@ -19,6 +19,8 @@
 #include "core/data/MembershipTransactionRepository.h"
 #include "core/data/AnalyticsRepository.h"
 #include "core/data/KitchenSettingsRepository.h"
+#include "core/data/RegionalSettingsRepository.h"
+#include "core/services/CurrencyService.h"
 #include "core/services/OrderService.h"
 #include "core/services/TableService.h"
 #include "core/services/AuthService.h"
@@ -81,9 +83,11 @@ int main(int argc, char *argv[])
     MembershipTransactionRepository membershipTransactionRepo(DatabaseManager::db());
     AnalyticsRepository analyticsRepo(DatabaseManager::db());
     KitchenSettingsRepository kitchenSettingsRepo(DatabaseManager::db());
+    RegionalSettingsRepository regionalSettingsRepo(DatabaseManager::db());
 
     NetworkPrinterService networkPrinterService;
     USBPrinterService usbPrinterService;
+    CurrencyService currencyService;
     TaxCalculationService taxCalculationService(taxSettingsRepo);
     MembershipService membershipService(membershipRepo, membershipSettingsRepo, membershipTransactionRepo);
     AuthService authService(userRepo);
@@ -95,7 +99,9 @@ int main(int argc, char *argv[])
         printerSettingRepo,
         taxSettingsRepo,
         membershipSettingsRepo,
-        kitchenSettingsRepo
+        kitchenSettingsRepo,
+        regionalSettingsRepo,
+        currencyService
     );
     KitchenPrinterService kitchenPrinterService(
         settingService,

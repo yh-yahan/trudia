@@ -20,6 +20,7 @@ class SettingService : public QObject
             READ membershipEnabled
             NOTIFY membershipEnabledChanged)
     Q_PROPERTY(QString kitchenMode READ kitchenMode NOTIFY kitchenModeChanged)
+    Q_PROPERTY(QString currencyCode READ currencyCode NOTIFY currencyChanged)
 
 public:
     explicit SettingService(RestaurantRepository &restaurantRepo,
@@ -32,6 +33,9 @@ public:
 
     bool membershipEnabled() const;
     QString kitchenMode() const;
+    QString currencyCode() const;
+
+    Q_INVOKABLE QString currencySymbol() const;
 
     Q_INVOKABLE QVariantMap getRestaurant();
     Q_INVOKABLE QVariantMap getPrinterSetting();
@@ -51,6 +55,7 @@ public:
 signals:
     void membershipEnabledChanged();
     void kitchenModeChanged();
+    void currencyChanged();
 
 private:
     RestaurantRepository &m_restaurantRepo;
@@ -62,6 +67,7 @@ private:
     CurrencyService &m_currencyService;
     bool m_membershipEnabled = false;
     QString m_kitchenMode = "none";
+    QString m_currencyCode;
 };
 
 #endif // SETTINGSERVICE_H

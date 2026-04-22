@@ -9,6 +9,7 @@ Item {
     anchors.fill: parent
 
     property var snapshot: AnalyticsService.getSnapshot()
+    property string currencySymbol: SettingService.currencySymbol()
 
     Flickable {
         anchors.fill: parent
@@ -42,7 +43,7 @@ Item {
                             opacity: 0.7
                         }
                         Label {
-                            text: "RM " + Number(
+                            text: currencySymbol + Number(
                                       snapshot.revenueToday).toFixed(2)
                             font.pixelSize: 28
                             font.bold: true
@@ -93,7 +94,7 @@ Item {
                             opacity: 0.7
                         }
                         Label {
-                            text: "RM " + Number(
+                            text: currencySymbol + Number(
                                       snapshot.averageOrder).toFixed(2)
                             font.pixelSize: 28
                             font.bold: true
@@ -203,7 +204,7 @@ Item {
                                 }
 
                                 Label {
-                                    text: "RM " + Number(
+                                    text: currencySymbol + Number(
                                               modelData.amount).toFixed(2)
                                     font.bold: true
                                     color: Theme.text
@@ -245,7 +246,7 @@ Item {
                             }
 
                             Label {
-                                text: "RM " + Number(
+                                text: currencySymbol + Number(
                                           modelData.amount).toFixed(2)
                                 font.bold: true
                                 color: Theme.text

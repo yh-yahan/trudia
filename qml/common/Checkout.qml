@@ -29,6 +29,8 @@ Item {
     property bool requireReadyForCheckout: false
     property string kitchenMode: ""
 
+    property string currencySymbol: SettingService.currencySymbol()
+
     function reloadData() {
         activeSessions = CheckoutService.getActiveOrdersForCheckout();
         recentOrders = CheckoutService.getRecentPaidOrders();
@@ -438,24 +440,24 @@ Item {
                         spacing: 6
 
                         Text {
-                            text: qsTr("Subtotal: RM") + selectedSession.subtotal.toFixed(2)
+                            text: qsTr("Subtotal: ") + currencySymbol + selectedSession.subtotal.toFixed(2)
                             color: Theme.text
                         }
 
                         Text {
-                            text: qsTr("Tax: RM") + selectedSession.tax.toFixed(2)
+                            text: qsTr("Tax: ") + currencySymbol + selectedSession.tax.toFixed(2)
                             color: Theme.text
                         }
 
                         Text {
                             visible: redeemDiscountPreview > 0
-                            text: qsTr("Discount: -RM") + redeemDiscountPreview.toFixed(2)
+                            text: qsTr("Discount: -") + currencySymbol + redeemDiscountPreview.toFixed(2)
                             color: Theme.orange
                             font.bold: true
                         }
 
                         Text {
-                            text: qsTr("Total: RM") + finalTotalPreview.toFixed(2)
+                            text: qsTr("Total: ") + currencySymbol + finalTotalPreview.toFixed(2)
                             color: Theme.text
                             font.bold: true
                             font.pixelSize: 18
@@ -587,7 +589,7 @@ Item {
                     }
 
                     Text {
-                        text: "RM " + modelData.total.toFixed(2)
+                        text: currencySymbol + modelData.total.toFixed(2)
                         color: Theme.green
                         font.pixelSize: 13
                     }

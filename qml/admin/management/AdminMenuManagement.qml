@@ -9,6 +9,8 @@ Item {
     width: 800
     height: 600
 
+    property string currencySymbol: SettingService.currencySymbol()
+
     ConfirmationDialog {
         id: confirmationDialog
         anchors.centerIn: parent
@@ -413,7 +415,7 @@ Item {
 
                                 Text {
                                     visible: !itemRect.isEditing
-                                    text: price.toFixed(2)
+                                    text: currencySymbol + price.toFixed(2)
                                     horizontalAlignment: Text.AlignRight
                                     anchors.verticalCenter: parent.verticalCenter
                                     width: parent.width

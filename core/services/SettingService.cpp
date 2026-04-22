@@ -24,6 +24,14 @@ SettingService::SettingService(RestaurantRepository &restaurantRepo,
     } else {
         m_kitchenMode = "none";
     }
+
+    auto regionalSettings = m_regionalSettingsRepo.get();
+    if (regionalSettings.has_value()) {
+        m_currencyCode = regionalSettings.value().currency_code;
+        emit currencyChanged();
+    } else {
+        m_currencyCode = "USD";
+    }
 }
 
 bool SettingService::membershipEnabled() const
@@ -34,6 +42,14 @@ bool SettingService::membershipEnabled() const
 QString SettingService::kitchenMode() const
 {
     return m_kitchenMode;
+}
+
+QString SettingService::currencyCode() const {
+    return m_currencyCode;
+}
+
+QString SettingService::currencySymbol() const {
+    return m_currencyService.getSymbol(m_currencyCode);
 }
 
 QVariantMap SettingService::getRestaurant()
@@ -334,6 +350,12 @@ bool SettingService::saveRegionalSettings(const QVariantMap &map)
 
     try {
         m_regionalSettingsRepo.save(rs);
+
+        if (m_currencyCode != rs.currency_code) {
+            m_currencyCode = rs.currency_code;
+            emit currencyChanged();
+        }
+
         return true;
     } catch (const std::exception &e) {
         qWarning() << "Failed to save regional settings:" << e.what();

@@ -24,6 +24,8 @@ Item {
     property var kitchenSettings: ({})
     property bool allowEditAfterSend: false
 
+    property string currencySymbol: SettingService.currencySymbol()
+
     function changeOrderType(newType) {
         currentOrderType = newType
     }
@@ -335,7 +337,7 @@ Item {
 
                                 Text {
                                     visible: true
-                                    text: "RM " + price.toFixed(2)
+                                    text: currencySymbol + price.toFixed(2)
                                     width: 70
                                     color: Theme.secondaryText
                                 }
@@ -601,7 +603,7 @@ Item {
                                         color: Theme.text
                                     }
                                     Label {
-                                        text: "RM " + price.toFixed(2)
+                                        text: currencySymbol + price.toFixed(2)
                                         font.pixelSize: 12
                                         color: Theme.secondaryText
                                     }
@@ -796,7 +798,7 @@ Item {
                                 font.bold: true
                             }
                             Label {
-                                text: "RM " + subtotal.toFixed(2)
+                                text: currencySymbol + subtotal.toFixed(2)
                                 color: Theme.text
                             }
                         }
@@ -809,7 +811,7 @@ Item {
                                 font.bold: true
                             }
                             Label {
-                                text: "RM " + total.toFixed(2)
+                                text: currencySymbol + total.toFixed(2)
                                 color: Theme.text
                             }
                         }

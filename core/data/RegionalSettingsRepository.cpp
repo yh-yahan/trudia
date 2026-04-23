@@ -10,8 +10,7 @@ RegionalSettingsRepository::RegionalSettingsRepository(QSqlDatabase db): m_db(db
 std::optional<RegionalSettings> RegionalSettingsRepository::get()
 {
     QSqlQuery query(m_db);
-    query.prepare("SELECT id, locale, currency_code, "
-                  "timezone, date_format, time_format "
+    query.prepare("SELECT id, locale, currency_code "
                   "FROM regional_settings");
 
     if (!query.exec()) {
@@ -28,37 +27,26 @@ std::optional<RegionalSettings> RegionalSettingsRepository::get()
     setting.id = query.value("id").toInt();
     setting.locale = query.value("locale").toString();
     setting.currency_code = query.value("currency_code").toString();
-    setting.timezone = query.value("timezone").toString();
-    setting.date_format = query.value("date_format").toString();
-    setting.time_format = query.value("time_format").toString();
 
     return setting;
 }
 
 void RegionalSettingsRepository::save(const RegionalSettings &setting)
 {
-    auto existing = get();
-
     QSqlQuery query(m_db);
 
     query.prepare(R"(
         INSERT INTO regional_settings
-            (id, locale, currency_code, timezone, date_format, time_format)
+            (id, locale, currency_code)
         VALUES
-            (1, :locale, :currency_code, :timezone, :date_format, :time_format)
+            (1, :locale, :currency_code)
         ON CONFLICT(id) DO UPDATE SET
             locale = excluded.locale,
-            currency_code = excluded.currency_code,
-            timezone = excluded.timezone,
-            date_format = excluded.date_format,
-            time_format = excluded.time_format
+            currency_code = excluded.currency_code
     )");
 
     query.bindValue(":locale", setting.locale);
     query.bindValue(":currency_code", setting.currency_code);
-    query.bindValue(":timezone", setting.timezone);
-    query.bindValue(":date_format", setting.date_format);
-    query.bindValue(":time_format", setting.time_format);
 
     if (!query.exec()) {
         qDebug() << "Failed to save regional setting:" << query.lastError().text();

@@ -327,9 +327,6 @@ QVariantMap SettingService::getRegionalSettings()
 
     map["locale"] = rs.locale;
     map["currency_code"] = rs.currency_code;
-    map["timezone"] = rs.timezone;
-    map["date_format"] = rs.date_format;
-    map["time_format"] = rs.time_format;
 
     auto currency = m_currencyService.get(rs.currency_code);
     map["currency_symbol"] = currency.symbol;
@@ -344,9 +341,6 @@ bool SettingService::saveRegionalSettings(const QVariantMap &map)
     rs.id = map.value("id", 1).toInt();
     rs.locale = map.value("locale", "en_US").toString();
     rs.currency_code = map.value("currency_code", "USD").toString();
-    rs.timezone = map.value("timezone", "America/New_York").toString();
-    rs.date_format = map.value("date_format", "").toString();
-    rs.time_format = map.value("time_format", "").toString();
 
     try {
         m_regionalSettingsRepo.save(rs);

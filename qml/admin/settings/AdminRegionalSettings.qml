@@ -20,10 +20,6 @@ ScrollView {
 
         localeCombo.currentValue = regionalData.locale || "en_US";
         currencyCombo.currentValue = regionalData.currency_code || "USD";
-        timezoneCombo.currentIndex = timezoneCombo.find(regionalData.timezone || "America/New_York");
-
-        dateFormatCombo.currentValue = regionalData.date_format || "yyyy-MM-dd";
-        timeFormatCombo.currentValue = regionalData.time_format || "HH:mm";
     }
 
     ColumnLayout {
@@ -113,97 +109,7 @@ ScrollView {
                             { value: "USD", label: "$ (USD)" },
                             { value: "MYR", label: "RM (MYR)" },
                             { value: "EUR", label: "€ (EUR)" },
-                            { value: "JPY", label: "¥ (JPY)" },
                             { value: "CNY", label: "¥ (CNY)" }
-                        ]
-
-                        textRole: "label"
-                        valueRole: "value"
-                    }
-                }
-            }
-        }
-
-        // time & region
-        ColumnLayout {
-            spacing: 15
-
-            Text {
-                text: qsTr("Time & Region")
-                font.bold: true
-                color: Theme.secondaryText
-                font.pointSize: 16
-            }
-
-            ColumnLayout {
-                spacing: 15
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.leftMargin: 20
-
-                RowLayout {
-                    Layout.fillWidth: true
-
-                    Label {
-                        text: qsTr("Timezone")
-                        color: Theme.text
-                        Layout.preferredWidth: 230
-                    }
-
-                    ComboBox {
-                        id: timezoneCombo
-                        Layout.preferredWidth: 220
-
-                        model: [
-                            "America/New_York",
-                            "Europe/London",
-                            "Asia/Kuala_Lumpur",
-                            "Asia/Singapore",
-                            "Asia/Jakarta",
-                        ]
-                    }
-                }
-
-                RowLayout {
-                    Layout.fillWidth: true
-
-                    Label {
-                        text: qsTr("Date Format")
-                        color: Theme.text
-                        Layout.preferredWidth: 230
-                    }
-
-                    ComboBox {
-                        id: dateFormatCombo
-                        Layout.preferredWidth: 220
-
-                        model: [
-                            { value: "MM/dd/yyyy", label: "MM/DD/YYYY" },
-                            { value: "dd/MM/yyyy", label: "DD/MM/YYYY" },
-                            { value: "yyyy-MM-dd", label: "YYYY-MM-DD" }
-                        ]
-
-                        textRole: "label"
-                        valueRole: "value"
-                    }
-                }
-
-                RowLayout {
-                    Layout.fillWidth: true
-
-                    Label {
-                        text: qsTr("Time Format")
-                        color: Theme.text
-                        Layout.preferredWidth: 230
-                    }
-
-                    ComboBox {
-                        id: timeFormatCombo
-                        Layout.preferredWidth: 220
-
-                        model: [
-                            { value: "hh:mm AP", label: "12-hour" },
-                            { value: "HH:mm", label: "24-hour" }
                         ]
 
                         textRole: "label"
@@ -256,10 +162,6 @@ ScrollView {
                 payload.locale = localeCombo.currentValue;
 
                 payload.currency_code = currencyCombo.currentValue;
-                payload.timezone = timezoneCombo.currentText;
-
-                payload.date_format = dateFormatCombo.currentValue;
-                payload.time_format = timeFormatCombo.currentValue;
 
                 SettingService.saveRegionalSettings(payload);
             }

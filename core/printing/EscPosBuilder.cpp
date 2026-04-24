@@ -30,7 +30,7 @@ void EscPosBuilder::setAlignRight()
 
 void EscPosBuilder::addText(const QString &text)
 {
-    m_buffer.append(text.toUtf8());
+    m_buffer.append(text.toLocal8Bit());
 }
 
 void EscPosBuilder::newLine()

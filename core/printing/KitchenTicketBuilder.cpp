@@ -3,6 +3,32 @@
 #include "./EscPosBuilder.h"
 #include "./PrintLayoutHelper.h"
 
+static int visualWidth(const QString &s)
+{
+    int w = 0;
+
+    for (QChar c : s)
+    {
+        if (c.unicode() < 128)
+            w += 1;
+        else
+            w += 2;
+    }
+
+    return w;
+}
+
+static QString padLeftRight(const QString &left, const QString &right, int width)
+{
+    int leftLen = visualWidth(left);
+    int rightLen = visualWidth(right);
+
+    int spaces = width - leftLen - rightLen;
+    if (spaces < 1) spaces = 1;
+
+    return left + QString(spaces, ' ') + right;
+}
+
 KitchenTicketBuilder::KitchenTicketBuilder(SettingService &settingService)
     : m_settingService(settingService) {}
 
@@ -23,14 +49,15 @@ QByteArray KitchenTicketBuilder::build(const Order &order,
     EscPosBuilder b;
     b.initialize();
 
-    b.setAlignLeft();
-    b.addText(" ORDER #" + QString::number(order.display_number));
+    b.setAlignCenter();
+    b.addText("ORDER #" + QString::number(order.display_number));
     b.newLine();
 
     b.setAlignLeft();
+
     if (orderSession.order_type == "dine_in")
     {
-        QString line = " DINE IN";
+        QString line = "DINE IN";
 
         if (orderSession.table_id.has_value())
         {
@@ -42,7 +69,7 @@ QByteArray KitchenTicketBuilder::build(const Order &order,
     }
     else
     {
-        b.addText(" " + orderSession.order_type.toUpper());
+        b.addText(orderSession.order_type.toUpper());
         b.newLine();
     }
 
@@ -54,11 +81,7 @@ QByteArray KitchenTicketBuilder::build(const Order &order,
         QString qty = QString::number(item.quantity) + "x";
         QString name = " " + item.item_name;
 
-        int spaceWidth = width - name.length() - qty.length();
-
-        if (spaceWidth < 1) spaceWidth = 1;
-
-        QString line = name + QString(spaceWidth, ' ') + qty;
+        QString line = padLeftRight(name, qty, width);
 
         b.setAlignLeft();
         b.addText(line);

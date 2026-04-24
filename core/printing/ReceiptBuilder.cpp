@@ -8,6 +8,37 @@
 ReceiptBuilder::ReceiptBuilder(SettingService &settingService)
     : m_settingService(settingService) {}
 
+static int visualWidth(const QString &s)
+{
+    int w = 0;
+
+    for (QChar c : s)
+    {
+        if (c.unicode() < 128)
+            w += 1;
+        else
+            w += 2;
+    }
+
+    return w;
+}
+
+QString ReceiptBuilder::formatAmount(double amount) const
+{
+    return QLocale().toString(amount, 'f', 2);
+}
+
+QString ReceiptBuilder::padLeftRight(const QString &left, const QString &right, int width)
+{
+    int leftLen = visualWidth(left);
+    int rightLen = visualWidth(right);
+
+    int spaces = width - leftLen - rightLen;
+    if (spaces < 1) spaces = 1;
+
+    return left + QString(spaces, ' ') + right;
+}
+
 QByteArray ReceiptBuilder::build(const ReceiptData &data)
 {
     auto printerOpt = m_settingService.getPrinterSetting();
@@ -63,8 +94,8 @@ QByteArray ReceiptBuilder::build(const ReceiptData &data)
     for (const auto &item : data.items)
     {
         QString left = QString("%1 x %2")
-                       .arg(item.quantity)
-                       .arg(item.name);
+                           .arg(item.quantity)
+                           .arg(item.name);
 
         QString right = formatAmount(item.total());
 
@@ -98,7 +129,7 @@ QByteArray ReceiptBuilder::build(const ReceiptData &data)
         b.addText("Discount: 0");
         b.newLine();
     }
-    b.setAlignRight();
+
     b.setBold(true);
     b.addText("Total: " + formatAmount(data.total));
     b.setBold(false);
@@ -151,20 +182,4 @@ QByteArray ReceiptBuilder::build(const ReceiptData &data)
     b.cut(cutMode);
 
     return b.data();
-}
-
-QString ReceiptBuilder::formatAmount(double amount) const
-{
-    return QLocale().toString(amount, 'f', 2);
-}
-
-QString ReceiptBuilder::padLeftRight(const QString &left, const QString &right, int width)
-{
-    int leftLen = left.length();
-    int rightLen = right.length();
-
-    int spaces = width - leftLen - rightLen;
-    if (spaces < 1) spaces = 1;
-
-    return left + QString(spaces, ' ') + right;
 }

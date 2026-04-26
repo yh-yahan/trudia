@@ -269,21 +269,43 @@ Item {
 
                             Repeater {
                                 model: modelData.items
-                                delegate: Row {
-                                    spacing: 12
-                                    width: parent.width
 
-                                    Text {
-                                        text: modelData.item_name + " x" + modelData.quantity
-                                        color: Theme.text
-                                        font.pixelSize: Theme.fontNormal
+                                delegate: Item {
+                                    width: parent.width
+                                    height: 28
+
+                                    readonly property int qtyCol: 80
+
+                                    Row {
+                                        x: 0
+                                        width: parent.width - qtyCol
+                                        spacing: 8
+                                        anchors.verticalCenter: parent.verticalCenter
+
+                                        Text {
+                                            text: modelData.item_name
+                                            color: Theme.text
+                                            font.pixelSize: Theme.fontNormal
+                                            elide: Text.ElideRight
+                                        }
+
+                                        Text {
+                                            visible: modelData.notes && modelData.notes.length > 0
+                                            text: "(" + modelData.notes + ")"
+                                            color: Theme.orange
+                                            font.pixelSize: Theme.fontSmall
+                                            elide: Text.ElideRight
+                                        }
                                     }
 
                                     Text {
-                                        visible: modelData.notes && modelData.notes.length > 0
-                                        text: "(" + modelData.notes + ")"
-                                        color: Theme.orange
-                                        font.pixelSize: Theme.fontSmall
+                                        x: parent.width - qtyCol
+                                        width: qtyCol
+                                        text: "x" + modelData.quantity
+                                        color: Theme.text
+                                        font.pixelSize: Theme.fontNormal
+                                        horizontalAlignment: Text.AlignRight
+                                        anchors.verticalCenter: parent.verticalCenter
                                     }
                                 }
                             }

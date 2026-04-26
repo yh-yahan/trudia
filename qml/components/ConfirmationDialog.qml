@@ -30,7 +30,7 @@ Popup {
 
         Text {
             text: confirmDialog.title
-            font.pixelSize: 18
+            font.pixelSize: Theme.fontNormal
             font.bold: true
             color: Theme.text
         }
@@ -40,6 +40,7 @@ Popup {
             color: Theme.secondaryText
             wrapMode: Text.WordWrap
             Layout.fillWidth: true
+            font.pixelSize: Theme.fontNormal
         }
 
         Item {
@@ -62,6 +63,7 @@ Popup {
                     text: qsTr("Cancel")
                     color: Theme.text
                     anchors.centerIn: parent
+                    font.pixelSize: Theme.fontNormal
                 }
 
                 onClicked: {
@@ -87,6 +89,7 @@ Popup {
                     color: "white"
                     anchors.centerIn: parent
                     font.bold: true
+                    font.pixelSize: Theme.fontNormal
                 }
 
                 onClicked: {

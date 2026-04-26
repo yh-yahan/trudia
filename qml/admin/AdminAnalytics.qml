@@ -40,12 +40,13 @@ Item {
                         Label {
                             text: qsTr("Revenue Today")
                             color: Theme.text
+                            font.pixelSize: Theme.fontLarge
                             opacity: 0.7
                         }
                         Label {
                             text: currencySymbol + Number(
                                       snapshot.revenueToday).toFixed(2)
-                            font.pixelSize: 28
+                            font.pixelSize: Theme.fontXL
                             font.bold: true
                             color: Theme.primary()
                         }
@@ -66,11 +67,12 @@ Item {
                         Label {
                             text: qsTr("Orders")
                             color: Theme.text
+                            font.pixelSize: Theme.fontLarge
                             opacity: 0.7
                         }
                         Label {
                             text: snapshot.ordersToday
-                            font.pixelSize: 28
+                            font.pixelSize: Theme.fontXL
                             font.bold: true
                             color: Theme.text
                         }
@@ -91,12 +93,13 @@ Item {
                         Label {
                             text: qsTr("Average Order")
                             color: Theme.text
+                            font.pixelSize: Theme.fontLarge
                             opacity: 0.7
                         }
                         Label {
                             text: currencySymbol + Number(
                                       snapshot.averageOrder).toFixed(2)
-                            font.pixelSize: 28
+                            font.pixelSize: Theme.fontXL
                             font.bold: true
                             color: Theme.text
                         }
@@ -117,11 +120,12 @@ Item {
                         Label {
                             text: qsTr("Items Sold")
                             color: Theme.text
+                            font.pixelSize: Theme.fontLarge
                             opacity: 0.7
                         }
                         Label {
                             text: snapshot.itemsSold
-                            font.pixelSize: 28
+                            font.pixelSize: Theme.fontXL
                             font.bold: true
                             color: Theme.text
                         }
@@ -147,7 +151,7 @@ Item {
 
                         Label {
                             text: qsTr("Top Items Today")
-                            font.pixelSize: 18
+                            font.pixelSize: Theme.fontNormal
                             font.bold: true
                             color: Theme.text
                         }
@@ -160,12 +164,14 @@ Item {
                                 Label {
                                     text: (index + 1) + ". " + modelData.name
                                     Layout.fillWidth: true
+                                    font.pixelSize: Theme.fontNormal
                                     color: Theme.text
                                 }
 
                                 Label {
                                     text: modelData.count
                                     font.bold: true
+                                    font.pixelSize: Theme.fontNormal
                                     color: Theme.text
                                 }
                             }
@@ -187,7 +193,7 @@ Item {
 
                         Label {
                             text: qsTr("Revenue by Hour")
-                            font.pixelSize: 18
+                            font.pixelSize: Theme.fontNormal
                             font.bold: true
                             color: Theme.text
                         }
@@ -201,6 +207,7 @@ Item {
                                     text: modelData.hour + ":00"
                                     Layout.fillWidth: true
                                     color: Theme.text
+                                    font.pixelSize: Theme.fontNormal
                                 }
 
                                 Label {
@@ -208,6 +215,7 @@ Item {
                                               modelData.amount).toFixed(2)
                                     font.bold: true
                                     color: Theme.text
+                                    font.pixelSize: Theme.fontNormal
                                 }
                             }
                         }
@@ -220,7 +228,7 @@ Item {
                 radius: 6
                 color: Theme.background
                 border.color: Theme.border
-                implicitHeight: 260
+                implicitHeight: 320
 
                 ColumnLayout {
                     anchors.fill: parent
@@ -229,9 +237,9 @@ Item {
 
                     Label {
                         text: qsTr("Last 7 Days Revenue")
-                        font.pixelSize: 18
                         font.bold: true
                         color: Theme.text
+                        font.pixelSize: Theme.fontNormal
                     }
 
                     Repeater {
@@ -243,6 +251,7 @@ Item {
                                 text: modelData.day
                                 Layout.fillWidth: true
                                 color: Theme.text
+                                font.pixelSize: Theme.fontNormal
                             }
 
                             Label {
@@ -250,6 +259,7 @@ Item {
                                           modelData.amount).toFixed(2)
                                 font.bold: true
                                 color: Theme.text
+                                font.pixelSize: Theme.fontNormal
                             }
                         }
                     }

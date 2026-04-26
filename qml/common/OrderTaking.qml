@@ -108,6 +108,7 @@ Item {
                     text: qsTr("Dine In")
                     color: dineInBtn.checked ? "white" : Theme.text
                     font.bold: true
+                    font.pixelSize: Theme.fontNormal
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                 }
@@ -141,6 +142,7 @@ Item {
                     text: qsTr("Takeaway")
                     color: takeawayBtn.checked ? "white" : Theme.text
                     font.bold: true
+                    font.pixelSize: Theme.fontNormal
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                 }
@@ -174,6 +176,7 @@ Item {
                     text: qsTr("Delivery")
                     color: deliveryBtn.checked ? "white" : Theme.text
                     font.bold: true
+                    font.pixelSize: Theme.fontNormal
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                 }
@@ -206,7 +209,7 @@ Item {
                     Text {
                         text: qsTr("Categories")
                         font.bold: true
-                        font.pixelSize: 18
+                        font.pixelSize: Theme.fontNormal
                         color: Theme.text
                     }
 
@@ -231,6 +234,7 @@ Item {
                                 anchors.verticalCenter: parent.verticalCenter
                                 anchors.left: parent.left
                                 anchors.leftMargin: 12
+                                font.pixelSize: Theme.fontNormal
                                 color: categoryListView.currentIndex === index ? "white" : Theme.text
                             }
 
@@ -261,7 +265,7 @@ Item {
                         text: MenuService.currentCategoryId !== -1 ? qsTr("Menu Items") : qsTr(
                                                               "Select a category")
                         font.bold: true
-                        font.pixelSize: 18
+                        font.pixelSize: Theme.fontNormal
                         color: Theme.text
                     }
 
@@ -280,18 +284,21 @@ Item {
                                 text: qsTr("Item")
                                 Layout.fillWidth: true
                                 color: Theme.secondaryText
+                                font.pixelSize: Theme.fontSmall
                                 font.bold: true
                             }
                             Text {
                                 text: qsTr("Price")
                                 width: 70
                                 color: Theme.secondaryText
+                                font.pixelSize: Theme.fontSmall
                                 font.bold: true
                             }
                             Text {
                                 text: qsTr("Portion")
                                 width: 100
                                 color: Theme.secondaryText
+                                font.pixelSize: Theme.fontSmall
                                 font.bold: true
                             }
                             Item {
@@ -333,6 +340,7 @@ Item {
                                     text: item
                                     Layout.fillWidth: true
                                     color: Theme.text
+                                    font.pixelSize: Theme.fontNormal
                                 }
 
                                 Text {
@@ -340,6 +348,7 @@ Item {
                                     text: currencySymbol + price.toFixed(2)
                                     width: 70
                                     color: Theme.secondaryText
+                                    font.pixelSize: Theme.fontNormal
                                 }
 
                                 Text {
@@ -347,6 +356,7 @@ Item {
                                     text: portion || "-"
                                     width: 100
                                     color: Theme.secondaryText
+                                    font.pixelSize: Theme.fontNormal
                                 }
 
                                 Button {
@@ -363,6 +373,7 @@ Item {
                                     contentItem: Text {
                                         text: qsTr("Add")
                                         color: "white"
+                                        font.pixelSize: Theme.fontNormal
                                         anchors.centerIn: parent
                                     }
                                     onClicked: {
@@ -429,6 +440,7 @@ Item {
                                 text: qsTr("New Order")
                                 anchors.centerIn: parent
                                 color: "white"
+                                font.pixelSize: Theme.fontNormal
                                 font.bold: true
                             }
 
@@ -462,6 +474,7 @@ Item {
                                 text: qsTr("Edit Order")
                                 anchors.centerIn: parent
                                 color: "white"
+                                font.pixelSize: Theme.fontNormal
                                 font.bold: true
                             }
 
@@ -493,6 +506,7 @@ Item {
                                 text: qsTr("Print Ticket")
                                 anchors.centerIn: parent
                                 color: "white"
+                                font.pixelSize: Theme.fontNormal
                                 font.bold: true
                             }
 
@@ -511,7 +525,7 @@ Item {
                     Label {
                         text: qsTr("Current Order")
                         visible: !showEditOrdersList
-                        font.pixelSize: 18
+                        font.pixelSize: Theme.fontNormal
                         color: Theme.text
                     }
 
@@ -525,6 +539,7 @@ Item {
                             text: "Table"
                             color: Theme.text
                             font.bold: true
+                            font.pixelSize: Theme.fontSmall
                         }
 
                         GridView {
@@ -552,6 +567,7 @@ Item {
                                     text: name
                                     color: "white"
                                     font.bold: true
+                                    font.pixelSize: Theme.fontNormal
                                 }
 
                                 MouseArea {
@@ -601,10 +617,11 @@ Item {
                                     Label {
                                         text: name
                                         color: Theme.text
+                                        font.pixelSize: Theme.fontNormal
                                     }
                                     Label {
                                         text: currencySymbol + price.toFixed(2)
-                                        font.pixelSize: 12
+                                        font.pixelSize: Theme.fontNormal
                                         color: Theme.secondaryText
                                     }
                                 }
@@ -635,6 +652,7 @@ Item {
                                         color: Theme.text
                                         horizontalAlignment: Text.AlignHCenter
                                         Layout.preferredWidth: 24
+                                        font.pixelSize: Theme.fontNormal
                                     }
                                     Button {
                                         text: "+"
@@ -666,7 +684,7 @@ Item {
                                             border.width: 1
                                         }
                                         color: Theme.text
-                                        font.pixelSize: 16
+                                        font.pixelSize: Theme.fontNormal
 
                                         onTextEdited: {
                                             orderModel.setProperty(index,
@@ -685,6 +703,7 @@ Item {
                                             text: qsTr("Remove")
                                             color: "white"
                                             anchors.centerIn: parent
+                                            font.pixelSize: Theme.fontNormal
                                         }
 
                                         onClicked: {
@@ -708,7 +727,7 @@ Item {
 
                         delegate: Rectangle {
                             width: ListView.view.width
-                            height: 70
+                            height: 75
                             radius: 4
                             color: Theme.surface
 
@@ -722,18 +741,20 @@ Item {
                                           + " (" + modelData.type + ")"
                                     color: Theme.text
                                     font.bold: true
+                                    font.pixelSize: Theme.fontNormal
                                 }
 
                                 Text {
                                     text: "Status: " + modelData.status
                                     color: Theme.secondaryText
+                                    font.pixelSize: Theme.fontNormal
                                 }
 
                                 Text {
                                     text: modelData.table_number ? "Table: " + modelData.table_number : ""
                                     visible: modelData.table_number !== undefined && modelData.table_number !== null
                                     color: Theme.secondaryText
-                                    font.pixelSize: 12
+                                    font.pixelSize: Theme.fontNormal
                                 }
                             }
 
@@ -783,10 +804,12 @@ Item {
                                 text: qsTr("Total Items:")
                                 color: Theme.text
                                 font.bold: true
+                                font.pixelSize: Theme.fontNormal
                             }
                             Label {
                                 text: totalItems
                                 color: Theme.text
+                                font.pixelSize: Theme.fontNormal
                             }
                         }
 
@@ -796,10 +819,12 @@ Item {
                                 text: qsTr("Subtotal:")
                                 color: Theme.text
                                 font.bold: true
+                                font.pixelSize: Theme.fontNormal
                             }
                             Label {
                                 text: currencySymbol + subtotal.toFixed(2)
                                 color: Theme.text
+                                font.pixelSize: Theme.fontNormal
                             }
                         }
 
@@ -809,10 +834,12 @@ Item {
                                 text: qsTr("Total:")
                                 color: Theme.text
                                 font.bold: true
+                                font.pixelSize: Theme.fontNormal
                             }
                             Label {
                                 text: currencySymbol + total.toFixed(2)
                                 color: Theme.text
+                                font.pixelSize: Theme.fontNormal
                             }
                         }
 
@@ -849,6 +876,7 @@ Item {
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
                             color: "white"
+                            font.pixelSize: Theme.fontNormal
                         }
 
                         onClicked: {

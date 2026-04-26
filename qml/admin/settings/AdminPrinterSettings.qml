@@ -65,7 +65,7 @@ ScrollView {
         Text {
             text: qsTr("Printing")
             font.bold: true
-            font.pixelSize: 26
+            font.pixelSize: Theme.fontLarge
             color: Theme.text
         }
 
@@ -78,7 +78,7 @@ ScrollView {
                 text: qsTr("Printers")
                 font.bold: true
                 color: Theme.secondaryText
-                font.pointSize: 16
+                font.pixelSize: Theme.fontNormal
             }
 
             // add printer
@@ -105,6 +105,7 @@ ScrollView {
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                         color: "white"
+                        font.pixelSize: Theme.fontNormal
                     }
                     hoverEnabled: false
                     focusPolicy: Qt.NoFocus
@@ -148,11 +149,13 @@ ScrollView {
                             text: qsTr("Printer")
                             font.bold: true
                             color: Theme.text
+                            font.pixelSize: Theme.fontNormal
                         }
 
                         Text {
                             text: modelData.com_port || qsTr("Unknown printer")
                             color: Theme.text
+                            font.pixelSize: Theme.fontNormal
                         }
 
                         RowLayout {
@@ -175,6 +178,7 @@ ScrollView {
                                     horizontalAlignment: Text.AlignHCenter
                                     verticalAlignment: Text.AlignVCenter
                                     color: "white"
+                                    font.pixelSize: Theme.fontNormal
                                 }
                                 hoverEnabled: false
                                 focusPolicy: Qt.NoFocus
@@ -203,6 +207,7 @@ ScrollView {
                                     horizontalAlignment: Text.AlignHCenter
                                     verticalAlignment: Text.AlignVCenter
                                     color: "white"
+                                    font.pixelSize: Theme.fontNormal
                                 }
                                 hoverEnabled: false
                                 focusPolicy: Qt.NoFocus
@@ -231,7 +236,7 @@ ScrollView {
                 text: qsTr("Paper and Format")
                 font.bold: true
                 color: Theme.secondaryText
-                font.pointSize: 16
+                font.pixelSize: Theme.fontNormal
             }
 
             ColumnLayout {
@@ -243,6 +248,7 @@ ScrollView {
                 Label {
                     text: qsTr("Paper Width")
                     color: Theme.text
+                    font.pixelSize: Theme.fontNormal
                 }
 
                 ComboBox {
@@ -258,6 +264,7 @@ ScrollView {
                         root.paperWidth = model[currentIndex]
                     }
 
+                    font.pixelSize: Theme.fontNormal
                     leftPadding: 12
                     rightPadding: 12
                     topPadding: 8
@@ -267,6 +274,7 @@ ScrollView {
                 Label {
                     text: qsTr("Cut Mode")
                     color: "white"
+                    font.pixelSize: Theme.fontNormal
                 }
 
                 ComboBox {
@@ -292,6 +300,7 @@ ScrollView {
                         root.cutMode = model[currentIndex].value
                     }
 
+                    font.pixelSize: Theme.fontNormal
                     leftPadding: 12
                     rightPadding: 12
                     topPadding: 8
@@ -329,6 +338,7 @@ ScrollView {
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
                 color: "white"
+                font.pixelSize: Theme.fontNormal
             }
             hoverEnabled: false
             focusPolicy: Qt.NoFocus
@@ -363,6 +373,7 @@ ScrollView {
             font.bold: true
             wrapMode: Text.WordWrap
             Layout.fillWidth: true
+            font.pixelSize: Theme.fontNormal
         }
     }
 
@@ -412,6 +423,7 @@ ScrollView {
                         text: qsTr("Printers")
                         color: Theme.text
                         font.bold: true
+                        font.pixelSize: Theme.fontNormal
                     }
 
                     Text {
@@ -439,6 +451,7 @@ ScrollView {
                             contentItem: Text {
                                 text: "     " + name
                                 color: Theme.text
+                                font.pixelSize: Theme.fontNormal
                             }
                         }
                     }
@@ -462,6 +475,7 @@ ScrollView {
                                 horizontalAlignment: Text.AlignHCenter
                                 verticalAlignment: Text.AlignVCenter
                                 color: Theme.primary()
+                                font.pixelSize: Theme.fontNormal
                             }
 
                             hoverEnabled: false
@@ -487,6 +501,7 @@ ScrollView {
                                 horizontalAlignment: Text.AlignHCenter
                                 verticalAlignment: Text.AlignVCenter
                                 color: "white"
+                                font.pixelSize: Theme.fontNormal
                             }
                             hoverEnabled: false
                             focusPolicy: Qt.NoFocus
@@ -514,6 +529,7 @@ ScrollView {
                                 horizontalAlignment: Text.AlignHCenter
                                 verticalAlignment: Text.AlignVCenter
                                 color: "white"
+                                font.pixelSize: Theme.fontNormal
                             }
                             hoverEnabled: false
                             focusPolicy: Qt.NoFocus
@@ -549,6 +565,7 @@ ScrollView {
                             text: testStatus
                             Layout.fillWidth: true
                             horizontalAlignment: Text.AlignHCenter
+                            font.pixelSize: Theme.fontNormal
 
                             color: printerRoot.testStatus.indexOf("Success")
                                    !== -1 ? "lightgreen" : (printerRoot.testStatus

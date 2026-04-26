@@ -51,7 +51,7 @@ Item {
                 Text {
                     text: "Trudia"
                     font.bold: true
-                    font.pixelSize: 32
+                    font.pixelSize: Theme.fontXL
                     color: Theme.text
                     horizontalAlignment: Text.AlignHCenter
                     anchors.horizontalCenter: parent.horizontalCenter
@@ -59,7 +59,7 @@ Item {
 
                 Text {
                     text: "v0.2.0-dev"
-                    font.pixelSize: 12
+                    font.pixelSize: Theme.fontSmall
                     color: Theme.secondaryText
                     horizontalAlignment: Text.AlignHCenter
                     anchors.horizontalCenter: parent.horizontalCenter
@@ -80,7 +80,7 @@ Item {
                 Text {
                     text: qsTr("Create your admin account")
                     font.bold: true
-                    font.pixelSize: 28
+                    font.pixelSize: Theme.fontXL
                     color: Theme.text
                     wrapMode: Text.WordWrap
                 }
@@ -88,6 +88,7 @@ Item {
                 Label {
                     text: qsTr("Username")
                     color: Theme.text
+                    font.pixelSize: Theme.fontNormal
                 }
 
                 TextField {
@@ -98,11 +99,13 @@ Item {
                     topPadding: 10
                     bottomPadding: 10
                     Layout.fillWidth: true
+                    font.pixelSize: Theme.fontNormal
                 }
 
                 Label {
                     text: qsTr("Password")
                     color: Theme.text
+                    font.pixelSize: Theme.fontNormal
                 }
 
                 TextField {
@@ -114,11 +117,13 @@ Item {
                     topPadding: 10
                     bottomPadding: 10
                     Layout.fillWidth: true
+                    font.pixelSize: Theme.fontNormal
                 }
 
                 Label {
                     text: qsTr("Confirm password")
                     color: Theme.text
+                    font.pixelSize: Theme.fontNormal
                 }
 
                 TextField {
@@ -130,6 +135,7 @@ Item {
                     topPadding: 10
                     bottomPadding: 10
                     Layout.fillWidth: true
+                    font.pixelSize: Theme.fontNormal
                 }
 
                 Button {
@@ -152,6 +158,7 @@ Item {
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                         color: "white"
+                        font.pixelSize: Theme.fontNormal
                     }
                     hoverEnabled: false
                     focusPolicy: Qt.NoFocus
@@ -181,7 +188,7 @@ Item {
                     id: errorMessage
                     text: ""
                     color: "red"
-                    font.pixelSize: 14
+                    font.pixelSize: Theme.fontNormal
                     anchors.top: registerButton.bottom
                     anchors.topMargin: 10
                     anchors.horizontalCenter: parent.horizontalCenter

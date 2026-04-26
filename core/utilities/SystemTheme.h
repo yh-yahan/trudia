@@ -9,7 +9,6 @@ class SystemTheme : public QObject
     Q_PROPERTY(bool darkMode READ darkMode NOTIFY darkModeChanged)
 
 public:
-
     explicit SystemTheme(QObject *parent = nullptr);
 
     bool darkMode() const;

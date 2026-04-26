@@ -38,7 +38,7 @@ Item {
                 Text {
                     text: qsTr("Categories")
                     font.bold: true
-                    font.pixelSize: 18
+                    font.pixelSize: Theme.fontNormal
                     color: Theme.text
                 }
 
@@ -51,7 +51,7 @@ Item {
                     clip: true
 
                     delegate: Rectangle {
-                        id: itemRect
+                        id: categoryRect
 
                         required property int id
                         required property string name
@@ -91,10 +91,11 @@ Item {
 
                             MenuItem {
                                 text: qsTr("Rename")
+                                font.pixelSize: Theme.fontNormal
                                 onTriggered: {
-                                    itemRect.originalCategory = name
-                                    itemRect.editedCategory = name
-                                    itemRect.isEditing = true
+                                    categoryRect.originalCategory = name
+                                    categoryRect.editedCategory = name
+                                    categoryRect.isEditing = true
 
                                     editField.forceActiveFocus()
                                     editField.selectAll()
@@ -103,6 +104,7 @@ Item {
 
                             MenuItem {
                                 text: qsTr("Delete")
+                                font.pixelSize: Theme.fontNormal
                                 onTriggered: {
                                     confirmationDialog.title = qsTr(
                                                 "Delete Category")
@@ -122,18 +124,19 @@ Item {
                         }
 
                         Text {
-                            visible: !itemRect.isEditing
+                            visible: !categoryRect.isEditing
                             text: name
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: parent.left
                             anchors.leftMargin: 12
+                            font.pixelSize: Theme.fontNormal
                             color: MenuService.currentCategoryId === id ? "white" : Theme.text
                         }
 
                         TextField {
                             id: editField
-                            visible: itemRect.isEditing
-                            text: itemRect.editedCategory
+                            visible: categoryRect.isEditing
+                            text: categoryRect.editedCategory
 
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: parent.left
@@ -144,26 +147,28 @@ Item {
                             selectByMouse: true
                             focus: true
 
+                            font.pixelSize: Theme.fontNormal
+
                             background: Rectangle {
                                 color: Theme.background
                                 radius: 4
                                 border.color: Theme.primary
                             }
 
-                            onTextChanged: itemRect.editedCategory = text
+                            onTextChanged: categoryRect.editedCategory = text
 
                             onActiveFocusChanged: {
-                                if (!activeFocus && itemRect.isEditing) {
-                                    itemRect.commitEdit()
+                                if (!activeFocus && categoryRect.isEditing) {
+                                    categoryRect.commitEdit()
                                 }
                             }
 
                             Keys.onPressed: (event) => {
                                 if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
-                                    itemRect.commitEdit()
+                                    categoryRect.commitEdit()
                                     event.accepted = true
                                 } else if (event.key === Qt.Key_Escape) {
-                                    itemRect.cancelEdit()
+                                    categoryRect.cancelEdit()
                                     event.accepted = true
                                 }
                             }
@@ -172,11 +177,11 @@ Item {
                         MouseArea {
                             anchors.fill: parent
                             acceptedButtons: Qt.LeftButton | Qt.RightButton
-                            enabled: !itemRect.isEditing
+                            enabled: !categoryRect.isEditing
 
                             onClicked: function (mouse) {
                                 if (mouse.button === Qt.RightButton) {
-                                    categoryMenu.popup(itemRect)
+                                    categoryMenu.popup(categoryRect)
                                 } else {
                                     MenuService.currentCategoryId = id
                                 }
@@ -195,7 +200,7 @@ Item {
                         placeholderText: qsTr("New category name")
                         Layout.fillWidth: true
                         height: 40
-                        font.pixelSize: 14
+                        font.pixelSize: Theme.fontNormal
                         color: Theme.text
                         leftPadding: 10
                         rightPadding: 10
@@ -211,7 +216,7 @@ Item {
                         }
 
                         Component.onCompleted: {
-                            if (itemRect.isEditing)
+                            if (categoryRect.isEditing)
                                 forceActiveFocus()
                         }
                     }
@@ -233,6 +238,7 @@ Item {
                             color: "white"
                             font.bold: true
                             anchors.centerIn: parent
+                            font.pixelSize: Theme.fontNormal
                         }
 
                         hoverEnabled: false
@@ -266,7 +272,7 @@ Item {
                     text: MenuService.currentCategoryId !== -1 ? qsTr("Menu Items") : qsTr(
                                                           "Select a category")
                     font.bold: true
-                    font.pixelSize: 18
+                    font.pixelSize: Theme.fontNormal
                     color: Theme.text
                 }
 
@@ -287,6 +293,7 @@ Item {
                             font.bold: true
                             color: Theme.secondaryText
                             Layout.fillWidth: true
+                            font.pixelSize: Theme.fontSmall
                         }
 
                         Text {
@@ -295,6 +302,7 @@ Item {
                             color: Theme.secondaryText
                             Layout.preferredWidth: 90
                             horizontalAlignment: Text.AlignRight
+                            font.pixelSize: Theme.fontSmall
                         }
 
                         Text {
@@ -302,6 +310,7 @@ Item {
                             font.bold: true
                             color: Theme.secondaryText
                             Layout.preferredWidth: 120
+                            font.pixelSize: Theme.fontSmall
                         }
 
                         Text {
@@ -309,6 +318,7 @@ Item {
                             font.bold: true
                             color: Theme.secondaryText
                             Layout.preferredWidth: 100
+                            font.pixelSize: Theme.fontSmall
                         }
 
                         Text {
@@ -316,6 +326,7 @@ Item {
                             font.bold: true
                             color: Theme.secondaryText
                             Layout.preferredWidth: 100
+                            font.pixelSize: Theme.fontSmall
                         }
 
                         Item {
@@ -370,7 +381,7 @@ Item {
                                     anchors.fill: parent
                                     color: Theme.text
                                     placeholderText: qsTr("Item Name")
-                                    font.pixelSize: 14
+                                    font.pixelSize: Theme.fontNormal
                                     placeholderTextColor: Theme.secondaryText
                                     background: Rectangle {
                                         color: Theme.background
@@ -386,6 +397,7 @@ Item {
                                     text: item
                                     color: Theme.text
                                     elide: Text.ElideRight
+                                    font.pixelSize: Theme.fontNormal
                                     anchors.verticalCenter: parent.verticalCenter
                                     width: parent.width
                                 }
@@ -402,7 +414,7 @@ Item {
                                     horizontalAlignment: Text.AlignRight
                                     color: Theme.text
                                     placeholderText: qsTr("Price")
-                                    font.pixelSize: 14
+                                    font.pixelSize: Theme.fontNormal
                                     placeholderTextColor: Theme.secondaryText
                                     background: Rectangle {
                                         color: Theme.background
@@ -420,6 +432,7 @@ Item {
                                     anchors.verticalCenter: parent.verticalCenter
                                     width: parent.width
                                     color: Theme.secondaryText
+                                    font.pixelSize: Theme.fontNormal
                                 }
                             }
 
@@ -433,7 +446,7 @@ Item {
                                     anchors.fill: parent
                                     color: Theme.text
                                     placeholderText: qsTr("Portion")
-                                    font.pixelSize: 14
+                                    font.pixelSize: Theme.fontNormal
                                     placeholderTextColor: Theme.secondaryText
                                     background: Rectangle {
                                         color: Theme.background
@@ -451,6 +464,7 @@ Item {
                                     anchors.verticalCenter: parent.verticalCenter
                                     width: parent.width
                                     color: Theme.secondaryText
+                                    font.pixelSize: Theme.fontNormal
                                 }
                             }
 
@@ -459,6 +473,7 @@ Item {
                                 checked: itemRect.isEditing ? itemRect.editedAvailable : available
                                 enabled: itemRect.isEditing
                                 onCheckedChanged: itemRect.editedAvailable = checked
+                                font.pixelSize: Theme.fontNormal
                             }
 
                             CheckBox {
@@ -466,6 +481,7 @@ Item {
                                 checked: itemRect.isEditing ? itemRect.editedTaxable : taxable
                                 enabled: itemRect.isEditing
                                 onCheckedChanged: itemRect.editedTaxable = checked
+                                font.pixelSize: Theme.fontNormal
                             }
 
                             Button {
@@ -484,6 +500,7 @@ Item {
                                                                    "Edit")
                                     color: "white"
                                     anchors.centerIn: parent
+                                    font.pixelSize: Theme.fontNormal
                                 }
                                 onClicked: {
                                     if (itemRect.isEditing) {
@@ -535,6 +552,7 @@ Item {
                                     text: qsTr("Delete")
                                     color: "white"
                                     anchors.centerIn: parent
+                                    font.pixelSize: Theme.fontNormal
                                 }
                                 onClicked: {
                                     confirmationDialog.title = qsTr(
@@ -573,7 +591,7 @@ Item {
                             rightPadding: 10
                             topPadding: 10
                             bottomPadding: 10
-                            font.pixelSize: 14
+                            font.pixelSize: Theme.fontNormal
                             color: Theme.text
                             placeholderTextColor: Theme.secondaryText
                             padding: 10
@@ -591,7 +609,7 @@ Item {
                             width: 200
                             inputMethodHints: Qt.ImhFormattedNumbersOnly
                             height: 40
-                            font.pixelSize: 14
+                            font.pixelSize: Theme.fontNormal
                             color: Theme.text
                             leftPadding: 10
                             rightPadding: 10
@@ -611,7 +629,7 @@ Item {
                             placeholderText: qsTr("Portion (optional)")
                             width: 150
                             height: 40
-                            font.pixelSize: 14
+                            font.pixelSize: Theme.fontNormal
                             leftPadding: 10
                             rightPadding: 10
                             topPadding: 10
@@ -630,12 +648,13 @@ Item {
                             id: newItemAvailable
                             text: qsTr("Available")
                             checked: true
-                            font.pixelSize: 14
+                            font.pixelSize: Theme.fontNormal
                             Layout.alignment: Qt.AlignVCenter
                             contentItem: Text {
                                 text: qsTr("Available")
                                 color: Theme.text
                                 anchors.verticalCenter: parent.verticalCenter
+                                font.pixelSize: Theme.fontNormal
                             }
                         }
 
@@ -643,12 +662,13 @@ Item {
                             id: newItemTaxable
                             text: qsTr("Taxable")
                             checked: true
-                            font.pixelSize: 14
+                            font.pixelSize: Theme.fontNormal
                             Layout.alignment: Qt.AlignVCenter
                             contentItem: Text {
                                 text: qsTr("Taxable")
                                 color: Theme.text
                                 anchors.verticalCenter: parent.verticalCenter
+                                font.pixelSize: Theme.fontNormal
                             }
                         }
                     }
@@ -670,6 +690,7 @@ Item {
                             color: "white"
                             font.bold: true
                             anchors.centerIn: parent
+                            font.pixelSize: Theme.fontNormal
                         }
                         hoverEnabled: false
                         focusPolicy: Qt.NoFocus

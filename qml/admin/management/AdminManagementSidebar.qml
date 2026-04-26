@@ -49,7 +49,7 @@ Rectangle {
                     anchors.centerIn: parent
                     color: sidebarBackground.selectedIndex === index ? "white" : Theme.text
                     font.family: "Arial"
-                    font.pixelSize: 14
+                    font.pixelSize: Theme.fontNormal
                     elide: Text.ElideRight
                 }
 

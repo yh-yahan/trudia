@@ -34,7 +34,7 @@ ScrollView {
 
         Label {
             text: qsTr("Membership Settings")
-            font.pixelSize: 26
+            font.pixelSize: Theme.fontLarge
             font.bold: true
             color: Theme.text
         }
@@ -46,7 +46,7 @@ ScrollView {
                 text: qsTr("General")
                 font.bold: true
                 color: Theme.secondaryText
-                font.pointSize: 16
+                font.pixelSize: Theme.fontNormal
             }
 
             ColumnLayout {
@@ -62,11 +62,13 @@ ScrollView {
                         text: qsTr("Enable Points Loyalty")
                         color: Theme.text
                         Layout.fillWidth: true
+                        font.pixelSize: Theme.fontNormal
                     }
 
                     Switch {
                         id: enableLoyaltySwitch
                         checked: false
+                        font.pixelSize: Theme.fontNormal
                     }
                 }
             }
@@ -80,7 +82,7 @@ ScrollView {
                 text: qsTr("Earning Rules")
                 font.bold: true
                 color: Theme.secondaryText
-                font.pointSize: 16
+                font.pixelSize: Theme.fontNormal
             }
 
             ColumnLayout {
@@ -97,6 +99,7 @@ ScrollView {
                         text: qsTr("Earn")
                         color: Theme.text
                         Layout.preferredWidth: 230
+                        font.pixelSize: Theme.fontNormal
                     }
 
                     RowLayout {
@@ -110,6 +113,7 @@ ScrollView {
                             placeholderTextColor: Theme.secondaryText
                             color: Theme.text
                             horizontalAlignment: Text.AlignHCenter
+                            font.pixelSize: Theme.fontNormal
 
                             background: Rectangle {
                                 color: Theme.background
@@ -120,6 +124,7 @@ ScrollView {
                         Label {
                             text: qsTr("point(s) for every RM")
                             color: Theme.text
+                            font.pixelSize: Theme.fontNormal
                         }
 
                         TextField {
@@ -130,6 +135,7 @@ ScrollView {
                             placeholderTextColor: Theme.secondaryText
                             color: Theme.text
                             horizontalAlignment: Text.AlignHCenter
+                            font.pixelSize: Theme.fontNormal
 
                             background: Rectangle {
                                 color: Theme.surface
@@ -140,6 +146,7 @@ ScrollView {
                         Label {
                             text: qsTr("spent")
                             color: Theme.text
+                            font.pixelSize: Theme.fontNormal
                         }
                     }
                 }
@@ -150,12 +157,14 @@ ScrollView {
                     Label {
                         text: qsTr("Earn Based On")
                         color: Theme.text
+                        font.pixelSize: Theme.fontNormal
                         Layout.preferredWidth: 230
                     }
 
                     ComboBox {
                         id: earnBaseCombo
                         Layout.preferredWidth: 220
+                        font.pixelSize: Theme.fontNormal
                         model: [
                             {
                                 value: "total",
@@ -181,7 +190,7 @@ ScrollView {
                 text: qsTr("Redemption Rules")
                 font.bold: true
                 color: Theme.secondaryText
-                font.pointSize: 16
+                font.pixelSize: Theme.fontNormal
             }
 
             ColumnLayout {
@@ -198,6 +207,7 @@ ScrollView {
                         text: qsTr("Redemption")
                         color: Theme.text
                         Layout.preferredWidth: 230
+                        font.pixelSize: Theme.fontNormal
                     }
 
                     RowLayout {
@@ -211,6 +221,7 @@ ScrollView {
                             placeholderTextColor: Theme.secondaryText
                             color: Theme.text
                             horizontalAlignment: Text.AlignHCenter
+                            font.pixelSize: Theme.fontNormal
 
                             background: Rectangle {
                                 color: Theme.surface
@@ -221,6 +232,7 @@ ScrollView {
                         Label {
                             text: qsTr("points = RM")
                             color: Theme.text
+                            font.pixelSize: Theme.fontNormal
                         }
 
                         TextField {
@@ -230,6 +242,7 @@ ScrollView {
                             placeholderText: "1.00"
                             placeholderTextColor: Theme.secondaryText
                             color: Theme.text
+                            font.pixelSize: Theme.fontNormal
                             horizontalAlignment: Text.AlignHCenter
 
                             background: Rectangle {
@@ -273,6 +286,7 @@ ScrollView {
                 font.bold: true
                 anchors.centerIn: parent
                 color: "white"
+                font.pixelSize: Theme.fontNormal
             }
 
             hoverEnabled: false
@@ -294,6 +308,15 @@ ScrollView {
 
                 SettingService.saveMembershipSettings(payload);
             }
+        }
+
+        Text {
+            text: root.errorMessage
+            color: "red"
+            font.bold: true
+            wrapMode: Text.WordWrap
+            Layout.fillWidth: true
+            font.pixelSize: Theme.fontNormal
         }
     }
 }

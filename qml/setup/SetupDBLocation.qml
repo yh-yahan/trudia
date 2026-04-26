@@ -28,12 +28,12 @@ Item {
 
     ColumnLayout {
         anchors.centerIn: parent
-        width: 400
+        width: 450
         spacing: 16
 
         Text {
             text: qsTr("Choose database location")
-            font.pixelSize: 28
+            font.pixelSize: Theme.fontLarge
             font.bold: true
             color: Theme.text
             wrapMode: Text.WordWrap
@@ -42,6 +42,7 @@ Item {
         Text {
             text: qsTr("Select where the database file will be stored.")
             color: Theme.secondaryText
+            font.pixelSize: Theme.fontNormal
             wrapMode: Text.WordWrap
         }
 
@@ -54,6 +55,7 @@ Item {
                 text: root.selectedPath
                 readOnly: true
                 Layout.fillWidth: true
+                font.pixelSize: Theme.fontNormal
 
                 leftPadding: 5
                 rightPadding: 5
@@ -74,6 +76,7 @@ Item {
                     font.bold: true
                     anchors.centerIn: parent
                     color: "white"
+                    font.pixelSize: Theme.fontNormal
                 }
 
                 hoverEnabled: false
@@ -109,6 +112,7 @@ Item {
                     color: "white"
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
+                    font.pixelSize: Theme.fontNormal
                 }
 
                 hoverEnabled: false
@@ -141,12 +145,13 @@ Item {
             visible: running || errorText.length > 0
             wrapMode: Text.WordWrap
             Layout.topMargin: 8
+            font.pixelSize: Theme.fontNormal
         }
     }
 
     Text {
         text: "v0.2.0-dev"
-        font.pixelSize: 12
+        font.pixelSize: Theme.fontSmall
         color: "#aaaaaa"
 
         anchors.bottom: parent.bottom

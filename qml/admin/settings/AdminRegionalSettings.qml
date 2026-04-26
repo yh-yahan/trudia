@@ -28,7 +28,7 @@ ScrollView {
 
         Label {
             text: qsTr("Region & Format Settings")
-            font.pixelSize: 26
+            font.pixelSize: Theme.fontLarge
             font.bold: true
             color: Theme.text
         }
@@ -41,7 +41,7 @@ ScrollView {
                 text: qsTr("Region & Language")
                 font.bold: true
                 color: Theme.secondaryText
-                font.pointSize: 16
+                font.pixelSize: Theme.fontNormal
             }
 
             ColumnLayout {
@@ -57,11 +57,13 @@ ScrollView {
                         text: qsTr("Locale")
                         color: Theme.text
                         Layout.preferredWidth: 230
+                        font.pixelSize: Theme.fontNormal
                     }
 
                     ComboBox {
                         id: localeCombo
                         Layout.preferredWidth: 220
+                        font.pixelSize: Theme.fontNormal
 
                         model: [
                             { value: "en_US", label: "English (United States)" },
@@ -83,7 +85,7 @@ ScrollView {
                 text: qsTr("Currency")
                 font.bold: true
                 color: Theme.secondaryText
-                font.pointSize: 16
+                font.pixelSize: Theme.fontNormal
             }
 
             ColumnLayout {
@@ -99,11 +101,13 @@ ScrollView {
                         text: qsTr("Default Currency")
                         color: Theme.text
                         Layout.preferredWidth: 230
+                        font.pixelSize: Theme.fontNormal
                     }
 
                     ComboBox {
                         id: currencyCombo
                         Layout.preferredWidth: 220
+                        font.pixelSize: Theme.fontNormal
 
                         model: [
                             { value: "USD", label: "$ (USD)" },
@@ -149,6 +153,7 @@ ScrollView {
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
                 color: "white"
+                font.pixelSize: Theme.fontNormal
             }
 
             hoverEnabled: false
@@ -165,6 +170,15 @@ ScrollView {
 
                 SettingService.saveRegionalSettings(payload);
             }
+        }
+
+        Text {
+            text: root.errorMessage
+            color: "red"
+            font.bold: true
+            wrapMode: Text.WordWrap
+            Layout.fillWidth: true
+            font.pixelSize: Theme.fontNormal
         }
     }
 }

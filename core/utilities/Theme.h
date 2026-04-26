@@ -8,6 +8,14 @@
 class Theme : public QObject {
     Q_OBJECT
 
+    Q_PROPERTY(qreal fontScale READ fontScale WRITE setFontScale NOTIFY themeChanged)
+    Q_PROPERTY(int fontSmall READ fontSmall NOTIFY themeChanged)
+    Q_PROPERTY(int fontNormal READ fontNormal NOTIFY themeChanged)
+    Q_PROPERTY(int fontMedium READ fontMedium NOTIFY themeChanged)
+    Q_PROPERTY(int fontLarge READ fontLarge NOTIFY themeChanged)
+    Q_PROPERTY(int fontXL READ fontXL NOTIFY themeChanged)
+    Q_PROPERTY(int fontXXL READ fontXXL NOTIFY themeChanged)
+
     Q_PROPERTY(QColor background READ background NOTIFY themeChanged)
     Q_PROPERTY(QColor surface READ surface NOTIFY themeChanged)
     Q_PROPERTY(QColor border READ border NOTIFY themeChanged)
@@ -24,6 +32,22 @@ public:
         connect(m_systemTheme, &SystemTheme::darkModeChanged,
                 this, &Theme::onSystemThemeChanged);
     }
+
+    qreal fontScale() const { return m_fontScale; }
+
+    void setFontScale(qreal scale) {
+        if (qFuzzyCompare(m_fontScale, scale))
+            return;
+        m_fontScale = scale;
+        emit themeChanged();
+    }
+
+    int fontSmall() const { return int(12 * m_fontScale); }
+    int fontNormal() const { return int(14 * m_fontScale); }
+    int fontMedium() const { return int(16 * m_fontScale); }
+    int fontLarge() const { return int(18 * m_fontScale); }
+    int fontXL() const { return int(24 * m_fontScale); }
+    int fontXXL() const { return int(28 * m_fontScale); }
 
     Q_INVOKABLE QColor background() const {
         return m_systemTheme->darkMode()
@@ -67,13 +91,9 @@ public:
             : QColor("#2E7D32");
     }
 
-    Q_INVOKABLE QColor primary() const {
-        return QColor("#9a7bff");
-    }
+    Q_INVOKABLE QColor primary() const { return QColor("#9a7bff"); }
 
-    Q_INVOKABLE QColor error() const {
-        return QColor("#ff0000");
-    }
+    Q_INVOKABLE QColor error() const { return QColor("#ff0000"); }
 
 signals:
     void themeChanged();
@@ -85,6 +105,7 @@ private slots:
 
 private:
     SystemTheme *m_systemTheme;
+    qreal m_fontScale = 1.2;
 };
 
 #endif // THEME_H

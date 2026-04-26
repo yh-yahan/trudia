@@ -27,7 +27,7 @@ Item {
         Text {
             text: qsTr("Table Management")
             font.bold: true
-            font.pixelSize: 18
+            font.pixelSize: Theme.fontLarge
             color: Theme.text
         }
 
@@ -47,12 +47,14 @@ Item {
                     Layout.fillWidth: true
                     color: Theme.secondaryText
                     font.bold: true
+                    font.pixelSize: Theme.fontSmall
                 }
                 Text {
                     text: qsTr("Capacity")
                     width: 80
                     color: Theme.secondaryText
                     font.bold: true
+                    font.pixelSize: Theme.fontSmall
                 }
                 Item {
                     width: 150
@@ -90,6 +92,7 @@ Item {
                         text: tableRect.editedName
                         Layout.fillWidth: true
                         color: Theme.text
+                        font.pixelSize: Theme.fontNormal
                         background: Rectangle {
                             color: Theme.background
                             radius: 4
@@ -116,6 +119,7 @@ Item {
                         text: name
                         Layout.fillWidth: true
                         color: Theme.text
+                        font.pixelSize: Theme.fontNormal
                     }
 
                     SpinBox {
@@ -125,6 +129,7 @@ Item {
                         value: tableRect.editedCapacity
                         width: 80
                         onValueChanged: tableRect.editedCapacity = value
+                        font.pixelSize: Theme.fontNormal
                     }
 
                     Text {
@@ -132,6 +137,7 @@ Item {
                         text: capacity
                         width: 80
                         color: Theme.secondaryText
+                        font.pixelSize: Theme.fontNormal
                     }
 
                     Button {
@@ -144,6 +150,7 @@ Item {
                             text: tableRect.isEditing ? qsTr("Save") : qsTr("Edit")
                             color: "white"
                             anchors.centerIn: parent
+                            font.pixelSize: Theme.fontNormal
                         }
                         leftPadding: 15
                         rightPadding: 15
@@ -169,6 +176,7 @@ Item {
                             text: qsTr("Delete")
                             color: "white"
                             anchors.centerIn: parent
+                            font.pixelSize: Theme.fontNormal
                         }
                         leftPadding: 15
                         rightPadding: 15
@@ -229,6 +237,7 @@ Item {
                     topPadding: 10
                     bottomPadding: 10
                     color: Theme.text
+                    font.pixelSize: Theme.fontNormal
                     placeholderTextColor: Theme.secondaryText
                     background: Rectangle {
                         color: Theme.surface
@@ -249,6 +258,7 @@ Item {
                     rightPadding: 10
                     topPadding: 10
                     bottomPadding: 10
+                    font.pixelSize: Theme.fontNormal
                     background: Rectangle {
                         color: Theme.background
                         radius: 4
@@ -274,6 +284,7 @@ Item {
                     color: "white"
                     font.bold: true
                     anchors.centerIn: parent
+                    font.pixelSize: Theme.fontNormal
                 }
                 hoverEnabled: false
                 focusPolicy: Qt.NoFocus

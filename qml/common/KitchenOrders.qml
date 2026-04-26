@@ -73,7 +73,7 @@ Item {
         Text {
             text: title
             color: Theme.text
-            font.pixelSize: 22
+            font.pixelSize: Theme.fontLarge
             font.bold: true
         }
 
@@ -108,14 +108,14 @@ Item {
                         Text {
                             text: "#" + modelData.display_number
                             color: Theme.text
-                            font.pixelSize: 18
+                            font.pixelSize: Theme.fontLarge
                             font.bold: true
                         }
 
                         Text {
                             text: modelData.order_type.toUpperCase()
                             color: Theme.text
-                            font.pixelSize: 12
+                            font.pixelSize: Theme.fontNormal
                         }
 
                         Item {
@@ -126,7 +126,7 @@ Item {
                             visible: modelData.table_number != null
                             text: "Table " + modelData.table_number
                             color: Theme.text
-                            font.pixelSize: 12
+                            font.pixelSize: Theme.fontNormal
                         }
                     }
 
@@ -142,7 +142,7 @@ Item {
                                 Text {
                                     text: modelData.item_name + " x" + modelData.quantity
                                     color: Theme.text
-                                    font.pixelSize: 14
+                                    font.pixelSize: Theme.fontNormal
                                 }
 
                                 Text {
@@ -150,7 +150,7 @@ Item {
                                              && modelData.notes.length > 0
                                     text: "- " + modelData.notes
                                     color: Theme.orange
-                                    font.pixelSize: 12
+                                    font.pixelSize: Theme.fontNormal
                                 }
                             }
                         }
@@ -160,7 +160,7 @@ Item {
                         visible: modelData.notes && modelData.notes.length > 0
                         text: qsTr("NOTE: ") + modelData.notes
                         color: Theme.orange
-                        font.pixelSize: 12
+                        font.pixelSize: Theme.fontNormal
                         wrapMode: Text.Wrap
                     }
 
@@ -180,6 +180,7 @@ Item {
                             font.bold: true
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
+                            font.pixelSize: Theme.fontNormal
                         }
 
                         hoverEnabled: false

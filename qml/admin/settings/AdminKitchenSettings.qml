@@ -31,7 +31,7 @@ ScrollView {
 
         Label {
             text: qsTr("Kitchen Settings")
-            font.pixelSize: 26
+            font.pixelSize: Theme.fontLarge
             font.bold: true
             color: Theme.text
         }
@@ -43,7 +43,7 @@ ScrollView {
                 text: qsTr("Kitchen Workflow")
                 font.bold: true
                 color: Theme.secondaryText
-                font.pointSize: 16
+                font.pixelSize: Theme.fontNormal
             }
 
             ColumnLayout {
@@ -59,11 +59,13 @@ ScrollView {
                         text: qsTr("Kitchen Mode")
                         color: Theme.text
                         Layout.preferredWidth: 230
+                        font.pixelSize: Theme.fontNormal
                     }
 
                     ComboBox {
                         id: workflowCombo
                         Layout.preferredWidth: 240
+                        font.pixelSize: Theme.fontNormal
 
                         model: [{
                                 "value": "none",
@@ -95,7 +97,7 @@ ScrollView {
                 text: qsTr("Kitchen Ticket Printing")
                 font.bold: true
                 color: Theme.secondaryText
-                font.pointSize: 16
+                font.pixelSize: Theme.fontNormal
             }
 
             ColumnLayout {
@@ -111,11 +113,13 @@ ScrollView {
                         text: qsTr("Print Ticket When")
                         color: Theme.text
                         Layout.preferredWidth: 230
+                        font.pixelSize: Theme.fontNormal
                     }
 
                     ComboBox {
                         id: ticketPrintCombo
                         Layout.preferredWidth: 240
+                        font.pixelSize: Theme.fontNormal
 
                         model: [{
                                 "value": "order_created",
@@ -141,7 +145,7 @@ ScrollView {
                 text: qsTr("Checkout Rules")
                 font.bold: true
                 color: Theme.secondaryText
-                font.pointSize: 16
+                font.pixelSize: Theme.fontNormal
             }
 
             ColumnLayout {
@@ -157,11 +161,13 @@ ScrollView {
                         text: qsTr("Require kitchen ready before checkout")
                         color: Theme.text
                         Layout.fillWidth: true
+                        font.pixelSize: Theme.fontNormal
                     }
 
                     Switch {
                         id: requireReadySwitch
                         checked: false
+                        font.pixelSize: Theme.fontNormal
                     }
                 }
             }
@@ -174,7 +180,7 @@ ScrollView {
                 text: qsTr("Order Modification")
                 font.bold: true
                 color: Theme.secondaryText
-                font.pointSize: 16
+                font.pixelSize: Theme.fontNormal
             }
 
             ColumnLayout {
@@ -190,11 +196,13 @@ ScrollView {
                         text: qsTr("Allow edits after order creation")
                         color: Theme.text
                         Layout.fillWidth: true
+                        font.pixelSize: Theme.fontNormal
                     }
 
                     Switch {
                         id: allowEditSwitch
                         checked: false
+                        font.pixelSize: Theme.fontNormal
                     }
                 }
             }
@@ -231,6 +239,7 @@ ScrollView {
                 font.bold: true
                 anchors.centerIn: parent
                 color: "white"
+                font.pixelSize: Theme.fontNormal
             }
 
             hoverEnabled: false
@@ -247,6 +256,15 @@ ScrollView {
 
                 SettingService.saveKitchenSettings(payload)
             }
+        }
+
+        Text {
+            text: root.errorMessage
+            color: "red"
+            font.bold: true
+            wrapMode: Text.WordWrap
+            Layout.fillWidth: true
+            font.pixelSize: Theme.fontNormal
         }
     }
 }

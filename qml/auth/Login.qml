@@ -28,7 +28,7 @@ Item {
                 Text {
                     text: "Trudia"
                     font.bold: true
-                    font.pixelSize: 32
+                    font.pixelSize: Theme.fontXL
                     color: Theme.text
                     horizontalAlignment: Text.AlignHCenter
                     anchors.horizontalCenter: parent.horizontalCenter
@@ -36,7 +36,7 @@ Item {
 
                 Text {
                     text: "v0.2.0-dev"
-                    font.pixelSize: 12
+                    font.pixelSize: Theme.fontSmall
                     color: Theme.secondaryText
                     horizontalAlignment: Text.AlignHCenter
                     anchors.horizontalCenter: parent.horizontalCenter
@@ -57,11 +57,13 @@ Item {
                 Label {
                     text: qsTr("Username")
                     color: Theme.text
+                    font.pixelSize: Theme.fontNormal
                 }
 
                 TextField {
                     id: usernameField
                     placeholderText: qsTr("Enter username")
+                    font.pixelSize: Theme.fontNormal
                     leftPadding: 10
                     rightPadding: 10
                     topPadding: 10
@@ -71,12 +73,14 @@ Item {
 
                 Label {
                     text: qsTr("Password")
+                    font.pixelSize: Theme.fontNormal
                     color: Theme.text
                 }
 
                 TextField {
                     id: passwordField
                     placeholderText: qsTr("Enter password")
+                    font.pixelSize: Theme.fontNormal
                     echoMode: TextInput.Password
                     leftPadding: 10
                     rightPadding: 10
@@ -105,6 +109,7 @@ Item {
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                         color: "white"
+                        font.pixelSize: Theme.fontNormal
                     }
                     hoverEnabled: false
                     focusPolicy: Qt.NoFocus
@@ -135,7 +140,7 @@ Item {
                     id: errorMessage
                     text: ""
                     color: Theme.error()
-                    font.pixelSize: 14
+                    font.pixelSize: Theme.fontNormal
                     anchors.top: button.bottom
                     anchors.topMargin: 10
                     anchors.horizontalCenter: parent.horizontalCenter

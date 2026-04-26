@@ -48,8 +48,8 @@ Rectangle {
                 contentItem: Text {
                     text: model.text
                     font.bold: true
+                    font.pixelSize: Theme.fontNormal
                     anchors.centerIn: parent
-                    horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                     color: sidebarBackground.selectedIndex === index
                         ? "white"

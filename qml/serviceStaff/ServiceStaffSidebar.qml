@@ -46,12 +46,12 @@ Rectangle {
                     text: model.text
                     font.bold: true
                     anchors.centerIn: parent
-                    horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                     color: sidebarBackground.selectedIndex === index
                         ? "white"
                         : (enabled ? Theme.text : Theme.secondaryText)
                     elide: Text.ElideRight
+                    font.pixelSize: Theme.fontNormal
                 }
 
                 onClicked: {

@@ -28,7 +28,7 @@ ScrollView {
 
         Label {
             text: qsTr("Tax Settings")
-            font.pixelSize: 26
+            font.pixelSize: Theme.fontLarge
             font.bold: true
             color: Theme.text
         }
@@ -40,7 +40,7 @@ ScrollView {
                 text: qsTr("General")
                 font.bold: true
                 color: Theme.secondaryText
-                font.pointSize: 16
+                font.pixelSize: Theme.fontNormal
             }
 
             ColumnLayout {
@@ -56,11 +56,13 @@ ScrollView {
                         text: qsTr("Enable Tax")
                         color: Theme.text
                         Layout.fillWidth: true
+                        font.pixelSize: Theme.fontNormal
                     }
 
                     Switch {
                         id: enableTaxSwitch
                         checked: true
+                        font.pixelSize: Theme.fontNormal
                     }
                 }
 
@@ -72,6 +74,7 @@ ScrollView {
                         text: qsTr("Tax Name")
                         color: Theme.text
                         Layout.preferredWidth: 200
+                        font.pixelSize: Theme.fontNormal
                     }
 
                     TextField {
@@ -80,6 +83,7 @@ ScrollView {
                         placeholderText: qsTr("e.g. Sales Tax")
                         color: Theme.text
                         placeholderTextColor: Theme.secondaryText
+                        font.pixelSize: Theme.fontNormal
 
                         background: Rectangle {
                             color: Theme.surface
@@ -96,6 +100,7 @@ ScrollView {
                         text: qsTr("Tax Rate (%)")
                         color: Theme.text
                         Layout.preferredWidth: 200
+                        font.pixelSize: Theme.fontNormal
                     }
 
                     TextField {
@@ -103,6 +108,7 @@ ScrollView {
                         Layout.preferredWidth: 150
                         inputMethodHints: Qt.ImhFormattedNumbersOnly
                         color: Theme.text
+                        font.pixelSize: Theme.fontNormal
 
                         background: Rectangle {
                             color: Theme.surface
@@ -119,6 +125,7 @@ ScrollView {
                         text: qsTr("Registration Number")
                         color: Theme.text
                         Layout.preferredWidth: 200
+                        font.pixelSize: Theme.fontNormal
                     }
 
                     TextField {
@@ -127,6 +134,7 @@ ScrollView {
                         placeholderText: qsTr("Optional")
                         color: Theme.text
                         placeholderTextColor: Theme.secondaryText
+                        font.pixelSize: Theme.fontNormal
 
                         background: Rectangle {
                             color: Theme.surface
@@ -171,6 +179,7 @@ ScrollView {
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
                 color: "white"
+                font.pixelSize: Theme.fontNormal
             }
             hoverEnabled: false
             focusPolicy: Qt.NoFocus
@@ -201,6 +210,15 @@ ScrollView {
                     console.error("Failed to save tax settings")
                 }
             }
+        }
+
+        Text {
+            text: root.errorMessage
+            color: "red"
+            font.bold: true
+            wrapMode: Text.WordWrap
+            Layout.fillWidth: true
+            font.pixelSize: Theme.fontNormal
         }
     }
 }

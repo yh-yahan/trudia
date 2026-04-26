@@ -45,7 +45,7 @@ Item {
 
             Text {
                 text: qsTr("User Management")
-                font.pixelSize: 20
+                font.pixelSize: Theme.fontLarge
                 font.bold: true
                 color: Theme.text
                 Layout.fillWidth: true
@@ -66,6 +66,7 @@ Item {
                     color: "white"
                     anchors.centerIn: parent
                     font.bold: true
+                    font.pixelSize: Theme.fontNormal
                 }
 
                 onClicked: createDialog.open()
@@ -88,6 +89,7 @@ Item {
                     color: Theme.secondaryText
                     font.bold: true
                     Layout.fillWidth: true
+                    font.pixelSize: Theme.fontSmall
                 }
 
                 Text {
@@ -95,6 +97,7 @@ Item {
                     color: Theme.secondaryText
                     font.bold: true
                     Layout.preferredWidth: 140
+                    font.pixelSize: Theme.fontSmall
                 }
 
                 Text {
@@ -102,6 +105,7 @@ Item {
                     color: Theme.secondaryText
                     font.bold: true
                     Layout.preferredWidth: 100
+                    font.pixelSize: Theme.fontSmall
                 }
 
                 Item {
@@ -133,18 +137,21 @@ Item {
                         color: Theme.text
                         Layout.fillWidth: true
                         elide: Text.ElideRight
+                        font.pixelSize: Theme.fontNormal
                     }
 
                     Text {
                         text: role
                         color: Theme.secondaryText
                         Layout.preferredWidth: 140
+                        font.pixelSize: Theme.fontNormal
                     }
 
                     Text {
                         text: active ? qsTr("Yes") : qsTr("No")
                         color: active ? "#7ed957" : "#ff6b6b"
                         Layout.preferredWidth: 100
+                        font.pixelSize: Theme.fontNormal
                     }
 
                     Button {
@@ -160,6 +167,7 @@ Item {
                             text: qsTr("Edit")
                             color: "white"
                             anchors.centerIn: parent
+                            font.pixelSize: Theme.fontNormal
                         }
 
                         hoverEnabled: false
@@ -186,6 +194,7 @@ Item {
                             text: qsTr("Password")
                             color: Theme.text
                             anchors.centerIn: parent
+                            font.pixelSize: Theme.fontNormal
                         }
 
                         hoverEnabled: false
@@ -210,6 +219,7 @@ Item {
                             text: qsTr("Deactivate")
                             color: "white"
                             anchors.centerIn: parent
+                            font.pixelSize: Theme.fontNormal
                         }
 
                         hoverEnabled: false
@@ -242,7 +252,7 @@ Item {
         anchors.centerIn: Overlay.overlay
 
         width: 460
-        height: 400
+        height: 450
         padding: 0
 
         background: Rectangle {
@@ -258,7 +268,7 @@ Item {
 
             Text {
                 text: qsTr("Create User")
-                font.pixelSize: 18
+                font.pixelSize: Theme.fontLarge
                 font.bold: true
                 color: Theme.text
             }
@@ -266,6 +276,7 @@ Item {
             Label {
                 text: qsTr("Username")
                 color: Theme.text
+                font.pixelSize: Theme.fontNormal
             }
 
             TextField {
@@ -276,6 +287,7 @@ Item {
                     radius: 4
                 }
                 color: Theme.text
+                font.pixelSize: Theme.fontNormal
                 placeholderTextColor: Theme.secondaryText
                 leftPadding: 10
                 rightPadding: 10
@@ -287,6 +299,7 @@ Item {
             Label {
                 text: qsTr("Password")
                 color: Theme.text
+                font.pixelSize: Theme.fontNormal
             }
 
             TextField {
@@ -297,6 +310,7 @@ Item {
                     radius: 4
                 }
                 color: Theme.text
+                font.pixelSize: Theme.fontNormal
                 placeholderTextColor: Theme.secondaryText
                 leftPadding: 10
                 rightPadding: 10
@@ -309,6 +323,7 @@ Item {
             Label {
                 text: qsTr("Confirm Password")
                 color: Theme.text
+                font.pixelSize: Theme.fontNormal
             }
 
             TextField {
@@ -319,6 +334,7 @@ Item {
                     radius: 4
                 }
                 color: Theme.text
+                font.pixelSize: Theme.fontNormal
                 placeholderTextColor: Theme.secondaryText
                 leftPadding: 10
                 rightPadding: 10
@@ -331,6 +347,7 @@ Item {
             Label {
                 text: qsTr("Role")
                 color: Theme.text
+                font.pixelSize: Theme.fontNormal
             }
 
             ComboBox {
@@ -341,6 +358,7 @@ Item {
                 topPadding: 10
                 bottomPadding: 10
                 Layout.fillWidth: true
+                font.pixelSize: Theme.fontNormal
             }
 
             RowLayout {
@@ -368,6 +386,7 @@ Item {
                         text: qsTr("Create")
                         color: "white"
                         anchors.centerIn: parent
+                        font.pixelSize: Theme.fontNormal
                     }
 
                     onClicked: {
@@ -393,6 +412,7 @@ Item {
                         text: qsTr("Cancel")
                         color: "white"
                         anchors.centerIn: parent
+                        font.pixelSize: Theme.fontNormal
                     }
                     hoverEnabled: false
                     focusPolicy: Qt.NoFocus
@@ -423,13 +443,14 @@ Item {
             Text {
                 text: qsTr("Edit User")
                 font.bold: true
-                font.pixelSize: 16
+                font.pixelSize: Theme.fontLarge
                 color: Theme.text
             }
 
             Label {
                 text: qsTr("Username")
                 color: Theme.text
+                font.pixelSize: Theme.fontNormal
             }
 
             TextField {
@@ -440,6 +461,7 @@ Item {
                     radius: 4
                 }
                 color: Theme.text
+                font.pixelSize: Theme.fontNormal
                 placeholderTextColor: Theme.secondaryText
                 leftPadding: 10
                 rightPadding: 10
@@ -452,6 +474,7 @@ Item {
             Label {
                 text: qsTr("Role")
                 color: Theme.text
+                font.pixelSize: Theme.fontNormal
             }
 
             ComboBox {
@@ -465,6 +488,7 @@ Item {
                     else if (editDialog.role === "kitchen_staff")
                         currentIndex = 2
                 }
+                font.pixelSize: Theme.fontNormal
                 leftPadding: 10
                 rightPadding: 10
                 topPadding: 10
@@ -490,6 +514,7 @@ Item {
                         text: qsTr("Save")
                         color: "white"
                         anchors.centerIn: parent
+                        font.pixelSize: Theme.fontNormal
                     }
                     hoverEnabled: false
                     focusPolicy: Qt.NoFocus
@@ -519,6 +544,7 @@ Item {
                         text: qsTr("Cancel")
                         color: "white"
                         anchors.centerIn: parent
+                        font.pixelSize: Theme.fontNormal
                     }
                     hoverEnabled: false
                     focusPolicy: Qt.NoFocus
@@ -538,7 +564,7 @@ Item {
         anchors.centerIn: Overlay.overlay
         modal: true
         width: 360
-        height: 340
+        height: 380
 
         property int userId: -1
 
@@ -550,13 +576,14 @@ Item {
             Text {
                 text: qsTr("Change Password")
                 font.bold: true
-                font.pixelSize: 16
+                font.pixelSize: Theme.fontLarge
                 color: Theme.text
             }
 
             Label {
                 text: qsTr("Old Password")
                 color: Theme.text
+                font.pixelSize: Theme.fontNormal
             }
 
             TextField {
@@ -567,6 +594,7 @@ Item {
                     radius: 4
                 }
                 color: Theme.text
+                font.pixelSize: Theme.fontNormal
                 placeholderTextColor: Theme.secondaryText
                 leftPadding: 10
                 rightPadding: 10
@@ -579,6 +607,7 @@ Item {
             Label {
                 text: qsTr("New Password")
                 color: Theme.text
+                font.pixelSize: Theme.fontNormal
             }
 
             TextField {
@@ -589,6 +618,7 @@ Item {
                     radius: 4
                 }
                 color: Theme.text
+                font.pixelSize: Theme.fontNormal
                 placeholderTextColor: Theme.secondaryText
                 echoMode: TextInput.Password
                 leftPadding: 10
@@ -601,6 +631,7 @@ Item {
             Label {
                 text: qsTr("Confirm New Password")
                 color: Theme.text
+                font.pixelSize: Theme.fontNormal
             }
 
             TextField {
@@ -611,6 +642,7 @@ Item {
                     radius: 4
                 }
                 color: Theme.text
+                font.pixelSize: Theme.fontNormal
                 placeholderTextColor: Theme.secondaryText
                 echoMode: TextInput.Password
                 leftPadding: 10
@@ -642,6 +674,7 @@ Item {
                         text: qsTr("Change Password")
                         color: "white"
                         anchors.centerIn: parent
+                        font.pixelSize: Theme.fontNormal
                     }
                     onClicked: {
                         var ok = UserService.changePassword(
@@ -671,6 +704,7 @@ Item {
                         text: qsTr("Cancel")
                         color: "white"
                         anchors.centerIn: parent
+                        font.pixelSize: Theme.fontNormal
                     }
                     hoverEnabled: false
                     focusPolicy: Qt.NoFocus

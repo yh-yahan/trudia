@@ -192,12 +192,13 @@ Item {
                         text: "#" + modelData.display_number
                         color: Theme.text
                         font.bold: true
+                        font.pixelSize: Theme.fontNormal
                     }
 
                     Text {
                         text: modelData.table_number ? qsTr("Table ") + modelData.table_number : modelData.order_type
                         color: Theme.secondaryText
-                        font.pixelSize: 12
+                        font.pixelSize: Theme.fontNormal
                     }
                 }
             }
@@ -222,7 +223,7 @@ Item {
                     Text {
                         text: qsTr("Order #") + selectedSession.display_number
                         color: Theme.text
-                        font.pixelSize: 20
+                        font.pixelSize: Theme.fontNormal
                         font.bold: true
                     }
 
@@ -245,7 +246,7 @@ Item {
                                     text: qsTr("Order ") + modelData.display_number
                                     color: '#9f9fff'
                                     font.bold: true
-                                    font.pixelSize: 16
+                                    font.pixelSize: Theme.fontNormal
                                     Layout.fillWidth: true
                                 }
 
@@ -254,6 +255,7 @@ Item {
                                     text: qsTr("PENDING")
                                     color: Theme.orange
                                     font.bold: true
+                                    font.pixelSize: Theme.fontNormal
                                 }
 
                                 Text {
@@ -261,6 +263,7 @@ Item {
                                     text: qsTr("SERVED")
                                     color: Theme.green
                                     font.bold: true
+                                    font.pixelSize: Theme.fontNormal
                                 }
                             }
 
@@ -273,14 +276,14 @@ Item {
                                     Text {
                                         text: modelData.item_name + " x" + modelData.quantity
                                         color: Theme.text
-                                        font.pixelSize: 16
+                                        font.pixelSize: Theme.fontNormal
                                     }
 
                                     Text {
                                         visible: modelData.notes && modelData.notes.length > 0
                                         text: "(" + modelData.notes + ")"
                                         color: Theme.orange
-                                        font.pixelSize: 15
+                                        font.pixelSize: Theme.fontSmall
                                     }
                                 }
                             }
@@ -304,7 +307,7 @@ Item {
                                 Text {
                                     text: qsTr("Member Phone (optional)")
                                     color: Theme.secondaryText
-                                    font.pixelSize: 13
+                                    font.pixelSize: Theme.fontNormal
                                 }
 
                                 Row {
@@ -347,6 +350,7 @@ Item {
                                             horizontalAlignment: Text.AlignHCenter
                                             verticalAlignment: Text.AlignVCenter
                                             color: "white"
+                                            font.pixelSize: Theme.fontNormal
                                         }
                                         hoverEnabled: false
                                         focusPolicy: Qt.NoFocus
@@ -366,7 +370,7 @@ Item {
                         Text {
                             text: memberId > 0 ? qsTr("Current Points: ") + currentPoints : qsTr("New member will be created")
                             color: memberId > 0 ? Theme.green : Theme.orange
-                            font.pixelSize: 14
+                            font.pixelSize: Theme.fontNormal
                             font.bold: true
                         }
 
@@ -374,7 +378,7 @@ Item {
                             visible: selectedSession !== null
                             text: qsTr("Points to Earn: +") + earnedPointsPreview
                             color: Theme.primary()
-                            font.pixelSize: 14
+                            font.pixelSize: Theme.fontNormal
                             font.bold: true
                         }
                     }
@@ -399,6 +403,7 @@ Item {
                                     anchors.centerIn: parent
                                     color: "black"
                                     font.bold: true
+                                    font.pixelSize: Theme.fontNormal
                                 }
 
                                 hoverEnabled: false
@@ -423,6 +428,7 @@ Item {
                                     anchors.centerIn: parent
                                     color: "white"
                                     font.bold: true
+                                    font.pixelSize: Theme.fontNormal
                                 }
 
                                 hoverEnabled: false
@@ -442,11 +448,13 @@ Item {
                         Text {
                             text: qsTr("Subtotal: ") + currencySymbol + selectedSession.subtotal.toFixed(2)
                             color: Theme.text
+                            font.pixelSize: Theme.fontNormal
                         }
 
                         Text {
                             text: qsTr("Tax: ") + currencySymbol + selectedSession.tax.toFixed(2)
                             color: Theme.text
+                            font.pixelSize: Theme.fontNormal
                         }
 
                         Text {
@@ -454,19 +462,26 @@ Item {
                             text: qsTr("Discount: -") + currencySymbol + redeemDiscountPreview.toFixed(2)
                             color: Theme.orange
                             font.bold: true
+                            font.pixelSize: Theme.fontNormal
                         }
 
                         Text {
                             text: qsTr("Total: ") + currencySymbol + finalTotalPreview.toFixed(2)
                             color: Theme.text
                             font.bold: true
-                            font.pixelSize: 18
+                            font.pixelSize: Theme.fontNormal
                         }
                     }
 
                     Button {
                         text: qsTr("Checkout")
                         enabled: canCheckout
+
+                        leftPadding: 10
+                        rightPadding: 10
+                        topPadding: 10
+                        bottomPadding: 10
+                        Layout.topMargin: 15
 
                         background: Rectangle {
                             radius: 6
@@ -479,6 +494,7 @@ Item {
                             font.bold: true
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
+                            font.pixelSize: Theme.fontNormal
                         }
 
                         hoverEnabled: false
@@ -507,11 +523,16 @@ Item {
                     Text {
                         text: qsTr("Recent Order #") + selectedRecent.display_number
                         color: Theme.text
-                        font.pixelSize: 20
+                        font.pixelSize: Theme.fontNormal
                         font.bold: true
                     }
 
                     Button {
+                        leftPadding: 10
+                        rightPadding: 10
+                        topPadding: 10
+                        bottomPadding: 10
+
                         text: qsTr("Reprint Receipt")
 
                         background: Rectangle {
@@ -525,6 +546,7 @@ Item {
                             font.bold: true
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
+                            font.pixelSize: Theme.fontNormal
                         }
 
                         hoverEnabled: false
@@ -554,7 +576,7 @@ Item {
 
                 Label {
                     text: qsTr("Recent Paid Orders")
-                    font.pixelSize: 26
+                    font.pixelSize: Theme.fontNormal
                     font.bold: true
                     color: Theme.text
                 }
@@ -586,12 +608,13 @@ Item {
                         text: "#" + modelData.display_number
                         color: Theme.text
                         font.bold: true
+                        font.pixelSize: Theme.fontNormal
                     }
 
                     Text {
                         text: currencySymbol + modelData.total.toFixed(2)
                         color: Theme.green
-                        font.pixelSize: 13
+                        font.pixelSize: Theme.fontNormal
                     }
                 }
             }

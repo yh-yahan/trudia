@@ -267,19 +267,63 @@ Item {
                                 }
                             }
 
+                            readonly property int qtyCol: 60
+                            readonly property int unitCol: 80
+                            readonly property int totalCol: 80
+                            readonly property int itemCol: parent.width - (qtyCol + unitCol + totalCol)
+
+                            RowLayout {
+                                width: parent.width
+                                spacing: 0
+
+                                Text {
+                                    text: qsTr("Item")
+                                    color: Theme.text
+                                    font.bold: true
+                                    font.pixelSize: Theme.fontSmall
+                                    Layout.preferredWidth: itemCol
+                                    elide: Text.ElideRight
+                                }
+
+                                Text {
+                                    text: qsTr("Qty")
+                                    color: Theme.text
+                                    font.bold: true
+                                    font.pixelSize: Theme.fontSmall
+                                    Layout.preferredWidth: qtyCol
+                                    horizontalAlignment: Text.AlignRight
+                                }
+
+                                Text {
+                                    text: qsTr("Unit")
+                                    color: Theme.text
+                                    font.bold: true
+                                    font.pixelSize: Theme.fontSmall
+                                    Layout.preferredWidth: unitCol
+                                    horizontalAlignment: Text.AlignRight
+                                }
+
+                                Text {
+                                    text: qsTr("Total")
+                                    color: Theme.text
+                                    font.bold: true
+                                    font.pixelSize: Theme.fontSmall
+                                    Layout.preferredWidth: totalCol
+                                    horizontalAlignment: Text.AlignRight
+                                }
+                            }
+
                             Repeater {
                                 model: modelData.items
 
-                                delegate: Item {
+                                delegate: RowLayout {
                                     width: parent.width
-                                    height: 28
-
-                                    readonly property int qtyCol: 80
+                                    spacing: 0
+                                    height: 32
 
                                     Row {
-                                        x: 0
-                                        width: parent.width - qtyCol
-                                        spacing: 8
+                                        Layout.preferredWidth: itemCol
+                                        spacing: 6
                                         anchors.verticalCenter: parent.verticalCenter
 
                                         Text {
@@ -299,13 +343,30 @@ Item {
                                     }
 
                                     Text {
-                                        x: parent.width - qtyCol
-                                        width: qtyCol
+                                        Layout.preferredWidth: qtyCol
                                         text: "x" + modelData.quantity
                                         color: Theme.text
                                         font.pixelSize: Theme.fontNormal
                                         horizontalAlignment: Text.AlignRight
-                                        anchors.verticalCenter: parent.verticalCenter
+                                        verticalAlignment: Text.AlignVCenter
+                                    }
+
+                                    Text {
+                                        Layout.preferredWidth: unitCol
+                                        text: Number(modelData.unit_price).toFixed(2)
+                                        color: Theme.text
+                                        font.pixelSize: Theme.fontNormal
+                                        horizontalAlignment: Text.AlignRight
+                                        verticalAlignment: Text.AlignVCenter
+                                    }
+
+                                    Text {
+                                        Layout.preferredWidth: totalCol
+                                        text: Number(modelData.total_price).toFixed(2)
+                                        color: Theme.text
+                                        font.pixelSize: Theme.fontNormal
+                                        horizontalAlignment: Text.AlignRight
+                                        verticalAlignment: Text.AlignVCenter
                                     }
                                 }
                             }

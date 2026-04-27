@@ -201,7 +201,9 @@ QVariantList CheckoutService::getCheckoutDetails(const int &orderSessionId)
         itemMap["item_id"] = item.item_id;
         itemMap["item_name"] = item.item_name;
         itemMap["quantity"] = item.quantity;
-        itemMap["price"] = item.price; // whole units for UI
+        double unitPrice = static_cast<double>(item.price) / CURRENCY_SCALE;
+        itemMap["unit_price"] = unitPrice;
+        itemMap["total_price"] = unitPrice * item.quantity;
         itemMap["item_status"] = item.item_status;
         itemMap["notes"] = item.notes;
 

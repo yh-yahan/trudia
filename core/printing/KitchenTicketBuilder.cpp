@@ -46,28 +46,38 @@ QByteArray KitchenTicketBuilder::build(const Order &order,
     b.initialize();
 
     b.setAlignCenter();
+    b.setBold(true);
     b.addText("ORDER #" + QString::number(order.display_number));
+    b.setBold(false);
     b.newLine();
 
     b.setAlignLeft();
 
+    b.newLine();
+
     if (orderSession.order_type == "dine_in")
     {
-        QString line = "DINE IN";
+        QString line = " DINE IN";
 
         if (orderSession.table_id.has_value())
         {
             line += " | TABLE " + QString::number(orderSession.table_id.value());
         }
 
+        b.newLine();
         b.addText(line);
         b.newLine();
     }
     else
     {
-        b.addText(orderSession.order_type.toUpper());
+        b.newLine();
+        b.addText(" " + orderSession.order_type.toUpper());
         b.newLine();
     }
+
+    b.setAlignLeft();
+    b.addText(" " + QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm"));
+    b.newLine();
 
     b.addText(QString(width, '-'));
     b.newLine();
@@ -95,15 +105,14 @@ QByteArray KitchenTicketBuilder::build(const Order &order,
     b.addText(QString(width, '-'));
     b.newLine();
 
-    b.setAlignRight();
-    b.addText(QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm"));
-    b.newLine();
-
     b.newLine();
     b.newLine();
 
     QString cutMode = printer.cut_mode;
     b.cut(cutMode);
+
+    b.newLine();
+    b.newLine();
 
     return b.data();
 }

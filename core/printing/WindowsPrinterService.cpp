@@ -125,7 +125,10 @@ bool WindowsPrinterService::testPrint(const QString &printerName)
     EscPosBuilder builder;
     builder.initialize();
     builder.setAlignCenter();
+    builder.setBold(true);
     builder.addText("TEST PRINT");
+    builder.setBold(false);
+    builder.newLine();
     builder.newLine();
     builder.addText("1234567890");
     builder.newLine();
@@ -134,7 +137,11 @@ bool WindowsPrinterService::testPrint(const QString &printerName)
     builder.addText("abcdefghijklmnopqrstuvwxyz");
     builder.newLine();
     builder.addText("!@#$%^&*()_+-=[]{}|;':\",.<>/?");
-    builder.cut("Full Cut");
+    builder.newLine();
+    builder.newLine();
+    builder.cut("none");
+    builder.newLine();
+    builder.newLine();
 
     return print(printerName, builder.data());
 }

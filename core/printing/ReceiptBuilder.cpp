@@ -166,7 +166,7 @@ QByteArray ReceiptBuilder::build(const ReceiptData &data, const Printer &printer
     b.addText("Thank you!");
     b.newLine();
 
-    b.setAlignRight();
+    b.setAlignCenter();
     b.addText(QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm"));
     b.newLine();
 
@@ -175,6 +175,9 @@ QByteArray ReceiptBuilder::build(const ReceiptData &data, const Printer &printer
 
     QString cutMode = printer.cut_mode;
     b.cut(cutMode);
+
+    b.newLine();
+    b.newLine();
 
     return b.data();
 }

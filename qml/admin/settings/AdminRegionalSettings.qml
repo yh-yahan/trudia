@@ -54,7 +54,7 @@ ScrollView {
                     Layout.fillWidth: true
 
                     Label {
-                        text: qsTr("Locale")
+                        text: qsTr("App Language")
                         color: Theme.text
                         Layout.preferredWidth: 230
                         font.pixelSize: Theme.fontNormal
@@ -98,7 +98,7 @@ ScrollView {
                     Layout.fillWidth: true
 
                     Label {
-                        text: qsTr("Default Currency")
+                        text: qsTr("Currency")
                         color: Theme.text
                         Layout.preferredWidth: 230
                         font.pixelSize: Theme.fontNormal

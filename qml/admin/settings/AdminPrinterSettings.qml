@@ -74,6 +74,14 @@ ScrollView {
                     hoverEnabled: false
                     focusPolicy: Qt.NoFocus
                     onClicked: {
+                        printerRoot.isEditMode = false
+                        printerRoot.editingPrinterId = -1
+                        printerRoot.selectedPrinter = ""
+                        printerRoot.role = "receipt"
+                        printerRoot.paperWidth = 58
+                        printerRoot.cutMode = "none"
+                        printerRoot.testStatus = ""
+
                         addPrinterPopup.open()
                     }
                 }
@@ -135,6 +143,37 @@ ScrollView {
 
                         RowLayout {
                             spacing: 10
+
+                            Button {
+                                text: "Edit"
+                                topPadding: 6
+                                bottomPadding: 6
+                                leftPadding: 12
+                                rightPadding: 12
+
+                                background: Rectangle {
+                                    color: '#ebac00'
+                                    radius: 4
+                                }
+
+                                contentItem: Text {
+                                    text: qsTr("Edit")
+                                    font.bold: true
+                                    anchors.centerIn: parent
+                                    color: "white"
+                                    font.pixelSize: Theme.fontNormal
+                                }
+
+                                hoverEnabled: false
+                                focusPolicy: Qt.NoFocus
+
+                                onClicked: {
+                                    printerRoot.loadPrinterForEdit(modelData)
+                                    addPrinterPopup.open()
+                                }
+                            }
+
+                            // test btn
                             Button {
                                 text: "Test"
                                 topPadding: 6
@@ -163,6 +202,8 @@ ScrollView {
                                                 modelData.system_name)
                                 }
                             }
+
+                            // remove btn
                             Button {
                                 text: "Remove"
                                 topPadding: 6
@@ -227,6 +268,21 @@ ScrollView {
                 property string role: "receipt"
                 property int paperWidth: 58
                 property string cutMode: "none"
+
+                property bool isEditMode: false
+                property int editingPrinterId: -1
+
+                function loadPrinterForEdit(printer) {
+                    isEditMode = true
+                    editingPrinterId = printer.id
+
+                    selectedPrinter = printer.system_name
+                    role = printer.role
+                    paperWidth = printer.paper_width
+                    cutMode = printer.cut_mode
+
+                    testStatus = ""
+                }
 
                 ListModel {
                     id: portsModel
@@ -419,7 +475,7 @@ ScrollView {
                         }
 
                         Button {
-                            text: "Add Printer"
+                            text: printerRoot.isEditMode ? qsTr("Save Changes") : qsTr("Add Printer")
                             Layout.fillWidth: true
 
                             background: Rectangle {
@@ -428,7 +484,7 @@ ScrollView {
                             }
 
                             contentItem: Text {
-                                text: qsTr("Add Printer")
+                                text: printerRoot.isEditMode ? qsTr("Save Changes") : qsTr("Add Printer")
                                 color: "white"
                                 font.bold: true
                                 horizontalAlignment: Text.AlignHCenter
@@ -442,8 +498,7 @@ ScrollView {
                             onClicked: {
                                 if (!printerRoot.selectedPrinter
                                         || printerRoot.selectedPrinter.length === 0) {
-                                    printerRoot.testStatus = qsTr(
-                                                "No printer selected")
+                                    printerRoot.testStatus = qsTr("No printer selected")
                                     return
                                 }
 
@@ -455,12 +510,18 @@ ScrollView {
                                     "cut_mode": printerRoot.cutMode
                                 }
 
-                                if (SettingService.savePrinter(map)) {
+                                var success
+
+                                map["id"] = printerRoot.isEditMode ? printerRoot.editingPrinterId : 0
+                                success = SettingService.savePrinter(map)
+
+                                if (success) {
                                     addPrinterPopup.close()
                                     root.loadPrinters()
                                 } else {
                                     printerRoot.testStatus = qsTr(
-                                                "Failed to add printer")
+                                        printerRoot.isEditMode ? "Failed to update printer"
+                                                            : "Failed to add printer")
                                 }
                             }
                         }

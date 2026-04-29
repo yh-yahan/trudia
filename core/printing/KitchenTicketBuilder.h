@@ -7,19 +7,17 @@
 #include "../domain/Order.h"
 #include "../domain/OrderItem.h"
 #include "../domain/OrderSession.h"
-#include "../services/SettingService.h"
+#include "../domain/Printer.h"
 
 class KitchenTicketBuilder
 {
 public:
-    explicit KitchenTicketBuilder(SettingService &settingService);
+    explicit KitchenTicketBuilder();
 
     QByteArray build(const Order &order,
                      const OrderSession &orderSession,
-                     const std::vector<OrderItem> &items);
-
-private:
-    SettingService &m_settingService;
+                     const std::vector<OrderItem> &items,
+                     const Printer &printer);
 };
 
 #endif // KITCHENTICKETBUILDER_H

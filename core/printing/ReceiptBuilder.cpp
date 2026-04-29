@@ -5,8 +5,7 @@
 #include <QLocale>
 #include <QDateTime>
 
-ReceiptBuilder::ReceiptBuilder(SettingService &settingService)
-    : m_settingService(settingService) {}
+ReceiptBuilder::ReceiptBuilder() {}
 
 static int visualWidth(const QString &s)
 {
@@ -39,15 +38,11 @@ QString ReceiptBuilder::padLeftRight(const QString &left, const QString &right, 
     return left + QString(spaces, ' ') + right;
 }
 
-QByteArray ReceiptBuilder::build(const ReceiptData &data)
+QByteArray ReceiptBuilder::build(const ReceiptData &data, const Printer &printer)
 {
-    auto printerOpt = m_settingService.getPrinterSetting();
-
-    QString paperWidth = "80mm";
-    if (printerOpt.contains("paper_width"))
-    {
-        paperWidth = printerOpt["paper_width"].toString();
-    }
+    QString paperWidth = printer.paper_width > 0
+        ? QString::number(printer.paper_width) + "mm"
+        : "80mm";
 
     int width = PrintLayoutHelper::lineWidth(paperWidth);
 
@@ -178,7 +173,7 @@ QByteArray ReceiptBuilder::build(const ReceiptData &data)
     b.newLine();
     b.newLine();
 
-    QString cutMode = printerOpt.value("cut_mode", "Full Cut").toString();
+    QString cutMode = printer.cut_mode;
     b.cut(cutMode);
 
     return b.data();

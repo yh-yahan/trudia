@@ -6,7 +6,7 @@
 #include <QVariantList>
 #include <QVariantMap>
 #include "../data/RestaurantRepository.h"
-#include "../data/PrinterSettingRepository.h"
+#include "../data/PrinterRepository.h"
 #include "../data/TaxSettingsRepository.h"
 #include "../data/MembershipSettingsRepository.h"
 #include "../data/KitchenSettingsRepository.h"
@@ -24,7 +24,7 @@ class SettingService : public QObject
 
 public:
     explicit SettingService(RestaurantRepository &restaurantRepo,
-                            PrinterSettingRepository &printerSettingRepo,
+                            PrinterRepository &printerRepo,
                             TaxSettingsRepository &taxSettingsRepo,
                             MembershipSettingsRepository &membershipSettingsRepo,
                             KitchenSettingsRepository &kitchenSettingsRepo,
@@ -38,11 +38,11 @@ public:
     Q_INVOKABLE QString currencySymbol() const;
 
     Q_INVOKABLE QVariantMap getRestaurant();
-    Q_INVOKABLE QVariantMap getPrinterSetting();
     Q_INVOKABLE bool saveRestaurantSetting(const QVariantMap &map);
-    bool savePrinterSetting(const PrinterSetting &printerSetting);
-    Q_INVOKABLE bool savePrinterSettingMap(const QVariantMap &map);
-    Q_INVOKABLE bool removePrinterSetting();
+    Q_INVOKABLE QVariantMap getPrinter(int printerId);
+    Q_INVOKABLE QVariantList getPrinters();
+    Q_INVOKABLE bool savePrinter(const QVariantMap &map);
+    Q_INVOKABLE bool removePrinter(int printerId);
     Q_INVOKABLE QVariantMap getTaxSettings();
     Q_INVOKABLE bool saveTaxSettings(const QVariantMap &map);
     Q_INVOKABLE QVariantMap getMembershipSettings();
@@ -59,7 +59,7 @@ signals:
 
 private:
     RestaurantRepository &m_restaurantRepo;
-    PrinterSettingRepository &m_printerSettingRepo;
+    PrinterRepository m_printerRepo;
     TaxSettingsRepository &m_taxSettingsRepo;
     MembershipSettingsRepository &m_membershipSettingsRepo;
     KitchenSettingsRepository &m_kitchenSettingsRepo;

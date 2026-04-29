@@ -40,10 +40,10 @@ void EscPosBuilder::newLine()
 
 void EscPosBuilder::cut(const QString &cut_mode)
 {
-    if (cut_mode == "Full Cut"){
+    if (cut_mode == "full"){
         m_buffer.append("\x1B\x64\x03");
         m_buffer.append("\x1D\x56\x00");
-    } else if (cut_mode == "Partial Cut"){
+    } else if (cut_mode == "partial"){
         m_buffer.append("\x1B\x64\x03");
         m_buffer.append("\x1D\x56\x01");
     } else {

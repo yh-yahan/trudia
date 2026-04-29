@@ -8,13 +8,12 @@ CheckoutService::CheckoutService(OrderSessionRepository &orderSessionRepo,
                                  OrderRepository &orderRepo,
                                  OrderItemRepository &orderItemRepo,
                                  RestaurantRepository &restaurantRepo,
-                                 PrinterSettingRepository &printerRepo,
+                                 PrinterRepository &printerRepo,
                                  TableRepository &tableRepo,
                                  MembershipRepository &membershipRepo,
                                  MembershipTransactionRepository &membershipTransactionRepo,
                                  ReceiptBuilder &receiptBuilder,
-                                 NetworkPrinterService &networkPrinterService,
-                                 USBPrinterService &usbPrinterService,
+                                 WindowsPrinterService &windowsPrinterService,
                                  TaxCalculationService &taxCalculationService,
                                  MembershipService &membershipService,
                                  SettingService &settingService)
@@ -26,8 +25,7 @@ CheckoutService::CheckoutService(OrderSessionRepository &orderSessionRepo,
       m_membershipRepo(membershipRepo),
       m_membershipTransactionRepository(membershipTransactionRepo),
       m_receiptBuilder(receiptBuilder),
-      m_networkPrinterService(networkPrinterService),
-      m_usbPrinterService(usbPrinterService),
+      m_windowsPrinterService(windowsPrinterService),
       m_taxCalculationService(taxCalculationService),
       m_tableRepo(tableRepo),
       m_membershipService(membershipService),
@@ -274,10 +272,6 @@ bool CheckoutService::printReceipt(int orderSessionId)
     if (!restaurantOpt.has_value())
         return false;
 
-    auto printerOpt = m_printerRepo.get();
-    if (!printerOpt.has_value())
-        return false;
-
     ReceiptData data;
     data.storeName = restaurantOpt->name;
     data.address = restaurantOpt->address;
@@ -356,23 +350,25 @@ bool CheckoutService::printReceipt(int orderSessionId)
         }
     }
 
-    QByteArray payload = m_receiptBuilder.build(data);
+    auto printers = m_printerRepo.getAll();
 
-    if (printerOpt->connection_type == "USB")
+    bool allOk = true;
+    bool printed = false;
+
+    for (const auto &printer : printers)
     {
-        return m_usbPrinterService.print(
-            *printerOpt->com_port,
-            payload);
-    }
-    else if (printerOpt->connection_type == "Network")
-    {
-        return m_networkPrinterService.print(
-            *printerOpt->ip_address,
-            static_cast<quint16>(*printerOpt->port),
-            payload);
+        if (printer.role == "receipt" || printer.role == "both")
+        {
+            printed = true;
+
+            QByteArray payload = m_receiptBuilder.build(data, printer);
+
+            if (!m_windowsPrinterService.print(printer.system_name, payload))
+                allOk = false;
+        }
     }
 
-    return false;
+    return printed && allOk;
 }
 
 QVariantList CheckoutService::getRecentPaidOrders() const

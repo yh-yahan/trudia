@@ -12,7 +12,7 @@
 #include "core/data/OrderSessionRepository.h"
 #include "core/data/TableRepository.h"
 #include "core/data/RestaurantRepository.h"
-#include "core/data/PrinterSettingRepository.h"
+#include "core/data/PrinterRepository.h"
 #include "core/data/TaxSettingsRepository.h"
 #include "core/data/MembershipSettingsRepository.h"
 #include "core/data/MembershipRepository.h"
@@ -36,9 +36,7 @@
 #include "core/services/SetupService.h"
 #include "core/database/DatabaseManager.h"
 #include "core/printing/ReceiptBuilder.h"
-#include "core/printing/NetworkPrinterService.h"
-#include "core/printing/USBPrinterService.h"
-#include "core/printing/KitchenPrinterService.h"
+#include "core/printing/WindowsPrinterService.h"
 #include "core/printing/KitchenTicketBuilder.h"
 
 int main(int argc, char *argv[])
@@ -76,7 +74,7 @@ int main(int argc, char *argv[])
     OrderItemRepository orderItemRepo(DatabaseManager::db());
     OrderSessionRepository orderSessionRepo(DatabaseManager::db());
     RestaurantRepository restaurantRepo(DatabaseManager::db());
-    PrinterSettingRepository printerSettingRepo(DatabaseManager::db());
+    PrinterRepository printerRepo(DatabaseManager::db());
     TaxSettingsRepository taxSettingsRepo(DatabaseManager::db());
     MembershipSettingsRepository membershipSettingsRepo(DatabaseManager::db());
     MembershipRepository membershipRepo(DatabaseManager::db());
@@ -85,8 +83,7 @@ int main(int argc, char *argv[])
     KitchenSettingsRepository kitchenSettingsRepo(DatabaseManager::db());
     RegionalSettingsRepository regionalSettingsRepo(DatabaseManager::db());
 
-    NetworkPrinterService networkPrinterService;
-    USBPrinterService usbPrinterService;
+    WindowsPrinterService windowsPrinterService;
     CurrencyService currencyService;
     TaxCalculationService taxCalculationService(taxSettingsRepo);
     MembershipService membershipService(membershipRepo, membershipSettingsRepo, membershipTransactionRepo);
@@ -96,30 +93,26 @@ int main(int argc, char *argv[])
     TableService tableService(tableRepo);
     SettingService settingService(
         restaurantRepo,
-        printerSettingRepo,
+        printerRepo,
         taxSettingsRepo,
         membershipSettingsRepo,
         kitchenSettingsRepo,
         regionalSettingsRepo,
         currencyService
     );
-    KitchenPrinterService kitchenPrinterService(
-        settingService,
-        usbPrinterService,
-        networkPrinterService
-    );
-    KitchenTicketBuilder kitchenTicketBuilder(settingService);
-    ReceiptBuilder receiptBuilder(settingService);
+    KitchenTicketBuilder kitchenTicketBuilder;
+    ReceiptBuilder receiptBuilder;
     OrderService orderService(
         orderSessionRepo,
         orderRepo,
         orderItemRepo,
         tableRepo,
         menuRepo,
+        printerRepo,
         taxCalculationService,
-        kitchenPrinterService,
         kitchenTicketBuilder,
-        settingService
+        settingService,
+        windowsPrinterService
     );
     KitchenOrderService kitchenOrderService(orderSessionRepo, orderRepo, orderItemRepo, tableRepo);
     CheckoutService checkoutService(
@@ -127,13 +120,12 @@ int main(int argc, char *argv[])
         orderRepo,
         orderItemRepo,
         restaurantRepo,
-        printerSettingRepo,
+        printerRepo,
         tableRepo,
         membershipRepo,
         membershipTransactionRepo,
         receiptBuilder,
-        networkPrinterService,
-        usbPrinterService,
+        windowsPrinterService,
         taxCalculationService,
         membershipService,
         settingService
@@ -160,7 +152,7 @@ int main(int argc, char *argv[])
     qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "SettingService", &settingService);
     qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "MembershipService", &membershipService);
     qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "AnalyticsService", &analyticsService);
-    qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "USBPrinterService", &usbPrinterService);
+    qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "WindowsPrinterService", &windowsPrinterService);
     qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "AppService", &appService);
     qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "SetupService", &setupService);
 

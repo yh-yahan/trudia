@@ -1,4 +1,4 @@
-#include "USBPrinterService.h"
+#include "WindowsPrinterService.h"
 
 #include <QVariantMap>
 #include <QDebug>
@@ -7,9 +7,9 @@
 #endif
 #include "./EscPosBuilder.h"
 
-USBPrinterService::USBPrinterService() {}
+WindowsPrinterService::WindowsPrinterService() {}
 
-bool USBPrinterService::print(const QString &printerName, const QByteArray &data)
+bool WindowsPrinterService::print(const QString &printerName, const QByteArray &data)
 {
     #ifdef Q_OS_WIN
     if (printerName.isEmpty())
@@ -72,7 +72,7 @@ bool USBPrinterService::print(const QString &printerName, const QByteArray &data
 #endif
 }
 
-QVariantList USBPrinterService::getAvailablePrinters()
+QVariantList WindowsPrinterService::getAvailablePrinters()
 {
     QVariantList list;
 
@@ -110,7 +110,7 @@ QVariantList USBPrinterService::getAvailablePrinters()
         for (DWORD i = 0; i < returned; ++i)
         {
             QVariantMap item;
-            item["name"] = QString::fromWCharArray(printers[i].pPrinterName);
+            item["system_name"] = QString::fromWCharArray(printers[i].pPrinterName);
             item["port"] = QString::fromWCharArray(printers[i].pPortName);
             list.append(item);
         }
@@ -120,7 +120,7 @@ QVariantList USBPrinterService::getAvailablePrinters()
     return list;
 }
 
-bool USBPrinterService::testPrint(const QString &printerName)
+bool WindowsPrinterService::testPrint(const QString &printerName)
 {
     EscPosBuilder builder;
     builder.initialize();

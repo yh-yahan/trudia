@@ -3,6 +3,8 @@
 #include "./EscPosBuilder.h"
 #include "./PrintLayoutHelper.h"
 
+KitchenTicketBuilder::KitchenTicketBuilder() {}
+
 static int visualWidth(const QString &s)
 {
     int w = 0;
@@ -29,20 +31,14 @@ static QString padLeftRight(const QString &left, const QString &right, int width
     return left + QString(spaces, ' ') + right;
 }
 
-KitchenTicketBuilder::KitchenTicketBuilder(SettingService &settingService)
-    : m_settingService(settingService) {}
-
 QByteArray KitchenTicketBuilder::build(const Order &order,
                                        const OrderSession &orderSession,
-                                       const std::vector<OrderItem> &items)
+                                       const std::vector<OrderItem> &items,
+                                       const Printer &printer)
 {
-    auto printerOpt = m_settingService.getPrinterSetting();
-
-    QString paperWidth = "80mm";
-
-    if (printerOpt.contains("paper_width")) {
-        paperWidth = printerOpt["paper_width"].toString();
-    }
+    QString paperWidth = printer.paper_width > 0
+        ? QString::number(printer.paper_width) + "mm"
+        : "80mm";
 
     int width = PrintLayoutHelper::lineWidth(paperWidth);
 
@@ -106,7 +102,7 @@ QByteArray KitchenTicketBuilder::build(const Order &order,
     b.newLine();
     b.newLine();
 
-    QString cutMode = printerOpt.value("cut_mode", "Full Cut").toString();
+    QString cutMode = printer.cut_mode;
     b.cut(cutMode);
 
     return b.data();

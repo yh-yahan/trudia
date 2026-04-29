@@ -1,14 +1,14 @@
 #include "SettingService.h"
 
 SettingService::SettingService(RestaurantRepository &restaurantRepo,
-                               PrinterSettingRepository &printerSettingRepo,
+                               PrinterRepository &printerRepo,
                                TaxSettingsRepository &taxSettingsRepo,
                                MembershipSettingsRepository &membershipSettingsRepo,
                                KitchenSettingsRepository &kitchenSettingsRepo,
                                RegionalSettingsRepository &regionalSettingsRepo,
                                CurrencyService &currencyService)
     : m_restaurantRepo(restaurantRepo),
-      m_printerSettingRepo(printerSettingRepo),
+      m_printerRepo(printerRepo),
       m_taxSettingsRepo(taxSettingsRepo),
       m_membershipSettingsRepo(membershipSettingsRepo),
       m_kitchenSettingsRepo(kitchenSettingsRepo),
@@ -69,34 +69,6 @@ QVariantMap SettingService::getRestaurant()
     return map;
 }
 
-QVariantMap SettingService::getPrinterSetting()
-{
-    QVariantMap map;
-
-    auto settingOpt = m_printerSettingRepo.get();
-    if (!settingOpt.has_value())
-        return map;
-
-    const PrinterSetting &s = settingOpt.value();
-
-    map["id"] = s.id;
-    map["printer_interface"] = s.printer_interface;
-    map["connection_type"] = s.connection_type.value_or("");
-    map["ip_address"] = s.ip_address.value_or("");
-    map["port"] = s.port.value_or(0);
-    map["com_port"] = s.com_port.value_or("");
-    map["baud_rate"] = s.baud_rate.value_or(0);
-    map["parity"] = s.parity.value_or("");
-    map["data_bits"] = s.data_bits.value_or(0);
-    map["stop_bits"] = s.stop_bits.value_or(0);
-    map["flow_control"] = s.flow_control.value_or("");
-    map["paper_width"] = s.paper_width;
-    map["char_per_line"] = s.char_per_line;
-    map["cut_mode"] = s.cut_mode;
-
-    return map;
-}
-
 bool SettingService::saveRestaurantSetting(const QVariantMap &map)
 {
     Restaurant restaurant;
@@ -116,72 +88,84 @@ bool SettingService::saveRestaurantSetting(const QVariantMap &map)
     }
 }
 
-bool SettingService::savePrinterSetting(const PrinterSetting &printerSetting)
+QVariantMap SettingService::getPrinter(int printerId)
+{
+    QVariantMap map;
+
+    auto opt = m_printerRepo.get(printerId);
+    if (!opt)
+        return map;
+
+    const Printer &p = *opt;
+
+    map["id"] = p.id;
+    map["system_name"] = p.system_name;
+    map["role"] = p.role;
+    map["paper_width"] = p.paper_width;
+    map["cut_mode"] = p.cut_mode;
+
+    return map;
+}
+
+QVariantList SettingService::getPrinters()
+{
+    QVariantList list;
+
+    auto printers = m_printerRepo.getAll();
+
+    for (const Printer &p : printers) {
+        QVariantMap map;
+        map["id"] = p.id;
+        map["system_name"] = p.system_name;
+        map["role"] = p.role;
+        map["paper_width"] = p.paper_width;
+        map["cut_mode"] = p.cut_mode;
+
+        list.append(map);
+    }
+
+    return list;
+}
+
+bool SettingService::savePrinter(const QVariantMap &map)
 {
     try {
-        m_printerSettingRepo.save(printerSetting);
+        Printer p;
+
+        if (map.contains("id"))
+            p.id = map.value("id").toInt();
+
+        p.system_name = map.value("system_name").toString();
+        p.role = map.value("role").toString();
+        p.paper_width = map.value("paper_width").toInt();
+        p.cut_mode = map.value("cut_mode").toString();
+
+        if (p.id > 0)
+            m_printerRepo.update(p);
+        else
+            m_printerRepo.add(p);
+
         return true;
+
     } catch (const std::exception &e) {
-        qWarning() << "Failed to save printer setting:" << e.what();
+        qWarning() << "Failed to save printer:" << e.what();
         return false;
     }
 }
 
-bool SettingService::savePrinterSettingMap(const QVariantMap &map)
+bool SettingService::removePrinter(int printerId)
 {
-    PrinterSetting s;
+    try {
+        Printer p;
+        p.id = printerId;
 
-    auto existingOpt = m_printerSettingRepo.get();
-    if (existingOpt.has_value()) {
-        s = existingOpt.value();
+        m_printerRepo.remove(p);
+        return true;
+
+    } catch (const std::exception &e) {
+        qWarning() << "Failed to remove printer:" << e.what();
+        return false;
     }
-
-    if (map.contains("printer_interface"))
-        s.printer_interface = map.value("printer_interface").toString();
-
-    if (map.contains("connection_type"))
-        s.connection_type = map.value("connection_type").toString();
-
-    if (map.contains("ip_address"))
-        s.ip_address = map.value("ip_address").toString();
-
-    if (map.contains("port"))
-        s.port = map.value("port").toInt();
-
-    if (map.contains("com_port"))
-        s.com_port = map.value("com_port").toString();
-
-    if (map.contains("baud_rate"))
-        s.baud_rate = map.value("baud_rate").toInt();
-
-    if (map.contains("parity"))
-        s.parity = map.value("parity").toString();
-
-    if (map.contains("data_bits"))
-        s.data_bits = map.value("data_bits").toInt();
-
-    if (map.contains("stop_bits"))
-        s.stop_bits = map.value("stop_bits").toInt();
-
-    if (map.contains("flow_control"))
-        s.flow_control = map.value("flow_control").toString();
-
-    if (map.contains("paper_width"))
-        s.paper_width = map.value("paper_width").toString();
-
-    if (map.contains("char_per_line"))
-        s.char_per_line = map.value("char_per_line").toInt();
-
-    if (map.contains("cut_mode"))
-        s.cut_mode = map.value("cut_mode").toString();
-
-    return savePrinterSetting(s);
-}
-
-bool SettingService::removePrinterSetting()
-{
-    PrinterSetting empty;
-    return savePrinterSetting(empty);
 }
 
 QVariantMap SettingService::getTaxSettings()

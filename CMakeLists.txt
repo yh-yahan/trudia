@@ -77,13 +77,10 @@ qt_add_qml_module(apptrudia
     SOURCES core/data/OrderSessionRepository.h core/data/OrderSessionRepository.cpp
     SOURCES core/services/KitchenOrderService.h core/services/KitchenOrderService.cpp
     SOURCES core/services/CheckoutService.h core/services/CheckoutService.cpp
-    SOURCES core/data/PrinterSettingRepository.h core/data/PrinterSettingRepository.cpp
-    SOURCES core/domain/PrinterSetting.h
     SOURCES core/data/RestaurantRepository.h core/data/RestaurantRepository.cpp
     SOURCES core/domain/Restaurant.h
     SOURCES core/services/SettingService.h core/services/SettingService.cpp
     SOURCES core/printing/EscPosBuilder.h core/printing/EscPosBuilder.cpp
-    SOURCES core/printing/NetworkPrinterService.h core/printing/NetworkPrinterService.cpp
     SOURCES core/domain/TaxSettings.h
     SOURCES core/data/TaxSettingsRepository.h core/data/TaxSettingsRepository.cpp
     SOURCES core/services/TaxCalculationService.h core/services/TaxCalculationService.cpp
@@ -102,9 +99,8 @@ qt_add_qml_module(apptrudia
     SOURCES core/data/KitchenSettingsRepository.h core/data/KitchenSettingsRepository.cpp
     SOURCES core/domain/OpenOrderView.h
     SOURCES core/printing/PrintLayoutHelper.h core/printing/PrintLayoutHelper.cpp
-    SOURCES core/printing/USBPrinterService.h core/printing/USBPrinterService.cpp
+    SOURCES core/printing/WindowsPrinterService.h core/printing/WindowsPrinterService.cpp
     SOURCES core/printing/KitchenTicketBuilder.h core/printing/KitchenTicketBuilder.cpp
-    SOURCES core/printing/KitchenPrinterService.h core/printing/KitchenPrinterService.cpp
     SOURCES core/services/AppService.h core/services/AppService.cpp
     SOURCES core/services/SetupService.h core/services/SetupService.cpp
     SOURCES core/printing/ReceiptBuilder.h core/printing/ReceiptBuilder.cpp
@@ -118,6 +114,8 @@ qt_add_qml_module(apptrudia
     SOURCES core/data/RegionalSettingsRepository.h core/data/RegionalSettingsRepository.cpp
     SOURCES core/domain/RegionalSettings.h
     SOURCES core/services/CurrencyService.h core/services/CurrencyService.cpp
+    SOURCES core/domain/Printer.h
+    SOURCES core/data/PrinterRepository.h core/data/PrinterRepository.cpp
 )
 
 qt_add_translations(apptrudia

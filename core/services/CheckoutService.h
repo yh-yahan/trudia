@@ -9,14 +9,13 @@
 #include "../data/OrderRepository.h"
 #include "../data/OrderItemRepository.h"
 #include "../data/RestaurantRepository.h"
-#include "../data/PrinterSettingRepository.h"
+#include "../data/PrinterRepository.h"
 #include "../data/TaxSettingsRepository.h"
 #include "../data/TableRepository.h"
 #include "../data/MembershipRepository.h"
 #include "../data/MembershipTransactionRepository.h"
 #include "../printing/ReceiptBuilder.h"
-#include "../printing/NetworkPrinterService.h"
-#include "../printing/USBPrinterService.h"
+#include "../printing/WindowsPrinterService.h"
 #include "./TaxCalculationService.h"
 #include "./MembershipService.h"
 #include "./SettingService.h"
@@ -36,13 +35,12 @@ public:
                              OrderRepository &orderRepo,
                              OrderItemRepository &orderItemRepo,
                              RestaurantRepository &restaurantRepo,
-                             PrinterSettingRepository &printerRepo,
+                             PrinterRepository &printerRepo,
                              TableRepository &tableRepo,
                              MembershipRepository &membershipRepo,
                              MembershipTransactionRepository &membershipTransactionRepo,
                              ReceiptBuilder &receiptBuilder,
-                             NetworkPrinterService &networkPrinterService,
-                             USBPrinterService &usbPrinterService,
+                             WindowsPrinterService &windowsPrinterService,
                              TaxCalculationService &taxCalculationService,
                              MembershipService &membershipService,
                              SettingService &settingService);
@@ -60,12 +58,11 @@ private:
     OrderRepository &m_orderRepo;
     OrderItemRepository &m_orderItemRepo;
     RestaurantRepository &m_restaurantRepo;
-    PrinterSettingRepository &m_printerRepo;
+    PrinterRepository &m_printerRepo;
     MembershipRepository &m_membershipRepo;
     MembershipTransactionRepository &m_membershipTransactionRepository;
     ReceiptBuilder &m_receiptBuilder;
-    NetworkPrinterService &m_networkPrinterService;
-    USBPrinterService &m_usbPrinterService;
+    WindowsPrinterService &m_windowsPrinterService;
     TaxCalculationService &m_taxCalculationService;
     SettingService &m_settingService;
     TableRepository &m_tableRepo;

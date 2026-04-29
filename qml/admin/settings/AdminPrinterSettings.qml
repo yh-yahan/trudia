@@ -9,53 +9,17 @@ ScrollView {
     anchors.fill: parent
     contentWidth: parent.width
 
-    property string printerInterface: "ESC/POS (Raw)"
-    property string connectionType: "Network (TCP/IP)"
-    property string ipAddress: ""
-    property int port: 0
-    property string comPort: ""
-    property int baudRate: 0
-    property string parity: ""
-    property int dataBits: 0
-    property int stopBits: 0
-    property string flowControl: ""
-    property string paperWidth: "80mm"
-    property string cutMode: "Full Cut"
+    property string role: "receipt"
+    property string paperWidth: "58"
+    property string cutMode: "full"
     property string errorMessage: ""
-    property var printerModel: []
+    property var printers: []
 
-    function loadPrinter() {
-        var data = SettingService.getPrinterSetting()
-
-        if (!data || Object.keys(data).length === 0) {
-            printerModel = []
-            return
-        }
-
-        printerModel = [data]
+    function loadPrinters() {
+        printers = SettingService.getPrinters() || []
     }
 
-    function loadPrinterSettings() {
-        var data = SettingService.getPrinterSetting()
-        printerInterface = data["printer_interface"] || "ESC/POS (Raw)"
-        connectionType = data["connection_type"] || "Network (TCP/IP)"
-        ipAddress = data["ip_address"] || ""
-        port = data["port"] || 0
-        comPort = data["com_port"] || ""
-        baudRate = data["baud_rate"] || 0
-        parity = data["parity"] || ""
-        dataBits = data["data_bits"] || 0
-        stopBits = data["stop_bits"] || 0
-        flowControl = data["flow_control"] || ""
-        paperWidth = data["paper_width"] || "80mm"
-        cutMode = data["cut_mode"] || "Full Cut"
-        errorMessage = ""
-    }
-
-    Component.onCompleted: {
-        loadPrinterSettings()
-        loadPrinter()
-    }
+    Component.onCompleted: loadPrinters()
 
     ColumnLayout {
         width: parent.width
@@ -126,7 +90,7 @@ ScrollView {
                 Layout.fillWidth: true
                 Layout.preferredHeight: contentHeight
 
-                model: printerModel
+                model: printers
 
                 delegate: Rectangle {
                     width: ListView.view.width
@@ -146,14 +110,25 @@ ScrollView {
                         spacing: 6
 
                         Text {
-                            text: qsTr("Printer")
+                            text: {
+                                switch (modelData.role) {
+                                case "receipt":
+                                    return qsTr("Receipt Printer")
+                                case "kitchen":
+                                    return qsTr("Kitchen Printer")
+                                case "both":
+                                    return qsTr("Receipt + Kitchen Printer")
+                                default:
+                                    return qsTr("Printer")
+                                }
+                            }
                             font.bold: true
                             color: Theme.text
                             font.pixelSize: Theme.fontNormal
                         }
 
                         Text {
-                            text: modelData.com_port || qsTr("Unknown printer")
+                            text: modelData.system_name
                             color: Theme.text
                             font.pixelSize: Theme.fontNormal
                         }
@@ -183,10 +158,9 @@ ScrollView {
                                 hoverEnabled: false
                                 focusPolicy: Qt.NoFocus
                                 onClicked: {
-                                    console.log("modelData:", JSON.stringify(modelData))
-                                    console.log("com_port:", modelData.com_port)
-                                    USBPrinterService.testPrint(
-                                                modelData.com_port)
+                                    console.log("system_name: ", modelData.system_name)
+                                    WindowsPrinterService.testPrint(
+                                                modelData.system_name)
                                 }
                             }
                             Button {
@@ -212,12 +186,10 @@ ScrollView {
                                 hoverEnabled: false
                                 focusPolicy: Qt.NoFocus
                                 onClicked: {
-                                    if (SettingService.removePrinterSetting()) {
-                                        root.printerModel = []
-                                        root.loadPrinterSettings()
+                                    if (SettingService.removePrinter(modelData.id)) {
+                                        loadPrinters()
                                     } else {
-                                        root.errorMessage = qsTr(
-                                                    "Failed to remove printer")
+                                        errorMessage = qsTr("Failed to remove printer")
                                     }
                                 }
                             }
@@ -225,155 +197,6 @@ ScrollView {
                     }
                 }
             }
-        }
-
-        // paper and format
-        ColumnLayout {
-            spacing: 15
-
-            Text {
-                Layout.fillWidth: true
-                text: qsTr("Paper and Format")
-                font.bold: true
-                color: Theme.secondaryText
-                font.pixelSize: Theme.fontNormal
-            }
-
-            ColumnLayout {
-                anchors.left: parent.left
-                anchors.leftMargin: 20
-                anchors.right: parent.right
-                spacing: 10
-
-                Label {
-                    text: qsTr("Paper Width")
-                    color: Theme.text
-                    font.pixelSize: Theme.fontNormal
-                }
-
-                ComboBox {
-                    id: paperWidthComboBox
-                    Layout.fillWidth: true
-                    model: ["58mm", "80mm"]
-                    Component.onCompleted: {
-                        var defaultIndex = model.indexOf(root.paperWidth)
-                        currentIndex = defaultIndex >= 0 ? defaultIndex : 1
-                    }
-
-                    onCurrentIndexChanged: {
-                        root.paperWidth = model[currentIndex]
-                    }
-
-                    font.pixelSize: Theme.fontNormal
-                    leftPadding: 12
-                    rightPadding: 12
-                    topPadding: 8
-                    bottomPadding: 8
-                }
-
-                Label {
-                    text: qsTr("Cut Mode")
-                    color: "white"
-                    font.pixelSize: Theme.fontNormal
-                }
-
-                ComboBox {
-                    Layout.fillWidth: true
-
-                    model: [{
-                            "text": qsTr("Full Cut"),
-                            "value": "Full Cut"
-                        }, {
-                            "text": qsTr("Partial Cut"),
-                            "value": "Partial Cut"
-                        }, {
-                            "text": qsTr("No Cut"),
-                            "value": "No Cut"
-                        }]
-
-                    textRole: "text"
-
-                    currentIndex: model.findIndex(
-                                      item => item.value === root.cutMode)
-
-                    onCurrentIndexChanged: {
-                        root.cutMode = model[currentIndex].value
-                    }
-
-                    font.pixelSize: Theme.fontNormal
-                    leftPadding: 12
-                    rightPadding: 12
-                    topPadding: 8
-                    bottomPadding: 8
-                }
-            }
-        }
-    }
-
-    RowLayout {
-        Layout.fillWidth: true
-        Layout.alignment: Qt.AlignRight
-        anchors.bottom: parent.bottom
-        anchors.leftMargin: 10
-        anchors.rightMargin: 10
-        anchors.bottomMargin: 20
-
-        Button {
-            text: qsTr("Save")
-            width: 60
-            leftPadding: 20
-            rightPadding: 20
-            topPadding: 10
-            bottomPadding: 10
-            Layout.topMargin: 10
-            Layout.leftMargin: 20
-            background: Rectangle {
-                color: Theme.primary()
-                radius: 4
-            }
-            contentItem: Text {
-                text: qsTr("Save")
-                font.bold: true
-                anchors.centerIn: parent
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-                color: "white"
-                font.pixelSize: Theme.fontNormal
-            }
-            hoverEnabled: false
-            focusPolicy: Qt.NoFocus
-            onClicked: {
-                var map = {
-                    "printer_interface": root.printerInterface,
-                    "connection_type": root.connectionType,
-                    "ip_address": root.ipAddress,
-                    "port": root.port,
-                    "com_port": root.comPort,
-                    "baud_rate": root.baudRate,
-                    "parity": root.parity,
-                    "data_bits": root.dataBits,
-                    "stop_bits": root.stopBits,
-                    "flow_control": root.flowControl,
-                    "paper_width": root.paperWidth,
-                    "cut_mode": root.cutMode
-                }
-
-                if (SettingService.savePrinterSettingMap(map)) {
-                    root.errorMessage = ""
-                    loadPrinterSettings()
-                } else {
-                    root.errorMessage = qsTr("Failed to save printer settings.")
-                }
-            }
-        }
-
-        Text {
-            text: root.errorMessage
-            color: "red"
-            font.bold: true
-            wrapMode: Text.WordWrap
-            Layout.fillWidth: true
-            font.pixelSize: Theme.fontNormal
         }
     }
 
@@ -384,7 +207,8 @@ ScrollView {
         x: parent.width / 2 - width / 2
         y: parent.height / 2 - height / 2
         width: 400
-        height: 300
+        height: 500
+
         background: Rectangle {
             color: Theme.background
             radius: 8
@@ -395,25 +219,26 @@ ScrollView {
                 id: printerRoot
 
                 width: 400
-                height: 300
+                height: 500
 
                 property string selectedPrinter: ""
                 property string testStatus: ""
+
+                property string role: "receipt"
+                property int paperWidth: 58
+                property string cutMode: "none"
 
                 ListModel {
                     id: portsModel
                 }
 
                 Component.onCompleted: {
-                    var list = USBPrinterService.getAvailablePrinters()
+                    var list = WindowsPrinterService.getAvailablePrinters()
 
                     portsModel.clear()
-
                     for (var i = 0; i < list.length; i++) {
                         portsModel.append(list[i])
                     }
-
-                    console.log("Loaded:", portsModel.count)
                 }
 
                 ColumnLayout {
@@ -434,56 +259,132 @@ ScrollView {
 
                     ListView {
                         Layout.fillWidth: true
-                        Layout.preferredHeight: 150
-                        Layout.preferredWidth: 130
+                        Layout.preferredHeight: 140
                         clip: true
 
                         model: portsModel
 
                         delegate: RadioButton {
-                            required property string name
-                            required property string port
+                            required property string system_name
 
-                            checked: name === printerRoot.selectedPrinter
+                            checked: system_name === printerRoot.selectedPrinter
 
-                            onClicked: printerRoot.selectedPrinter = name
+                            onClicked: printerRoot.selectedPrinter = system_name
 
                             contentItem: Text {
-                                text: "     " + name
+                                text: "     " + system_name
                                 color: Theme.text
                                 font.pixelSize: Theme.fontNormal
                             }
                         }
                     }
 
+                    Text {
+                        text: qsTr("Role")
+                        color: Theme.secondaryText
+                    }
+
+                    ComboBox {
+                        Layout.fillWidth: true
+                        font.pixelSize: Theme.fontNormal
+
+                        model: [{
+                                "value": "receipt",
+                                "label": qsTr("Receipt")
+                            }, {
+                                "value": "kitchen",
+                                "label": qsTr("Kitchen Ticket")
+                            }, {
+                                "value": "both",
+                                "label": qsTr("Receipt + Kitchen Ticket")
+                            }]
+
+                        textRole: "label"
+                        valueRole: "value"
+
+                        currentValue: printerRoot.role
+                        onActivated: printerRoot.role = currentValue
+                    }
+
+                    Text {
+                        text: qsTr("Paper Width")
+                        color: Theme.secondaryText
+                    }
+
+                    ComboBox {
+                        Layout.fillWidth: true
+                        font.pixelSize: Theme.fontNormal
+
+                        model: [{
+                                "value": 58,
+                                "label": "58 mm"
+                            }, {
+                                "value": 80,
+                                "label": "80 mm"
+                            }]
+
+                        textRole: "label"
+                        valueRole: "value"
+
+                        currentValue: printerRoot.paperWidth
+                        onActivated: printerRoot.paperWidth = currentValue
+                    }
+
+                    Text {
+                        text: qsTr("Cut Mode")
+                        color: Theme.secondaryText
+                    }
+
+                    ComboBox {
+                        Layout.fillWidth: true
+                        font.pixelSize: Theme.fontNormal
+
+                        model: [{
+                                "value": "full",
+                                "label": qsTr("Full Cut")
+                            }, {
+                                "value": "partial",
+                                "label": qsTr("Partial Cut")
+                            }, {
+                                "value": "none",
+                                "label": qsTr("None")
+                            }]
+
+                        textRole: "label"
+                        valueRole: "value"
+
+                        currentValue: printerRoot.cutMode
+                        onActivated: printerRoot.cutMode = currentValue
+                    }
+
                     RowLayout {
                         spacing: 10
+                        Layout.topMargin: 15
 
                         Button {
                             text: "Cancel"
                             Layout.fillWidth: true
+
                             background: Rectangle {
-                                color: 'transparent'
+                                color: "transparent"
                                 border.color: Theme.primary()
                                 border.width: 1
                                 radius: 4
-                            }
-                            contentItem: Text {
-                                text: qsTr("Cancel")
-                                font.bold: true
-                                anchors.centerIn: parent
-                                horizontalAlignment: Text.AlignHCenter
-                                verticalAlignment: Text.AlignVCenter
-                                color: Theme.primary()
-                                font.pixelSize: Theme.fontNormal
                             }
 
                             hoverEnabled: false
                             focusPolicy: Qt.NoFocus
 
-                            onClicked: {
-                                addPrinterPopup.close()
+                            contentItem: Text {
+                                text: qsTr("Cancel")
+                                color: Theme.primary()
+                                font.bold: true
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
+                                font.pixelSize: Theme.fontNormal
                             }
+
+                            onClicked: addPrinterPopup.close()
                         }
 
                         Button {
@@ -491,25 +392,28 @@ ScrollView {
                             Layout.fillWidth: true
 
                             background: Rectangle {
-                                color: '#5F7DDC'
+                                color: "#5F7DDC"
                                 radius: 4
                             }
+
                             contentItem: Text {
                                 text: qsTr("Test Printer")
+                                color: "white"
                                 font.bold: true
-                                anchors.centerIn: parent
                                 horizontalAlignment: Text.AlignHCenter
                                 verticalAlignment: Text.AlignVCenter
-                                color: "white"
                                 font.pixelSize: Theme.fontNormal
                             }
+
                             hoverEnabled: false
                             focusPolicy: Qt.NoFocus
 
                             onClicked: {
                                 printerRoot.testStatus = qsTr("Testing...")
-                                var success = USBPrinterService.testPrint(
+
+                                var success = WindowsPrinterService.testPrint(
                                             printerRoot.selectedPrinter)
+
                                 printerRoot.testStatus = success ? "Success" : "Failed"
                             }
                         }
@@ -522,15 +426,16 @@ ScrollView {
                                 color: Theme.primary()
                                 radius: 4
                             }
+
                             contentItem: Text {
                                 text: qsTr("Add Printer")
+                                color: "white"
                                 font.bold: true
-                                anchors.centerIn: parent
                                 horizontalAlignment: Text.AlignHCenter
                                 verticalAlignment: Text.AlignVCenter
-                                color: "white"
                                 font.pixelSize: Theme.fontNormal
                             }
+
                             hoverEnabled: false
                             focusPolicy: Qt.NoFocus
 
@@ -543,34 +448,33 @@ ScrollView {
                                 }
 
                                 var map = {
-                                    "connection_type": "USB",
-                                    "com_port": printerRoot.selectedPrinter
+                                    "name": printerRoot.selectedPrinter,
+                                    "system_name": printerRoot.selectedPrinter,
+                                    "role": printerRoot.role,
+                                    "paper_width": printerRoot.paperWidth,
+                                    "cut_mode": printerRoot.cutMode
                                 }
 
-                                if (SettingService.savePrinterSettingMap(map)) {
+                                if (SettingService.savePrinter(map)) {
                                     addPrinterPopup.close()
-                                    root.loadPrinterSettings()
+                                    root.loadPrinters()
                                 } else {
                                     printerRoot.testStatus = qsTr(
                                                 "Failed to add printer")
                                 }
-
-                                root.loadPrinter()
                             }
                         }
                     }
 
-                    RowLayout {
-                        Text {
-                            text: testStatus
-                            Layout.fillWidth: true
-                            horizontalAlignment: Text.AlignHCenter
-                            font.pixelSize: Theme.fontNormal
+                    Text {
+                        text: printerRoot.testStatus
+                        Layout.fillWidth: true
+                        horizontalAlignment: Text.AlignHCenter
+                        font.pixelSize: Theme.fontNormal
 
-                            color: printerRoot.testStatus.indexOf("Success")
-                                   !== -1 ? "lightgreen" : (printerRoot.testStatus
-                                                            === "Testing..." ? "orange" : "red")
-                        }
+                        color: printerRoot.testStatus.indexOf("Success")
+                               !== -1 ? "lightgreen" : (printerRoot.testStatus
+                                                        === "Testing..." ? "orange" : "red")
                     }
                 }
             }

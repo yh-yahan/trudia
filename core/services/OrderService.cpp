@@ -8,19 +8,21 @@ OrderService::OrderService(OrderSessionRepository &orderSessionRepo,
                            OrderItemRepository &orderItemRepo,
                            TableRepository &tableRepo,
                            MenuRepository &menuRepo,
+                           PrinterRepository &printerRepo,
                            TaxCalculationService &taxService,
-                           KitchenPrinterService &kitchenPrinter,
                            KitchenTicketBuilder &kitchenTicketBuilder,
-                           SettingService &settingService)
+                           SettingService &settingService,
+                           WindowsPrinterService &windowsPrinterService)
     : m_orderSessionRepo(orderSessionRepo),
       m_orderRepo(orderRepo),
       m_orderItemRepo(orderItemRepo),
       m_tableRepo(tableRepo),
       m_menuRepo(menuRepo),
+      m_printerRepo(printerRepo),
       m_taxService(taxService),
-      m_kitchenPrinter(kitchenPrinter),
       m_kitchenTicketBuilder(kitchenTicketBuilder),
-      m_settingService(settingService) {}
+      m_settingService(settingService),
+      m_windowsPrinterService(windowsPrinterService){}
 
 int OrderService::createOrder(
     const QString &orderType,
@@ -156,14 +158,27 @@ int OrderService::createOrder(
             {
                 auto items = m_orderItemRepo.getOrderItemsByOrderId(orderId);
 
-                QByteArray data = m_kitchenTicketBuilder.build(
-                    orderOpt.value(),
-                    sessionOpt.value(),
-                    items);
-
                 qDebug() << orderOpt.value().display_number;
 
-                m_kitchenPrinter.print(data);
+                auto printers = m_printerRepo.getAll();
+
+                for (const auto &printer : printers)
+                {
+                    if (printer.role == "kitchen" || printer.role == "both")
+                    {
+                        QByteArray data = m_kitchenTicketBuilder.build(
+                            orderOpt.value(),
+                            sessionOpt.value(),
+                            items,
+                            printer
+                        );
+
+                        if (!m_windowsPrinterService.print(printer.system_name, data))
+                        {
+                            qWarning() << "Kitchen print failed for printer:" << printer.system_name;
+                        }
+                    }
+                }
             }
         }
     }
@@ -372,12 +387,25 @@ int OrderService::updateOrder(
             {
                 auto items = m_orderItemRepo.getOrderItemsByOrderId(orderId);
 
-                QByteArray data = m_kitchenTicketBuilder.build(
-                    orderOpt.value(),
-                    sessionOpt.value(),
-                    items);
+                auto printers = m_printerRepo.getAll();
 
-                m_kitchenPrinter.print(data);
+                for (const auto &printer : printers)
+                {
+                    if (printer.role == "kitchen" || printer.role == "both")
+                    {
+                        QByteArray data = m_kitchenTicketBuilder.build(
+                            orderOpt.value(),
+                            sessionOpt.value(),
+                            items,
+                            printer
+                        );
+
+                        if (!m_windowsPrinterService.print(printer.system_name, data))
+                        {
+                            qWarning() << "Kitchen print failed for printer:" << printer.system_name;
+                        }
+                    }
+                }
             }
         }
     }
@@ -448,11 +476,26 @@ bool OrderService::printKitchenTicket(int orderId)
         return false;
     }
 
-    QByteArray data = m_kitchenTicketBuilder.build(
-        order,
-        sessionOpt.value(),
-        items
-    );
+    auto printers = m_printerRepo.getAll();
 
-    return m_kitchenPrinter.print(data);
+    bool allOk = true;
+    bool printed = false;
+
+    for (const auto &printer : printers)
+    {
+        if (printer.role == "kitchen" || printer.role == "both")
+        {
+            QByteArray data = m_kitchenTicketBuilder.build(
+                orderOpt.value(),
+                sessionOpt.value(),
+                items,
+                printer
+            );
+
+            if (!m_windowsPrinterService.print(printer.system_name, data))
+                allOk = false;
+        }
+    }
+
+    return printed && allOk;
 }

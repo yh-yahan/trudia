@@ -198,8 +198,7 @@ ScrollView {
                                 focusPolicy: Qt.NoFocus
                                 onClicked: {
                                     console.log("system_name: ", modelData.system_name)
-                                    WindowsPrinterService.testPrint(
-                                                modelData.system_name)
+                                    WindowsPrinterService.testPrint(modelData)
                                 }
                             }
 
@@ -467,8 +466,12 @@ ScrollView {
                             onClicked: {
                                 printerRoot.testStatus = qsTr("Testing...")
 
-                                var success = WindowsPrinterService.testPrint(
-                                            printerRoot.selectedPrinter)
+                                var success = WindowsPrinterService.testPrint({
+                                    "system_name": printerRoot.selectedPrinter,
+                                    "role": printerRoot.role,
+                                    "paper_width": printerRoot.paperWidth,
+                                    "cut_mode": printerRoot.cutMode
+                                })
 
                                 printerRoot.testStatus = success ? "Success" : "Failed"
                             }

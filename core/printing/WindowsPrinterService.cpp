@@ -6,6 +6,7 @@
 #include <windows.h>
 #endif
 #include "./EscPosBuilder.h"
+#include "./PrintLayoutHelper.h"
 
 WindowsPrinterService::WindowsPrinterService() {}
 
@@ -120,16 +121,56 @@ QVariantList WindowsPrinterService::getAvailablePrinters()
     return list;
 }
 
-bool WindowsPrinterService::testPrint(const QString &printerName)
+bool WindowsPrinterService::testPrint(const QVariantMap &printerConfig)
 {
+    const QString printerName = printerConfig.value("system_name").toString();
+    const QString cutMode = printerConfig.value("cut_mode").toString();
+    const QString role = printerConfig.value("role").toString();
+    const int paperWidth = printerConfig.value("paper_width").toInt();
+
+    int width = PrintLayoutHelper::lineWidth(paperWidth > 0
+        ? QString::number(paperWidth) + "mm"
+        : "58mm");
+
+    auto roleToText = [](const QString &r) -> QString {
+        if (r == "receipt") return "Receipt Printer";
+        if (r == "kitchen") return "Kitchen Printer";
+        if (r == "both") return "Receipt + Kitchen Printer";
+    };
+
     EscPosBuilder builder;
     builder.initialize();
+
     builder.setAlignCenter();
     builder.setBold(true);
-    builder.addText("TEST PRINT");
+    builder.addText("PRINTER TEST");
     builder.setBold(false);
     builder.newLine();
     builder.newLine();
+    builder.addText(QString(width, '-'));
+    builder.newLine();
+    builder.newLine();
+
+    builder.setAlignLeft();
+    builder.newLine();
+    builder.addText("Printer: " + printerName);
+    builder.newLine();
+
+    builder.addText("Role: " + roleToText(role));
+    builder.newLine();
+
+    builder.addText("Paper Width: " + QString::number(paperWidth) + "mm");
+    builder.newLine();
+
+    builder.addText("Cut Mode: " + cutMode);
+    builder.newLine();
+
+    builder.newLine();
+    builder.addText(QString(width, '-'));
+    builder.newLine();
+    builder.newLine();
+
+    builder.setAlignCenter();
     builder.addText("1234567890");
     builder.newLine();
     builder.addText("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
@@ -138,8 +179,9 @@ bool WindowsPrinterService::testPrint(const QString &printerName)
     builder.newLine();
     builder.addText("!@#$%^&*()_+-=[]{}|;':\",.<>/?");
     builder.newLine();
+
     builder.newLine();
-    builder.cut("none");
+    builder.cut(cutMode);
     builder.newLine();
     builder.newLine();
 

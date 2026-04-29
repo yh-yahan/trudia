@@ -42,7 +42,7 @@ QByteArray ReceiptBuilder::build(const ReceiptData &data, const Printer &printer
 {
     QString paperWidth = printer.paper_width > 0
         ? QString::number(printer.paper_width) + "mm"
-        : "80mm";
+        : "58mm";
 
     int width = PrintLayoutHelper::lineWidth(paperWidth);
 

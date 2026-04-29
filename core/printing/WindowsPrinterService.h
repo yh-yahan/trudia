@@ -15,7 +15,7 @@ public:
 
     Q_INVOKABLE bool print(const QString &portName, const QByteArray &data);
     Q_INVOKABLE QVariantList getAvailablePrinters();
-    Q_INVOKABLE bool testPrint(const QString &printerName);
+    Q_INVOKABLE bool testPrint(const QVariantMap &printerConfig);
 };
 
 #endif // WINDOWSPRINTERSERVICE_H

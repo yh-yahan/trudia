@@ -2,6 +2,8 @@
 
 #include <QFile>
 #include <QDebug>
+#include "../data/RegionalSettingsRepository.h"
+#include "./RegionalSettingsService.h"
 
 SetupService::SetupService(AppService &appService,
                            DatabaseManager &databaseManager,
@@ -35,6 +37,11 @@ bool SetupService::initializeSystem(const QString &dbPath)
     }
 
     m_appService.setDatabasePath(dbPath);
+
+    RegionalSettingsRepository repo(m_databaseManager.db());
+    RegionalSettingsService service;
+
+    service.ensureInitialized(repo);
 
     qDebug() << "System initialization completed successfully.";
     return true;

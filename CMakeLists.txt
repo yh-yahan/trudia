@@ -116,6 +116,7 @@ qt_add_qml_module(apptrudia
     SOURCES core/services/CurrencyService.h core/services/CurrencyService.cpp
     SOURCES core/domain/Printer.h
     SOURCES core/data/PrinterRepository.h core/data/PrinterRepository.cpp
+    SOURCES core/services/RegionalSettingsService.h core/services/RegionalSettingsService.cpp
 )
 
 qt_add_translations(apptrudia

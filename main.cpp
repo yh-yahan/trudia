@@ -46,11 +46,6 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationName("Trudia");
     QCoreApplication::setApplicationName("TrudiaPOS");
 
-    QTranslator translator;
-    if (translator.load(QLocale(), "app", "_", ":/i18n")) {
-        app.installTranslator(&translator);
-    }
-
     DatabaseManager dbManager;
 
     AppService appService;
@@ -65,6 +60,29 @@ int main(int argc, char *argv[])
 
     SystemTheme systemTheme;
     Theme theme(&systemTheme);
+
+    auto regionalOpt = RegionalSettingsRepository(DatabaseManager::db()).get();
+
+    QString locale;
+
+    if (regionalOpt.has_value() && !regionalOpt->locale.isEmpty()) {
+        locale = regionalOpt->locale;
+    } else {
+        locale = QLocale::system().name();
+    }
+
+    QTranslator translator;
+
+    const QString translationFile = QString("app_%1").arg(locale);
+
+    if (translator.load(QLocale(locale), "app", "_", ":/i18n")) {
+        app.installTranslator(&translator);
+    } else {
+        QLocale fallbackLocale(locale);
+        if (translator.load(fallbackLocale, "app", "_", ":/i18n")) {
+            app.installTranslator(&translator);
+        }
+    }
 
     UserRepository userRepo(DatabaseManager::db());
     MenuRepository menuRepo(DatabaseManager::db());

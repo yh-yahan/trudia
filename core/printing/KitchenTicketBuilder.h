@@ -4,6 +4,7 @@
 #include <QByteArray>
 #include <QString>
 #include <QDateTime>
+#include "../data/RegionalSettingsRepository.h"
 #include "../domain/Order.h"
 #include "../domain/OrderItem.h"
 #include "../domain/OrderSession.h"
@@ -12,12 +13,16 @@
 class KitchenTicketBuilder
 {
 public:
-    explicit KitchenTicketBuilder();
+    explicit KitchenTicketBuilder(RegionalSettingsRepository &regionalSettingsRepo);
 
     QByteArray build(const Order &order,
                      const OrderSession &orderSession,
                      const std::vector<OrderItem> &items,
                      const Printer &printer);
+
+private:
+    RegionalSettingsRepository &m_regionalSettingsRepo;
+    QLocale getLocale() const;
 };
 
 #endif // KITCHENTICKETBUILDER_H

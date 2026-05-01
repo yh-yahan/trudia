@@ -5,7 +5,8 @@
 #include <QLocale>
 #include <QDateTime>
 
-ReceiptBuilder::ReceiptBuilder() {}
+ReceiptBuilder::ReceiptBuilder(RegionalSettingsRepository &regionalSettingsRepo)
+    : m_regionalSettingsRepo(regionalSettingsRepo) {}
 
 static int visualWidth(const QString &s)
 {
@@ -24,7 +25,8 @@ static int visualWidth(const QString &s)
 
 QString ReceiptBuilder::formatAmount(double amount) const
 {
-    return QLocale().toString(amount, 'f', 2);
+    QLocale locale = getLocale();
+    return locale.toString(amount, 'f', 2);
 }
 
 QString ReceiptBuilder::padLeftRight(const QString &left, const QString &right, int width)
@@ -36,6 +38,17 @@ QString ReceiptBuilder::padLeftRight(const QString &left, const QString &right, 
     if (spaces < 1) spaces = 1;
 
     return left + QString(spaces, ' ') + right;
+}
+
+QLocale ReceiptBuilder::getLocale() const
+{
+    auto settings = m_regionalSettingsRepo.get();
+
+    if (settings.has_value() && !settings->locale.isEmpty()) {
+        return QLocale(settings->locale);
+    }
+
+    return QLocale();
 }
 
 QByteArray ReceiptBuilder::build(const ReceiptData &data, const Printer &printer)
@@ -82,7 +95,6 @@ QByteArray ReceiptBuilder::build(const ReceiptData &data, const Printer &printer
 
     b.newLine();
 
-    b.setAlignLeft();
     b.addText(QString(width, '-'));
     b.newLine();
 
@@ -108,25 +120,28 @@ QByteArray ReceiptBuilder::build(const ReceiptData &data, const Printer &printer
 
     b.setAlignRight();
 
-    b.addText("Subtotal: " + formatAmount(data.subtotal));
+    b.addText(QObject::tr("Subtotal: %1").arg(formatAmount(data.subtotal)));
     b.newLine();
 
-    b.addText("Tax: " + formatAmount(data.tax));
-    b.newLine();
+    if (data.tax > 0.0)
+    {
+        b.addText(QObject::tr("Tax: %1").arg(formatAmount(data.tax)));
+        b.newLine();
+    }
 
     if (data.discount > 0.0)
     {
-        b.addText("Discount: -" + formatAmount(data.discount));
+        b.addText(QObject::tr("Discount: -%1").arg(formatAmount(data.discount)));
         b.newLine();
     }
     else
     {
-        b.addText("Discount: 0");
+        b.addText(QObject::tr("Discount: %1").arg("0"));
         b.newLine();
     }
 
     b.setBold(true);
-    b.addText("Total: " + formatAmount(data.total));
+    b.addText(QObject::tr("Total: %1").arg(formatAmount(data.total)));
     b.setBold(false);
     b.newLine();
 
@@ -136,24 +151,22 @@ QByteArray ReceiptBuilder::build(const ReceiptData &data, const Printer &printer
 
     if (data.membershipEnabled && !data.memberPhone.isEmpty())
     {
-        b.setAlignLeft();
-
         if (data.pointsRedeemed > 0)
         {
-            b.addText(QString(" Points Redeemed: -%1")
-                          .arg(data.pointsRedeemed));
+            b.addText(QObject::tr("Points Redeemed: -%1")
+                .arg(data.pointsRedeemed));
             b.newLine();
         }
 
         if (data.pointsEarned > 0)
         {
-            b.addText(QString("Points Earned: +%1")
-                          .arg(data.pointsEarned));
+            b.addText(QObject::tr("Points Earned: +%1")
+                .arg(data.pointsEarned));
             b.newLine();
         }
 
-        b.addText(QString("Balance: %1")
-                      .arg(data.pointsBalance));
+        b.addText(QObject::tr("Balance: %1")
+              .arg(data.pointsBalance));
         b.newLine();
 
         b.addText(QString(width, '-'));
@@ -163,11 +176,19 @@ QByteArray ReceiptBuilder::build(const ReceiptData &data, const Printer &printer
     b.newLine();
 
     b.setAlignCenter();
-    b.addText("Thank you!");
+    b.addText(QObject::tr("Thank you!"));
     b.newLine();
 
     b.setAlignCenter();
-    b.addText(QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm"));
+    QLocale locale = getLocale();
+    QString date = locale.toString(
+        QDate::currentDate(),
+        QLocale::ShortFormat
+    );
+
+    QString time = QTime::currentTime().toString("HH:mm:ss");
+
+    b.addText(date + " " + time);
     b.newLine();
 
     b.newLine();

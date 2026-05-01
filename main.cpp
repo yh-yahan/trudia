@@ -118,8 +118,8 @@ int main(int argc, char *argv[])
         regionalSettingsRepo,
         currencyService
     );
-    KitchenTicketBuilder kitchenTicketBuilder;
-    ReceiptBuilder receiptBuilder;
+    KitchenTicketBuilder kitchenTicketBuilder(regionalSettingsRepo);
+    ReceiptBuilder receiptBuilder(regionalSettingsRepo);
     OrderService orderService(
         orderSessionRepo,
         orderRepo,

@@ -133,9 +133,17 @@ bool WindowsPrinterService::testPrint(const QVariantMap &printerConfig)
         : "58mm");
 
     auto roleToText = [](const QString &r) -> QString {
-        if (r == "receipt") return "Receipt Printer";
-        if (r == "kitchen") return "Kitchen Printer";
-        if (r == "both") return "Receipt + Kitchen Printer";
+        if (r == "receipt") return QObject::tr("Receipt Printer");
+        if (r == "kitchen") return QObject::tr("Kitchen Printer");
+        if (r == "both") return QObject::tr("Receipt + Kitchen Printer");
+        return r;
+    };
+
+    auto cutModeToText = [](const QString &c) -> QString {
+        if (c == "full") return QObject::tr("Full Cut");
+        if (c == "partial") return QObject::tr("Partial Cut");
+        if (c == "none") return QObject::tr("No Cut");
+        return c;
     };
 
     EscPosBuilder builder;
@@ -143,26 +151,28 @@ bool WindowsPrinterService::testPrint(const QVariantMap &printerConfig)
 
     builder.setAlignCenter();
     builder.setBold(true);
-    builder.addText("PRINTER TEST");
+    builder.addText(QObject::tr("PRINTER TEST"));
     builder.setBold(false);
     builder.newLine();
     builder.newLine();
+
     builder.addText(QString(width, '-'));
     builder.newLine();
     builder.newLine();
 
     builder.setAlignLeft();
     builder.newLine();
-    builder.addText("Printer: " + printerName);
+
+    builder.addText(QObject::tr("Printer: %1").arg(printerName));
     builder.newLine();
 
-    builder.addText("Role: " + roleToText(role));
+    builder.addText(QObject::tr("Role: %1").arg(roleToText(role)));
     builder.newLine();
 
-    builder.addText("Paper Width: " + QString::number(paperWidth) + "mm");
+    builder.addText(QObject::tr("Paper Width: %1mm").arg(paperWidth));
     builder.newLine();
 
-    builder.addText("Cut Mode: " + cutMode);
+    builder.addText(QObject::tr("Cut Mode: %1").arg(cutModeToText(cutMode)));
     builder.newLine();
 
     builder.newLine();
@@ -171,6 +181,7 @@ bool WindowsPrinterService::testPrint(const QVariantMap &printerConfig)
     builder.newLine();
 
     builder.setAlignCenter();
+
     builder.addText("1234567890");
     builder.newLine();
     builder.addText("ABCDEFGHIJKLMNOPQRSTUVWXYZ");

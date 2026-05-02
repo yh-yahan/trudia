@@ -536,7 +536,7 @@ Item {
                         spacing: 8
 
                         Label {
-                            text: "Table"
+                            text: qsTr("Table")
                             color: Theme.text
                             font.bold: true
                             font.pixelSize: Theme.fontSmall

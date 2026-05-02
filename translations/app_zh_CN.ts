@@ -653,43 +653,43 @@
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="124"/>
         <location filename="../qml/admin/settings/AdminPrinterSettings.qml" line="124"/>
         <source>Receipt Printer</source>
-        <translation type="unfinished"></translation>
+        <translation>收据打印机</translation>
     </message>
     <message>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="126"/>
         <location filename="../qml/admin/settings/AdminPrinterSettings.qml" line="126"/>
         <source>Kitchen Printer</source>
-        <translation type="unfinished"></translation>
+        <translation>厨房打印机</translation>
     </message>
     <message>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="128"/>
         <location filename="../qml/admin/settings/AdminPrinterSettings.qml" line="128"/>
         <source>Receipt + Kitchen Printer</source>
-        <translation type="unfinished"></translation>
+        <translation>收据 + 厨房打印机</translation>
     </message>
     <message>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="338"/>
         <location filename="../qml/admin/settings/AdminPrinterSettings.qml" line="338"/>
         <source>Role</source>
-        <translation type="unfinished">角色</translation>
+        <translation>角色</translation>
     </message>
     <message>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="348"/>
         <location filename="../qml/admin/settings/AdminPrinterSettings.qml" line="348"/>
         <source>Receipt</source>
-        <translation type="unfinished"></translation>
+        <translation>收据</translation>
     </message>
     <message>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="351"/>
         <location filename="../qml/admin/settings/AdminPrinterSettings.qml" line="351"/>
         <source>Kitchen Ticket</source>
-        <translation type="unfinished"></translation>
+        <translation>厨房小票</translation>
     </message>
     <message>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="354"/>
         <location filename="../qml/admin/settings/AdminPrinterSettings.qml" line="354"/>
         <source>Receipt + Kitchen Ticket</source>
-        <translation type="unfinished"></translation>
+        <translation>收据 + 厨房打印机</translation>
     </message>
     <message>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="365"/>
@@ -713,7 +713,7 @@
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="405"/>
         <location filename="../qml/admin/settings/AdminPrinterSettings.qml" line="405"/>
         <source>None</source>
-        <translation type="unfinished"></translation>
+        <translation>不切纸</translation>
     </message>
     <message>
         <source>No Cut</source>
@@ -811,7 +811,7 @@
         <location filename="../qml/admin/settings/AdminPrinterSettings.qml" line="481"/>
         <location filename="../qml/admin/settings/AdminPrinterSettings.qml" line="490"/>
         <source>Save Changes</source>
-        <translation type="unfinished"></translation>
+        <translation>保存更改</translation>
     </message>
     <message>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="504"/>
@@ -832,7 +832,7 @@
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminRegionalSettings.qml" line="30"/>
         <location filename="../qml/admin/settings/AdminRegionalSettings.qml" line="30"/>
         <source>Region &amp; Format Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>区域和格式设置</translation>
     </message>
     <message>
         <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminRegionalSettings.qml" line="41"/>
@@ -840,13 +840,13 @@
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminRegionalSettings.qml" line="41"/>
         <location filename="../qml/admin/settings/AdminRegionalSettings.qml" line="41"/>
         <source>Region &amp; Language</source>
-        <translation type="unfinished"></translation>
+        <translation>地区及语言</translation>
     </message>
     <message>
         <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminRegionalSettings.qml" line="57"/>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminRegionalSettings.qml" line="57"/>
         <source>Locale</source>
-        <translation type="unfinished"></translation>
+        <translation>语言</translation>
     </message>
     <message>
         <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminRegionalSettings.qml" line="85"/>
@@ -856,13 +856,13 @@
         <location filename="../qml/admin/settings/AdminRegionalSettings.qml" line="85"/>
         <location filename="../qml/admin/settings/AdminRegionalSettings.qml" line="101"/>
         <source>Currency</source>
-        <translation type="unfinished"></translation>
+        <translation>货币</translation>
     </message>
     <message>
         <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminRegionalSettings.qml" line="101"/>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminRegionalSettings.qml" line="101"/>
         <source>Default Currency</source>
-        <translation type="unfinished"></translation>
+        <translation>默认货币</translation>
     </message>
     <message>
         <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminRegionalSettings.qml" line="136"/>
@@ -874,13 +874,13 @@
         <location filename="../qml/admin/settings/AdminRegionalSettings.qml" line="136"/>
         <location filename="../qml/admin/settings/AdminRegionalSettings.qml" line="150"/>
         <source>Save</source>
-        <translation type="unfinished">保存</translation>
+        <translation>保存</translation>
     </message>
     <message>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminRegionalSettings.qml" line="57"/>
         <location filename="../qml/admin/settings/AdminRegionalSettings.qml" line="57"/>
         <source>App Language</source>
-        <translation type="unfinished"></translation>
+        <translation>语言</translation>
     </message>
 </context>
 <context>
@@ -931,7 +931,7 @@
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminSettingsSidebar.qml" line="39"/>
         <location filename="../qml/admin/settings/AdminSettingsSidebar.qml" line="39"/>
         <source>Region &amp; Formats</source>
-        <translation type="unfinished"></translation>
+        <translation>区域和格式设置</translation>
     </message>
 </context>
 <context>
@@ -1180,6 +1180,7 @@
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminTableManagement.qml" line="271"/>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/management/AdminTableManagement.qml" line="271"/>
         <location filename="../qml/admin/management/AdminTableManagement.qml" line="271"/>
+        <location filename="../qml/admin/management/AdminTableManagement.qml" line="283"/>
         <source>Add Table</source>
         <translation>添加桌子</translation>
     </message>
@@ -1594,7 +1595,7 @@
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/Checkout.qml" line="280"/>
         <location filename="../qml/common/Checkout.qml" line="280"/>
         <source>Item</source>
-        <translation type="unfinished">菜品</translation>
+        <translation>菜品</translation>
     </message>
     <message>
         <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/Checkout.qml" line="289"/>
@@ -1602,7 +1603,7 @@
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/Checkout.qml" line="289"/>
         <location filename="../qml/common/Checkout.qml" line="289"/>
         <source>Qty</source>
-        <translation type="unfinished"></translation>
+        <translation>数量</translation>
     </message>
     <message>
         <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/Checkout.qml" line="298"/>
@@ -1610,7 +1611,7 @@
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/Checkout.qml" line="298"/>
         <location filename="../qml/common/Checkout.qml" line="298"/>
         <source>Unit</source>
-        <translation type="unfinished"></translation>
+        <translation>单价</translation>
     </message>
     <message>
         <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/Checkout.qml" line="307"/>
@@ -1618,7 +1619,7 @@
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/Checkout.qml" line="307"/>
         <location filename="../qml/common/Checkout.qml" line="307"/>
         <source>Total</source>
-        <translation type="unfinished">总计</translation>
+        <translation>总价</translation>
     </message>
     <message>
         <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/Checkout.qml" line="423"/>
@@ -1662,7 +1663,7 @@
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/Checkout.qml" line="532"/>
         <location filename="../qml/common/Checkout.qml" line="532"/>
         <source>Subtotal: </source>
-        <translation type="unfinished"></translation>
+        <translation>小计: </translation>
     </message>
     <message>
         <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/Checkout.qml" line="538"/>
@@ -1670,7 +1671,7 @@
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/Checkout.qml" line="538"/>
         <location filename="../qml/common/Checkout.qml" line="538"/>
         <source>Tax: </source>
-        <translation type="unfinished"></translation>
+        <translation>税: </translation>
     </message>
     <message>
         <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/Checkout.qml" line="545"/>
@@ -1678,7 +1679,7 @@
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/Checkout.qml" line="545"/>
         <location filename="../qml/common/Checkout.qml" line="545"/>
         <source>Discount: -</source>
-        <translation type="unfinished"></translation>
+        <translation>折扣: -</translation>
     </message>
     <message>
         <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/Checkout.qml" line="552"/>
@@ -1686,7 +1687,7 @@
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/Checkout.qml" line="552"/>
         <location filename="../qml/common/Checkout.qml" line="552"/>
         <source>Total: </source>
-        <translation type="unfinished"></translation>
+        <translation>总计: </translation>
     </message>
     <message>
         <source>Subtotal: RM</source>
@@ -2392,6 +2393,11 @@ Do you want to replace it?</source>
         <location filename="../qml/common/OrderTaking.qml" line="872"/>
         <source>Place Order</source>
         <translation>下单</translation>
+    </message>
+    <message>
+        <location filename="../qml/common/OrderTaking.qml" line="539"/>
+        <source>Table</source>
+        <translation>餐桌</translation>
     </message>
 </context>
 <context>

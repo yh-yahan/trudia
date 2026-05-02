@@ -280,7 +280,7 @@ Item {
                     radius: 4
                 }
                 contentItem: Text {
-                    text: "Add Table"
+                    text: qsTr("Add Table")
                     color: "white"
                     font.bold: true
                     anchors.centerIn: parent

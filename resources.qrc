@@ -15,5 +15,7 @@
         <file>core/database/migrations/013_create_membership_transactions.sql</file>
         <file>core/database/migrations/014_create_kitchen_settings.sql</file>
         <file>core/database/migrations/015_create_regional_settings.sql</file>
+        <file>core/database/migrations/016_create_floors.sql</file>
+        <file>core/database/migrations/017_create_canvas_items.sql</file>
     </qresource>
 </RCC>

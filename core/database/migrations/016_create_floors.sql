@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS floors (
+    id TEXT PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    floor_number INTEGER,
+    sort_order INTEGER DEFAULT 0,
+    is_active INTEGER DEFAULT 1,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);

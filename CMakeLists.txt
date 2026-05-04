@@ -121,6 +121,9 @@ qt_add_qml_module(apptrudia
     SOURCES core/domain/Floor.h
     SOURCES core/data/CanvasItemRepository.h core/data/CanvasItemRepository.cpp
     SOURCES core/data/FloorRepository.h core/data/FloorRepository.cpp
+    SOURCES core/services/FloorPlanService.h core/services/FloorPlanService.cpp
+    SOURCES core/models/FloorModel.h core/models/FloorModel.cpp
+    SOURCES core/models/CanvasItemModel.h core/models/CanvasItemModel.cpp
 )
 
 qt_add_translations(apptrudia

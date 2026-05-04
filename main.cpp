@@ -34,6 +34,7 @@
 #include "core/services/MembershipService.h"
 #include "core/services/UserService.h"
 #include "core/services/AnalyticsService.h"
+#include "core/services/FloorPlanService.h"
 #include "core/services/AppService.h"
 #include "core/services/SetupService.h"
 #include "core/database/DatabaseManager.h"
@@ -153,6 +154,7 @@ int main(int argc, char *argv[])
         settingService
     );
     AnalyticsService analyticsService(analyticsRepo);
+    FloorPlanService floorPlanService(floorRepo, canvasItemRepo);
     SetupService setupService(appService, dbManager);
 
     QObject::connect(&orderService, &OrderService::orderCreated,
@@ -175,6 +177,7 @@ int main(int argc, char *argv[])
     qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "MembershipService", &membershipService);
     qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "AnalyticsService", &analyticsService);
     qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "WindowsPrinterService", &windowsPrinterService);
+    qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "FloorPlanService", &floorPlanService);
     qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "AppService", &appService);
     qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "SetupService", &setupService);
 

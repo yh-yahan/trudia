@@ -117,6 +117,10 @@ qt_add_qml_module(apptrudia
     SOURCES core/domain/Printer.h
     SOURCES core/data/PrinterRepository.h core/data/PrinterRepository.cpp
     SOURCES core/services/RegionalSettingsService.h core/services/RegionalSettingsService.cpp
+    SOURCES core/domain/CanvasItem.h
+    SOURCES core/domain/Floor.h
+    SOURCES core/data/CanvasItemRepository.h core/data/CanvasItemRepository.cpp
+    SOURCES core/data/FloorRepository.h core/data/FloorRepository.cpp
 )
 
 qt_add_translations(apptrudia

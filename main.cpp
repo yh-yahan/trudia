@@ -20,6 +20,8 @@
 #include "core/data/AnalyticsRepository.h"
 #include "core/data/KitchenSettingsRepository.h"
 #include "core/data/RegionalSettingsRepository.h"
+#include "core/data/FloorRepository.h"
+#include "core/data/CanvasItemRepository.h"
 #include "core/services/CurrencyService.h"
 #include "core/services/OrderService.h"
 #include "core/services/TableService.h"
@@ -100,6 +102,8 @@ int main(int argc, char *argv[])
     AnalyticsRepository analyticsRepo(DatabaseManager::db());
     KitchenSettingsRepository kitchenSettingsRepo(DatabaseManager::db());
     RegionalSettingsRepository regionalSettingsRepo(DatabaseManager::db());
+    FloorRepository floorRepo(DatabaseManager::db());
+    CanvasItemRepository canvasItemRepo(DatabaseManager::db());
 
     WindowsPrinterService windowsPrinterService;
     CurrencyService currencyService;

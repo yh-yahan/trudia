@@ -1,0 +1,27 @@
+#ifndef CANVASITEM_H
+#define CANVASITEM_H
+
+#include <QString>
+#include <optional>
+
+class CanvasItem {
+public:
+    int id = -1;
+    int floor_id;
+    QString type;
+    std::optional<QString> label;
+    std::optional<int> capacity;
+    double x;
+    double y;
+    double width;
+    double height;
+    double rotation;
+    QString color;
+    QString border_color;
+    double border_width;
+    double opacity;
+    int z_order;
+    std::optional<QString> metadata;
+};
+
+#endif // CANVASITEM_H

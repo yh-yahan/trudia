@@ -32,6 +32,8 @@ public:
     Q_INVOKABLE void loadCanvas(int floorId);
     Q_INVOKABLE bool saveCanvas(int floorId);
 
+    Q_INVOKABLE void addItem(const QVariantMap &itemData);
+
 private:
     FloorModel *m_floorModel;
     CanvasItemModel *m_canvasModel;

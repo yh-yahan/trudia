@@ -103,3 +103,23 @@ bool FloorPlanService::saveCanvas(int floorId)
 
     return m_canvasItemRepo.saveAll(floorId, items);
 }
+
+void FloorPlanService::addItem(const QVariantMap &itemData)
+{
+    CanvasItem item;
+
+    item.id = -1;
+    item.type = itemData.value("type").toString();
+    item.x = itemData.value("x").toDouble();
+    item.y = itemData.value("y").toDouble();
+    item.width = itemData.value("width").toDouble();
+    item.height = itemData.value("height").toDouble();
+    item.rotation = itemData.value("rotation", 0).toDouble();
+    item.label = itemData.value("label").toString();
+    item.color = itemData.value("color", "#444").toString();
+    item.border_color = itemData.value("border_color", "#ffffff").toString();
+    item.opacity = itemData.value("opacity", 1.0).toDouble();
+    item.z_order = itemData.value("z_order", 0).toInt();
+
+    m_canvasModel->addItem(item);
+}

@@ -60,12 +60,22 @@ std::vector<Floor> FloorModel::floors() const
     return m_floors;
 }
 
-Floor FloorModel::getFloor(int index) const
+QVariantMap FloorModel::getFloor(int index) const
 {
-    if (index < 0 || index >= static_cast<int>(m_floors.size()))
-        return Floor{};
+    QVariantMap map;
 
-    return m_floors[index];
+    if (index < 0 || index >= static_cast<int>(m_floors.size()))
+        return map;
+
+    const Floor &floor = m_floors[index];
+
+    map["id"] = floor.id;
+    map["name"] = floor.name;
+    map["floor_number"] = floor.floor_number;
+    map["sort_order"] = floor.sort_order;
+    map["is_active"] = floor.is_active;
+
+    return map;
 }
 
 void FloorModel::addFloor(const Floor &floor)

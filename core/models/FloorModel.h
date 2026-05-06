@@ -27,7 +27,7 @@ public:
     Q_INVOKABLE void setFloors(const std::vector<Floor>& floors);
     Q_INVOKABLE std::vector<Floor> floors() const;
 
-    Q_INVOKABLE Floor getFloor(int index) const;
+    Q_INVOKABLE QVariantMap getFloor(int index) const;
 
     Q_INVOKABLE void addFloor(const Floor& floor);
     Q_INVOKABLE void updateFloor(int index, const Floor& floor);

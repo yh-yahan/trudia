@@ -38,6 +38,8 @@ public:
 
     Q_INVOKABLE void addItem(const CanvasItem& item);
     Q_INVOKABLE void updateItem(int index, const CanvasItem& item);
+    Qt::ItemFlags flags(const QModelIndex &index) const override;
+    bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override;
     Q_INVOKABLE void removeItem(int index);
 
 private:

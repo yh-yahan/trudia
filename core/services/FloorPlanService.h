@@ -23,10 +23,8 @@ public:
     CanvasItemModel *canvasModel() const;
 
     Q_INVOKABLE void loadFloors();
-    Q_INVOKABLE int createFloor(const QString& name,
-                            int floorNumber,
-                            int sortOrder);
-    Q_INVOKABLE bool updateFloor(const Floor& floor);
+    Q_INVOKABLE int createFloor(const QString &name);
+    Q_INVOKABLE bool updateFloor(const Floor &floor);
     Q_INVOKABLE bool deleteFloor(int floorId);
 
     Q_INVOKABLE void loadCanvas(int floorId);

@@ -29,6 +29,8 @@ qt_add_qml_module(apptrudia
     QML_FILES
         qml/Main.qml
         qml/components/ConfirmationDialog.qml
+        qml/components/FloorCanvas.qml
+        qml/components/FloorItem.qml
         qml/setup/SetupAdmin.qml
         qml/setup/SetupDBLocation.qml
         qml/common/OrderTaking.qml
@@ -40,6 +42,7 @@ qt_add_qml_module(apptrudia
         qml/admin/AdminAnalytics.qml
         qml/admin/management/AdminMenuManagement.qml
         qml/admin/management/AdminTableManagement.qml
+        qml/admin/management/AdminFloorPlanManagement.qml
         qml/admin/management/AdminUserManagement.qml
         qml/admin/management/AdminManagement.qml
         qml/admin/management/AdminManagementSidebar.qml

@@ -41,6 +41,8 @@ Item {
             pageLoader.sourceComponent = table
         } else if (index === 2) {
             pageLoader.sourceComponent = user
+        } else if (index === 3) {
+            pageLoader.sourceComponent = floorPlan
         }
     }
 
@@ -57,5 +59,10 @@ Item {
     Component {
         id: user
         AdminUserManagement {}
+    }
+
+    Component {
+        id: floorPlan
+        AdminFloorPlanManagement {}
     }
 }

@@ -111,6 +111,87 @@ void CanvasItemModel::updateItem(int index, const CanvasItem &item)
     emit dataChanged(modelIndex, modelIndex);
 }
 
+Qt::ItemFlags CanvasItemModel::flags(const QModelIndex &index) const
+{
+    if (!index.isValid())
+        return Qt::NoItemFlags;
+
+    return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable;
+}
+
+bool CanvasItemModel::setData(const QModelIndex &index, const QVariant &value, int role)
+{
+    if (!index.isValid() || index.row() < 0 || index.row() >= static_cast<int>(m_items.size()))
+        return false;
+
+    CanvasItem &item = m_items[index.row()];
+    bool changed = false;
+
+    switch (role) {
+    case XRole:
+        if (value.canConvert<double>()) {
+            item.x = value.toDouble();
+            changed = true;
+        }
+        break;
+
+    case YRole:
+        if (value.canConvert<double>()) {
+            item.y = value.toDouble();
+            changed = true;
+        }
+        break;
+
+    case WidthRole:
+        if (value.canConvert<double>()) {
+            item.width = value.toDouble();
+            changed = true;
+        }
+        break;
+
+    case HeightRole:
+        if (value.canConvert<double>()) {
+            item.height = value.toDouble();
+            changed = true;
+        }
+        break;
+
+    case RotationRole:
+        if (value.canConvert<double>()) {
+            item.rotation = value.toDouble();
+            changed = true;
+        }
+        break;
+
+    case LabelRole:
+        item.label = value.toString();
+        changed = true;
+        break;
+
+    case ColorRole:
+        item.color = value.toString();
+        changed = true;
+        break;
+
+    case MetadataRole:
+        if (value.canConvert<QString>()) {
+            item.metadata = value.toString();
+            changed = true;
+        }
+        break;
+
+    default:
+        return false;
+    }
+
+    if (changed) {
+        emit dataChanged(index, index, {role});
+        return true;
+    }
+
+    return false;
+}
+
 void CanvasItemModel::removeItem(int index)
 {
     if (index < 0 || index >= static_cast<int>(m_items.size()))

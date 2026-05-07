@@ -11,6 +11,8 @@ FloorPlanService::FloorPlanService(FloorRepository &floorRepo,
 {
     m_floorModel = new FloorModel(this);
     m_canvasModel = new CanvasItemModel(this);
+
+    loadFloors();
 }
 
 FloorModel *FloorPlanService::floorModel() const
@@ -37,14 +39,17 @@ void FloorPlanService::loadCanvas(int floorId)
     m_canvasModel->setItems(items);
 }
 
-int FloorPlanService::createFloor(const QString &name,
-                                 int floorNumber,
-                                 int sortOrder)
+int FloorPlanService::createFloor(const QString &name)
 {
     Floor floor;
+
     floor.name = name;
-    floor.floor_number = floorNumber;
-    floor.sort_order = sortOrder;
+
+    int nextNumber = m_floorModel->rowCount() + 1;
+
+    floor.floor_number = nextNumber;
+    floor.sort_order = nextNumber;
+
     floor.is_active = 1;
 
     int id = m_floorRepo.create(floor);
@@ -112,6 +117,9 @@ void FloorPlanService::addItem(const QVariantMap &itemData)
     item.type = itemData.value("type").toString();
     item.x = itemData.value("x").toDouble();
     item.y = itemData.value("y").toDouble();
+    item.capacity = itemData.contains("capacity")
+        ? std::optional<int>(itemData.value("capacity").toInt())
+        : std::nullopt;
     item.width = itemData.value("width").toDouble();
     item.height = itemData.value("height").toDouble();
     item.rotation = itemData.value("rotation", 0).toDouble();
@@ -120,6 +128,9 @@ void FloorPlanService::addItem(const QVariantMap &itemData)
     item.border_color = itemData.value("border_color", "#ffffff").toString();
     item.opacity = itemData.value("opacity", 1.0).toDouble();
     item.z_order = itemData.value("z_order", 0).toInt();
+    item.metadata = itemData.contains("metadata")
+        ? std::optional<QString>(itemData.value("metadata").toString())
+        : std::nullopt;
 
     m_canvasModel->addItem(item);
 }

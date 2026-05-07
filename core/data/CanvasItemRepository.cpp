@@ -96,7 +96,6 @@ bool CanvasItemRepository::saveAll(int floorId, const std::vector<CanvasItem>& i
         )");
 
         for (const CanvasItem& item : items) {
-
             insertQuery.bindValue(":floor_id", floorId);
             insertQuery.bindValue(":type", item.type);
 
@@ -122,7 +121,7 @@ bool CanvasItemRepository::saveAll(int floorId, const std::vector<CanvasItem>& i
             insertQuery.bindValue(":opacity", item.opacity);
             insertQuery.bindValue(":z_order", item.z_order);
 
-            if (item.capacity.has_value())
+            if (item.metadata.has_value())
                 insertQuery.bindValue(":metadata", item.metadata.value());
             else
                 insertQuery.bindValue(":metadata", QVariant());

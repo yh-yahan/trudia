@@ -321,10 +321,11 @@ Item {
         anchors.centerIn: Overlay.overlay
         modal: true
         width: 360
-        height: 260
+        height: 320
 
         property int seats: 4
         property string tableType: "square"
+        property string label: qsTr("Table")
 
         ColumnLayout {
             anchors.fill: parent
@@ -336,6 +337,37 @@ Item {
                 font.bold: true
                 font.pixelSize: Theme.fontLarge
                 color: Theme.text
+            }
+
+            Label {
+                text: qsTr("Table Label")
+                color: Theme.text
+                font.pixelSize: Theme.fontNormal
+            }
+
+            TextField {
+                placeholderText: qsTr("Enter Table Label")
+                text: addTableDialog.label
+
+                onTextChanged: {
+                    addTableDialog.label = text
+                }
+
+                background: Rectangle {
+                    color: Theme.surface
+                    radius: 4
+                }
+
+                color: Theme.text
+                font.pixelSize: Theme.fontNormal
+                placeholderTextColor: Theme.secondaryText
+
+                leftPadding: 10
+                rightPadding: 10
+                topPadding: 10
+                bottomPadding: 10
+
+                Layout.fillWidth: true
             }
 
             Label {
@@ -408,7 +440,7 @@ Item {
                             "y": 100,
                             "width": 80,
                             "height": 80,
-                            "label": "T",
+                            "label": addTableDialog.label,
                             "metadata": JSON.stringify({
                                 "table_type": addTableDialog.tableType
                             })

@@ -134,3 +134,8 @@ void FloorPlanService::addItem(const QVariantMap &itemData)
 
     m_canvasModel->addItem(item);
 }
+
+void FloorPlanService::deleteItem(int index)
+{
+    m_canvasModel->removeItem(index);
+}

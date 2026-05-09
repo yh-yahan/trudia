@@ -20,6 +20,10 @@ Rectangle {
         }
 
         ListElement {
+            text: qsTr("Tables")
+        }
+
+        ListElement {
             text: qsTr("Printer")
         }
 

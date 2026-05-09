@@ -38,14 +38,16 @@ Item {
         if (index === 0) {
             pageLoader.sourceComponent = storeSettingsPage
         } else if (index === 1) {
-            pageLoader.sourceComponent = printerSettingsPage
+            pageLoader.sourceComponent = tableSettingsPage
         } else if (index === 2) {
-            pageLoader.sourceComponent = taxSettingsPage
+            pageLoader.sourceComponent = printerSettingsPage
         } else if (index === 3) {
-            pageLoader.sourceComponent = membershipSettingsPage
+            pageLoader.sourceComponent = taxSettingsPage
         } else if (index === 4) {
-            pageLoader.sourceComponent = kitchenSettingsPage
+            pageLoader.sourceComponent = membershipSettingsPage
         } else if (index === 5) {
+            pageLoader.sourceComponent = kitchenSettingsPage
+        } else if (index === 6) {
             pageLoader.sourceComponent = regionalSettingsPage
         }
     }
@@ -53,6 +55,11 @@ Item {
     Component {
         id: storeSettingsPage
         AdminStoreSettings {}
+    }
+
+    Component {
+        id: tableSettingsPage
+        AdminTableSettings {}
     }
 
     Component {

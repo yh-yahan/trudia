@@ -22,6 +22,7 @@
 #include "core/data/RegionalSettingsRepository.h"
 #include "core/data/FloorRepository.h"
 #include "core/data/CanvasItemRepository.h"
+#include "core/data/TableSettingsRepository.h"
 #include "core/services/CurrencyService.h"
 #include "core/services/OrderService.h"
 #include "core/services/TableService.h"
@@ -105,6 +106,7 @@ int main(int argc, char *argv[])
     RegionalSettingsRepository regionalSettingsRepo(DatabaseManager::db());
     FloorRepository floorRepo(DatabaseManager::db());
     CanvasItemRepository canvasItemRepo(DatabaseManager::db());
+    TableSettingsRepository tableSettingsRepo(DatabaseManager::db());
 
     WindowsPrinterService windowsPrinterService;
     CurrencyService currencyService;
@@ -121,6 +123,7 @@ int main(int argc, char *argv[])
         membershipSettingsRepo,
         kitchenSettingsRepo,
         regionalSettingsRepo,
+        tableSettingsRepo,
         currencyService
     );
     KitchenTicketBuilder kitchenTicketBuilder(regionalSettingsRepo);

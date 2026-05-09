@@ -52,6 +52,7 @@ qt_add_qml_module(apptrudia
         qml/admin/settings/AdminPrinterSettings.qml
         qml/admin/settings/AdminTaxSettings.qml
         qml/admin/settings/AdminMembershipSettings.qml
+        qml/admin/settings/AdminTableSettings.qml
         qml/admin/settings/AdminSettings.qml
         qml/admin/settings/AdminSettingsSidebar.qml
         qml/serviceStaff/ServiceStaffHome.qml
@@ -127,6 +128,8 @@ qt_add_qml_module(apptrudia
     SOURCES core/services/FloorPlanService.h core/services/FloorPlanService.cpp
     SOURCES core/models/FloorModel.h core/models/FloorModel.cpp
     SOURCES core/models/CanvasItemModel.h core/models/CanvasItemModel.cpp
+    SOURCES core/domain/TableSettings.h
+    SOURCES core/data/TableSettingsRepository.h core/data/TableSettingsRepository.cpp
 )
 
 qt_add_translations(apptrudia

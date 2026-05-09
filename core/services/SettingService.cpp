@@ -6,6 +6,7 @@ SettingService::SettingService(RestaurantRepository &restaurantRepo,
                                MembershipSettingsRepository &membershipSettingsRepo,
                                KitchenSettingsRepository &kitchenSettingsRepo,
                                RegionalSettingsRepository &regionalSettingsRepo,
+                               TableSettingsRepository &tableSettingsRepo,
                                CurrencyService &currencyService)
     : m_restaurantRepo(restaurantRepo),
       m_printerRepo(printerRepo),
@@ -13,6 +14,7 @@ SettingService::SettingService(RestaurantRepository &restaurantRepo,
       m_membershipSettingsRepo(membershipSettingsRepo),
       m_kitchenSettingsRepo(kitchenSettingsRepo),
       m_regionalSettingsRepo(regionalSettingsRepo),
+      m_tableSettingsRepo(tableSettingsRepo),
       m_currencyService(currencyService)
 {
     auto result = m_membershipSettingsRepo.get();
@@ -32,6 +34,14 @@ SettingService::SettingService(RestaurantRepository &restaurantRepo,
     } else {
         m_currencyCode = "USD";
     }
+
+    auto tableSettings = m_tableSettingsRepo.get();
+
+    if (tableSettings.has_value()) {
+        m_tableLayoutMode = tableSettings->layout_mode;
+    } else {
+        m_tableLayoutMode = "simple";
+    }
 }
 
 bool SettingService::membershipEnabled() const
@@ -42,6 +52,11 @@ bool SettingService::membershipEnabled() const
 QString SettingService::kitchenMode() const
 {
     return m_kitchenMode;
+}
+
+QString SettingService::tableLayoutMode() const
+{
+    return m_tableLayoutMode;
 }
 
 QString SettingService::currencyCode() const {
@@ -337,6 +352,50 @@ bool SettingService::saveRegionalSettings(const QVariantMap &map)
         return true;
     } catch (const std::exception &e) {
         qWarning() << "Failed to save regional settings:" << e.what();
+        return false;
+    }
+}
+
+QVariantMap SettingService::getTableSettings()
+{
+    QVariantMap map;
+
+    auto opt = m_tableSettingsRepo.get();
+
+    if (!opt.has_value())
+        return map;
+
+    const TableSettings &ts = opt.value();
+
+    map["id"] = ts.id;
+    map["layout_mode"] = ts.layout_mode;
+
+    return map;
+}
+
+bool SettingService::saveTableSettings(const QVariantMap &map)
+{
+    TableSettings tableSettings;
+
+    tableSettings.id = map.value("id", 1).toInt();
+
+    tableSettings.layout_mode =
+        map.value("layout_mode", "simple").toString();
+
+    try {
+        m_tableSettingsRepo.save(tableSettings);
+
+        if (m_tableLayoutMode != tableSettings.layout_mode) {
+            m_tableLayoutMode = tableSettings.layout_mode;
+            emit tableLayoutModeChanged();
+        }
+
+        return true;
+
+    } catch (const std::exception &e) {
+        qWarning() << "Failed to save table settings:"
+                   << e.what();
+
         return false;
     }
 }

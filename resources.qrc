@@ -17,5 +17,6 @@
         <file>core/database/migrations/015_create_regional_settings.sql</file>
         <file>core/database/migrations/016_create_floors.sql</file>
         <file>core/database/migrations/017_create_canvas_items.sql</file>
+        <file>core/database/migrations/018_create_table_settings.sql</file>
     </qresource>
 </RCC>

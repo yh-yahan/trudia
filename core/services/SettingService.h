@@ -11,6 +11,7 @@
 #include "../data/MembershipSettingsRepository.h"
 #include "../data/KitchenSettingsRepository.h"
 #include "../data/RegionalSettingsRepository.h"
+#include "../data/TableSettingsRepository.h"
 #include "./CurrencyService.h"
 
 class SettingService : public QObject
@@ -21,6 +22,7 @@ class SettingService : public QObject
             NOTIFY membershipEnabledChanged)
     Q_PROPERTY(QString kitchenMode READ kitchenMode NOTIFY kitchenModeChanged)
     Q_PROPERTY(QString currencyCode READ currencyCode NOTIFY currencyChanged)
+    Q_PROPERTY(QString tableLayoutMode READ tableLayoutMode NOTIFY tableLayoutModeChanged)
 
 public:
     explicit SettingService(RestaurantRepository &restaurantRepo,
@@ -29,11 +31,13 @@ public:
                             MembershipSettingsRepository &membershipSettingsRepo,
                             KitchenSettingsRepository &kitchenSettingsRepo,
                             RegionalSettingsRepository &regionalSettingsRepo,
+                            TableSettingsRepository &tableSettingsRepo,
                             CurrencyService &currencyService);
 
     bool membershipEnabled() const;
     QString kitchenMode() const;
     QString currencyCode() const;
+    QString tableLayoutMode() const;
 
     Q_INVOKABLE QString currencySymbol() const;
 
@@ -51,11 +55,14 @@ public:
     Q_INVOKABLE bool saveKitchenSettings(const QVariantMap &map);
     Q_INVOKABLE QVariantMap getRegionalSettings();
     Q_INVOKABLE bool saveRegionalSettings(const QVariantMap &map);
+    Q_INVOKABLE QVariantMap getTableSettings();
+    Q_INVOKABLE bool saveTableSettings(const QVariantMap &map);
 
 signals:
     void membershipEnabledChanged();
     void kitchenModeChanged();
     void currencyChanged();
+    void tableLayoutModeChanged();
 
 private:
     RestaurantRepository &m_restaurantRepo;
@@ -64,9 +71,11 @@ private:
     MembershipSettingsRepository &m_membershipSettingsRepo;
     KitchenSettingsRepository &m_kitchenSettingsRepo;
     RegionalSettingsRepository &m_regionalSettingsRepo;
+    TableSettingsRepository &m_tableSettingsRepo;
     CurrencyService &m_currencyService;
     bool m_membershipEnabled = false;
     QString m_kitchenMode = "none";
+    QString m_tableLayoutMode;
     QString m_currencyCode;
 };
 

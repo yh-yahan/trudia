@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import Trudia.Services 1.0
 
 Item {
     anchors.fill: parent
@@ -37,12 +38,17 @@ Item {
     function loadPage(index) {
         if (index === 0) {
             pageLoader.sourceComponent = menu
+
         } else if (index === 1) {
-            pageLoader.sourceComponent = table
+
+            if (SettingService.tableLayoutMode === "floor_plan") {
+                pageLoader.sourceComponent = floorPlan
+            } else {
+                pageLoader.sourceComponent = table
+            }
+
         } else if (index === 2) {
             pageLoader.sourceComponent = user
-        } else if (index === 3) {
-            pageLoader.sourceComponent = floorPlan
         }
     }
 

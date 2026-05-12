@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls 2.15
 import QtQuick.Layouts
+import Trudia.Services 1.0
 import trudia.Theme 1.0
 
 Rectangle {
@@ -15,22 +16,27 @@ Rectangle {
 
     ListModel {
         id: buttonModel
-        ListElement {
-            text: qsTr("Menu")
-        }
-
-        ListElement {
-            text: qsTr("Table")
-        }
-
-        ListElement {
-            text: qsTr("User")
-        }
-
-        ListElement {
-            text: qsTr("Floor Plan")
-        }
     }
+
+    function populateModel() {
+        buttonModel.clear()
+
+        buttonModel.append({
+                               "text": qsTr("Menu")
+                           })
+
+        buttonModel.append({
+                               "text": SettingService.tableLayoutMode
+                                       === "floor_plan" ? qsTr("Floor Plan") : qsTr(
+                                                              "Table")
+                           })
+
+        buttonModel.append({
+                               "text": qsTr("User")
+                           })
+    }
+
+    Component.onCompleted: populateModel()
 
     ColumnLayout {
         anchors.fill: parent
@@ -43,7 +49,8 @@ Rectangle {
                 Layout.preferredHeight: 50
 
                 background: Rectangle {
-                    color: sidebarBackground.selectedIndex === index ? Theme.primary() : Theme.surface
+                    color: sidebarBackground.selectedIndex === index ? Theme.primary(
+                                                                           ) : Theme.surface
                     radius: 4
                 }
 

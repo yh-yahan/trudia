@@ -34,8 +34,11 @@ qt_add_qml_module(apptrudia
         qml/setup/SetupAdmin.qml
         qml/setup/SetupDBLocation.qml
         qml/common/OrderTaking.qml
+        qml/common/OrderTakingSimple.qml
+        qml/common/OrderTakingFloorPlan.qml
         qml/common/Checkout.qml
         qml/common/KitchenOrders.qml
+        qml/common/floor/FloorPlanView.qml
         qml/auth/Login.qml
         qml/admin/AdminHome.qml
         qml/admin/AdminSidebar.qml

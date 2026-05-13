@@ -79,6 +79,24 @@ QHash<int, QByteArray> CanvasItemModel::roleNames() const
     };
 }
 
+QVariantMap CanvasItemModel::get(int row) const
+{
+    QVariantMap map;
+    if (row < 0 || row >= static_cast<int>(m_items.size()))
+        return map;
+
+    const CanvasItem &item = m_items[row];
+
+    map["id"] = item.id;
+    map["type"] = item.type;
+    map["label"] = item.label.value_or(QString());
+    map["capacity"] = item.capacity.value_or(0);
+    map["x"] = item.x;
+    map["y"] = item.y;
+
+    return map;
+}
+
 void CanvasItemModel::setItems(const std::vector<CanvasItem> &items)
 {
     beginResetModel();

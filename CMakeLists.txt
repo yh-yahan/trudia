@@ -31,6 +31,7 @@ qt_add_qml_module(apptrudia
         qml/components/ConfirmationDialog.qml
         qml/components/FloorCanvas.qml
         qml/components/FloorItem.qml
+        qml/components/OrderEditor.qml
         qml/setup/SetupAdmin.qml
         qml/setup/SetupDBLocation.qml
         qml/common/OrderTaking.qml

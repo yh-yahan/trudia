@@ -33,6 +33,8 @@ public:
     QVariant data(const QModelIndex& index, int role) const override;
     QHash<int, QByteArray> roleNames() const override;
 
+    Q_INVOKABLE QVariantMap get(int index) const;
+
     Q_INVOKABLE void setItems(const std::vector<CanvasItem>& items);
     Q_INVOKABLE std::vector<CanvasItem> items() const;
 

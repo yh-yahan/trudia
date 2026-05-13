@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import Trudia.Services 1.0
 import trudia.Theme 1.0
+import "../components"
 import "./floor"
 
 Item {
@@ -13,94 +14,306 @@ Item {
 
     property int selectedTableId: -1
     property int currentFloorId: -1
+    property var orderTable: null
+
+    function selectedTable() {
+        if (root.selectedTableId < 0)
+            return null
+
+        const model = FloorPlanService.canvasModel
+
+        if (!model || model.rowCount() === 0)
+            return null
+
+        for (var i = 0; i < model.rowCount(); i++) {
+            const item = model.get(i)
+
+            if (!item)
+                continue
+
+            if (Number(item.id) === Number(root.selectedTableId))
+                return item
+        }
+
+        return null
+    }
 
     Rectangle {
         anchors.fill: parent
         color: Theme.background
     }
 
-    ColumnLayout {
+    StackView {
+        id: stackView
         anchors.fill: parent
-        spacing: 8
 
-        RowLayout {
-            Layout.fillWidth: true
-            spacing: 0
+        initialItem: floorPlanComponent
+    }
 
-            // visible: FloorPlanService.floorModel.count > 1
+    Component {
+        id: floorPlanComponent
 
-            ButtonGroup {
-                id: floorGroup
-                exclusive: true
+        ColumnLayout {
+            anchors.fill: parent
+            spacing: 8
+
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: 8
+
+                // visible: FloorPlanService.floorModel.count > 1
+                ButtonGroup {
+                    id: floorGroup
+                    exclusive: true
+                }
+
+                Repeater {
+                    model: FloorPlanService.floorModel
+
+                    delegate: Button {
+                        required property int index
+                        required property var modelData
+
+                        text: modelData.name
+
+                        checkable: true
+                        checked: root.currentFloorId === modelData.id
+
+                        ButtonGroup.group: floorGroup
+
+                        leftPadding: 10
+                        rightPadding: 10
+                        topPadding: 8
+                        bottomPadding: 8
+
+                        background: Rectangle {
+                            radius: 6
+                            color: checked ? Theme.primary() : Theme.surface
+                        }
+
+                        contentItem: Label {
+                            text: modelData.name
+
+                            color: checked ? "white" : Theme.text
+
+                            font.bold: true
+                            font.pixelSize: Theme.fontNormal
+
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                        }
+
+                        hoverEnabled: false
+                        focusPolicy: Qt.NoFocus
+
+                        onClicked: {
+                            let floor = FloorPlanService.floorModel.getFloor(
+                                    index)
+
+                            if (!floor)
+                                return
+
+                            root.currentFloorId = modelData.id
+                            root.selectedTableId = -1
+
+                            FloorPlanService.loadCanvas(modelData.id)
+                        }
+                    }
+                }
             }
 
-            Repeater {
-                model: FloorPlanService.floorModel
+            RowLayout {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                spacing: 8
 
-                delegate: Button {
-                    required property int index
-                    required property var modelData
+                Rectangle {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
 
-                    text: modelData.name
-                    checkable: true
-                    ButtonGroup.group: floorGroup
+                    radius: 6
+                    color: Theme.background
 
-                    checked: root.currentFloorId === modelData.id
+                    border.width: 1
+                    border.color: Theme.border
 
-                    leftPadding: 10
-                    rightPadding: 10
-                    topPadding: 8
-                    bottomPadding: 8
+                    clip: true
 
-                    background: Rectangle {
-                        radius: 6
-                        color: checked ? Theme.primary() : Theme.surface
+                    Flickable {
+                        anchors.fill: parent
+
+                        contentWidth: 1600
+                        contentHeight: 1200
+
+                        clip: true
+
+                        boundsBehavior: Flickable.StopAtBounds
+
+                        FloorPlanView {
+                            id: floorView
+
+                            width: 1600
+                            height: 1200
+
+                            model: FloorPlanService.canvasModel
+                            selectedTableId: root.selectedTableId
+
+                            onTableSelected: function (tableId) {
+                                root.selectedTableId = tableId
+                            }
+                        }
                     }
+                }
 
-                    contentItem: Label {
-                        text: modelData.name
-                        color: checked ? "white" : Theme.text
-                        font.bold: true
-                        font.pixelSize: Theme.fontNormal
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                    }
+                Rectangle {
+                    Layout.preferredWidth: 320
+                    Layout.fillHeight: true
 
-                    hoverEnabled: false
-                    focusPolicy: Qt.NoFocus
+                    radius: 6
+                    color: Theme.surface
 
-                    onClicked: {
-                        let floor = FloorPlanService.floorModel.getFloor(index)
-                        if (!floor)
-                            return
+                    border.width: 1
+                    border.color: Theme.border
 
-                        root.currentFloorId = modelData.id
-                        FloorPlanService.loadCanvas(modelData.id)
+                    ColumnLayout {
+                        anchors.fill: parent
+                        anchors.margins: 16
+
+                        spacing: 12
+
+                        Label {
+                            text: qsTr("Table Session")
+
+                            font.bold: true
+                            font.pixelSize: Theme.fontLarge
+
+                            color: Theme.text
+                        }
+
+                        Rectangle {
+                            Layout.fillWidth: true
+                            height: 1
+                            color: Theme.border
+                        }
+
+                        ColumnLayout {
+                            visible: root.selectedTableId < 0
+
+                            Layout.fillWidth: true
+                            spacing: 8
+
+                            Label {
+                                text: qsTr("Select a table")
+
+                                color: Theme.secondaryText
+                                font.pixelSize: Theme.fontNormal
+                            }
+                        }
+
+                        ColumnLayout {
+                            visible: root.selectedTableId >= 0
+
+                            Layout.fillWidth: true
+                            spacing: 12
+
+                            Label {
+                                text: selectedTable() ? selectedTable(
+                                                            ).label : qsTr(
+                                                            "Unknown Table")
+
+                                color: Theme.text
+                                font.bold: true
+                                font.pixelSize: Theme.fontLarge
+                            }
+
+                            Label {
+                                text: qsTr(
+                                          "Capacity: ") + (selectedTable(
+                                                               ) ? (selectedTable(
+                                                                        ).capacity
+                                                                    ?? 0) : 0)
+
+                                color: Theme.secondaryText
+                                font.pixelSize: Theme.fontNormal
+                            }
+
+                            Rectangle {
+                                Layout.fillWidth: true
+                                height: 1
+                                color: Theme.border
+                            }
+
+                            Button {
+                                text: qsTr("Create Order")
+
+                                Layout.fillWidth: true
+
+                                leftPadding: 12
+                                rightPadding: 12
+                                topPadding: 12
+                                bottomPadding: 12
+
+                                background: Rectangle {
+                                    radius: 6
+                                    color: Theme.primary()
+                                }
+
+                                contentItem: Label {
+                                    text: qsTr("Create Order")
+
+                                    color: "white"
+
+                                    font.bold: true
+                                    font.pixelSize: Theme.fontNormal
+
+                                    horizontalAlignment: Text.AlignHCenter
+                                    verticalAlignment: Text.AlignVCenter
+                                }
+
+                                hoverEnabled: false
+                                focusPolicy: Qt.NoFocus
+
+                                onClicked: {
+                                    root.orderTable = selectedTable()
+
+                                    stackView.push(orderEditorComponent)
+                                }
+                            }
+                        }
+
+                        Item {
+                            Layout.fillHeight: true
+                        }
                     }
                 }
             }
         }
+    }
 
-        FloorPlanView {
-            id: floorView
+    Component {
+        id: orderEditorComponent
 
-            Layout.fillWidth: true
-            Layout.fillHeight: true
+        OrderEditor {
+            anchors.fill: parent
 
-            model: FloorPlanService.canvasModel
-            selectedTableId: root.selectedTableId
+            tableId: root.orderTable
+                    ? root.orderTable.id
+                    : -1
 
-            onTableSelected: function (tableId) {
-                root.selectedTableId = tableId
-            }
+            tableLabel: root.orderTable
+                        ? root.orderTable.label
+                        : ""
         }
     }
 
     Component.onCompleted: {
+        FloorPlanService.loadFloors()
+
         if (FloorPlanService.floorModel.count > 0) {
             let first = FloorPlanService.floorModel.get(0)
 
             currentFloorId = first.id
+
             FloorPlanService.loadCanvas(first.id)
         }
     }

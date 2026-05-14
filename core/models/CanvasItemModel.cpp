@@ -1,6 +1,7 @@
 #include "CanvasItemModel.h"
 
-CanvasItemModel::CanvasItemModel(QObject *parent) : QAbstractListModel(parent) {}
+CanvasItemModel::CanvasItemModel(QObject *parent)
+    : QAbstractListModel(parent) {}
 
 int CanvasItemModel::rowCount(const QModelIndex &parent) const
 {
@@ -23,6 +24,10 @@ QVariant CanvasItemModel::data(const QModelIndex &index, int role) const
     switch (role) {
     case IdRole:
         return item.id;
+    case TableIdRole:
+        return item.table_id.has_value()
+                   ? QVariant(item.table_id.value())
+                   : QVariant();
     case TypeRole:
         return item.type;
     case LabelRole:
@@ -62,6 +67,7 @@ QHash<int, QByteArray> CanvasItemModel::roleNames() const
 {
     return {
         { IdRole, "id" },
+        { TableIdRole, "table_id" },
         { TypeRole, "type" },
         { LabelRole, "label" },
         { CapacityRole, "capacity" },
@@ -82,17 +88,23 @@ QHash<int, QByteArray> CanvasItemModel::roleNames() const
 QVariantMap CanvasItemModel::get(int row) const
 {
     QVariantMap map;
-    if (row < 0 || row >= static_cast<int>(m_items.size()))
+
+    if (row < 0 ||
+        row >= static_cast<int>(m_items.size()))
         return map;
 
     const CanvasItem &item = m_items[row];
 
     map["id"] = item.id;
+    if (item.table_id.has_value())
+        map["table_id"] = item.table_id.value();
     map["type"] = item.type;
     map["label"] = item.label.value_or(QString());
     map["capacity"] = item.capacity.value_or(0);
     map["x"] = item.x;
     map["y"] = item.y;
+    map["width"] = item.width;
+    map["height"] = item.height;
 
     return map;
 }

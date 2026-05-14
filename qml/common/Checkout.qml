@@ -196,7 +196,7 @@ Item {
                     }
 
                     Text {
-                        text: modelData.table_number ? qsTr("Table ") + modelData.table_number : modelData.order_type
+                        text: modelData.table_name ? qsTr("Table ") + modelData.table_name : modelData.order_type
                         color: Theme.secondaryText
                         font.pixelSize: Theme.fontNormal
                     }

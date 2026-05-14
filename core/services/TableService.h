@@ -26,6 +26,8 @@ public:
                                const QString &tableName,
                                const int capacity);
     Q_INVOKABLE bool removeTable(const int &tableId);
+    Q_INVOKABLE bool setTableStatus(const int &tableId,
+                                const QString &status);
 
 signals:
     void tablesChanged();

@@ -13,6 +13,7 @@ std::vector<CanvasItem> CanvasItemRepository::getByFloorId(int floorId)
     std::vector<CanvasItem> items;
 
     QSqlQuery query(m_db);
+
     query.prepare(R"(
         SELECT *
         FROM canvas_items
@@ -23,7 +24,9 @@ std::vector<CanvasItem> CanvasItemRepository::getByFloorId(int floorId)
     query.bindValue(":floor_id", floorId);
 
     if (!query.exec()) {
-        qWarning() << "Failed to fetch canvas items:" << query.lastError();
+        qWarning() << "Failed to fetch canvas items:"
+                   << query.lastError();
+
         return items;
     }
 
@@ -32,13 +35,14 @@ std::vector<CanvasItem> CanvasItemRepository::getByFloorId(int floorId)
 
         item.id = query.value("id").toInt();
         item.floor_id = query.value("floor_id").toInt();
+
+        if (!query.value("table_id").isNull())
+            item.table_id = query.value("table_id").toInt();
+
         item.type = query.value("type").toString();
 
         if (!query.value("label").isNull())
             item.label = query.value("label").toString();
-
-        if (!query.value("capacity").isNull())
-            item.capacity = query.value("capacity").toInt();
 
         item.x = query.value("x").toDouble();
         item.y = query.value("y").toDouble();
@@ -61,7 +65,9 @@ std::vector<CanvasItem> CanvasItemRepository::getByFloorId(int floorId)
     return items;
 }
 
-bool CanvasItemRepository::saveAll(int floorId, const std::vector<CanvasItem>& items)
+bool CanvasItemRepository::saveAll(
+    int floorId,
+    const std::vector<CanvasItem>& items)
 {
     if (!m_db.transaction()) {
         qWarning() << "Failed to begin transaction for saveAll";
@@ -69,11 +75,18 @@ bool CanvasItemRepository::saveAll(int floorId, const std::vector<CanvasItem>& i
     }
 
     QSqlQuery deleteQuery(m_db);
-    deleteQuery.prepare("DELETE FROM canvas_items WHERE floor_id = :floor_id");
+
+    deleteQuery.prepare(R"(
+        DELETE FROM canvas_items
+        WHERE floor_id = :floor_id
+    )");
+
     deleteQuery.bindValue(":floor_id", floorId);
 
     if (!deleteQuery.exec()) {
-        qWarning() << "Delete failed:" << deleteQuery.lastError();
+        qWarning() << "Delete failed:"
+                   << deleteQuery.lastError();
+
         m_db.rollback();
         return false;
     }
@@ -83,31 +96,67 @@ bool CanvasItemRepository::saveAll(int floorId, const std::vector<CanvasItem>& i
 
         insertQuery.prepare(R"(
             INSERT INTO canvas_items (
-                floor_id, type, label, capacity,
-                x, y, width, height, rotation,
-                color, border_color, border_width,
-                opacity, z_order, metadata
+                floor_id,
+                table_id,
+                type,
+                label,
+                x,
+                y,
+                width,
+                height,
+                rotation,
+                color,
+                border_color,
+                border_width,
+                opacity,
+                z_order,
+                metadata
             ) VALUES (
-                :floor_id, :type, :label, :capacity,
-                :x, :y, :width, :height, :rotation,
-                :color, :border_color, :border_width,
-                :opacity, :z_order, :metadata
+                :floor_id,
+                :table_id,
+                :type,
+                :label,
+                :x,
+                :y,
+                :width,
+                :height,
+                :rotation,
+                :color,
+                :border_color,
+                :border_width,
+                :opacity,
+                :z_order,
+                :metadata
             )
         )");
 
         for (const CanvasItem& item : items) {
+
             insertQuery.bindValue(":floor_id", floorId);
+
+            if (item.table_id.has_value())
+                insertQuery.bindValue(
+                    ":table_id",
+                    item.table_id.value()
+                );
+            else
+                insertQuery.bindValue(
+                    ":table_id",
+                    QVariant()
+                );
+
             insertQuery.bindValue(":type", item.type);
 
             if (item.label.has_value())
-                insertQuery.bindValue(":label", item.label.value());
+                insertQuery.bindValue(
+                    ":label",
+                    item.label.value()
+                );
             else
-                insertQuery.bindValue(":label", QVariant());
-
-            if (item.capacity.has_value())
-                insertQuery.bindValue(":capacity", item.capacity.value());
-            else
-                insertQuery.bindValue(":capacity", QVariant());
+                insertQuery.bindValue(
+                    ":label",
+                    QVariant()
+                );
 
             insertQuery.bindValue(":x", item.x);
             insertQuery.bindValue(":y", item.y);
@@ -122,12 +171,20 @@ bool CanvasItemRepository::saveAll(int floorId, const std::vector<CanvasItem>& i
             insertQuery.bindValue(":z_order", item.z_order);
 
             if (item.metadata.has_value())
-                insertQuery.bindValue(":metadata", item.metadata.value());
+                insertQuery.bindValue(
+                    ":metadata",
+                    item.metadata.value()
+                );
             else
-                insertQuery.bindValue(":metadata", QVariant());
+                insertQuery.bindValue(
+                    ":metadata",
+                    QVariant()
+                );
 
             if (!insertQuery.exec()) {
-                qWarning() << "Insert failed:" << insertQuery.lastError();
+                qWarning() << "Insert failed:"
+                           << insertQuery.lastError();
+
                 m_db.rollback();
                 return false;
             }
@@ -136,6 +193,7 @@ bool CanvasItemRepository::saveAll(int floorId, const std::vector<CanvasItem>& i
 
     if (!m_db.commit()) {
         qWarning() << "Commit failed";
+
         m_db.rollback();
         return false;
     }
@@ -146,7 +204,12 @@ bool CanvasItemRepository::saveAll(int floorId, const std::vector<CanvasItem>& i
 bool CanvasItemRepository::remove(int id)
 {
     QSqlQuery query(m_db);
-    query.prepare("DELETE FROM canvas_items WHERE id = :id");
+
+    query.prepare(R"(
+        DELETE FROM canvas_items
+        WHERE id = :id
+    )");
+
     query.bindValue(":id", id);
 
     return query.exec();

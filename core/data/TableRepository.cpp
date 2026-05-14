@@ -5,14 +5,18 @@
 #include <QVariant>
 #include <QDebug>
 
-TableRepository::TableRepository(QSqlDatabase db): m_db(db) {}
+TableRepository::TableRepository(QSqlDatabase db)
+    : m_db(db) {}
 
 std::vector<Table> TableRepository::getAllTables()
 {
     std::vector<Table> tables;
 
     QSqlQuery query(m_db);
-    query.prepare("SELECT id, table_number, capacity, is_active FROM tables");
+    query.prepare(R"(
+        SELECT id, table_name, capacity, status, created_at
+        FROM tables
+    )");
 
     if (!query.exec()) {
         qWarning() << "getAllTables failed:" << query.lastError();
@@ -21,10 +25,12 @@ std::vector<Table> TableRepository::getAllTables()
 
     while (query.next()) {
         Table table;
+
         table.id = query.value("id").toInt();
-        table.table_number = query.value("table_number").toString();
+        table.table_name = query.value("table_name").toString();
         table.capacity = query.value("capacity").toInt();
-        table.is_active = query.value("is_active").toBool();
+        table.status = query.value("status").toString();
+        table.created_at = query.value("created_at").toString();
 
         tables.push_back(table);
     }
@@ -35,7 +41,13 @@ std::vector<Table> TableRepository::getAllTables()
 std::optional<Table> TableRepository::getTableById(int tableId)
 {
     QSqlQuery query(m_db);
-    query.prepare("SELECT id, table_number, capacity, is_active FROM tables WHERE id = :id");
+
+    query.prepare(R"(
+        SELECT id, table_name, capacity, status, created_at
+        FROM tables
+        WHERE id = :id
+    )");
+
     query.bindValue(":id", tableId);
 
     if (!query.exec()) {
@@ -48,59 +60,78 @@ std::optional<Table> TableRepository::getTableById(int tableId)
     }
 
     Table table;
+
     table.id = query.value("id").toInt();
-    table.table_number = query.value("table_number").toString();
+    table.table_name = query.value("table_name").toString();
     table.capacity = query.value("capacity").toInt();
-    table.is_active = query.value("is_active").toBool();
+    table.status = query.value("status").toString();
+    table.created_at = query.value("created_at").toString();
 
     return table;
 }
 
-void TableRepository::create(const Table &table)
+int TableRepository::create(const Table &table)
 {
     QSqlQuery query(m_db);
     query.prepare(R"(
-        INSERT INTO tables (table_number, capacity, is_active)
-        VALUES (:table_number, :capacity, false)
+        INSERT INTO tables (
+            table_name,
+            capacity,
+            status
+        )
+        VALUES (
+            :table_name,
+            :capacity,
+            :status
+        )
     )");
 
-    query.bindValue(":table_number", table.table_number);
+    query.bindValue(":table_name", table.table_name);
     query.bindValue(":capacity", table.capacity);
+    query.bindValue(":status", table.status);
 
     if (!query.exec()) {
         qWarning() << "create failed:" << query.lastError();
     }
+
+    return query.lastInsertId().toInt();
 }
 
 void TableRepository::update(const Table &table)
 {
     QSqlQuery query(m_db);
+
     query.prepare(R"(
         UPDATE tables
-        SET table_number = :table_number, capacity = :capacity
+        SET
+            table_name = :table_name,
+            capacity = :capacity,
+            status = :status
         WHERE id = :table_id
     )");
 
     query.bindValue(":table_id", table.id);
-    query.bindValue(":table_number", table.table_number);
+    query.bindValue(":table_name", table.table_name);
     query.bindValue(":capacity", table.capacity);
+    query.bindValue(":status", table.status);
 
     if (!query.exec()) {
         qWarning() << "update failed:" << query.lastError();
     }
 }
 
-void TableRepository::setTableState(int tableId, bool isActive)
+void TableRepository::setTableState(int tableId, const QString &status)
 {
     QSqlQuery query(m_db);
+
     query.prepare(R"(
         UPDATE tables
-        SET is_active = :is_active
+        SET status = :status
         WHERE id = :table_id
     )");
 
     query.bindValue(":table_id", tableId);
-    query.bindValue(":is_active", isActive);
+    query.bindValue(":status", status);
 
     if (!query.exec()) {
         qWarning() << "setTableState failed:" << query.lastError();
@@ -110,6 +141,7 @@ void TableRepository::setTableState(int tableId, bool isActive)
 void TableRepository::remove(const Table &table)
 {
     QSqlQuery query(m_db);
+
     query.prepare(R"(
         DELETE FROM tables
         WHERE id = :table_id

@@ -2,6 +2,7 @@
 
 #include <QDate>
 #include <QRandomGenerator>
+#include "../constants/TableStatus.h"
 
 OrderService::OrderService(OrderSessionRepository &orderSessionRepo,
                            OrderRepository &orderRepo,
@@ -60,7 +61,10 @@ int OrderService::createOrder(
             orderSession.total = 0.0;
 
             orderSessionId = m_orderSessionRepo.create(orderSession);
-            m_tableRepo.setTableState(orderSession.table_id.value(), true);
+            m_tableRepo.setTableState(
+                orderSession.table_id.value(),
+                TableStatus::Occupied
+            );
             if (orderSessionId <= 0)
             {
                 qCritical() << "OrderSession creation failed, aborting order creation";
@@ -198,7 +202,7 @@ QVariantList OrderService::getOpenOrders()
     QMap<int, QString> tableMap;
 
     for (const auto &table : tables) {
-        tableMap[table.id] = table.table_number;
+        tableMap[table.id] = table.table_name;
     }
 
     for (const auto &order : orders)
@@ -213,9 +217,9 @@ QVariantList OrderService::getOpenOrders()
 
         if (order.table_id.has_value()) {
             int tableId = order.table_id.value();
-            map["table_number"] = tableMap.value(tableId);
+            map["table_name"] = tableMap.value(tableId);
         } else {
-            map["table_number"] = QVariant();
+            map["table_name"] = QVariant();
         }
 
         result.append(map);
@@ -294,10 +298,16 @@ int OrderService::updateOrder(
     if (session.table_id != newTableId)
     {
         if (session.table_id.has_value())
-            m_tableRepo.setTableState(session.table_id.value(), false);
+            m_tableRepo.setTableState(
+                session.table_id.value(),
+                TableStatus::Available
+            );
 
         if (newTableId.has_value())
-            m_tableRepo.setTableState(newTableId.value(), true);
+            m_tableRepo.setTableState(
+                newTableId.value(),
+                TableStatus::Occupied
+            );
 
         session.table_id = newTableId;
     }

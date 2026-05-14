@@ -433,18 +433,18 @@ Item {
                         font.pixelSize: Theme.fontNormal
                     }
                     onClicked: {
-                        FloorPlanService.addItem({
+                        FloorPlanService.createTableItem({
                             "type": "table",
-                            "capacity": addTableDialog.seats,
                             "x": 100,
                             "y": 100,
                             "width": 80,
                             "height": 80,
                             "label": addTableDialog.label,
+                            "floor_id": root.currentFloorId,
                             "metadata": JSON.stringify({
                                 "table_type": addTableDialog.tableType
                             })
-                        });
+                        }, addTableDialog.seats);
 
                         addTableDialog.close()
                     }

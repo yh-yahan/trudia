@@ -1,10 +1,10 @@
 CREATE TABLE IF NOT EXISTS canvas_items (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     floor_id INTEGER NOT NULL REFERENCES floors(id) ON DELETE CASCADE,
+    table_id INTEGER REFERENCES tables(id) ON DELETE CASCADE,
     
     type TEXT NOT NULL, -- table/wall/room/door/text
-    label TEXT, 
-    capacity INTEGER, -- only for tables
+    label TEXT,
     
     x REAL NOT NULL,
     y REAL NOT NULL,

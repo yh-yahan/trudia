@@ -41,7 +41,7 @@ QVariantList KitchenOrderService::getOrdersByStatus(const QString &status) const
     QMap<int, QString> tableMap;
 
     for (const auto &table : tables) {
-        tableMap[table.id] = table.table_number;
+        tableMap[table.id] = table.table_name;
     }
 
     for (const auto &order : orders) {
@@ -59,9 +59,9 @@ QVariantList KitchenOrderService::getOrdersByStatus(const QString &status) const
 
             if (session.table_id.has_value()) {
                 int tableId = session.table_id.value();
-                orderMap["table_number"] = tableMap.value(tableId);
+                orderMap["table_name"] = tableMap.value(tableId);
             } else {
-                orderMap["table_number"] = QVariant();
+                orderMap["table_name"] = QVariant();
             }
 
             orderMap["order_type"] = session.order_type;

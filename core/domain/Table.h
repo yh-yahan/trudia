@@ -7,9 +7,10 @@ class Table
 {
 public:
     int id = -1;
-    QString table_number;
+    QString table_name;
     int capacity;
-    bool is_active;
+    QString status;
+    QString created_at;
 };
 
 #endif // TABLE_H

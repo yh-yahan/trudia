@@ -25,11 +25,11 @@ QVariant TableModel::data(const QModelIndex &index, int role) const
     case IdRole:
         return table.id;
     case NameRole:
-        return table.table_number;
+        return table.table_name;
     case CapacityRole:
         return table.capacity;
-    case ActiveRole:
-        return table.is_active;
+    case StatusRole:
+        return table.status;
     default:
         return QVariant();
     }
@@ -41,7 +41,7 @@ QHash<int, QByteArray> TableModel::roleNames() const
         { IdRole, "id" },
         { NameRole, "name" },
         { CapacityRole, "capacity" },
-        { ActiveRole, "is_active" }
+        { StatusRole, "status" }
     };
 }
 

@@ -15,7 +15,7 @@ public:
         IdRole = Qt::UserRole + 1,
         NameRole,
         CapacityRole,
-        ActiveRole
+        StatusRole
     };
 
     explicit TableModel(TableRepository &repo, QObject *parent = nullptr);

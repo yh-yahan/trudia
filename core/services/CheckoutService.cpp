@@ -1,6 +1,7 @@
 #include "CheckoutService.h"
 
 #include <cmath>
+#include "../constants/TableStatus.h"
 
 constexpr qint64 CURRENCY_SCALE = 100; // cents
 
@@ -42,7 +43,7 @@ QVariantList CheckoutService::getActiveOrdersForCheckout() const
 
     for (const auto &table : tables)
     {
-        tableMap[table.id] = table.table_number;
+        tableMap[table.id] = table.table_name;
     }
 
     for (const auto &session : activeSessions)
@@ -54,11 +55,11 @@ QVariantList CheckoutService::getActiveOrdersForCheckout() const
         if (session.table_id.has_value())
         {
             int tableId = session.table_id.value();
-            sessionMap["table_number"] = tableMap.value(tableId);
+            sessionMap["table_name"] = tableMap.value(tableId);
         }
         else
         {
-            sessionMap["table_number"] = QVariant();
+            sessionMap["table_name"] = QVariant();
         }
 
         sessionMap["order_type"] = session.order_type;
@@ -254,7 +255,10 @@ bool CheckoutService::markOrderPaid(const int &orderSessionId, const QString &me
 
     if (session.table_id.has_value())
     {
-        m_tableRepo.setTableState(session.table_id.value(), false);
+        m_tableRepo.setTableState(
+            session.table_id.value(),
+            TableStatus::Available
+        );
     }
 
     return true;

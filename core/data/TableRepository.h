@@ -12,8 +12,8 @@ public:
 
     std::vector<Table> getAllTables();
     std::optional<Table> getTableById(int tableId);
-    void create(const Table &table);
-    void setTableState(int tableId, bool isActive);
+    int create(const Table &table);
+    void setTableState(int tableId, const QString &status);
     void update(const Table &table);
     void remove(const Table &table);
 

@@ -123,8 +123,8 @@ Item {
                         }
 
                         Text {
-                            visible: modelData.table_number != null
-                            text: "Table " + modelData.table_number
+                            visible: modelData.table_name != null
+                            text: "Table " + modelData.table_name
                             color: Theme.text
                             font.pixelSize: Theme.fontNormal
                         }

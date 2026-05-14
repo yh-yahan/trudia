@@ -157,7 +157,7 @@ int main(int argc, char *argv[])
         settingService
     );
     AnalyticsService analyticsService(analyticsRepo);
-    FloorPlanService floorPlanService(floorRepo, canvasItemRepo);
+    FloorPlanService floorPlanService(floorRepo, canvasItemRepo, tableRepo);
     SetupService setupService(appService, dbManager);
 
     QObject::connect(&orderService, &OrderService::orderCreated,

@@ -134,6 +134,7 @@ qt_add_qml_module(apptrudia
     SOURCES core/models/CanvasItemModel.h core/models/CanvasItemModel.cpp
     SOURCES core/domain/TableSettings.h
     SOURCES core/data/TableSettingsRepository.h core/data/TableSettingsRepository.cpp
+    SOURCES core/constants/TableStatus.h
 )
 
 qt_add_translations(apptrudia

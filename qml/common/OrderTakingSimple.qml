@@ -557,7 +557,7 @@ Item {
                                 height: 40
                                 radius: 4
 
-                                color: is_active ? "#ff4d4d" : "#4caf50"
+                                color: status == "occupied" ? "#ff4d4d" : "#4caf50"
 
                                 border.width: 3
                                 border.color: selectedTableId === id ? Theme.primary() : Theme.background
@@ -751,8 +751,8 @@ Item {
                                 }
 
                                 Text {
-                                    text: modelData.table_number ? "Table: " + modelData.table_number : ""
-                                    visible: modelData.table_number !== undefined && modelData.table_number !== null
+                                    text: modelData.table_name ? "Table: " + modelData.table_name : ""
+                                    visible: modelData.table_name !== undefined && modelData.table_name !== null
                                     color: Theme.secondaryText
                                     font.pixelSize: Theme.fontNormal
                                 }

@@ -8,6 +8,7 @@ class CanvasItem {
 public:
     int id = -1;
     int floor_id;
+    std::optional<int> table_id;
     QString type;
     std::optional<QString> label;
     std::optional<int> capacity;

@@ -4,6 +4,7 @@
 #include <QObject>
 #include "../data/FloorRepository.h"
 #include "../data/CanvasItemRepository.h"
+#include "../data/TableRepository.h"
 
 class FloorModel;
 class CanvasItemModel;
@@ -17,7 +18,8 @@ class FloorPlanService : public QObject
 
 public:
     FloorPlanService(FloorRepository &floorRepo,
-                     CanvasItemRepository &canvasItemRepo);
+                     CanvasItemRepository &canvasItemRepo,
+                     TableRepository &tableRepo);
 
     FloorModel *floorModel() const;
     CanvasItemModel *canvasModel() const;
@@ -31,6 +33,7 @@ public:
     Q_INVOKABLE bool saveCanvas(int floorId);
 
     Q_INVOKABLE void addItem(const QVariantMap &itemData);
+    Q_INVOKABLE void createTableItem(const QVariantMap &itemData, int capacity);
     Q_INVOKABLE void deleteItem(int index);
 
 private:
@@ -39,6 +42,7 @@ private:
 
     FloorRepository &m_floorRepo;
     CanvasItemRepository &m_canvasItemRepo;
+    TableRepository &m_tableRepo;
 };
 
 #endif // FLOORPLANSERVICE_H

@@ -51,43 +51,103 @@ Item {
                     Repeater {
                         model: FloorPlanService.floorModel
 
-                        delegate: Button {
+                        delegate: Item {
                             required property int index
                             required property var modelData
 
-                            text: modelData.name
-                            checkable: true
-                            ButtonGroup.group: floorGroup
+                            width: floorRow.implicitWidth
+                            height: floorRow.implicitHeight
 
-                            checked: root.currentFloorId === modelData.id
+                            RowLayout {
+                                id: floorRow
+                                anchors.fill: parent
+                                spacing: 0
 
-                            leftPadding: 10
-                            rightPadding: 10
-                            topPadding: 10
-                            bottomPadding: 10
+                                Button {
+                                    id: floorButton
 
-                            background: Rectangle {
-                                radius: 6
-                                color: checked ? Theme.primary() : Theme.surface
+                                    text: modelData.name
+                                    checkable: true
+                                    ButtonGroup.group: floorGroup
+
+                                    checked: root.currentFloorId === modelData.id
+
+                                    leftPadding: 10
+                                    rightPadding: 10
+                                    topPadding: 10
+                                    bottomPadding: 10
+
+                                    background: Rectangle {
+                                        radius: 6
+                                        color: floorButton.checked ? Theme.primary() : Theme.surface
+                                    }
+
+                                    contentItem: Label {
+                                        text: modelData.name
+                                        color: floorButton.checked ? "white" : Theme.text
+                                        font.bold: true
+                                        font.pixelSize: Theme.fontNormal
+                                        horizontalAlignment: Text.AlignHCenter
+                                        verticalAlignment: Text.AlignVCenter
+                                    }
+
+                                    hoverEnabled: false
+                                    focusPolicy: Qt.NoFocus
+
+                                    onClicked: {
+                                        let floor = FloorPlanService.floorModel.getFloor(index);
+
+                                        if (floor) {
+                                            root.currentFloorId = modelData.id;
+                                            FloorPlanService.loadCanvas(modelData.id);
+                                        }
+                                    }
+
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        acceptedButtons: Qt.RightButton
+                                        propagateComposedEvents: true
+
+                                        onPressed: function (mouse) {
+                                            if (mouse.button === Qt.RightButton) {
+                                                floorMenu.popup();
+                                            }
+
+                                            mouse.accepted = false;
+                                        }
+                                    }
+                                }
                             }
 
-                            contentItem: Label {
-                                text: modelData.name
-                                color: checked ? "white" : Theme.text
-                                font.bold: true
-                                font.pixelSize: Theme.fontNormal
-                                horizontalAlignment: Text.AlignHCenter
-                                verticalAlignment: Text.AlignVCenter
-                            }
+                            Menu {
+                                id: floorMenu
 
-                            hoverEnabled: false
-                            focusPolicy: Qt.NoFocus
+                                MenuItem {
+                                    text: qsTr("Delete Floor")
 
-                            onClicked: {
-                                let floor = FloorPlanService.floorModel.getFloor(index);
-                                if (floor) {
-                                    root.currentFloorId = modelData.id;
-                                    FloorPlanService.loadCanvas(modelData.id);
+                                    enabled: FloorPlanService.floorModel.rowCount() > 1
+
+                                    onTriggered: {
+                                        let deletedFloorId = modelData.id;
+
+                                        let success = FloorPlanService.deleteFloor(deletedFloorId);
+
+                                        if (!success)
+                                            return;
+
+                                        FloorPlanService.loadFloors();
+
+                                        if (root.currentFloorId === deletedFloorId) {
+                                            if (FloorPlanService.floorModel.rowCount() > 0) {
+                                                let first = FloorPlanService.floorModel.getFloor(0);
+
+                                                root.currentFloorId = first.id;
+                                                FloorPlanService.loadCanvas(first.id);
+                                            } else {
+                                                root.currentFloorId = -1;
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -283,7 +343,7 @@ Item {
                             FloorPlanService.loadCanvas(id);
                         }
 
-                        createFloorDialog.close()
+                        createFloorDialog.close();
                     }
                 }
                 Button {
@@ -350,7 +410,7 @@ Item {
                 text: addTableDialog.label
 
                 onTextChanged: {
-                    addTableDialog.label = text
+                    addTableDialog.label = text;
                 }
 
                 background: Rectangle {
@@ -392,9 +452,18 @@ Item {
 
             ComboBox {
                 model: [
-                    { key: "square", value: qsTr("Square Table") },
-                    { key: "rectangle", value: qsTr("Rectangle Table") },
-                    { key: "circle", value: qsTr("Circle Table") }
+                    {
+                        key: "square",
+                        value: qsTr("Square Table")
+                    },
+                    {
+                        key: "rectangle",
+                        value: qsTr("Rectangle Table")
+                    },
+                    {
+                        key: "circle",
+                        value: qsTr("Circle Table")
+                    }
                 ]
 
                 font.pixelSize: Theme.fontNormal
@@ -404,7 +473,7 @@ Item {
                 Layout.fillWidth: true
 
                 onCurrentIndexChanged: {
-                    addTableDialog.tableType = model[currentIndex].key
+                    addTableDialog.tableType = model[currentIndex].key;
                 }
             }
 
@@ -446,7 +515,7 @@ Item {
                             })
                         }, addTableDialog.seats);
 
-                        addTableDialog.close()
+                        addTableDialog.close();
                     }
                 }
                 Button {

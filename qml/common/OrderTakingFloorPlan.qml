@@ -297,7 +297,7 @@ Item {
             anchors.fill: parent
 
             tableId: root.orderTable
-                    ? root.orderTable.id
+                    ? root.orderTable.table_id
                     : -1
 
             tableLabel: root.orderTable

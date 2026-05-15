@@ -60,9 +60,6 @@ Item {
         anchors.margins: 8
         spacing: 8
 
-        // =========================
-        // HEADER
-        // =========================
         Rectangle {
             Layout.fillWidth: true
             height: 64

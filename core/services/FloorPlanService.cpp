@@ -1,5 +1,7 @@
 #include "FloorPlanService.h"
 
+#include <QJsonObject>
+#include <QJsonDocument>
 #include "../models/FloorModel.h"
 #include "../models/CanvasItemModel.h"
 
@@ -40,25 +42,36 @@ void FloorPlanService::loadCanvas(int floorId)
 
     for (CanvasItem &item : items)
     {
+        QJsonObject obj;
+
+        if (item.metadata.has_value() && !item.metadata->isEmpty())
+        {
+            const QJsonDocument doc =
+                QJsonDocument::fromJson(item.metadata->toUtf8());
+            if (doc.isObject())
+            {
+                obj = doc.object();
+            }
+        }
+
         if (item.type == "table" && item.table_id.has_value())
         {
-            const int tableId = item.table_id.value();
+            const auto tableOpt =
+                m_tableRepo.getTableById(item.table_id.value());
 
-            auto tableOpt = m_tableRepo.getTableById(tableId);
-
-            if (!tableOpt) {
-                return;
-            }
+            if (!tableOpt)
+                continue;
 
             const Table &table = *tableOpt;
 
-            item.capacity = table.capacity;
-            item.label = table.table_name;
+            obj["table_id"] = table.id;
+            obj["capacity"] = table.capacity;
+            obj["status"] = table.status;
         }
-        else
-        {
-            item.capacity.reset();
-        }
+
+        item.metadata = QString::fromUtf8(
+            QJsonDocument(obj).toJson(QJsonDocument::Compact)
+        );
     }
 
     m_canvasModel->setItems(items);

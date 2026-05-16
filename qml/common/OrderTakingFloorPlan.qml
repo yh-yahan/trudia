@@ -31,8 +31,14 @@ Item {
             if (!item)
                 continue
 
-            if (Number(item.id) === Number(root.selectedTableId))
-                return item
+            const metadata = item.metadata ? JSON.parse(item.metadata) : {}
+
+            if (Number(metadata.table_id) === Number(root.selectedTableId)) {
+                return {
+                    "canvasItem": item,
+                    "metadata": metadata
+                }
+            }
         }
 
         return null
@@ -61,7 +67,6 @@ Item {
                 Layout.fillWidth: true
                 spacing: 8
 
-                // visible: FloorPlanService.floorModel.count > 1
                 ButtonGroup {
                     id: floorGroup
                     exclusive: true
@@ -217,9 +222,10 @@ Item {
                             spacing: 12
 
                             Label {
-                                text: selectedTable() ? selectedTable(
-                                                            ).label : qsTr(
-                                                            "Unknown Table")
+                                text: selectedTable(
+                                          ) ? selectedTable(
+                                                  ).canvasItem.label : qsTr(
+                                                  "Unknown Table")
 
                                 color: Theme.text
                                 font.bold: true
@@ -230,7 +236,7 @@ Item {
                                 text: qsTr(
                                           "Capacity: ") + (selectedTable(
                                                                ) ? (selectedTable(
-                                                                        ).capacity
+                                                                        ).metadata.capacity
                                                                     ?? 0) : 0)
 
                                 color: Theme.secondaryText
@@ -296,13 +302,9 @@ Item {
         OrderEditor {
             anchors.fill: parent
 
-            tableId: root.orderTable
-                    ? root.orderTable.table_id
-                    : -1
+            tableId: root.orderTable ? root.orderTable.metadata.table_id : -1
 
-            tableLabel: root.orderTable
-                        ? root.orderTable.label
-                        : ""
+            tableLabel: root.orderTable ? root.orderTable.canvasItem.label : ""
         }
     }
 

@@ -5,6 +5,7 @@ import trudia.Theme 1.0
 
 Item {
     id: root
+
     property var model
     property int selectedIndex: -1
 
@@ -19,19 +20,41 @@ Item {
         delegate: FloorItem {
             id: itemDelegate
 
+            metadata: model.metadata
+                ? JSON.parse(model.metadata)
+                : {}
+
             x: model.x ?? 0
             y: model.y ?? 0
-            capacity: model.capacity ?? 4
+
             width: model.width ?? 80
             height: model.height ?? 80
+
             rotation: model.rotation ?? 0
-            label: model.label ?? ""
-            color: model.color ?? "#3a3a3a"
-            borderColor: model.border_color ?? "#555555"
+
             opacity: model.opacity ?? 1.0
             z: model.z_order ?? 0
 
-            property var metadata: model.metadata ? JSON.parse(model.metadata) : {}
+            capacity: metadata.capacity ?? 4
+
+            label: model.label ?? ""
+
+            color: {
+                switch (metadata.status) {
+                case "occupied":
+                    return "#e74c3c"
+                case "reserved":
+                    return "#f39c12"
+                case "available":
+                    return '#66BB6A'
+                default:
+                    return Theme.surface
+                }
+            }
+
+            borderColor: root.selectedIndex === index
+                         ? Theme.primary()
+                         : "#555555"
 
             onMoved: (newX, newY) => {
                 if (model) {
@@ -42,7 +65,9 @@ Item {
 
             MouseArea {
                 anchors.fill: parent
+
                 drag.target: parent
+
                 drag.minimumX: 0
                 drag.minimumY: 0
 

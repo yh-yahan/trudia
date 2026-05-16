@@ -11,7 +11,6 @@ public:
     std::optional<int> table_id;
     QString type;
     std::optional<QString> label;
-    std::optional<int> capacity;
     double x;
     double y;
     double width;

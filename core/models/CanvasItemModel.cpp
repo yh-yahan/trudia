@@ -32,8 +32,6 @@ QVariant CanvasItemModel::data(const QModelIndex &index, int role) const
         return item.type;
     case LabelRole:
         return item.label.value_or(QString());
-    case CapacityRole:
-        return item.capacity.value_or(0);
     case XRole:
         return item.x;
     case YRole:
@@ -70,7 +68,6 @@ QHash<int, QByteArray> CanvasItemModel::roleNames() const
         { TableIdRole, "table_id" },
         { TypeRole, "type" },
         { LabelRole, "label" },
-        { CapacityRole, "capacity" },
         { XRole, "x" },
         { YRole, "y" },
         { WidthRole, "width" },
@@ -100,11 +97,13 @@ QVariantMap CanvasItemModel::get(int row) const
         map["table_id"] = item.table_id.value();
     map["type"] = item.type;
     map["label"] = item.label.value_or(QString());
-    map["capacity"] = item.capacity.value_or(0);
     map["x"] = item.x;
     map["y"] = item.y;
     map["width"] = item.width;
     map["height"] = item.height;
+    map["metadata"] = item.metadata.has_value()
+                      ? QVariant(*item.metadata)
+                      : QVariant();
 
     return map;
 }

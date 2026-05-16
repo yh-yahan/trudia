@@ -14,7 +14,6 @@ public:
         TableIdRole,
         TypeRole,
         LabelRole,
-        CapacityRole,
         XRole,
         YRole,
         WidthRole,

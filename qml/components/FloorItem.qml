@@ -5,19 +5,22 @@ import trudia.Theme 1.0
 Item {
     id: root
 
+    width: 80
+    height: 80
+
     property string label: ""
+
     property color borderColor: "black"
-    property color color: "#3a7fff"
+    property color color: "#a1a1a1"
 
     property int capacity: 4
 
-    property var meta: model.metadata ? JSON.parse(model.metadata) : {}
-    property string tableType: meta.table_type ?? "square"
+    property var metadata: ({})
+    property string tableType: metadata.table_type ?? "square"
+
+    property bool editable: false
 
     signal moved(real x, real y)
-
-    width: model.width ?? 80
-    height: model.height ?? 80
 
     Loader {
         anchors.fill: parent
@@ -64,21 +67,22 @@ Item {
             color: root.color
             border.width: 2
             border.color: root.borderColor
-            radius: width / 2
+
+            radius: Math.min(root.width, root.height) / 2
         }
     }
 
     Text {
         anchors.centerIn: parent
         text: root.label
-        color: "#9c9c9c"
+        color: '#383838'
         font.bold: true
     }
 
     MouseArea {
         anchors.fill: parent
-        drag.target: root
-        cursorShape: Qt.DragMoveCursor
+        drag.target: root.editable ? root : undefined
+        cursorShape: root.editable ? Qt.DragMoveCursor : Qt.PointingHandCursor
 
         onPositionChanged: {
             if (drag.active) {
@@ -113,8 +117,6 @@ Item {
             property int posOnSide: index % perSide
 
             property real t: (posOnSide + 1) / (perSide + 1)
-
-            visible: true
 
             x: {
                 if (root.tableType === "circle") {

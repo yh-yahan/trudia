@@ -27,6 +27,8 @@ Item {
             x: model.x ?? 0
             y: model.y ?? 0
 
+            type: model.type ?? "table"
+
             width: model.width ?? 80
             height: model.height ?? 80
 

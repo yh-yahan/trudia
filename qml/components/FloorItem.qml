@@ -13,6 +13,8 @@ Item {
     property color borderColor: "black"
     property color color: "#a1a1a1"
 
+    property string type: "table"
+
     property int capacity: 4
 
     property var metadata: ({})
@@ -96,7 +98,7 @@ Item {
     }
 
     Repeater {
-        model: capacity
+        model: type === "table" ? capacity : 0
 
         delegate: Rectangle {
             width: 12

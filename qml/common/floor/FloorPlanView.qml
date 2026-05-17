@@ -25,6 +25,8 @@ Item {
                 ? JSON.parse(model.metadata)
                 : {}
 
+            tableType: metadata.table_type ?? "square"
+
             x: model.x ?? 0
             y: model.y ?? 0
 
@@ -36,7 +38,9 @@ Item {
             opacity: 1.0
             z: model.z_order ?? 0
 
-            capacity: metadata.capacity ?? 4
+            capacity: model.type === "table"
+                ? (metadata.capacity ?? 4)
+                : 0
 
             label: model.label ?? ""
 

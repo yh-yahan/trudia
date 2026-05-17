@@ -174,10 +174,29 @@ void FloorPlanService::addItem(const QVariantMap &itemData)
     m_canvasModel->addItem(item);
 }
 
-void FloorPlanService::createTableItem(const QVariantMap &itemData, int capacity)
+void FloorPlanService::createTableItem(const QVariantMap &itemData)
 {
     const int floorId = itemData.value("floor_id").toInt();
     const QString label = itemData.value("label").toString().trimmed();
+
+    int capacity = 0;
+
+    if (itemData.contains("metadata") && !itemData.value("metadata").isNull()) {
+        const QString metadataStr = itemData.value("metadata").toString();
+
+        QJsonParseError parseError;
+        QJsonDocument doc = QJsonDocument::fromJson(
+            metadataStr.toUtf8(),
+            &parseError
+        );
+
+        if (parseError.error == QJsonParseError::NoError && doc.isObject()) {
+
+            QJsonObject obj = doc.object();
+
+            capacity = obj.value("capacity").toInt();
+        }
+    }
 
     Table table;
     table.table_name = label;

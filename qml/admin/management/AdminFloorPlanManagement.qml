@@ -511,9 +511,11 @@ Item {
                             "label": addTableDialog.label,
                             "floor_id": root.currentFloorId,
                             "metadata": JSON.stringify({
-                                "table_type": addTableDialog.tableType
+                                "table_type": addTableDialog.tableType,
+                                "capacity": addTableDialog.seats,
+                                "status": "available"
                             })
-                        }, addTableDialog.seats);
+                        });
 
                         addTableDialog.close();
                     }

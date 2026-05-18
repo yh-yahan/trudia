@@ -44,6 +44,21 @@ Item {
         return null
     }
 
+    Connections {
+        target: FloorPlanService.floorModel
+
+        function onModelReset() {
+            if (FloorPlanService.floorModel.rowCount() <= 0)
+                return
+
+            const first = FloorPlanService.floorModel.getFloor(0)
+
+            root.currentFloorId = first.id
+
+            FloorPlanService.loadCanvas(first.id)
+        }
+    }
+
     Rectangle {
         anchors.fill: parent
         color: Theme.background
@@ -82,7 +97,9 @@ Item {
                         text: modelData.name
 
                         checkable: true
-                        checked: root.currentFloorId === modelData.id
+                        checked: root.currentFloorId < 0
+                            ? index === 0
+                            : root.currentFloorId === modelData.id
 
                         ButtonGroup.group: floorGroup
 
@@ -311,12 +328,15 @@ Item {
     Component.onCompleted: {
         FloorPlanService.loadFloors()
 
-        if (FloorPlanService.floorModel.count > 0) {
-            let first = FloorPlanService.floorModel.get(0)
+        Qt.callLater(function () {
+            if (FloorPlanService.floorModel.count <= 0)
+                return
 
-            currentFloorId = first.id
+            const first = FloorPlanService.floorModel.get(0)
+
+            root.currentFloorId = first.id
 
             FloorPlanService.loadCanvas(first.id)
-        }
+        })
     }
 }

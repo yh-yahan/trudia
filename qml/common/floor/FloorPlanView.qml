@@ -25,6 +25,8 @@ Item {
                 ? JSON.parse(model.metadata)
                 : {}
 
+            property bool isTable: model.type === "table"
+
             tableType: metadata.table_type ?? "square"
 
             x: model.x ?? 0
@@ -38,36 +40,43 @@ Item {
             opacity: 1.0
             z: model.z_order ?? 0
 
-            capacity: model.type === "table"
+            capacity: isTable
                 ? (metadata.capacity ?? 4)
                 : 0
 
             label: model.label ?? ""
 
             color: {
+                if (!isTable)
+                    return Theme.surface
+
                 switch (metadata.status) {
                 case "occupied":
                     return "#e74c3c"
                 case "reserved":
                     return "#f39c12"
                 case "available":
-                    return '#66BB6A'
+                    return "#66BB6A"
                 default:
                     return Theme.surface
                 }
             }
 
-            borderColor: root.selectedTableId === metadata.table_id
-                         ? Theme.primary()
-                         : "#555555"
+            borderColor: isTable && root.selectedTableId === metadata.table_id
+                        ? Theme.primary()
+                        : "#555555"
 
             MouseArea {
                 anchors.fill: parent
 
+                enabled: isTable
+                visible: isTable
+
                 cursorShape: Qt.PointingHandCursor
 
                 onClicked: {
-                    root.tableSelected(metadata.table_id)
+                    if (isTable)
+                        root.tableSelected(metadata.table_id)
                 }
             }
         }

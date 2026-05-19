@@ -43,6 +43,7 @@ public:
     Qt::ItemFlags flags(const QModelIndex &index) const override;
     bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override;
     Q_INVOKABLE void removeItem(int index);
+    void clear();
 
 private:
     std::vector<CanvasItem> m_items;

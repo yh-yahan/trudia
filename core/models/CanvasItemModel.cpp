@@ -230,3 +230,13 @@ void CanvasItemModel::removeItem(int index)
     m_items.erase(m_items.begin() + index);
     endRemoveRows();
 }
+
+void CanvasItemModel::clear()
+{
+    if (m_items.empty())
+        return;
+
+    beginResetModel();
+    m_items.clear();
+    endResetModel();
+}

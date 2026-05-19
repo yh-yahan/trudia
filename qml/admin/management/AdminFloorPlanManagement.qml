@@ -8,19 +8,19 @@ import "../../components"
 Item {
     id: root
 
-    property int currentFloorId: 1
+    property int currentFloorId: -1
 
     signal requestSave
     signal requestReload(int floorId)
 
     Component.onCompleted: {
-        FloorPlanService.loadFloors();
+        FloorPlanService.loadFloors()
 
         if (FloorPlanService.floorModel.rowCount() > 0) {
-            let first = FloorPlanService.floorModel.getFloor(0);
+            let first = FloorPlanService.floorModel.getFloor(0)
             if (first) {
-                root.currentFloorId = first.id;
-                FloorPlanService.loadCanvas(first.id);
+                root.currentFloorId = first.id
+                FloorPlanService.loadCanvas(first.id)
             }
         }
     }
@@ -55,6 +55,8 @@ Item {
                             required property int index
                             required property var modelData
 
+                            property var rootItem: root
+
                             width: floorRow.implicitWidth
                             height: floorRow.implicitHeight
 
@@ -70,7 +72,7 @@ Item {
                                     checkable: true
                                     ButtonGroup.group: floorGroup
 
-                                    checked: root.currentFloorId === modelData.id
+                                    checked: rootItem.currentFloorId === modelData.id
 
                                     leftPadding: 10
                                     rightPadding: 10
@@ -79,7 +81,8 @@ Item {
 
                                     background: Rectangle {
                                         radius: 6
-                                        color: floorButton.checked ? Theme.primary() : Theme.surface
+                                        color: floorButton.checked ? Theme.primary(
+                                                                         ) : Theme.surface
                                     }
 
                                     contentItem: Label {
@@ -95,11 +98,13 @@ Item {
                                     focusPolicy: Qt.NoFocus
 
                                     onClicked: {
-                                        let floor = FloorPlanService.floorModel.getFloor(index);
+                                        let floor = FloorPlanService.floorModel.getFloor(
+                                                index)
 
                                         if (floor) {
-                                            root.currentFloorId = modelData.id;
-                                            FloorPlanService.loadCanvas(modelData.id);
+                                            rootItem.currentFloorId = modelData.id
+                                            FloorPlanService.loadCanvas(
+                                                        modelData.id)
                                         }
                                     }
 
@@ -110,10 +115,10 @@ Item {
 
                                         onPressed: function (mouse) {
                                             if (mouse.button === Qt.RightButton) {
-                                                floorMenu.popup();
+                                                floorMenu.popup()
                                             }
 
-                                            mouse.accepted = false;
+                                            mouse.accepted = false
                                         }
                                     }
                                 }
@@ -122,29 +127,34 @@ Item {
                             Menu {
                                 id: floorMenu
 
+                                property var rootItem: root
+
                                 MenuItem {
                                     text: qsTr("Delete Floor")
 
-                                    enabled: FloorPlanService.floorModel.rowCount() > 1
-
                                     onTriggered: {
-                                        let deletedFloorId = modelData.id;
+                                        let deletedFloorId = modelData.id
 
-                                        let success = FloorPlanService.deleteFloor(deletedFloorId);
+                                        let success = FloorPlanService.deleteFloor(
+                                                deletedFloorId)
 
                                         if (!success)
-                                            return;
+                                            return
 
-                                        FloorPlanService.loadFloors();
+                                        FloorPlanService.loadFloors()
 
-                                        if (root.currentFloorId === deletedFloorId) {
-                                            if (FloorPlanService.floorModel.rowCount() > 0) {
-                                                let first = FloorPlanService.floorModel.getFloor(0);
+                                        if (floorMenu.rootItem.currentFloorId === deletedFloorId) {
+                                            if (FloorPlanService.floorModel.rowCount(
+                                                        ) > 0) {
+                                                let first = FloorPlanService.floorModel.getFloor(
+                                                        0)
 
-                                                root.currentFloorId = first.id;
-                                                FloorPlanService.loadCanvas(first.id);
+                                                floorMenu.rootItem.currentFloorId = first.id
+                                                FloorPlanService.loadCanvas(
+                                                            first.id)
                                             } else {
-                                                root.currentFloorId = -1;
+                                                floorMenu.rootItem.currentFloorId = -1
+                                                FloorPlanService.clearCanvas()
                                             }
                                         }
                                     }
@@ -187,6 +197,9 @@ Item {
                 RowLayout {
                     Layout.fillWidth: true
                     spacing: 10
+
+                    visible: currentFloorId > 0
+                    enabled: visible
 
                     Button {
                         text: qsTr("Add Table")
@@ -245,13 +258,13 @@ Item {
 
                         onClicked: {
                             FloorPlanService.addItem({
-                                "type": "wall",
-                                "x": 150,
-                                "y": 150,
-                                "width": 150,
-                                "height": 10,
-                                "label": ""
-                            });
+                                                         "type": "wall",
+                                                         "x": 150,
+                                                         "y": 150,
+                                                         "width": 150,
+                                                         "height": 10,
+                                                         "label": ""
+                                                     })
                         }
                     }
                 }
@@ -336,14 +349,15 @@ Item {
                         font.pixelSize: Theme.fontNormal
                     }
                     onClicked: {
-                        let id = FloorPlanService.createFloor(createFloorDialog.name);
+                        let id = FloorPlanService.createFloor(
+                                createFloorDialog.name)
 
                         if (id > 0) {
-                            root.currentFloorId = id;
-                            FloorPlanService.loadCanvas(id);
+                            root.currentFloorId = id
+                            FloorPlanService.loadCanvas(id)
                         }
 
-                        createFloorDialog.close();
+                        createFloorDialog.close()
                     }
                 }
                 Button {
@@ -410,7 +424,7 @@ Item {
                 text: addTableDialog.label
 
                 onTextChanged: {
-                    addTableDialog.label = text;
+                    addTableDialog.label = text
                 }
 
                 background: Rectangle {
@@ -451,20 +465,16 @@ Item {
             }
 
             ComboBox {
-                model: [
-                    {
-                        key: "square",
-                        value: qsTr("Square Table")
-                    },
-                    {
-                        key: "rectangle",
-                        value: qsTr("Rectangle Table")
-                    },
-                    {
-                        key: "circle",
-                        value: qsTr("Circle Table")
-                    }
-                ]
+                model: [{
+                        "key": "square",
+                        "value": qsTr("Square Table")
+                    }, {
+                        "key": "rectangle",
+                        "value": qsTr("Rectangle Table")
+                    }, {
+                        "key": "circle",
+                        "value": qsTr("Circle Table")
+                    }]
 
                 font.pixelSize: Theme.fontNormal
 
@@ -473,7 +483,7 @@ Item {
                 Layout.fillWidth: true
 
                 onCurrentIndexChanged: {
-                    addTableDialog.tableType = model[currentIndex].key;
+                    addTableDialog.tableType = model[currentIndex].key
                 }
             }
 
@@ -503,21 +513,21 @@ Item {
                     }
                     onClicked: {
                         FloorPlanService.createTableItem({
-                            "type": "table",
-                            "x": 100,
-                            "y": 100,
-                            "width": 80,
-                            "height": 80,
-                            "label": addTableDialog.label,
-                            "floor_id": root.currentFloorId,
-                            "metadata": JSON.stringify({
-                                "table_type": addTableDialog.tableType,
-                                "capacity": addTableDialog.seats,
-                                "status": "available"
-                            })
-                        });
+                                                             "type": "table",
+                                                             "x": 100,
+                                                             "y": 100,
+                                                             "width": 80,
+                                                             "height": 80,
+                                                             "label": addTableDialog.label,
+                                                             "floor_id": root.currentFloorId,
+                                                             "metadata": JSON.stringify({
+                                                                                            "table_type": addTableDialog.tableType,
+                                                                                            "capacity": addTableDialog.seats,
+                                                                                            "status": "available"
+                                                                                        })
+                                                         })
 
-                        addTableDialog.close();
+                        addTableDialog.close()
                     }
                 }
                 Button {
@@ -555,9 +565,9 @@ Item {
 
         onActivated: {
             if (root.currentFloorId > 0) {
-                FloorPlanService.saveCanvas(root.currentFloorId);
+                FloorPlanService.saveCanvas(root.currentFloorId)
             } else {
-                console.warn("No floor selected, cannot save");
+                console.warn("No floor selected, cannot save")
             }
         }
     }

@@ -31,6 +31,7 @@ public:
 
     Q_INVOKABLE void loadCanvas(int floorId);
     Q_INVOKABLE bool saveCanvas(int floorId);
+    Q_INVOKABLE void clearCanvas();
 
     Q_INVOKABLE void addItem(const QVariantMap &itemData);
     Q_INVOKABLE void createTableItem(const QVariantMap &itemData);

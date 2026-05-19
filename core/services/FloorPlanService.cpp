@@ -77,6 +77,11 @@ void FloorPlanService::loadCanvas(int floorId)
     m_canvasModel->setItems(items);
 }
 
+void FloorPlanService::clearCanvas()
+{
+    m_canvasModel->clear();
+}
+
 int FloorPlanService::createFloor(const QString &name)
 {
     Floor floor;

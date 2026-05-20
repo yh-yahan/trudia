@@ -138,7 +138,8 @@ int main(int argc, char *argv[])
         taxCalculationService,
         kitchenTicketBuilder,
         settingService,
-        windowsPrinterService
+        windowsPrinterService,
+        tableService
     );
     KitchenOrderService kitchenOrderService(orderSessionRepo, orderRepo, orderItemRepo, tableRepo);
     CheckoutService checkoutService(
@@ -154,10 +155,11 @@ int main(int argc, char *argv[])
         windowsPrinterService,
         taxCalculationService,
         membershipService,
-        settingService
+        settingService,
+        tableService
     );
     AnalyticsService analyticsService(analyticsRepo);
-    FloorPlanService floorPlanService(floorRepo, canvasItemRepo, tableRepo);
+    FloorPlanService floorPlanService(floorRepo, canvasItemRepo, tableRepo, tableService);
     SetupService setupService(appService, dbManager);
 
     QObject::connect(&orderService, &OrderService::orderCreated,

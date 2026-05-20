@@ -13,7 +13,8 @@ OrderService::OrderService(OrderSessionRepository &orderSessionRepo,
                            TaxCalculationService &taxService,
                            KitchenTicketBuilder &kitchenTicketBuilder,
                            SettingService &settingService,
-                           WindowsPrinterService &windowsPrinterService)
+                           WindowsPrinterService &windowsPrinterService,
+                           TableService &tableService)
     : m_orderSessionRepo(orderSessionRepo),
       m_orderRepo(orderRepo),
       m_orderItemRepo(orderItemRepo),
@@ -23,7 +24,8 @@ OrderService::OrderService(OrderSessionRepository &orderSessionRepo,
       m_taxService(taxService),
       m_kitchenTicketBuilder(kitchenTicketBuilder),
       m_settingService(settingService),
-      m_windowsPrinterService(windowsPrinterService){}
+      m_windowsPrinterService(windowsPrinterService),
+      m_tableService(tableService) {}
 
 int OrderService::createOrder(
     const QString &orderType,
@@ -65,6 +67,7 @@ int OrderService::createOrder(
                 orderSession.table_id.value(),
                 TableStatus::Occupied
             );
+            m_tableService.setTableStatus(orderSession.table_id.value(), TableStatus::Occupied);
             if (orderSessionId <= 0)
             {
                 qCritical() << "OrderSession creation failed, aborting order creation";
@@ -303,11 +306,15 @@ int OrderService::updateOrder(
                 TableStatus::Available
             );
 
+            m_tableService.setTableStatus(orderSession.table_id.value(), TableStatus::Available);
+
         if (newTableId.has_value())
             m_tableRepo.setTableState(
                 newTableId.value(),
                 TableStatus::Occupied
             );
+
+            m_tableService.setTableStatus(orderSession.table_id.value(), TableStatus::Occupied);
 
         session.table_id = newTableId;
     }

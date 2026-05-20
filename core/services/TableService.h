@@ -31,6 +31,7 @@ public:
 
 signals:
     void tablesChanged();
+    void tableStatusChanged(int tableId, const QString &status);
 
 private:
     TableRepository &m_tableRepo;

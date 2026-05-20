@@ -19,6 +19,7 @@
 #include "./TaxCalculationService.h"
 #include "./MembershipService.h"
 #include "./SettingService.h"
+#include "./TableService.h"
 
 struct TaxComputationResult {
     double subtotal = 0.0;
@@ -43,7 +44,8 @@ public:
                              WindowsPrinterService &windowsPrinterService,
                              TaxCalculationService &taxCalculationService,
                              MembershipService &membershipService,
-                             SettingService &settingService);
+                             SettingService &settingService,
+                             TableService &tableService);
 
     Q_INVOKABLE QVariantList getActiveOrdersForCheckout() const;
     Q_INVOKABLE bool processMembershipPoints(int orderSessionId, const QString &memberPhone, int pointsToRedeem);
@@ -67,6 +69,7 @@ private:
     SettingService &m_settingService;
     TableRepository &m_tableRepo;
     MembershipService &m_membershipService;
+    TableService &m_tableService;
 };
 
 #endif // CHECKOUTSERVICE_H

@@ -5,6 +5,7 @@
 #include "../data/FloorRepository.h"
 #include "../data/CanvasItemRepository.h"
 #include "../data/TableRepository.h"
+#include "./TableService.h"
 
 class FloorModel;
 class CanvasItemModel;
@@ -19,7 +20,8 @@ class FloorPlanService : public QObject
 public:
     FloorPlanService(FloorRepository &floorRepo,
                      CanvasItemRepository &canvasItemRepo,
-                     TableRepository &tableRepo);
+                     TableRepository &tableRepo,
+                     TableService &tableService);
 
     FloorModel *floorModel() const;
     CanvasItemModel *canvasModel() const;
@@ -37,6 +39,12 @@ public:
     Q_INVOKABLE void createTableItem(const QVariantMap &itemData);
     Q_INVOKABLE void deleteItem(int index);
 
+signals:
+    void tableStatusUpdated(int tableId, const QString &status);
+
+public slots:
+    void onTableStatusChanged(int tableId, const QString &newStatus);
+
 private:
     FloorModel *m_floorModel;
     CanvasItemModel *m_canvasModel;
@@ -44,6 +52,7 @@ private:
     FloorRepository &m_floorRepo;
     CanvasItemRepository &m_canvasItemRepo;
     TableRepository &m_tableRepo;
+    TableService &m_tableService;
 };
 
 #endif // FLOORPLANSERVICE_H

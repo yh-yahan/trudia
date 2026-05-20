@@ -7,16 +7,21 @@
 
 FloorPlanService::FloorPlanService(FloorRepository &floorRepo,
                                    CanvasItemRepository &canvasItemRepo,
-                                   TableRepository &tableRepo)
+                                   TableRepository &tableRepo,
+                                   TableService &tableService)
     : QObject(nullptr),
       m_floorRepo(floorRepo),
       m_canvasItemRepo(canvasItemRepo),
-      m_tableRepo(tableRepo)
+      m_tableRepo(tableRepo),
+      m_tableService(tableService)
 {
     m_floorModel = new FloorModel(this);
     m_canvasModel = new CanvasItemModel(this);
 
     loadFloors();
+
+    connect(&m_tableService, &TableService::tableStatusChanged,
+        this, &FloorPlanService::onTableStatusChanged);
 }
 
 FloorModel *FloorPlanService::floorModel() const
@@ -27,6 +32,42 @@ FloorModel *FloorPlanService::floorModel() const
 CanvasItemModel *FloorPlanService::canvasModel() const
 {
     return m_canvasModel;
+}
+
+void FloorPlanService::onTableStatusChanged(int tableId, const QString &newStatus)
+{
+    if (!m_canvasModel)
+        return;
+
+    auto items = m_canvasModel->items();
+
+    for (int i = 0; i < static_cast<int>(items.size()); ++i)
+    {
+        CanvasItem &item = items[i];
+
+        if (item.type == "table" && item.table_id.has_value() && 
+            item.table_id.value() == tableId)
+        {
+            QJsonObject obj;
+            if (item.metadata.has_value())
+            {
+                QJsonDocument doc = QJsonDocument::fromJson(item.metadata->toUtf8());
+                if (doc.isObject())
+                    obj = doc.object();
+            }
+
+            obj["status"] = newStatus;
+
+            item.metadata = QString::fromUtf8(
+                QJsonDocument(obj).toJson(QJsonDocument::Compact)
+            );
+
+            m_canvasModel->updateItem(i, item);
+
+            emit tableStatusUpdated(tableId, newStatus);
+            return;
+        }
+    }
 }
 
 void FloorPlanService::loadFloors()

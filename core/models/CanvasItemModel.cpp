@@ -1,5 +1,8 @@
 #include "CanvasItemModel.h"
 
+#include <QJsonObject>
+#include <QJsonDocument>
+
 CanvasItemModel::CanvasItemModel(QObject *parent)
     : QAbstractListModel(parent) {}
 
@@ -239,4 +242,30 @@ void CanvasItemModel::clear()
     beginResetModel();
     m_items.clear();
     endResetModel();
+}
+
+void CanvasItemModel::updateTableStatus(int tableId, const QString &status)
+{
+    for (int i = 0; i < static_cast<int>(m_items.size()); ++i)
+    {
+        if (m_items[i].type == "table" && 
+            m_items[i].table_id.has_value() && 
+            m_items[i].table_id.value() == tableId)
+        {
+            QJsonObject obj;
+            if (m_items[i].metadata.has_value())
+            {
+                auto doc = QJsonDocument::fromJson(m_items[i].metadata->toUtf8());
+                if (doc.isObject()) obj = doc.object();
+            }
+            obj["status"] = status;
+
+            m_items[i].metadata = QString::fromUtf8(
+                QJsonDocument(obj).toJson(QJsonDocument::Compact));
+
+            QModelIndex idx = createIndex(i, 0);
+            emit dataChanged(idx, idx, {MetadataRole});
+            return;
+        }
+    }
 }

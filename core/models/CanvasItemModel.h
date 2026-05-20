@@ -45,6 +45,8 @@ public:
     Q_INVOKABLE void removeItem(int index);
     void clear();
 
+    void updateTableStatus(int tableId, const QString &status);
+
 private:
     std::vector<CanvasItem> m_items;
 };

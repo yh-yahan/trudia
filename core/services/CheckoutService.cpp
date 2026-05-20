@@ -17,7 +17,8 @@ CheckoutService::CheckoutService(OrderSessionRepository &orderSessionRepo,
                                  WindowsPrinterService &windowsPrinterService,
                                  TaxCalculationService &taxCalculationService,
                                  MembershipService &membershipService,
-                                 SettingService &settingService)
+                                 SettingService &settingService,
+                                 TableService &tableService)
     : m_orderSessionRepo(orderSessionRepo),
       m_orderRepo(orderRepo),
       m_orderItemRepo(orderItemRepo),
@@ -30,7 +31,8 @@ CheckoutService::CheckoutService(OrderSessionRepository &orderSessionRepo,
       m_taxCalculationService(taxCalculationService),
       m_tableRepo(tableRepo),
       m_membershipService(membershipService),
-      m_settingService(settingService) {}
+      m_settingService(settingService),
+      m_tableService(tableService) {}
 
 QVariantList CheckoutService::getActiveOrdersForCheckout() const
 {
@@ -259,6 +261,8 @@ bool CheckoutService::markOrderPaid(const int &orderSessionId, const QString &me
             session.table_id.value(),
             TableStatus::Available
         );
+
+        m_tableService.setTableStatus(session.table_id.value(), TableStatus::Available);
     }
 
     return true;

@@ -15,6 +15,16 @@ Item {
         color: Theme.background
     }
 
+    MouseArea {
+        anchors.fill: parent
+
+        z: -1
+
+        onClicked: {
+            root.tableSelected(-1)
+        }
+    }
+
     Repeater {
         model: root.model
 

@@ -15,6 +15,8 @@ Item {
 
     property int currentOrderId: -1
 
+    property string orderType: "dine_in"
+
     property real subtotal: 0
     property real total: 0
     property int totalItems: 0
@@ -122,7 +124,16 @@ Item {
                     spacing: 2
 
                     Label {
-                        text: tableLabel
+                        text: {
+                            switch (orderType) {
+                            case "takeaway":
+                                return qsTr("Takeaway Order")
+                            case "delivery":
+                                return qsTr("Delivery Order")
+                            default:
+                                return tableLabel
+                            }
+                        }
 
                         font.bold: true
                         font.pixelSize: Theme.fontLarge
@@ -131,7 +142,16 @@ Item {
                     }
 
                     Label {
-                        text: qsTr("Dine In")
+                        text: {
+                            switch (orderType) {
+                            case "takeaway":
+                                return qsTr("Takeaway")
+                            case "delivery":
+                                return qsTr("Delivery")
+                            default:
+                                return qsTr("Dine In")
+                            }
+                        }
 
                         color: Theme.secondaryText
                         font.pixelSize: Theme.fontNormal
@@ -648,19 +668,22 @@ Item {
                             }
 
                             var options = {
-                                "tableId": tableId,
                                 "notes": ""
+                            }
+
+                            if (orderType === "dine_in") {
+                                options.tableId = tableId
                             }
 
                             if (currentOrderId >= 0) {
                                 OrderService.updateOrder(
                                             currentOrderId,
-                                            "dine_in",
+                                            orderType,
                                             items,
                                             options)
                             } else {
                                 currentOrderId = OrderService.createOrder(
-                                            "dine_in",
+                                            orderType,
                                             items,
                                             options)
                             }

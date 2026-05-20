@@ -222,13 +222,106 @@ Item {
                             visible: root.selectedTableId < 0
 
                             Layout.fillWidth: true
-                            spacing: 8
+                            spacing: 12
 
                             Label {
-                                text: qsTr("Select a table")
+                                text: qsTr("Select a table for dine in")
 
                                 color: Theme.secondaryText
                                 font.pixelSize: Theme.fontNormal
+                            }
+
+                            Rectangle {
+                                Layout.fillWidth: true
+                                height: 1
+                                color: Theme.border
+                            }
+
+                            Label {
+                                text: qsTr("Quick Orders")
+
+                                color: Theme.text
+                                font.bold: true
+                                font.pixelSize: Theme.fontNormal
+                            }
+
+                            RowLayout {
+                                Layout.fillWidth: true
+                                spacing: 8
+
+                                Button {
+                                    Layout.fillWidth: true
+
+                                    leftPadding: 12
+                                    rightPadding: 12
+                                    topPadding: 12
+                                    bottomPadding: 12
+
+                                    background: Rectangle {
+                                        radius: 6
+                                        color: "#5bb8d6"
+                                    }
+
+                                    contentItem: Label {
+                                        text: qsTr("Takeaway")
+
+                                        color: "white"
+
+                                        font.bold: true
+                                        font.pixelSize: Theme.fontNormal
+
+                                        horizontalAlignment: Text.AlignHCenter
+                                        verticalAlignment: Text.AlignVCenter
+                                    }
+
+                                    hoverEnabled: false
+                                    focusPolicy: Qt.NoFocus
+
+                                    onClicked: {
+                                        root.orderTable = null
+
+                                        stackView.push(orderEditorComponent, {
+                                            "orderType": "takeaway"
+                                        })
+                                    }
+                                }
+
+                                Button {
+                                    Layout.fillWidth: true
+
+                                    leftPadding: 12
+                                    rightPadding: 12
+                                    topPadding: 12
+                                    bottomPadding: 12
+
+                                    background: Rectangle {
+                                        radius: 6
+                                        color: "#e3a34f"
+                                    }
+
+                                    contentItem: Label {
+                                        text: qsTr("Delivery")
+
+                                        color: "white"
+
+                                        font.bold: true
+                                        font.pixelSize: Theme.fontNormal
+
+                                        horizontalAlignment: Text.AlignHCenter
+                                        verticalAlignment: Text.AlignVCenter
+                                    }
+
+                                    hoverEnabled: false
+                                    focusPolicy: Qt.NoFocus
+
+                                    onClicked: {
+                                        root.orderTable = null
+
+                                        stackView.push(orderEditorComponent, {
+                                            "orderType": "delivery"
+                                        })
+                                    }
+                                }
                             }
                         }
 
@@ -267,7 +360,7 @@ Item {
                             }
 
                             Button {
-                                text: qsTr("Create Order")
+                                text: qsTr("Create Dine-In Order")
 
                                 Layout.fillWidth: true
 
@@ -282,7 +375,7 @@ Item {
                                 }
 
                                 contentItem: Label {
-                                    text: qsTr("Create Order")
+                                    text: qsTr("Create Dine-In Order")
 
                                     color: "white"
 
@@ -299,7 +392,9 @@ Item {
                                 onClicked: {
                                     root.orderTable = selectedTable()
 
-                                    stackView.push(orderEditorComponent)
+                                    stackView.push(orderEditorComponent, {
+                                        "orderType": "dine_in"
+                                    })
                                 }
                             }
                         }
@@ -319,9 +414,15 @@ Item {
         OrderEditor {
             anchors.fill: parent
 
-            tableId: root.orderTable ? root.orderTable.metadata.table_id : -1
+            orderType: properties.orderType ?? "dine_in"
 
-            tableLabel: root.orderTable ? root.orderTable.canvasItem.label : ""
+            tableId: root.orderTable
+                ? root.orderTable.metadata.table_id
+                : -1
+
+            tableLabel: root.orderTable
+                ? root.orderTable.canvasItem.label
+                : ""
         }
     }
 

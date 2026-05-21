@@ -51,7 +51,7 @@ Item {
             z: model.z_order ?? 0
 
             capacity: isTable
-                ? (metadata.capacity ?? 4)
+                ? (model.capacity ?? 4)
                 : 0
 
             label: model.label ?? ""
@@ -60,7 +60,7 @@ Item {
                 if (!isTable)
                     return Theme.surface
 
-                switch (metadata.status) {
+                switch (model.status) {
                 case "occupied":
                     return "#e74c3c"
                 case "reserved":
@@ -72,7 +72,7 @@ Item {
                 }
             }
 
-            borderColor: isTable && root.selectedTableId === metadata.table_id
+            borderColor: isTable && root.selectedTableId === model.table_id
                         ? Theme.primary()
                         : "#555555"
 

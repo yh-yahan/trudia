@@ -98,22 +98,8 @@ bool TableService::removeTable(const int &tableId)
 bool TableService::setTableStatus(const int &tableId,
                                   const QString &status)
 {
-    auto tableOpt = m_tableRepo.getTableById(tableId);
-
-    if (!tableOpt.has_value()) {
-        qWarning() << "Table with ID" << tableId << "not found";
-        return false;
-    }
-
-    if (status.trimmed().isEmpty()) {
-        qWarning() << "Status cannot be empty";
-        return false;
-    }
-
     m_tableRepo.setTableState(tableId, status);
-
-    m_tableModel->reload();
-    emit tablesChanged();
+    emit tableStatusChanged(tableId, status);
 
     return true;
 }

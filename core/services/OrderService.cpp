@@ -306,7 +306,7 @@ int OrderService::updateOrder(
                 TableStatus::Available
             );
 
-            m_tableService.setTableStatus(orderSession.table_id.value(), TableStatus::Available);
+            m_tableService.setTableStatus(session.table_id.value(), TableStatus::Available);
 
         if (newTableId.has_value())
             m_tableRepo.setTableState(
@@ -314,7 +314,7 @@ int OrderService::updateOrder(
                 TableStatus::Occupied
             );
 
-            m_tableService.setTableStatus(orderSession.table_id.value(), TableStatus::Occupied);
+            m_tableService.setTableStatus(session.table_id.value(), TableStatus::Occupied);
 
         session.table_id = newTableId;
     }

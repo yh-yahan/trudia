@@ -22,6 +22,9 @@ public:
     double opacity;
     int z_order;
     std::optional<QString> metadata;
+
+    std::optional<int> capacity;
+    std::optional<QString> status;
 };
 
 #endif // CANVASITEM_H

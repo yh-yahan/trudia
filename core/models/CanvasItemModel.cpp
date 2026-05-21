@@ -59,6 +59,15 @@ QVariant CanvasItemModel::data(const QModelIndex &index, int role) const
         return item.metadata.has_value()
             ? QVariant(*item.metadata)
             : QVariant();
+    case CapacityRole:
+        return item.capacity.has_value()
+            ? QVariant(item.capacity.value())
+            : QVariant();
+
+    case StatusRole:
+        return item.status.has_value()
+            ? QVariant(item.status.value())
+            : QVariant();
     default:
         return QVariant();
     }
@@ -81,7 +90,9 @@ QHash<int, QByteArray> CanvasItemModel::roleNames() const
         { BorderWidthRole, "border_width" },
         { OpacityRole, "opacity" },
         { ZOrderRole, "z_order" },
-        { MetadataRole, "metadata" }
+        { MetadataRole, "metadata" },
+        { CapacityRole, "capacity" },
+        { StatusRole, "status" }
     };
 }
 
@@ -107,6 +118,11 @@ QVariantMap CanvasItemModel::get(int row) const
     map["metadata"] = item.metadata.has_value()
                       ? QVariant(*item.metadata)
                       : QVariant();
+    if (item.capacity.has_value())
+        map["capacity"] = item.capacity.value();
+
+    if (item.status.has_value())
+        map["status"] = item.status.value();
 
     return map;
 }
@@ -212,6 +228,16 @@ bool CanvasItemModel::setData(const QModelIndex &index, const QVariant &value, i
         }
         break;
 
+    case CapacityRole:
+        item.capacity = value.toInt();
+        changed = true;
+        break;
+
+    case StatusRole:
+        item.status = value.toString();
+        changed = true;
+        break;
+
     default:
         return false;
     }
@@ -244,27 +270,21 @@ void CanvasItemModel::clear()
     endResetModel();
 }
 
-void CanvasItemModel::updateTableStatus(int tableId, const QString &status)
+
+void CanvasItemModel::updateTableStatus(int tableId, const QString &newStatus)
 {
     for (int i = 0; i < static_cast<int>(m_items.size()); ++i)
     {
-        if (m_items[i].type == "table" && 
-            m_items[i].table_id.has_value() && 
-            m_items[i].table_id.value() == tableId)
-        {
-            QJsonObject obj;
-            if (m_items[i].metadata.has_value())
-            {
-                auto doc = QJsonDocument::fromJson(m_items[i].metadata->toUtf8());
-                if (doc.isObject()) obj = doc.object();
-            }
-            obj["status"] = status;
+        CanvasItem &item = m_items[i];
 
-            m_items[i].metadata = QString::fromUtf8(
-                QJsonDocument(obj).toJson(QJsonDocument::Compact));
+        if (item.type == "table" &&
+            item.table_id.has_value() &&
+            item.table_id.value() == tableId)
+        {
+            item.status = newStatus;
 
             QModelIndex idx = createIndex(i, 0);
-            emit dataChanged(idx, idx, {MetadataRole});
+            emit dataChanged(idx, idx, {StatusRole});
             return;
         }
     }

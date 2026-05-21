@@ -36,38 +36,14 @@ CanvasItemModel *FloorPlanService::canvasModel() const
 
 void FloorPlanService::onTableStatusChanged(int tableId, const QString &newStatus)
 {
-    if (!m_canvasModel)
+    if (!m_canvasModel) {
+        qDebug() << "FloorPlanService: No canvas model";
         return;
-
-    auto items = m_canvasModel->items();
-
-    for (int i = 0; i < static_cast<int>(items.size()); ++i)
-    {
-        CanvasItem &item = items[i];
-
-        if (item.type == "table" && item.table_id.has_value() && 
-            item.table_id.value() == tableId)
-        {
-            QJsonObject obj;
-            if (item.metadata.has_value())
-            {
-                QJsonDocument doc = QJsonDocument::fromJson(item.metadata->toUtf8());
-                if (doc.isObject())
-                    obj = doc.object();
-            }
-
-            obj["status"] = newStatus;
-
-            item.metadata = QString::fromUtf8(
-                QJsonDocument(obj).toJson(QJsonDocument::Compact)
-            );
-
-            m_canvasModel->updateItem(i, item);
-
-            emit tableStatusUpdated(tableId, newStatus);
-            return;
-        }
     }
+
+    m_canvasModel->updateTableStatus(tableId, newStatus);
+
+    emit tableStatusUpdated(tableId, newStatus);
 }
 
 void FloorPlanService::loadFloors()
@@ -83,18 +59,6 @@ void FloorPlanService::loadCanvas(int floorId)
 
     for (CanvasItem &item : items)
     {
-        QJsonObject obj;
-
-        if (item.metadata.has_value() && !item.metadata->isEmpty())
-        {
-            const QJsonDocument doc =
-                QJsonDocument::fromJson(item.metadata->toUtf8());
-            if (doc.isObject())
-            {
-                obj = doc.object();
-            }
-        }
-
         if (item.type == "table" && item.table_id.has_value())
         {
             const auto tableOpt =
@@ -105,14 +69,9 @@ void FloorPlanService::loadCanvas(int floorId)
 
             const Table &table = *tableOpt;
 
-            obj["table_id"] = table.id;
-            obj["capacity"] = table.capacity;
-            obj["status"] = table.status;
+            item.capacity = table.capacity;
+            item.status = table.status;
         }
-
-        item.metadata = QString::fromUtf8(
-            QJsonDocument(obj).toJson(QJsonDocument::Compact)
-        );
     }
 
     m_canvasModel->setItems(items);
@@ -227,7 +186,8 @@ void FloorPlanService::createTableItem(const QVariantMap &itemData)
 
     int capacity = 0;
 
-    if (itemData.contains("metadata") && !itemData.value("metadata").isNull()) {
+    if (itemData.contains("metadata") && !itemData.value("metadata").isNull())
+    {
         const QString metadataStr = itemData.value("metadata").toString();
 
         QJsonParseError parseError;
@@ -236,10 +196,9 @@ void FloorPlanService::createTableItem(const QVariantMap &itemData)
             &parseError
         );
 
-        if (parseError.error == QJsonParseError::NoError && doc.isObject()) {
-
+        if (parseError.error == QJsonParseError::NoError && doc.isObject())
+        {
             QJsonObject obj = doc.object();
-
             capacity = obj.value("capacity").toInt();
         }
     }
@@ -271,7 +230,11 @@ void FloorPlanService::createTableItem(const QVariantMap &itemData)
     item.opacity = itemData.value("opacity", 1.0).toDouble();
     item.z_order = itemData.value("z_order", 0).toInt();
 
-    if (itemData.contains("metadata") && !itemData.value("metadata").isNull()) {
+    item.capacity = capacity;
+    item.status = "available";
+
+    if (itemData.contains("metadata") && !itemData.value("metadata").isNull())
+    {
         item.metadata = itemData.value("metadata").toString();
     }
 

@@ -24,7 +24,10 @@ public:
         BorderWidthRole,
         OpacityRole,
         ZOrderRole,
-        MetadataRole
+        MetadataRole,
+
+        CapacityRole,
+        StatusRole
     };
 
     explicit CanvasItemModel(QObject *parent = nullptr);

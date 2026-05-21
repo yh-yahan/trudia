@@ -31,12 +31,9 @@ Item {
             if (!item)
                 continue
 
-            const metadata = item.metadata ? JSON.parse(item.metadata) : {}
-
-            if (Number(metadata.table_id) === Number(root.selectedTableId)) {
+            if (Number(item.table_id) === Number(root.selectedTableId)) {
                 return {
-                    "canvasItem": item,
-                    "metadata": metadata
+                    "canvasItem": item
                 }
             }
         }
@@ -345,9 +342,7 @@ Item {
                             Label {
                                 text: qsTr(
                                           "Capacity: ") + (selectedTable(
-                                                               ) ? (selectedTable(
-                                                                        ).metadata.capacity
-                                                                    ?? 0) : 0)
+                                                               ) ? (selectedTable().canvasItem.capacity ?? 0) : 0)
 
                                 color: Theme.secondaryText
                                 font.pixelSize: Theme.fontNormal
@@ -417,7 +412,7 @@ Item {
             orderType: properties.orderType ?? "dine_in"
 
             tableId: root.orderTable
-                ? root.orderTable.metadata.table_id
+                ? root.orderTable.canvasItem.table_id
                 : -1
 
             tableLabel: root.orderTable

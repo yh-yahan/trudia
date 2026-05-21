@@ -37,12 +37,12 @@ Item {
             opacity: model.opacity ?? 1.0
             z: model.z_order ?? 0
 
-            capacity: metadata.capacity ?? 4
+            capacity: model.capacity ?? 4
 
             label: model.label ?? ""
 
             color: {
-                switch (metadata.status) {
+                switch (model.status) {
                 case "occupied":
                     return "#e74c3c"
                 case "reserved":

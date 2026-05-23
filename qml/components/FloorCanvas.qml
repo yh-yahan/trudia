@@ -58,10 +58,11 @@ Item {
                          ? Theme.primary()
                          : "#555555"
 
-            onMoved: (newX, newY, newRotation) => {
+            onChanged: (newX, newY, newWidth, newRotation) => {
                 if (model) {
                     model.x = newX
                     model.y = newY
+                    model.width = newWidth
                     model.rotation = newRotation
                 }
             }

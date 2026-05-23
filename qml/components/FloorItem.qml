@@ -24,7 +24,7 @@ Item {
 
     property bool editable: true
 
-    signal moved(real x, real y, real rotation)
+    signal changed(real x, real y, real width, real rotation)
 
     Loader {
         anchors.fill: parent
@@ -90,12 +90,12 @@ Item {
 
         onPositionChanged: {
             if (drag.active) {
-                root.moved(root.x, root.y, root.rotation)
+                root.changed(root.x, root.y, root.width, root.rotation)
             }
         }
 
         onReleased: {
-            root.moved(root.x, root.y, root.rotation)
+            root.changed(root.x, root.y, root.width, root.rotation)
         }
     }
 
@@ -202,7 +202,49 @@ Item {
 
                 root.rotation = startRotation + (delta * 180 / Math.PI)
 
-                root.moved(root.x, root.y, root.rotation)
+                root.changed(root.x, root.y, root.width, root.rotation)
+            }
+        }
+    }
+
+    Rectangle {
+        visible: root.editable && root.type === "wall"
+
+        width: 16
+        height: 16
+        radius: 3
+
+        color: "white"
+        border.width: 2
+        border.color: Theme.primary()
+
+        z: 9999
+
+        x: root.width - width / 2
+        y: root.height / 2 - height / 2
+
+        MouseArea {
+            anchors.fill: parent
+
+            cursorShape: Qt.SizeHorCursor
+
+            property real startMouseX: 0
+            property real startWidth: 0
+
+            onPressed: mouse => {
+                startMouseX = mouse.x
+                startWidth = root.width
+            }
+
+            onPositionChanged: mouse => {
+                if (!pressedButtons)
+                    return
+
+                const delta = mouse.x - startMouseX
+
+                root.width = Math.max(40, startWidth + delta)
+
+                root.changed(root.x, root.y, root.width, root.rotation)
             }
         }
     }

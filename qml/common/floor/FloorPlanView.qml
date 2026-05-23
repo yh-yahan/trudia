@@ -31,6 +31,8 @@ Item {
         delegate: FloorItem {
             id: tableItem
 
+            editable: false
+
             property var metadata: model.metadata
                 ? JSON.parse(model.metadata)
                 : {}

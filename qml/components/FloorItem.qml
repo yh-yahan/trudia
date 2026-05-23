@@ -8,6 +8,8 @@ Item {
     width: 80
     height: 80
 
+    transformOrigin: Item.Center
+
     property string label: ""
 
     property color borderColor: "black"
@@ -20,9 +22,9 @@ Item {
     property var metadata: ({})
     property string tableType: metadata.table_type ?? "square"
 
-    property bool editable: false
+    property bool editable: true
 
-    signal moved(real x, real y)
+    signal moved(real x, real y, real rotation)
 
     Loader {
         anchors.fill: parent
@@ -88,12 +90,12 @@ Item {
 
         onPositionChanged: {
             if (drag.active) {
-                root.moved(root.x, root.y)
+                root.moved(root.x, root.y, root.rotation)
             }
         }
 
         onReleased: {
-            root.moved(root.x, root.y)
+            root.moved(root.x, root.y, root.rotation)
         }
     }
 
@@ -148,6 +150,59 @@ Item {
                     return root.height + spacing - height / 2;
                 if (side === 3)
                     return (1 - t) * root.height - height / 2;
+            }
+        }
+    }
+
+    Rectangle {
+        visible: root.editable && (root.type === "wall" || root.type === "divider")
+
+        width: 18
+        height: 18
+        radius: 9
+
+        color: Theme.primary()
+        z: 9999
+
+        x: root.width / 2 - width / 2
+        y: -25
+
+        border.width: 2
+        border.color: "white"
+
+        MouseArea {
+            anchors.fill: parent
+            cursorShape: Qt.CrossCursor
+
+            property real startAngle: 0
+            property real startRotation: 0
+
+            onPressed: mouse => {
+                const p = mapToItem(root.parent, mouse.x, mouse.y)
+
+                const cx = root.x + root.width / 2
+                const cy = root.y + root.height / 2
+
+                startAngle = Math.atan2(p.y - cy, p.x - cx)
+                startRotation = root.rotation
+            }
+
+            onPositionChanged: mouse => {
+                if (!pressedButtons)
+                    return
+
+                const p = mapToItem(root.parent, mouse.x, mouse.y)
+
+                const cx = root.x + root.width / 2
+                const cy = root.y + root.height / 2
+
+                const currentAngle = Math.atan2(p.y - cy, p.x - cx)
+
+                const delta = currentAngle - startAngle
+
+                root.rotation = startRotation + (delta * 180 / Math.PI)
+
+                root.moved(root.x, root.y, root.rotation)
             }
         }
     }

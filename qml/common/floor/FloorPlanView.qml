@@ -88,7 +88,7 @@ Item {
 
                 onClicked: {
                     if (isTable)
-                        root.tableSelected(metadata.table_id)
+                        root.tableSelected(model.table_id)
                 }
             }
         }

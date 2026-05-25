@@ -23,6 +23,7 @@
 #include "core/data/FloorRepository.h"
 #include "core/data/CanvasItemRepository.h"
 #include "core/data/TableSettingsRepository.h"
+#include "core/data/ReservationRepository.h"
 #include "core/services/CurrencyService.h"
 #include "core/services/OrderService.h"
 #include "core/services/TableService.h"
@@ -107,6 +108,7 @@ int main(int argc, char *argv[])
     FloorRepository floorRepo(DatabaseManager::db());
     CanvasItemRepository canvasItemRepo(DatabaseManager::db());
     TableSettingsRepository tableSettingsRepo(DatabaseManager::db());
+    ReservationRepository reservationRepo(DatabaseManager::db());
 
     WindowsPrinterService windowsPrinterService;
     CurrencyService currencyService;

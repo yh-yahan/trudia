@@ -135,6 +135,9 @@ qt_add_qml_module(apptrudia
     SOURCES core/domain/TableSettings.h
     SOURCES core/data/TableSettingsRepository.h core/data/TableSettingsRepository.cpp
     SOURCES core/constants/TableStatus.h
+    SOURCES core/domain/Reservation.h
+    SOURCES core/data/ReservationRepository.h core/data/ReservationRepository.cpp
+    SOURCES core/constants/ReservationStatus.h
 )
 
 qt_add_translations(apptrudia

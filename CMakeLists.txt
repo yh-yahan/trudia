@@ -32,6 +32,8 @@ qt_add_qml_module(apptrudia
         qml/components/FloorCanvas.qml
         qml/components/FloorItem.qml
         qml/components/OrderEditor.qml
+        qml/components/TimePicker.qml
+        qml/components/DatePicker.qml
         qml/setup/SetupAdmin.qml
         qml/setup/SetupDBLocation.qml
         qml/common/OrderTaking.qml
@@ -138,6 +140,7 @@ qt_add_qml_module(apptrudia
     SOURCES core/domain/Reservation.h
     SOURCES core/data/ReservationRepository.h core/data/ReservationRepository.cpp
     SOURCES core/constants/ReservationStatus.h
+    SOURCES core/services/ReservationService.h core/services/ReservationService.cpp
 )
 
 qt_add_translations(apptrudia

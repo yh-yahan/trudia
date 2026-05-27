@@ -94,9 +94,8 @@ Item {
                         text: modelData.name
 
                         checkable: true
-                        checked: root.currentFloorId < 0
-                            ? index === 0
-                            : root.currentFloorId === modelData.id
+                        checked: root.currentFloorId
+                                 < 0 ? index === 0 : root.currentFloorId === modelData.id
 
                         ButtonGroup.group: floorGroup
 
@@ -278,8 +277,8 @@ Item {
                                         root.orderTable = null
 
                                         stackView.push(orderEditorComponent, {
-                                            "orderType": "takeaway"
-                                        })
+                                                           "orderType": "takeaway"
+                                                       })
                                     }
                                 }
 
@@ -315,8 +314,8 @@ Item {
                                         root.orderTable = null
 
                                         stackView.push(orderEditorComponent, {
-                                            "orderType": "delivery"
-                                        })
+                                                           "orderType": "delivery"
+                                                       })
                                     }
                                 }
                             }
@@ -342,7 +341,9 @@ Item {
                             Label {
                                 text: qsTr(
                                           "Capacity: ") + (selectedTable(
-                                                               ) ? (selectedTable().canvasItem.capacity ?? 0) : 0)
+                                                               ) ? (selectedTable(
+                                                                        ).canvasItem.capacity
+                                                                    ?? 0) : 0)
 
                                 color: Theme.secondaryText
                                 font.pixelSize: Theme.fontNormal
@@ -388,14 +389,310 @@ Item {
                                     root.orderTable = selectedTable()
 
                                     stackView.push(orderEditorComponent, {
-                                        "orderType": "dine_in"
-                                    })
+                                                       "orderType": "dine_in"
+                                                   })
+                                }
+                            }
+
+                            Button {
+                                text: qsTr("Create Reservation")
+
+                                Layout.fillWidth: true
+
+                                leftPadding: 12
+                                rightPadding: 12
+                                topPadding: 12
+                                bottomPadding: 12
+
+                                background: Rectangle {
+                                    radius: 6
+                                    color: "#4faba1"
+                                }
+
+                                contentItem: Label {
+                                    text: qsTr("Create Reservation")
+
+                                    color: "white"
+
+                                    font.bold: true
+                                    font.pixelSize: Theme.fontNormal
+
+                                    horizontalAlignment: Text.AlignHCenter
+                                    verticalAlignment: Text.AlignVCenter
+                                }
+
+                                hoverEnabled: false
+                                focusPolicy: Qt.NoFocus
+
+                                onClicked: {
+                                    reservationDialog.open()
                                 }
                             }
                         }
 
                         Item {
                             Layout.fillHeight: true
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    Dialog {
+        id: reservationDialog
+
+        anchors.centerIn: Overlay.overlay
+        modal: true
+        width: 580
+        height: 520
+
+        property date selectedDate: new Date()
+
+        background: Rectangle {
+            color: Theme.background
+            radius: 6
+        }
+
+        ScrollView {
+            anchors.fill: parent
+            anchors.margins: 16
+            width: parent.width
+
+            clip: true
+
+            ColumnLayout {
+                anchors.fill: parent
+                anchors.margins: 16
+                spacing: 6
+
+                Text {
+                    text: qsTr("Create Reservation")
+                    font.bold: true
+                    font.pixelSize: Theme.fontLarge
+                    color: Theme.text
+                }
+
+                Label {
+                    text: qsTr("Customer Name")
+                    color: Theme.text
+                    font.pixelSize: Theme.fontNormal
+                }
+
+                TextField {
+                    id: customerNameField
+                    Layout.fillWidth: true
+
+                    placeholderText: qsTr("Enter Customer Name")
+
+                    background: Rectangle {
+                        color: Theme.surface
+                        radius: 4
+                    }
+
+                    color: Theme.text
+                    font.pixelSize: Theme.fontNormal
+                    placeholderTextColor: Theme.secondaryText
+
+                    leftPadding: 10
+                    rightPadding: 10
+                    topPadding: 10
+                    bottomPadding: 10
+                }
+
+                Label {
+                    text: qsTr("Customer Phone")
+                    color: Theme.text
+                    font.pixelSize: Theme.fontNormal
+                }
+
+                TextField {
+                    id: customerPhoneField
+                    Layout.fillWidth: true
+
+                    placeholderText: qsTr("Enter Customer Phone")
+
+                    background: Rectangle {
+                        color: Theme.surface
+                        radius: 4
+                    }
+
+                    color: Theme.text
+                    font.pixelSize: Theme.fontNormal
+                    placeholderTextColor: Theme.secondaryText
+
+                    leftPadding: 10
+                    rightPadding: 10
+                    topPadding: 10
+                    bottomPadding: 10
+                }
+
+                Label {
+                    text: qsTr("Number Of Guests")
+                    color: Theme.text
+                    font.pixelSize: Theme.fontNormal
+                }
+
+                SpinBox {
+                    id: paxSpinBox
+                    from: 1
+                    to: 100
+                    value: 2
+                    font.pixelSize: Theme.fontNormal
+                }
+
+                Label {
+                    text: qsTr("Reservation Date")
+                    color: Theme.text
+                    font.pixelSize: Theme.fontNormal
+                    Layout.bottomMargin: 15
+                }
+
+                DatePicker {
+                    id: reservationDatePicker
+                    Layout.fillWidth: true
+                }
+
+                Label {
+                    text: qsTr("Reservation Time")
+                    color: Theme.text
+                    font.pixelSize: Theme.fontNormal
+                    Layout.topMargin: 15
+                    Layout.bottomMargin: 15
+                }
+
+                TimePicker {
+                    id: reservationTimePicker
+                    Layout.fillWidth: true
+                }
+
+                Label {
+                    text: qsTr("Duration (minutes)")
+                    color: Theme.text
+                    font.pixelSize: Theme.fontNormal
+                    Layout.topMargin: 15
+                }
+
+                SpinBox {
+                    id: durationSpinBox
+                    from: 30
+                    to: 300
+                    stepSize: 30
+                    value: 90
+                    editable: true
+                    font.pixelSize: Theme.fontNormal
+                }
+
+                Label {
+                    text: qsTr("Notes")
+                    color: Theme.text
+                    font.pixelSize: Theme.fontNormal
+                }
+
+                TextArea {
+                    id: notesField
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 80
+
+                    placeholderText: qsTr("Enter notes")
+
+                    background: Rectangle {
+                        color: Theme.surface
+                        radius: 4
+                    }
+
+                    color: Theme.text
+                    font.pixelSize: Theme.fontNormal
+                    placeholderTextColor: Theme.secondaryText
+                }
+
+                RowLayout {
+                    Layout.alignment: Qt.AlignRight
+                    spacing: 8
+                    Layout.topMargin: 15
+                    Layout.bottomMargin: 15
+
+                    Button {
+                        text: qsTr("Cancel")
+
+                        background: Rectangle {
+                            color: "#6b6b6b"
+                            radius: 4
+                        }
+
+                        leftPadding: 15
+                        rightPadding: 15
+                        topPadding: 5
+                        bottomPadding: 5
+
+                        contentItem: Text {
+                            text: qsTr("Cancel")
+                            color: "white"
+                            anchors.centerIn: parent
+                            font.pixelSize: Theme.fontNormal
+                        }
+
+                        hoverEnabled: false
+                        focusPolicy: Qt.NoFocus
+
+                        onClicked: reservationDialog.close()
+                    }
+
+                    Button {
+                        text: qsTr("Create Reservation")
+
+                        background: Rectangle {
+                            color: Theme.primary()
+                            radius: 4
+                        }
+
+                        leftPadding: 15
+                        rightPadding: 15
+                        topPadding: 5
+                        bottomPadding: 5
+
+                        contentItem: Text {
+                            text: qsTr("Create Reservation")
+                            color: "white"
+                            anchors.centerIn: parent
+                            font.pixelSize: Theme.fontNormal
+                        }
+
+                        hoverEnabled: false
+                        focusPolicy: Qt.NoFocus
+
+                        onClicked: {
+                            const date = reservationDatePicker.selectedDate
+                            const hour = reservationTimePicker.hour
+                            const minute = reservationTimePicker.minute
+
+                            const reservationDateTime = new Date(date.getFullYear(
+                                                                     ),
+                                                                 date.getMonth(
+                                                                     ),
+                                                                 date.getDate(
+                                                                     ),
+                                                                 reservationTimePicker.hour,
+                                                                 reservationTimePicker.minute,
+                                                                 0)
+
+                            const success = ReservationService.createReservation({
+                                                                                     "customerName": customerNameField.text,
+                                                                                     "customerPhone": customerPhoneField.text,
+                                                                                     "pax": paxSpinBox.value,
+                                                                                     "tableId": root.selectedTableId,
+                                                                                     "reservationDateTime": reservationDateTime,
+                                                                                     "durationMinutes": durationSpinBox.value,
+                                                                                     "status": "booked",
+                                                                                     "notes": notesField.text
+                                                                                 })
+
+                            if (!success) {
+                                console.log("Reservation conflict")
+                                return
+                            }
+
+                            reservationDialog.close()
                         }
                     }
                 }
@@ -411,13 +708,9 @@ Item {
 
             orderType: properties.orderType ?? "dine_in"
 
-            tableId: root.orderTable
-                ? root.orderTable.canvasItem.table_id
-                : -1
+            tableId: root.orderTable ? root.orderTable.canvasItem.table_id : -1
 
-            tableLabel: root.orderTable
-                ? root.orderTable.canvasItem.label
-                : ""
+            tableLabel: root.orderTable ? root.orderTable.canvasItem.label : ""
         }
     }
 

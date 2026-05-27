@@ -5,6 +5,7 @@
 #include "../data/FloorRepository.h"
 #include "../data/CanvasItemRepository.h"
 #include "../data/TableRepository.h"
+#include "../data/ReservationRepository.h"
 #include "./TableService.h"
 
 class FloorModel;
@@ -21,6 +22,7 @@ public:
     FloorPlanService(FloorRepository &floorRepo,
                      CanvasItemRepository &canvasItemRepo,
                      TableRepository &tableRepo,
+                     ReservationRepository &reservationRepo,
                      TableService &tableService);
 
     FloorModel *floorModel() const;
@@ -51,6 +53,7 @@ private:
 
     FloorRepository &m_floorRepo;
     CanvasItemRepository &m_canvasItemRepo;
+    ReservationRepository &m_reservationRepo;
     TableRepository &m_tableRepo;
     TableService &m_tableService;
 };

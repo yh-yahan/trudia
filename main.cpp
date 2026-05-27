@@ -39,6 +39,7 @@
 #include "core/services/FloorPlanService.h"
 #include "core/services/AppService.h"
 #include "core/services/SetupService.h"
+#include "core/services/ReservationService.h"
 #include "core/database/DatabaseManager.h"
 #include "core/printing/ReceiptBuilder.h"
 #include "core/printing/WindowsPrinterService.h"
@@ -161,8 +162,14 @@ int main(int argc, char *argv[])
         tableService
     );
     AnalyticsService analyticsService(analyticsRepo);
-    FloorPlanService floorPlanService(floorRepo, canvasItemRepo, tableRepo, tableService);
+    FloorPlanService floorPlanService(
+        floorRepo,
+        canvasItemRepo,
+        tableRepo,
+        reservationRepo,
+        tableService);
     SetupService setupService(appService, dbManager);
+    ReservationService reservationService(reservationRepo, tableService);
 
     QObject::connect(&orderService, &OrderService::orderCreated,
                  &kitchenOrderService, &KitchenOrderService::ordersChanged);
@@ -187,6 +194,7 @@ int main(int argc, char *argv[])
     qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "FloorPlanService", &floorPlanService);
     qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "AppService", &appService);
     qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "SetupService", &setupService);
+    qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "ReservationService", &reservationService);
 
     QQmlApplicationEngine engine;
     engine.loadFromModule("trudia", "Main");

@@ -9,6 +9,7 @@ namespace ReservationStatus
     inline const QString Seated = "seated";
     inline const QString Completed = "completed";
     inline const QString Cancelled = "cancelled";
+    inline const QString NoShow = "no_show";
 }
 
 #endif // RESERVATIONSTATUS_H

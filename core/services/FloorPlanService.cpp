@@ -4,15 +4,18 @@
 #include <QJsonDocument>
 #include "../models/FloorModel.h"
 #include "../models/CanvasItemModel.h"
+#include "../constants/ReservationStatus.h"
 
 FloorPlanService::FloorPlanService(FloorRepository &floorRepo,
                                    CanvasItemRepository &canvasItemRepo,
                                    TableRepository &tableRepo,
+                                   ReservationRepository &reservationRepo,
                                    TableService &tableService)
     : QObject(nullptr),
       m_floorRepo(floorRepo),
       m_canvasItemRepo(canvasItemRepo),
       m_tableRepo(tableRepo),
+      m_reservationRepo(reservationRepo),
       m_tableService(tableService)
 {
     m_floorModel = new FloorModel(this);
@@ -59,18 +62,43 @@ void FloorPlanService::loadCanvas(int floorId)
 
     for (CanvasItem &item : items)
     {
-        if (item.type == "table" && item.table_id.has_value())
+        if (item.type != "table" ||
+            !item.table_id.has_value())
         {
-            const auto tableOpt =
-                m_tableRepo.getTableById(item.table_id.value());
+            continue;
+        }
 
-            if (!tableOpt)
+        const auto tableOpt =
+            m_tableRepo.getTableById(
+                item.table_id.value());
+
+        if (!tableOpt)
+            continue;
+
+        const Table &table = *tableOpt;
+
+        item.capacity = table.capacity;
+        item.status = table.status;
+
+        const QList<Reservation> reservations =
+            m_reservationRepo.getReservationsByTable(
+                table.id);
+
+        for (const Reservation &reservation
+             : reservations)
+        {
+            if (reservation.status ==
+                    ReservationStatus::Cancelled ||
+                reservation.status ==
+                    ReservationStatus::Completed ||
+                reservation.status ==
+                    ReservationStatus::NoShow)
+            {
                 continue;
+            }
 
-            const Table &table = *tableOpt;
-
-            item.capacity = table.capacity;
-            item.status = table.status;
+            item.status = "reserved";
+            break;
         }
     }
 

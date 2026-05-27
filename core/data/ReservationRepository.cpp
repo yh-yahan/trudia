@@ -28,7 +28,9 @@ Reservation ReservationRepository::mapQueryToReservation(const QSqlQuery &query)
         query.value("table_id").toInt();
 
     reservation.reservationDateTime =
-        query.value("reservation_datetime").toDateTime();
+        QDateTime::fromString(
+            query.value("reservation_datetime").toString(),
+            "yyyy-MM-dd HH:mm:ss");
 
     reservation.durationMinutes =
         query.value("duration_minutes").toInt();
@@ -87,7 +89,8 @@ bool ReservationRepository::createReservation(const Reservation &reservation)
 
     query.bindValue(
         ":reservation_datetime",
-        reservation.reservationDateTime);
+        reservation.reservationDateTime.toString(
+        "yyyy-MM-dd HH:mm:ss"));
 
     query.bindValue(
         ":duration_minutes",
@@ -154,7 +157,8 @@ bool ReservationRepository::updateReservation(
 
     query.bindValue(
         ":reservation_datetime",
-        reservation.reservationDateTime);
+        reservation.reservationDateTime.toString(
+        "yyyy-MM-dd HH:mm:ss"));
 
     query.bindValue(
         ":duration_minutes",
@@ -297,36 +301,26 @@ QList<Reservation> ReservationRepository::getReservationsByDate(
     return reservations;
 }
 
-QList<Reservation> ReservationRepository::getReservationsByTable(
-    int tableId)
+QList<Reservation> ReservationRepository::getReservationsByTable(int tableId)
 {
     QList<Reservation> reservations;
-
     QSqlQuery query(m_db);
 
     query.prepare(R"(
-        SELECT *
-        FROM reservations
-        WHERE table_id = :table_id
+        SELECT * FROM reservations 
+        WHERE table_id = ? 
         ORDER BY reservation_datetime ASC
     )");
 
-    query.bindValue(
-        ":table_id",
-        tableId);
+    query.addBindValue(tableId);
 
-    if (!query.exec())
-    {
-        qWarning() << "Failed to get reservations by table:"
-                   << query.lastError();
-
+    if (!query.exec()) {
+        qWarning() << "Failed to get reservations by table:" << query.lastError().text();
         return reservations;
     }
 
-    while (query.next())
-    {
-        reservations.append(
-            mapQueryToReservation(query));
+    while (query.next()) {
+        reservations.append(mapQueryToReservation(query));
     }
 
     return reservations;

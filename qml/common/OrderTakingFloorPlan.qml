@@ -462,49 +462,44 @@ Item {
                             }
 
                             Label {
-                                text: qsTr("Customer: ")
-                                    + reservation.customer_name
+                                text: qsTr("Customer: ") + reservation.customer_name
 
                                 color: Theme.secondaryText
                                 font.pixelSize: Theme.fontNormal
                             }
 
                             Label {
-                                text: qsTr("Phone: ")
-                                    + reservation.customer_phone
+                                text: qsTr("Phone: ") + reservation.customer_phone
 
                                 color: Theme.secondaryText
                                 font.pixelSize: Theme.fontNormal
                             }
 
                             Label {
-                                text: qsTr("Guests: ")
-                                    + reservation.pax
+                                text: qsTr("Guests: ") + reservation.pax
 
                                 color: Theme.secondaryText
                                 font.pixelSize: Theme.fontNormal
                             }
 
                             Label {
-                                text: qsTr("Time: ")
-                                    + reservation.datetime_label
+                                text: qsTr(
+                                          "Time: ") + reservation.datetime_label
 
                                 color: Theme.secondaryText
                                 font.pixelSize: Theme.fontNormal
                             }
 
                             Label {
-                                text: qsTr("Duration: ")
-                                    + reservation.duration_minutes
-                                    + qsTr(" mins")
+                                text: qsTr("Duration: ") + reservation.duration_minutes + qsTr(
+                                          " mins")
 
                                 color: Theme.secondaryText
                                 font.pixelSize: Theme.fontNormal
                             }
 
                             Label {
-                                text: qsTr("Status: ")
-                                    + reservation.status
+                                text: qsTr("Status: ") + reservation.status
 
                                 color: Theme.secondaryText
                                 font.pixelSize: Theme.fontNormal
@@ -512,16 +507,50 @@ Item {
 
                             Label {
                                 visible: reservation.notes
-                                        && reservation.notes.length > 0
 
-                                text: qsTr("Notes: ")
-                                    + reservation.notes
+                                text: qsTr("Notes: ") + reservation.notes
 
                                 color: Theme.secondaryText
 
                                 wrapMode: Text.WordWrap
                                 Layout.fillWidth: true
                                 font.pixelSize: Theme.fontNormal
+                            }
+
+                            Button {
+                                text: qsTr("Cancel Reservation")
+
+                                Layout.fillWidth: true
+
+                                Layout.topMargin: 10
+                                leftPadding: 12
+                                rightPadding: 12
+                                topPadding: 12
+                                bottomPadding: 12
+
+                                background: Rectangle {
+                                    radius: 6
+                                    color: '#5a5a5a'
+                                }
+
+                                contentItem: Label {
+                                    text: qsTr("Cancel Reservation")
+
+                                    color: "white"
+
+                                    font.bold: true
+                                    font.pixelSize: Theme.fontNormal
+
+                                    horizontalAlignment: Text.AlignHCenter
+                                    verticalAlignment: Text.AlignVCenter
+                                }
+
+                                hoverEnabled: false
+                                focusPolicy: Qt.NoFocus
+
+                                onClicked: {
+                                    ReservationService.cancelReservation(reservation.id)
+                                }
                             }
                         }
 

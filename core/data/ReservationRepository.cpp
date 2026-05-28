@@ -115,8 +115,7 @@ bool ReservationRepository::createReservation(const Reservation &reservation)
     return true;
 }
 
-bool ReservationRepository::updateReservation(
-    const Reservation &reservation)
+bool ReservationRepository::updateReservation(const Reservation &reservation)
 {
     QSqlQuery query(m_db);
 
@@ -183,8 +182,32 @@ bool ReservationRepository::updateReservation(
     return true;
 }
 
-bool ReservationRepository::deleteReservation(
-    int reservationId)
+bool ReservationRepository::updateReservationStatus(int reservationId, const QString &status) {
+    QSqlQuery query(m_db);
+
+    query.prepare(R"(
+        UPDATE reservations
+        SET
+            status = :status,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = :id
+    )");
+
+    query.bindValue(":id", reservationId);
+    query.bindValue(":status", status);
+
+    if (!query.exec())
+    {
+        qWarning() << "Failed to update status:"
+                   << query.lastError();
+
+        return false;
+    }
+
+    return true;
+}
+
+bool ReservationRepository::deleteReservation(int reservationId)
 {
     QSqlQuery query(m_db);
 
@@ -208,8 +231,7 @@ bool ReservationRepository::deleteReservation(
     return true;
 }
 
-Reservation ReservationRepository::getReservationById(
-    int reservationId)
+Reservation ReservationRepository::getReservationById(int reservationId)
 {
     QSqlQuery query(m_db);
 
@@ -266,8 +288,7 @@ QList<Reservation> ReservationRepository::getReservations()
     return reservations;
 }
 
-QList<Reservation> ReservationRepository::getReservationsByDate(
-    const QDate &date)
+QList<Reservation> ReservationRepository::getReservationsByDate(const QDate &date)
 {
     QList<Reservation> reservations;
 

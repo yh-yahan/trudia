@@ -58,6 +58,21 @@ bool ReservationService::deleteReservation(int reservationId)
     return m_reservationRepo.deleteReservation(reservationId);
 }
 
+bool ReservationService::cancelReservation(int reservationId)
+{
+    const Reservation reservation = m_reservationRepo.getReservationById(reservationId);
+
+    if (reservation.id <= 0)
+    {
+        qWarning() << "Cancel failed: reservation not found";
+        return false;
+    }
+
+    m_tableService.setTableStatus(reservation.tableId, TableStatus::Available);
+
+    return m_reservationRepo.updateReservationStatus(reservationId, ReservationStatus::Cancelled);
+}
+
 QVariantList ReservationService::getReservationsByDate(
     const QDate &date)
 {

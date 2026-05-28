@@ -22,6 +22,7 @@ public:
     Q_INVOKABLE bool createReservation(const QVariantMap &data);
     Q_INVOKABLE bool updateReservation(const QVariantMap &data);
     Q_INVOKABLE bool deleteReservation(int reservationId);
+    Q_INVOKABLE bool cancelReservation(int reservationId);
     Q_INVOKABLE QVariantList getReservationsByDate(const QDate &date);
     Q_INVOKABLE bool isTableAvailable(int tableId,
         const QDateTime &start,

@@ -16,6 +16,22 @@ Item {
     property int currentFloorId: -1
     property var orderTable: null
 
+    property var metadata: {
+        const table = selectedTable()
+
+        if (!table || !table.canvasItem.metadata)
+            return {}
+
+        try {
+            return JSON.parse(table.canvasItem.metadata)
+        } catch (e) {
+            console.log("Failed to parse metadata:", e)
+            return {}
+        }
+    }
+
+    property var reservation: metadata.reservation ?? null
+
     function selectedTable() {
         if (root.selectedTableId < 0)
             return null
@@ -395,6 +411,7 @@ Item {
                             }
 
                             Button {
+                                visible: reservation === null
                                 text: qsTr("Create Reservation")
 
                                 Layout.fillWidth: true
@@ -427,6 +444,84 @@ Item {
                                 onClicked: {
                                     reservationDialog.open()
                                 }
+                            }
+                        }
+
+                        ColumnLayout {
+                            visible: reservation !== null
+
+                            Layout.fillWidth: true
+                            spacing: 6
+
+                            Label {
+                                text: qsTr("Reservation Details")
+
+                                color: Theme.text
+                                font.bold: true
+                                font.pixelSize: Theme.fontNormal
+                            }
+
+                            Label {
+                                text: qsTr("Customer: ")
+                                    + reservation.customer_name
+
+                                color: Theme.secondaryText
+                                font.pixelSize: Theme.fontNormal
+                            }
+
+                            Label {
+                                text: qsTr("Phone: ")
+                                    + reservation.customer_phone
+
+                                color: Theme.secondaryText
+                                font.pixelSize: Theme.fontNormal
+                            }
+
+                            Label {
+                                text: qsTr("Guests: ")
+                                    + reservation.pax
+
+                                color: Theme.secondaryText
+                                font.pixelSize: Theme.fontNormal
+                            }
+
+                            Label {
+                                text: qsTr("Time: ")
+                                    + reservation.datetime_label
+
+                                color: Theme.secondaryText
+                                font.pixelSize: Theme.fontNormal
+                            }
+
+                            Label {
+                                text: qsTr("Duration: ")
+                                    + reservation.duration_minutes
+                                    + qsTr(" mins")
+
+                                color: Theme.secondaryText
+                                font.pixelSize: Theme.fontNormal
+                            }
+
+                            Label {
+                                text: qsTr("Status: ")
+                                    + reservation.status
+
+                                color: Theme.secondaryText
+                                font.pixelSize: Theme.fontNormal
+                            }
+
+                            Label {
+                                visible: reservation.notes
+                                        && reservation.notes.length > 0
+
+                                text: qsTr("Notes: ")
+                                    + reservation.notes
+
+                                color: Theme.secondaryText
+
+                                wrapMode: Text.WordWrap
+                                Layout.fillWidth: true
+                                font.pixelSize: Theme.fontNormal
                             }
                         }
 

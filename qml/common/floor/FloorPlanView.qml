@@ -33,7 +33,7 @@ Item {
 
             editable: false
 
-            property var metadata: model.metadata
+            metadata: model.metadata
                 ? JSON.parse(model.metadata)
                 : {}
 

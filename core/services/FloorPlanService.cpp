@@ -5,6 +5,7 @@
 #include "../models/FloorModel.h"
 #include "../models/CanvasItemModel.h"
 #include "../constants/ReservationStatus.h"
+#include "../constants/TableStatus.h"
 
 FloorPlanService::FloorPlanService(FloorRepository &floorRepo,
                                    CanvasItemRepository &canvasItemRepo,
@@ -57,23 +58,15 @@ void FloorPlanService::loadFloors()
 
 void FloorPlanService::loadCanvas(int floorId)
 {
-    std::vector<CanvasItem> items =
-        m_canvasItemRepo.getByFloorId(floorId);
+    std::vector<CanvasItem> items = m_canvasItemRepo.getByFloorId(floorId);
 
     for (CanvasItem &item : items)
     {
-        if (item.type != "table" ||
-            !item.table_id.has_value())
-        {
-            continue;
-        }
+        if (item.type != "table" || !item.table_id.has_value()) continue;
 
-        const auto tableOpt =
-            m_tableRepo.getTableById(
-                item.table_id.value());
+        const auto tableOpt = m_tableRepo.getTableById(item.table_id.value());
 
-        if (!tableOpt)
-            continue;
+        if (!tableOpt) continue;
 
         const Table &table = *tableOpt;
 
@@ -84,8 +77,7 @@ void FloorPlanService::loadCanvas(int floorId)
             m_reservationRepo.getReservationsByTable(
                 table.id);
 
-        for (const Reservation &reservation
-             : reservations)
+        for (const Reservation &reservation : reservations)
         {
             if (reservation.status ==
                     ReservationStatus::Cancelled ||
@@ -97,7 +89,51 @@ void FloorPlanService::loadCanvas(int floorId)
                 continue;
             }
 
-            item.status = "reserved";
+            item.status = TableStatus::Reserved;
+
+            QVariantMap reservationData;
+
+            reservationData["id"] = reservation.id;
+            reservationData["customer_name"] = reservation.customerName;
+            reservationData["customer_phone"] = reservation.customerPhone;
+            reservationData["pax"] = reservation.pax;
+            reservationData["reservation_datetime"] = reservation.reservationDateTime;
+            reservationData["duration_minutes"] = reservation.durationMinutes;
+            reservationData["status"] = reservation.status;
+            reservationData["notes"] = reservation.notes;
+            reservationData["time_label"] = reservation.reservationDateTime
+                    .time()
+                    .toString("hh:mm AP");
+            reservationData["date_label"] = reservation.reservationDateTime
+                    .date()
+                    .toString("dd MMM yyyy");
+            reservationData["datetime_label"] = reservation.reservationDateTime
+                    .toString("dd MMM yyyy hh:mm AP");
+            
+            QJsonObject metadataObj;
+
+            if (item.metadata.has_value() &&
+                !item.metadata->isEmpty())
+            {
+                QJsonParseError error;
+
+                QJsonDocument doc = QJsonDocument::fromJson(
+                    item.metadata->toUtf8(),
+                    &error);
+
+                if (error.error == QJsonParseError::NoError &&
+                    doc.isObject())
+                {
+                    metadataObj = doc.object();
+                }
+            }
+
+            metadataObj["reservation"] = QJsonObject::fromVariantMap(reservationData);
+
+            item.metadata = QString::fromUtf8(
+                QJsonDocument(metadataObj)
+                    .toJson(QJsonDocument::Compact));
+
             break;
         }
     }

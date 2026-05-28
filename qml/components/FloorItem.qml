@@ -20,6 +20,10 @@ Item {
     property int capacity: 4
 
     property var metadata: ({})
+    property var reservation: metadata && metadata.reservation ? metadata.reservation : null
+    property string reservationText: reservation
+        ? ("Reserved " + reservation.time_label)
+        : ""
     property string tableType: metadata.table_type ?? "square"
 
     property bool editable: true
@@ -81,6 +85,20 @@ Item {
         text: root.label
         color: '#383838'
         font.bold: true
+    }
+
+    Text {
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 4
+
+        text: reservationText
+
+        font.pixelSize: 9
+        color: '#383838'
+        opacity: 0.9
+
+        elide: Text.ElideRight
     }
 
     MouseArea {

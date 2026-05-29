@@ -131,20 +131,11 @@ int main(int argc, char *argv[])
     );
     KitchenTicketBuilder kitchenTicketBuilder(regionalSettingsRepo);
     ReceiptBuilder receiptBuilder(regionalSettingsRepo);
-    OrderService orderService(
-        orderSessionRepo,
-        orderRepo,
-        orderItemRepo,
-        tableRepo,
-        menuRepo,
-        printerRepo,
-        taxCalculationService,
-        kitchenTicketBuilder,
-        settingService,
-        windowsPrinterService,
-        tableService
-    );
-    KitchenOrderService kitchenOrderService(orderSessionRepo, orderRepo, orderItemRepo, tableRepo);
+    KitchenOrderService kitchenOrderService(
+        orderSessionRepo, 
+        orderRepo, 
+        orderItemRepo, 
+        tableRepo);
     CheckoutService checkoutService(
         orderSessionRepo,
         orderRepo,
@@ -170,6 +161,20 @@ int main(int argc, char *argv[])
         tableService);
     SetupService setupService(appService, dbManager);
     ReservationService reservationService(reservationRepo, tableService);
+    OrderService orderService(
+        orderSessionRepo,
+        orderRepo,
+        orderItemRepo,
+        tableRepo,
+        menuRepo,
+        printerRepo,
+        taxCalculationService,
+        kitchenTicketBuilder,
+        settingService,
+        windowsPrinterService,
+        tableService,
+        reservationService
+    );
 
     QObject::connect(&orderService, &OrderService::orderCreated,
                  &kitchenOrderService, &KitchenOrderService::ordersChanged);

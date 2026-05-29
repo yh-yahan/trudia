@@ -79,7 +79,9 @@ void FloorPlanService::loadCanvas(int floorId)
 
         for (const Reservation &reservation : reservations)
         {
-            if (reservation.status ==
+            if (reservation.status == 
+                    ReservationStatus::Seated || 
+                reservation.status ==
                     ReservationStatus::Cancelled ||
                 reservation.status ==
                     ReservationStatus::Completed ||

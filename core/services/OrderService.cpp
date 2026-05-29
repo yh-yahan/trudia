@@ -3,6 +3,7 @@
 #include <QDate>
 #include <QRandomGenerator>
 #include "../constants/TableStatus.h"
+#include "../constants/ReservationStatus.h"
 
 OrderService::OrderService(OrderSessionRepository &orderSessionRepo,
                            OrderRepository &orderRepo,
@@ -14,7 +15,8 @@ OrderService::OrderService(OrderSessionRepository &orderSessionRepo,
                            KitchenTicketBuilder &kitchenTicketBuilder,
                            SettingService &settingService,
                            WindowsPrinterService &windowsPrinterService,
-                           TableService &tableService)
+                           TableService &tableService,
+                           ReservationService &reservationService)
     : m_orderSessionRepo(orderSessionRepo),
       m_orderRepo(orderRepo),
       m_orderItemRepo(orderItemRepo),
@@ -25,7 +27,8 @@ OrderService::OrderService(OrderSessionRepository &orderSessionRepo,
       m_kitchenTicketBuilder(kitchenTicketBuilder),
       m_settingService(settingService),
       m_windowsPrinterService(windowsPrinterService),
-      m_tableService(tableService) {}
+      m_tableService(tableService),
+      m_reservationService(reservationService){}
 
 int OrderService::createOrder(
     const QString &orderType,
@@ -75,6 +78,17 @@ int OrderService::createOrder(
             }
 
             orderSession.id = orderSessionId;
+        }
+
+        const int tableId = orderSession.table_id.value();
+
+        QVariantMap reservation = m_reservationService.getActiveReservationByTable(tableId);
+
+        if (!reservation.isEmpty() && reservation["status"].toString() == ReservationStatus::Booked)
+        {
+            reservation["status"] = ReservationStatus::Seated;
+
+            m_reservationService.updateReservation(reservation);
         }
     }
     else

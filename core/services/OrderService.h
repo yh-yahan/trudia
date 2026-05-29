@@ -14,6 +14,7 @@
 #include "../printing/KitchenTicketBuilder.h"
 #include "../printing/WindowsPrinterService.h"
 #include "./TableService.h"
+#include "./ReservationService.h"
 
 class OrderService : public QObject
 {
@@ -34,7 +35,8 @@ public:
                           KitchenTicketBuilder &kitchenTicketBuilder,
                           SettingService &settingService,
                           WindowsPrinterService &windowsPrinterService,
-                          TableService &tableService);
+                          TableService &tableService,
+                          ReservationService &reservationService);
 
     Q_INVOKABLE int createOrder(
         const QString &orderType,
@@ -65,6 +67,7 @@ private:
     SettingService &m_settingService;
     WindowsPrinterService &m_windowsPrinterService;
     TableService &m_tableService;
+    ReservationService &m_reservationService;
 
     int generateOrderSessionDisplayNumber();
     int generateOrderDisplayNumber();

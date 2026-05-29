@@ -11,6 +11,28 @@ ReservationService::ReservationService(
       m_reservationRepo(reservationRepo),
       m_tableService(tableService) {}
 
+QVariantMap ReservationService::getActiveReservationByTable(int tableId)
+{
+    const QList<Reservation> reservations = m_reservationRepo.getReservationsByTable(tableId);
+
+    for (const Reservation &reservation : reservations)
+    {
+        if (reservation.status ==
+                ReservationStatus::Cancelled ||
+            reservation.status ==
+                ReservationStatus::Completed ||
+            reservation.status ==
+                ReservationStatus::NoShow)
+        {
+            continue;
+        }
+
+        return reservationToVariantMap(reservation);
+    }
+
+    return {};
+}
+
 bool ReservationService::createReservation(
     const QVariantMap &data)
 {

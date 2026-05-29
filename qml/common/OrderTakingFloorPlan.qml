@@ -442,7 +442,8 @@ Item {
                                 focusPolicy: Qt.NoFocus
 
                                 onClicked: {
-                                    reservationDialog.open()
+                                    reservationDialog.openCreate(
+                                                root.selectedTableId)
                                 }
                             }
                         }
@@ -518,6 +519,49 @@ Item {
                             }
 
                             Button {
+                                text: qsTr("Update Reservation")
+
+                                Layout.fillWidth: true
+
+                                Layout.topMargin: 10
+                                leftPadding: 12
+                                rightPadding: 12
+                                topPadding: 12
+                                bottomPadding: 12
+
+                                background: Rectangle {
+                                    radius: 6
+                                    color: "#4faba1"
+                                }
+
+                                contentItem: Label {
+                                    text: qsTr("Update Reservation")
+
+                                    color: "white"
+
+                                    font.bold: true
+                                    font.pixelSize: Theme.fontNormal
+
+                                    horizontalAlignment: Text.AlignHCenter
+                                    verticalAlignment: Text.AlignVCenter
+                                }
+
+                                hoverEnabled: false
+                                focusPolicy: Qt.NoFocus
+
+                                onClicked: {
+                                        const reservation = 
+                                        ReservationService.getActiveReservationByTable(
+                                            root.selectedTableId)
+
+                                    if (!reservation.id)
+                                        return
+
+                                    reservationDialog.openEdit(reservation)
+                                }
+                            }
+
+                            Button {
                                 text: qsTr("Cancel Reservation")
 
                                 Layout.fillWidth: true
@@ -549,7 +593,8 @@ Item {
                                 focusPolicy: Qt.NoFocus
 
                                 onClicked: {
-                                    ReservationService.cancelReservation(reservation.id)
+                                    ReservationService.cancelReservation(
+                                                reservation.id)
                                 }
                             }
                         }
@@ -572,6 +617,43 @@ Item {
         height: 520
 
         property date selectedDate: new Date()
+        property string mode: "create"
+        property var editingReservation: null
+
+        function openCreate(tableId) {
+            mode = "create"
+            editingReservation = null
+
+            clearFields()
+            root.selectedTableId = tableId
+
+            open()
+        }
+
+        function openEdit(reservation) {
+            mode = "edit"
+            editingReservation = reservation
+
+            fillFields(reservation)
+
+            open()
+        }
+
+        function clearFields() {
+            customerNameField.text = ""
+            customerPhoneField.text = ""
+            paxSpinBox.value = 2
+            durationSpinBox.value = 90
+            notesField.text = ""
+        }
+
+        function fillFields(r) {
+            customerNameField.text = r.customerName
+            customerPhoneField.text = r.customerPhone
+            paxSpinBox.value = r.pax
+            durationSpinBox.value = r.durationMinutes
+            notesField.text = r.notes ?? ""
+        }
 
         background: Rectangle {
             color: Theme.background
@@ -591,7 +673,9 @@ Item {
                 spacing: 6
 
                 Text {
-                    text: qsTr("Create Reservation")
+                    text: reservationDialog.mode === "edit" ? qsTr("Update Reservation") : qsTr(
+                                                                  "Create Reservation")
+
                     font.bold: true
                     font.pixelSize: Theme.fontLarge
                     color: Theme.text
@@ -763,7 +847,9 @@ Item {
                     }
 
                     Button {
-                        text: qsTr("Create Reservation")
+                        text: reservationDialog.mode
+                              === "edit" ? qsTr("Update Reservation") : qsTr(
+                                               "Create Reservation")
 
                         background: Rectangle {
                             color: Theme.primary()
@@ -776,7 +862,10 @@ Item {
                         bottomPadding: 5
 
                         contentItem: Text {
-                            text: qsTr("Create Reservation")
+                            text: reservationDialog.mode
+                                  === "edit" ? qsTr(
+                                                   "Update Reservation") : qsTr(
+                                                   "Create Reservation")
                             color: "white"
                             anchors.centerIn: parent
                             font.pixelSize: Theme.fontNormal
@@ -787,33 +876,48 @@ Item {
 
                         onClicked: {
                             const date = reservationDatePicker.selectedDate
-                            const hour = reservationTimePicker.hour
-                            const minute = reservationTimePicker.minute
+                            const time = reservationTimePicker.time
 
-                            const reservationDateTime = new Date(date.getFullYear(
-                                                                     ),
-                                                                 date.getMonth(
-                                                                     ),
-                                                                 date.getDate(
-                                                                     ),
-                                                                 reservationTimePicker.hour,
-                                                                 reservationTimePicker.minute,
-                                                                 0)
+                            const reservationDateTime = new Date(date.getFullYear(),
+                                                                date.getMonth(),
+                                                                date.getDate(),
+                                                                reservationTimePicker.hour,
+                                                                reservationTimePicker.minute,
+                                                                0)
 
-                            const success = ReservationService.createReservation({
-                                                                                     "customerName": customerNameField.text,
-                                                                                     "customerPhone": customerPhoneField.text,
-                                                                                     "pax": paxSpinBox.value,
-                                                                                     "tableId": root.selectedTableId,
-                                                                                     "reservationDateTime": reservationDateTime,
-                                                                                     "durationMinutes": durationSpinBox.value,
-                                                                                     "status": "booked",
-                                                                                     "notes": notesField.text
-                                                                                 })
+                            if (reservationDialog.mode === "create") {
+                                const success = ReservationService.createReservation({
+                                                    "customerName": customerNameField.text,
+                                                    "customerPhone": customerPhoneField.text,
+                                                    "pax": paxSpinBox.value,
+                                                    "tableId": root.selectedTableId,
+                                                    "reservationDateTime": reservationDateTime,
+                                                    "durationMinutes": durationSpinBox.value,
+                                                    "status": "booked",
+                                                    "notes": notesField.text
+                                                })
 
-                            if (!success) {
-                                console.log("Reservation conflict")
-                                return
+                                if (!success) {
+                                    console.log("Reservation conflict")
+                                    return
+                                }
+                            } else {
+                                const success = ReservationService.updateReservation({
+                                                    "id": reservationDialog.editingReservation.id,
+                                                    "tableId": root.selectedTableId,
+                                                    "customerName": customerNameField.text,
+                                                    "customerPhone": customerPhoneField.text,
+                                                    "pax": paxSpinBox.value,
+                                                    "reservationDateTime": reservationDateTime,
+                                                    "durationMinutes": durationSpinBox.value,
+                                                    "status": reservationDialog.editingReservation.status,
+                                                    "notes": notesField.text
+                                                })
+
+                                if (!success) {
+                                    console.log("Update failed")
+                                    return
+                                }
                             }
 
                             reservationDialog.close()

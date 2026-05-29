@@ -134,42 +134,16 @@ bool ReservationRepository::updateReservation(const Reservation &reservation)
         WHERE id = :id
     )");
 
-    query.bindValue(
-        ":id",
-        reservation.id);
-
-    query.bindValue(
-        ":customer_name",
-        reservation.customerName);
-
-    query.bindValue(
-        ":customer_phone",
-        reservation.customerPhone);
-
-    query.bindValue(
-        ":pax",
-        reservation.pax);
-
-    query.bindValue(
-        ":table_id",
-        reservation.tableId);
-
-    query.bindValue(
-        ":reservation_datetime",
-        reservation.reservationDateTime.toString(
-        "yyyy-MM-dd HH:mm:ss"));
-
-    query.bindValue(
-        ":duration_minutes",
-        reservation.durationMinutes);
-
-    query.bindValue(
-        ":status",
-        reservation.status);
-
-    query.bindValue(
-        ":notes",
-        reservation.notes);
+    query.bindValue(":id", reservation.id);
+    query.bindValue(":customer_name", reservation.customerName);
+    query.bindValue(":customer_phone", reservation.customerPhone);
+    query.bindValue(":pax", reservation.pax);
+    query.bindValue(":table_id", reservation.tableId);
+    query.bindValue(":reservation_datetime", 
+        reservation.reservationDateTime.toString("yyyy-MM-dd HH:mm:ss"));
+    query.bindValue(":duration_minutes", reservation.durationMinutes);
+    query.bindValue(":status", reservation.status);
+    query.bindValue(":notes", reservation.notes);
 
     if (!query.exec())
     {
@@ -241,9 +215,7 @@ Reservation ReservationRepository::getReservationById(int reservationId)
         WHERE id = :id
     )");
 
-    query.bindValue(
-        ":id",
-        reservationId);
+    query.bindValue(":id", reservationId);
 
     if (!query.exec())
     {

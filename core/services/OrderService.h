@@ -11,6 +11,7 @@
 #include "../data/PrinterRepository.h"
 #include "./TaxCalculationService.h"
 #include "./SettingService.h"
+#include "./CheckoutService.h"
 #include "../printing/KitchenTicketBuilder.h"
 #include "../printing/WindowsPrinterService.h"
 #include "./TableService.h"
@@ -36,7 +37,8 @@ public:
                           SettingService &settingService,
                           WindowsPrinterService &windowsPrinterService,
                           TableService &tableService,
-                          ReservationService &reservationService);
+                          ReservationService &reservationService,
+                          CheckoutService &checkoutService);
 
     Q_INVOKABLE int createOrder(
         const QString &orderType,
@@ -68,6 +70,7 @@ private:
     WindowsPrinterService &m_windowsPrinterService;
     TableService &m_tableService;
     ReservationService &m_reservationService;
+    CheckoutService &m_checkoutService;
 
     int generateOrderSessionDisplayNumber();
     int generateOrderDisplayNumber();

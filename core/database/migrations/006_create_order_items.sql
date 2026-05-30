@@ -5,12 +5,14 @@ CREATE TABLE IF NOT EXISTS order_items (
     item_name TEXT,
     quantity INTEGER,
     price NUMERIC,
+    is_taxable INTEGER NOT NULL,
     item_status TEXT,
     notes TEXT,
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
     FOREIGN KEY (order_id) REFERENCES orders(id)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE,
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
 
     FOREIGN KEY (item_id) REFERENCES menu(id)
         ON DELETE RESTRICT

@@ -8,7 +8,7 @@ class TaxCalculationService
 public:
     explicit TaxCalculationService(TaxSettingsRepository &taxSettingsRepo);
 
-    qint64 calculateTax(qint64 subtotal) const;
+    qint64 calculateTax(qint64 lineTotal) const;
 
 private:
     TaxSettingsRepository &m_taxSettingsRepo;

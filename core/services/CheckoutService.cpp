@@ -151,18 +151,26 @@ bool CheckoutService::recalculateSessionTotals(int orderSessionId)
     auto items = m_orderItemRepo.getOrderItemsByOrderIds(orderIds);
 
     qint64 subtotal = 0;
+    qint64 tax = 0;
 
     for (const auto &item : items)
     {
-        subtotal += item.price * item.quantity;
-    }
+        const qint64 lineTotal = item.price * item.quantity;
 
-    qint64 tax = m_taxCalculationService.calculateTax(subtotal);
+        subtotal += lineTotal;
+
+        if (item.is_taxable)
+            tax += m_taxCalculationService.calculateTax(lineTotal);
+    }
 
     session.subtotal = subtotal;
     session.tax = tax;
 
     session.total = subtotal + tax - session.discount;
+
+    qDebug()
+    << "Subtotal:" << subtotal
+    << "Tax:" << tax;
 
     if (session.total < 0)
         session.total = 0;

@@ -173,7 +173,8 @@ int main(int argc, char *argv[])
         settingService,
         windowsPrinterService,
         tableService,
-        reservationService
+        reservationService,
+        checkoutService
     );
 
     QObject::connect(&orderService, &OrderService::orderCreated,

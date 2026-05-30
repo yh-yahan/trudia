@@ -12,6 +12,7 @@ public:
     QString item_name;
     int quantity;
     double price;
+    bool is_taxable;
     QString item_status;
     QString notes;
 };

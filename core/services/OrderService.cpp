@@ -16,7 +16,8 @@ OrderService::OrderService(OrderSessionRepository &orderSessionRepo,
                            SettingService &settingService,
                            WindowsPrinterService &windowsPrinterService,
                            TableService &tableService,
-                           ReservationService &reservationService)
+                           ReservationService &reservationService,
+                           CheckoutService &checkoutService)
     : m_orderSessionRepo(orderSessionRepo),
       m_orderRepo(orderRepo),
       m_orderItemRepo(orderItemRepo),
@@ -28,7 +29,8 @@ OrderService::OrderService(OrderSessionRepository &orderSessionRepo,
       m_settingService(settingService),
       m_windowsPrinterService(windowsPrinterService),
       m_tableService(tableService),
-      m_reservationService(reservationService){}
+      m_reservationService(reservationService),
+      m_checkoutService(checkoutService) {}
 
 int OrderService::createOrder(
     const QString &orderType,
@@ -149,6 +151,7 @@ int OrderService::createOrder(
         item.item_name = menu.item;
         item.quantity = m["qty"].toInt();
         item.price = menu.price;
+        item.is_taxable = menu.is_taxable;
         item.notes = m["notes"].toString();
         item.item_status = "pending";
 
@@ -157,13 +160,7 @@ int OrderService::createOrder(
         m_orderItemRepo.create(item);
     }
 
-    orderSession.subtotal += subtotal;
-    orderSession.tax = m_taxService.calculateTax(orderSession.subtotal);
-    orderSession.discount = 0.0;
-    orderSession.total = orderSession.subtotal + orderSession.tax - orderSession.discount;
-
-    m_orderSessionRepo.update(orderSession);
-
+    m_checkoutService.recalculateSessionTotals(orderSessionId);
 
     auto settings = m_settingService.getKitchenSettings();
 
@@ -370,32 +367,14 @@ int OrderService::updateOrder(
         item.item_name = menu.item;
         item.quantity = m["qty"].toInt();
         item.price = menu.price;
+        item.is_taxable = menu.is_taxable;
         item.notes = m["notes"].toString();
         item.item_status = "pending";
 
         m_orderItemRepo.create(item);
     }
 
-    // recompute session totals
-    auto orders = m_orderRepo.getOrdersBySessionId(orderSessionId);
-
-    double newSubtotal = 0.0;
-
-    for (const auto &o : orders)
-    {
-        auto orderItems = m_orderItemRepo.getOrderItemsByOrderId(o.id);
-
-        for (const auto &item : orderItems)
-        {
-            newSubtotal += item.quantity * item.price;
-        }
-    }
-
-    session.subtotal = newSubtotal;
-    session.tax = m_taxService.calculateTax(newSubtotal);
-    session.total = session.subtotal + session.tax - session.discount;
-
-    m_orderSessionRepo.update(session);
+    m_checkoutService.recalculateSessionTotals(orderSessionId);
 
     if (!db.commit())
     {

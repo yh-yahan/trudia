@@ -3,7 +3,7 @@
 TaxCalculationService::TaxCalculationService(TaxSettingsRepository &taxSettingsRepo) :
                     m_taxSettingsRepo(taxSettingsRepo) {}
 
-qint64 TaxCalculationService::calculateTax(qint64 subtotal) const
+qint64 TaxCalculationService::calculateTax(qint64 lineTotal) const
 {
     auto settingsOpt = m_taxSettingsRepo.get();
     if (!settingsOpt.has_value())
@@ -13,6 +13,6 @@ qint64 TaxCalculationService::calculateTax(qint64 subtotal) const
     if (!settings.enabled)
         return 0;
 
-    const qint64 tax = (subtotal * settings.rate) / 100000000;
+    const qint64 tax = (lineTotal * settings.rate) / 100000000;
     return tax;
 }

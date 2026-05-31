@@ -114,10 +114,14 @@ int OrderService::createOrder(
     }
 
     // create order
+    const QString kitchenMode = m_settingService.kitchenMode();
+    const bool usesKds = kitchenMode == "kds" || kitchenMode == "hybrid";
+    const QString initialStatus = usesKds ? "pending" : "served";
+
     Order order;
     order.display_number = generateOrderDisplayNumber();
     order.order_session_id = orderSessionId;
-    order.status = "pending";
+    order.status = initialStatus;
     order.notes = options.value("notes").toString();
 
     int orderId = m_orderRepo.create(order);
@@ -153,7 +157,7 @@ int OrderService::createOrder(
         item.price = menu.price;
         item.is_taxable = menu.is_taxable;
         item.notes = m["notes"].toString();
-        item.item_status = "pending";
+        item.item_status = initialStatus;
 
         subtotal += item.quantity * item.price;
 

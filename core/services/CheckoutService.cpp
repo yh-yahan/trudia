@@ -252,17 +252,32 @@ bool CheckoutService::markOrderPaid(const int &orderSessionId, const QString &me
     if (!recalculateSessionTotals(orderSessionId))
         return false;
 
+    // get order session
     auto sessionOpt = m_orderSessionRepo.getById(orderSessionId);
     if (!sessionOpt.has_value())
         return false;
 
     OrderSession session = sessionOpt.value();
 
+    // process membership points
     if (!processMembershipPoints(orderSessionId, memberPhone, pointsToRedeem))
         return false;
 
+    // mark orders and items served
+    auto orders = m_orderRepo.getOrdersBySessionId(orderSessionId);
+
+    for (auto &order : orders)
+    {
+        order.status = "served";
+        m_orderRepo.update(order);
+
+        m_orderItemRepo.markItemsByOrderId(order.id, "served");
+    }
+
+    // mark order session paid
     m_orderSessionRepo.markAsPaid(orderSessionId);
 
+    // set table state
     if (session.table_id.has_value())
     {
         m_tableRepo.setTableState(

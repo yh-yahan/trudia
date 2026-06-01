@@ -99,7 +99,10 @@ bool TableService::setTableStatus(const int &tableId,
                                   const QString &status)
 {
     m_tableRepo.setTableState(tableId, status);
+    m_tableModel->reload();
+    
     emit tableStatusChanged(tableId, status);
+    emit tablesChanged();
 
     return true;
 }

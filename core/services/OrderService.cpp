@@ -236,6 +236,7 @@ QVariantList OrderService::getOpenOrders()
         if (order.table_id.has_value()) {
             int tableId = order.table_id.value();
             map["table_name"] = tableMap.value(tableId);
+            map["table_id"] = tableId;
         } else {
             map["table_name"] = QVariant();
         }

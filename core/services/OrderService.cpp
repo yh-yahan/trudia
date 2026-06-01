@@ -316,21 +316,23 @@ int OrderService::updateOrder(
 
     if (session.table_id != newTableId)
     {
-        if (session.table_id.has_value())
+        if (session.table_id.has_value()) {
             m_tableRepo.setTableState(
                 session.table_id.value(),
                 TableStatus::Available
             );
 
             m_tableService.setTableStatus(session.table_id.value(), TableStatus::Available);
+        }
 
-        if (newTableId.has_value())
+        if (newTableId.has_value()) {
             m_tableRepo.setTableState(
                 newTableId.value(),
                 TableStatus::Occupied
             );
 
             m_tableService.setTableStatus(session.table_id.value(), TableStatus::Occupied);
+        }
 
         session.table_id = newTableId;
     }
@@ -379,6 +381,7 @@ int OrderService::updateOrder(
         m_orderItemRepo.create(item);
     }
 
+    m_orderSessionRepo.update(session);
     m_checkoutService.recalculateSessionTotals(orderSessionId);
 
     if (!db.commit())

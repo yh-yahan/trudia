@@ -9,6 +9,11 @@ public:
     static bool runMigrations();
 
     static bool canOpen(const QString& dbPath);
+
+    static bool isOpen();
+    static bool checkpoint();
+    static void close();
+
     static QSqlDatabase db();
 };
 

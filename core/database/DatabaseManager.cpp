@@ -188,6 +188,7 @@ bool DatabaseManager::runMigrations()
 
     return true;
 }
+
 bool DatabaseManager::canOpen(const QString &dbPath)
 {
     const QString connName = "test_connection";
@@ -208,6 +209,56 @@ bool DatabaseManager::canOpen(const QString &dbPath)
     QSqlDatabase::removeDatabase(connName);
 
     return ok;
+}
+
+bool DatabaseManager::isOpen()
+{
+    return QSqlDatabase::contains(MAIN_CONN) && QSqlDatabase::database(MAIN_CONN).isOpen();
+}
+
+bool DatabaseManager::checkpoint()
+{
+    if (!QSqlDatabase::contains(MAIN_CONN))
+    {
+        return false;
+    }
+
+    QSqlDatabase database = QSqlDatabase::database(MAIN_CONN);
+
+    if (!database.isOpen())
+    {
+        return false;
+    }
+
+    QSqlQuery q(database);
+
+    if (!q.exec("PRAGMA wal_checkpoint(FULL);"))
+    {
+        qWarning() << "Failed to checkpoint WAL:"
+                   << q.lastError().text();
+        return false;
+    }
+
+    return true;
+}
+
+void DatabaseManager::close()
+{
+    if (!QSqlDatabase::contains(MAIN_CONN))
+    {
+        return;
+    }
+
+    {
+        QSqlDatabase database = QSqlDatabase::database(MAIN_CONN);
+
+        if (database.isOpen())
+        {
+            database.close();
+        }
+    }
+
+    QSqlDatabase::removeDatabase(MAIN_CONN);
 }
 
 QSqlDatabase DatabaseManager::db()

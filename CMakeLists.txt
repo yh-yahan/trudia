@@ -52,6 +52,7 @@ qt_add_qml_module(apptrudia
         qml/admin/management/AdminUserManagement.qml
         qml/admin/management/AdminManagement.qml
         qml/admin/management/AdminManagementSidebar.qml
+        qml/admin/settings/AdminDatabaseSettings.qml
         qml/admin/settings/AdminRegionalSettings.qml
         qml/admin/settings/AdminKitchenSettings.qml
         qml/admin/settings/AdminStoreSettings.qml
@@ -141,6 +142,7 @@ qt_add_qml_module(apptrudia
     SOURCES core/data/ReservationRepository.h core/data/ReservationRepository.cpp
     SOURCES core/constants/ReservationStatus.h
     SOURCES core/services/ReservationService.h core/services/ReservationService.cpp
+    SOURCES core/services/DatabaseService.h core/services/DatabaseService.cpp
 )
 
 qt_add_translations(apptrudia

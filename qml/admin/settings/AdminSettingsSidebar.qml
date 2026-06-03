@@ -42,6 +42,10 @@ Rectangle {
         ListElement {
             text: qsTr("Region & Formats")
         }
+
+        ListElement {
+            text: qsTr("Database")
+        }
     }
 
     ColumnLayout {

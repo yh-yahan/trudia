@@ -335,19 +335,28 @@ Item {
                                 anchors.margins: 8
                                 spacing: 10
 
-                                Text {
-                                    visible: true
-                                    text: item
+                                Column {
                                     Layout.fillWidth: true
-                                    color: Theme.text
-                                    font.pixelSize: Theme.fontNormal
+
+                                    Text {
+                                        text: item
+                                        color: available ? Theme.text : Theme.secondaryText
+                                        font.pixelSize: Theme.fontNormal
+                                    }
+
+                                    Text {
+                                        visible: !available
+                                        text: qsTr("Unavailable")
+                                        color: "red"
+                                        font.pixelSize: Theme.fontSmall
+                                    }
                                 }
 
                                 Text {
                                     visible: true
                                     text: currencySymbol + price.toFixed(2)
                                     width: 70
-                                    color: Theme.secondaryText
+                                    color: available ? Theme.text : Theme.secondaryText
                                     font.pixelSize: Theme.fontNormal
                                 }
 
@@ -355,7 +364,7 @@ Item {
                                     visible: true
                                     text: portion || "-"
                                     width: 100
-                                    color: Theme.secondaryText
+                                    color: available ? Theme.text : Theme.secondaryText
                                     font.pixelSize: Theme.fontNormal
                                 }
 
@@ -363,7 +372,7 @@ Item {
                                     text: qsTr("Add")
                                     enabled: available
                                     background: Rectangle {
-                                        color: Theme.primary()
+                                        color: available ? Theme.primary() : Theme.secondaryText
                                         radius: 4
                                     }
                                     leftPadding: 15

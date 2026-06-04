@@ -326,13 +326,21 @@ Item {
                                 anchors.margins: 8
                                 spacing: 10
 
-                                Text {
-                                    text: item
-
+                                Column {
                                     Layout.fillWidth: true
 
-                                    color: Theme.text
-                                    font.pixelSize: Theme.fontNormal
+                                    Text {
+                                        text: item
+                                        color: available ? Theme.text : Theme.secondaryText
+                                        font.pixelSize: Theme.fontNormal
+                                    }
+
+                                    Text {
+                                        visible: !available
+                                        text: qsTr("Unavailable")
+                                        color: "red"
+                                        font.pixelSize: Theme.fontSmall
+                                    }
                                 }
 
                                 Text {
@@ -340,7 +348,7 @@ Item {
 
                                     width: 80
 
-                                    color: Theme.secondaryText
+                                    color: available ? Theme.text : Theme.secondaryText
                                     font.pixelSize: Theme.fontNormal
                                 }
 
@@ -351,7 +359,7 @@ Item {
 
                                     background: Rectangle {
                                         radius: 4
-                                        color: Theme.primary()
+                                        color: available ? Theme.primary() : Theme.secondaryText
                                     }
 
                                     leftPadding: 14

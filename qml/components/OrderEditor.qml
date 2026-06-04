@@ -290,15 +290,23 @@ Item {
                             Text {
                                 text: qsTr("Price")
 
-                                width: 80
+                                width: 70
 
                                 color: Theme.secondaryText
                                 font.pixelSize: Theme.fontSmall
                                 font.bold: true
                             }
 
+                            Text {
+                                text: qsTr("Portion")
+                                width: 100
+                                color: Theme.secondaryText
+                                font.pixelSize: Theme.fontSmall
+                                font.bold: true
+                            }
+
                             Item {
-                                width: 70
+                                width: 60
                             }
                         }
                     }
@@ -346,8 +354,16 @@ Item {
                                 Text {
                                     text: currencySymbol + price.toFixed(2)
 
-                                    width: 80
+                                    width: 70
 
+                                    color: available ? Theme.text : Theme.secondaryText
+                                    font.pixelSize: Theme.fontNormal
+                                }
+
+                                Text {
+                                    visible: true
+                                    text: portion || "-"
+                                    width: 100
                                     color: available ? Theme.text : Theme.secondaryText
                                     font.pixelSize: Theme.fontNormal
                                 }

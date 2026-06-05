@@ -40,6 +40,19 @@ ScrollView {
         }
     }
 
+    function backupDatabase() {
+        errorMessage = ""
+        successMessage = ""
+
+        let success = DatabaseService.backupDatabase()
+
+        if (success) {
+            successMessage = qsTr("Database backup created successfully.")
+        } else {
+            errorMessage = qsTr("Failed to create database backup.")
+        }
+    }
+
     FolderDialog {
         id: folderDialog
 
@@ -285,6 +298,15 @@ ScrollView {
                 font.pixelSize: Theme.fontNormal
             }
 
+            Text {
+                text: qsTr("Backups are stored in a 'backups' folder next to the database file.")
+                wrapMode: Text.WordWrap
+                color: Theme.secondaryText
+                font.pixelSize: Theme.fontNormal
+
+                Layout.preferredWidth: 650
+            }
+
             ColumnLayout {
                 spacing: 15
 
@@ -292,37 +314,72 @@ ScrollView {
                 anchors.right: parent.right
                 anchors.leftMargin: 20
 
-                Button {
-                    text: qsTr("Move Database")
+                RowLayout {
+                    spacing: 8
 
-                    enabled: !root.moveInProgress
+                    Button {
+                        text: qsTr("Backup Database")
 
-                    leftPadding: 20
-                    rightPadding: 20
-                    topPadding: 10
-                    bottomPadding: 10
+                        enabled: !root.moveInProgress
 
-                    background: Rectangle {
-                        color: "#5F7DDC"
-                        radius: 4
+                        leftPadding: 20
+                        rightPadding: 20
+                        topPadding: 10
+                        bottomPadding: 10
+
+                        background: Rectangle {
+                            color: "#4faba1"
+                            radius: 4
+                        }
+
+                        contentItem: Text {
+                            text: qsTr("Backup Database")
+                            font.bold: true
+                            anchors.centerIn: parent
+                            color: "white"
+                            font.pixelSize: Theme.fontNormal
+                        }
+
+                        hoverEnabled: false
+                        focusPolicy: Qt.NoFocus
+
+                        onClicked: {
+                            root.backupDatabase()
+                        }
                     }
 
-                    contentItem: Text {
+                    Button {
                         text: qsTr("Move Database")
-                        font.bold: true
-                        anchors.centerIn: parent
-                        color: "white"
-                        font.pixelSize: Theme.fontNormal
-                    }
 
-                    hoverEnabled: false
-                    focusPolicy: Qt.NoFocus
+                        enabled: !root.moveInProgress
 
-                    onClicked: {
-                        root.errorMessage = ""
-                        root.successMessage = ""
+                        leftPadding: 20
+                        rightPadding: 20
+                        topPadding: 10
+                        bottomPadding: 10
 
-                        folderDialog.open()
+                        background: Rectangle {
+                            color: "#5F7DDC"
+                            radius: 4
+                        }
+
+                        contentItem: Text {
+                            text: qsTr("Move Database")
+                            font.bold: true
+                            anchors.centerIn: parent
+                            color: "white"
+                            font.pixelSize: Theme.fontNormal
+                        }
+
+                        hoverEnabled: false
+                        focusPolicy: Qt.NoFocus
+
+                        onClicked: {
+                            root.errorMessage = ""
+                            root.successMessage = ""
+
+                            folderDialog.open()
+                        }
                     }
                 }
             }

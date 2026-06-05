@@ -12,6 +12,63 @@ DatabaseService::DatabaseService(
       m_appService(appService),
       m_databaseManager(databaseManager) {}
 
+bool DatabaseService::backupDatabase()
+{
+    QFileInfo dbInfo(m_appService.databasePath());
+
+    if (!dbInfo.exists())
+    {
+        qWarning() << "Database file does not exist:" << dbInfo.absoluteFilePath();
+        return false;
+    }
+
+    QString backupDir = dbInfo.absolutePath() + "/backups";
+
+    if (!QDir().mkpath(backupDir))
+    {
+        qWarning() << "Failed to create backup directory:" << backupDir;
+        return false;
+    }
+
+    QString timestamp = QDateTime::currentDateTime().toString("yyyy-MM-dd_hh-mm-ss");
+
+    QString backupPath = backupDir + QString("/backup_%1.db").arg(timestamp);
+
+    QSqlDatabase db = m_databaseManager.db();
+
+    if (!db.isOpen())
+    {
+        qWarning() << "Database is not open.";
+        return false;
+    }
+
+    // flush WAL to main db before backup
+    if (!DatabaseManager::checkpoint())
+    {
+        qWarning() << "Failed to checkpoint database before backup.";
+        return false;
+    }
+
+    QString escapedPath = backupPath;
+    escapedPath.replace("'", "''");
+
+    QSqlQuery query(db);
+
+    QString sql = QString("VACUUM INTO '%1'").arg(escapedPath);
+
+    qDebug() << "Creating backup with SQL:" << sql;
+
+    if (!query.exec(sql))
+    {
+        qWarning() << "Backup failed:" << query.lastError().text();
+        return false;
+    }
+
+    qDebug() << "Backup created at:" << backupPath;
+
+    return true;
+}
+
 bool DatabaseService::moveDatabase(const QString &destinationFolder)
 {
     const QString currentPath = m_appService.databasePath();

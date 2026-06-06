@@ -41,6 +41,7 @@
 #include "core/services/SetupService.h"
 #include "core/services/DatabaseService.h"
 #include "core/services/ReservationService.h"
+#include "core/services/DatabaseRestoreService.h"
 #include "core/database/DatabaseManager.h"
 #include "core/printing/ReceiptBuilder.h"
 #include "core/printing/WindowsPrinterService.h"
@@ -53,16 +54,16 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationName("Trudia");
     QCoreApplication::setApplicationName("TrudiaPOS");
 
-    DatabaseManager dbManager;
+    DatabaseRestoreService::processPendingRestore();
 
     AppService appService;
 
     QString dbPath = appService.databasePath();
 
-    bool dbReady = false;
+    DatabaseManager dbManager;
 
     if (!dbPath.isEmpty()) {
-        dbReady = dbManager.initialize(dbPath);
+        dbManager.initialize(dbPath);
     }
 
     SystemTheme systemTheme;

@@ -143,6 +143,7 @@ qt_add_qml_module(apptrudia
     SOURCES core/constants/ReservationStatus.h
     SOURCES core/services/ReservationService.h core/services/ReservationService.cpp
     SOURCES core/services/DatabaseService.h core/services/DatabaseService.cpp
+    SOURCES core/services/DatabaseRestoreService.h core/services/DatabaseRestoreService.cpp
 )
 
 qt_add_translations(apptrudia

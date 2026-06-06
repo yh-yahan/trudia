@@ -3,6 +3,7 @@
 #include <QFileInfo>
 #include <QDir>
 #include <QDebug>
+#include <QSettings>
 
 DatabaseService::DatabaseService(
     AppService &appService,
@@ -69,6 +70,23 @@ bool DatabaseService::backupDatabase()
     return true;
 }
 
+// requires app to restart
+bool DatabaseService::restoreDatabase(const QString &dbFilePath) {
+    QFileInfo dbInfo(dbFilePath);
+
+    if (!dbInfo.exists())
+    {
+        qWarning() << "Database file does not exist:" << dbInfo.absoluteFilePath();
+        return false;
+    }
+
+    QSettings settings;
+    settings.setValue("database/pendingRestore", dbFilePath);
+
+    return true;
+}
+
+// requires app to restart
 bool DatabaseService::moveDatabase(const QString &destinationFolder)
 {
     const QString currentPath = m_appService.databasePath();

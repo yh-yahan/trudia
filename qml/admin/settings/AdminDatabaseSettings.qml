@@ -11,6 +11,8 @@ ScrollView {
     property string selectedFolder: ""
     property string destinationPreview: ""
 
+    property string selectedRestoreFile: ""
+
     property string errorMessage: ""
     property string successMessage: ""
 
@@ -53,6 +55,24 @@ ScrollView {
         }
     }
 
+    function restoreDatabase() {
+        errorMessage = ""
+        successMessage = ""
+
+        moveInProgress = true
+
+        let success = DatabaseService.restoreDatabase(root.selectedRestoreFile)
+
+        moveInProgress = false
+
+        if (success) {
+            successMessage = qsTr("Database restored successfully.")
+            SetupService.restartApp()
+        } else {
+            errorMessage = qsTr("Failed to restore database.")
+        }
+    }
+
     FolderDialog {
         id: folderDialog
 
@@ -69,6 +89,22 @@ ScrollView {
             root.destinationPreview = root.selectedFolder + "/TrudiaPOS/data/" + fileName
 
             moveDatabaseDialog.open()
+        }
+    }
+
+    FileDialog {
+        id: restoreFileDialog
+
+        title: qsTr("Select Restore Database File")
+        nameFilters: ["Database Files (*.db *.sqlite *.sqlite3)", "All Files (*)"]
+
+        onAccepted: {
+            root.selectedRestoreFile = selectedFile.toString().replace("file:///", "")
+
+            if (root.selectedRestoreFile === "")
+                return
+
+            restoreDatabaseDialog.open()
         }
     }
 
@@ -227,6 +263,125 @@ ScrollView {
         }
     }
 
+    Dialog {
+        id: restoreDatabaseDialog
+
+        anchors.centerIn: Overlay.overlay
+        modal: true
+        width: 650
+        height: 300
+
+        ColumnLayout {
+            anchors.fill: parent
+            anchors.margins: 16
+            spacing: 10
+
+            Text {
+                text: qsTr("Restore Database")
+                font.bold: true
+                font.pixelSize: Theme.fontLarge
+                color: Theme.text
+            }
+
+            Text {
+                Layout.fillWidth: true
+                text: qsTr("This will replace the current database and restart the application. It is recommended a backup to be created before restoration.")
+                wrapMode: Text.WordWrap
+                color: Theme.text
+                font.pixelSize: Theme.fontNormal
+            }
+
+            Item { Layout.preferredHeight: 10 }
+
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 50
+                radius: 4
+                color: Theme.surface
+
+                Text {
+                    anchors.fill: parent
+                    anchors.margins: 10
+                    verticalAlignment: Text.AlignVCenter
+                    elide: Text.ElideMiddle
+
+                    text: root.selectedRestoreFile
+                    color: Theme.text
+                    font.pixelSize: Theme.fontNormal
+                }
+            }
+
+            Text {
+                Layout.fillWidth: true
+                text: qsTr("Make sure you selected the correct restore file.")
+                color: Theme.secondaryText
+                wrapMode: Text.WordWrap
+                font.pixelSize: Theme.fontNormal
+            }
+
+            RowLayout {
+                Layout.alignment: Qt.AlignRight
+                spacing: 8
+
+                Button {
+                    leftPadding: 15
+                    rightPadding: 15
+                    topPadding: 5
+                    bottomPadding: 5
+
+                    background: Rectangle {
+                        color: Theme.primary()
+                        radius: 4
+                    }
+
+                    contentItem: Text {
+                        text: qsTr("Restore")
+                        color: "white"
+                        anchors.centerIn: parent
+                        font.pixelSize: Theme.fontNormal
+                    }
+
+                    hoverEnabled: false
+                    focusPolicy: Qt.NoFocus
+
+                    onClicked: {
+                        root.restoreDatabase()
+                        restoreDatabaseDialog.close()
+                    }
+                }
+
+                Button {
+                    leftPadding: 15
+                    rightPadding: 15
+                    topPadding: 5
+                    bottomPadding: 5
+
+                    background: Rectangle {
+                        color: "#6b6b6b"
+                        radius: 4
+                    }
+                    
+                    hoverEnabled: false
+                    focusPolicy: Qt.NoFocus
+
+                    contentItem: Text {
+                        text: qsTr("Cancel")
+                        color: "white"
+                        anchors.centerIn: parent
+                        font.pixelSize: Theme.fontNormal
+                    }
+
+                    onClicked: restoreDatabaseDialog.close()
+                }
+            }
+        }
+
+        background: Rectangle {
+            color: Theme.background
+            radius: 6
+        }
+    }
+
     ColumnLayout {
         width: parent.width
         spacing: 30
@@ -315,7 +470,7 @@ ScrollView {
                 anchors.leftMargin: 20
 
                 RowLayout {
-                    spacing: 8
+                    spacing: 12
 
                     Button {
                         text: qsTr("Backup Database")
@@ -349,7 +504,7 @@ ScrollView {
                     }
 
                     Button {
-                        text: qsTr("Move Database")
+                        text: qsTr("Restore Database")
 
                         enabled: !root.moveInProgress
 
@@ -359,12 +514,12 @@ ScrollView {
                         bottomPadding: 10
 
                         background: Rectangle {
-                            color: "#5F7DDC"
+                            color: "#ebac00"
                             radius: 4
                         }
 
                         contentItem: Text {
-                            text: qsTr("Move Database")
+                            text: qsTr("Restore Database")
                             font.bold: true
                             anchors.centerIn: parent
                             color: "white"
@@ -375,11 +530,42 @@ ScrollView {
                         focusPolicy: Qt.NoFocus
 
                         onClicked: {
-                            root.errorMessage = ""
-                            root.successMessage = ""
-
-                            folderDialog.open()
+                            restoreFileDialog.open()
                         }
+                    }
+                }
+
+                Button {
+                    text: qsTr("Move Database")
+
+                    enabled: !root.moveInProgress
+
+                    leftPadding: 20
+                    rightPadding: 20
+                    topPadding: 10
+                    bottomPadding: 10
+
+                    background: Rectangle {
+                        color: "#5F7DDC"
+                        radius: 4
+                    }
+
+                    contentItem: Text {
+                        text: qsTr("Move Database")
+                        font.bold: true
+                        anchors.centerIn: parent
+                        color: "white"
+                        font.pixelSize: Theme.fontNormal
+                    }
+
+                    hoverEnabled: false
+                    focusPolicy: Qt.NoFocus
+
+                    onClicked: {
+                        root.errorMessage = ""
+                        root.successMessage = ""
+
+                        folderDialog.open()
                     }
                 }
             }

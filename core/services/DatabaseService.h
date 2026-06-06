@@ -15,6 +15,7 @@ public:
                              QObject *parent = nullptr);
 
     Q_INVOKABLE bool backupDatabase();
+    Q_INVOKABLE bool restoreDatabase(const QString &dbFilePath);
     Q_INVOKABLE bool moveDatabase(const QString &destinationFolder);
 
 private:

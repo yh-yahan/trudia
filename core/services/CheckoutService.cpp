@@ -13,6 +13,7 @@ CheckoutService::CheckoutService(OrderSessionRepository &orderSessionRepo,
                                  TableRepository &tableRepo,
                                  MembershipRepository &membershipRepo,
                                  MembershipTransactionRepository &membershipTransactionRepo,
+                                 TaxSettingsRepository &taxSettingsRepo,
                                  ReceiptBuilder &receiptBuilder,
                                  WindowsPrinterService &windowsPrinterService,
                                  TaxCalculationService &taxCalculationService,
@@ -26,6 +27,7 @@ CheckoutService::CheckoutService(OrderSessionRepository &orderSessionRepo,
       m_printerRepo(printerRepo),
       m_membershipRepo(membershipRepo),
       m_membershipTransactionRepository(membershipTransactionRepo),
+      m_taxSettingsRepo(taxSettingsRepo),
       m_receiptBuilder(receiptBuilder),
       m_windowsPrinterService(windowsPrinterService),
       m_taxCalculationService(taxCalculationService),
@@ -151,7 +153,7 @@ bool CheckoutService::recalculateSessionTotals(int orderSessionId)
     auto items = m_orderItemRepo.getOrderItemsByOrderIds(orderIds);
 
     qint64 subtotal = 0;
-    qint64 tax = 0;
+    qint64 taxableSubtotal = 0;
 
     for (const auto &item : items)
     {
@@ -160,8 +162,20 @@ bool CheckoutService::recalculateSessionTotals(int orderSessionId)
         subtotal += lineTotal;
 
         if (item.is_taxable)
-            tax += m_taxCalculationService.calculateTax(lineTotal);
+            taxableSubtotal += lineTotal;
     }
+
+    auto settingsOpt = m_taxSettingsRepo.get();
+    if (!settingsOpt)
+        return false;
+
+    const auto &settings = *settingsOpt;
+
+    qint64 tax = m_taxCalculationService.calculateTax(
+        taxableSubtotal,
+        settings.rate,
+        settings.enabled
+    );
 
     session.subtotal = subtotal;
     session.tax = tax;
@@ -169,8 +183,9 @@ bool CheckoutService::recalculateSessionTotals(int orderSessionId)
     session.total = subtotal + tax - session.discount;
 
     qDebug()
-    << "Subtotal:" << subtotal
-    << "Tax:" << tax;
+        << "Subtotal:" << subtotal
+        << "TaxableSubtotal:" << taxableSubtotal
+        << "Tax:" << tax;
 
     if (session.total < 0)
         session.total = 0;

@@ -1,17 +1,14 @@
 #ifndef TAXCALCULATIONSERVICE_H
 #define TAXCALCULATIONSERVICE_H
 
-#include "../data/TaxSettingsRepository.h"
+#include <QtGlobal>
 
 class TaxCalculationService
 {
 public:
-    explicit TaxCalculationService(TaxSettingsRepository &taxSettingsRepo);
+    explicit TaxCalculationService();
 
-    qint64 calculateTax(qint64 lineTotal) const;
-
-private:
-    TaxSettingsRepository &m_taxSettingsRepo;
+    qint64 calculateTax(qint64 taxableSubtotal, qint64 rate, bool enabled) const;
 };
 
 #endif // TAXCALCULATIONSERVICE_H

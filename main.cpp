@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
 
     WindowsPrinterService windowsPrinterService;
     CurrencyService currencyService;
-    TaxCalculationService taxCalculationService(taxSettingsRepo);
+    TaxCalculationService taxCalculationService;
     MembershipService membershipService(membershipRepo, membershipSettingsRepo, membershipTransactionRepo);
     AuthService authService(userRepo);
     UserService userService(userRepo);
@@ -147,6 +147,7 @@ int main(int argc, char *argv[])
         tableRepo,
         membershipRepo,
         membershipTransactionRepo,
+        taxSettingsRepo,
         receiptBuilder,
         windowsPrinterService,
         taxCalculationService,

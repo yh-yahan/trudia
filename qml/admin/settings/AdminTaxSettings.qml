@@ -16,7 +16,7 @@ ScrollView {
 
         enableTaxSwitch.checked = data.enabled
         taxNameField.text = data.name
-        taxRateField.text = (data.rate / 1000000).toFixed(2)
+        taxRateField.text = (data.rate / 100).toFixed(2)
         registrationField.text = data.registration_number
     }
 
@@ -194,7 +194,7 @@ ScrollView {
 
                 if (enableTaxSwitch.checked) {
                     scaledRate = Math.round(parseFloat(
-                                                taxRateField.text) * 1000000)
+                                                taxRateField.text) * 100)
                 }
 
                 let taxSettings = {

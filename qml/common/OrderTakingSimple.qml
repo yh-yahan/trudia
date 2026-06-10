@@ -235,7 +235,7 @@ Item {
                                 anchors.left: parent.left
                                 anchors.leftMargin: 12
                                 font.pixelSize: Theme.fontNormal
-                                color: categoryListView.currentIndex === index ? "white" : Theme.text
+                                color: MenuService.currentCategoryId === id ? "white" : Theme.text
                             }
 
                             MouseArea {

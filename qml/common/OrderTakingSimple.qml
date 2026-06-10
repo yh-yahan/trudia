@@ -241,7 +241,6 @@ Item {
                             MouseArea {
                                 anchors.fill: parent
                                 onClicked: {
-                                    categoryListView.currentIndex = index
                                     MenuService.currentCategoryId = id
                                 }
                             }

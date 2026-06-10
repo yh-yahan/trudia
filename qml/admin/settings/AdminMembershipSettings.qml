@@ -7,6 +7,8 @@ import trudia.Theme 1.0
 ScrollView {
     property var membershipData: ({})
 
+    property string currencySymbol: SettingService.currencySymbol()
+
     Component.onCompleted: {
         membershipData = SettingService.getMembershipSettings();
 
@@ -122,7 +124,7 @@ ScrollView {
                         }
 
                         Label {
-                            text: qsTr("point(s) for every RM")
+                            text: qsTr("point(s) for every %1").arg(currencySymbol)
                             color: Theme.text
                             font.pixelSize: Theme.fontNormal
                         }
@@ -230,7 +232,7 @@ ScrollView {
                         }
 
                         Label {
-                            text: qsTr("points = RM")
+                            text: qsTr("points = %1").arg(currencySymbol)
                             color: Theme.text
                             font.pixelSize: Theme.fontNormal
                         }

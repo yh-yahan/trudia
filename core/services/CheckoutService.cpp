@@ -36,11 +36,77 @@ CheckoutService::CheckoutService(OrderSessionRepository &orderSessionRepo,
       m_settingService(settingService),
       m_tableService(tableService) {}
 
-QVariantList CheckoutService::getActiveOrdersForCheckout() const
+bool CheckoutService::recalculateSessionTotals(int orderSessionId)
+{
+    auto sessionOpt = m_orderSessionRepo.getById(orderSessionId);
+    if (!sessionOpt.has_value())
+        return false;
+
+    OrderSession session = sessionOpt.value();
+
+    auto orders = m_orderRepo.getOrdersBySessionId(orderSessionId);
+
+    QList<int> orderIds;
+    for (const auto &order : orders)
+        orderIds.append(order.id);
+
+    auto items = m_orderItemRepo.getOrderItemsByOrderIds(orderIds);
+
+    qint64 subtotal = 0;
+    qint64 taxableSubtotal = 0;
+
+    for (const auto &item : items)
+    {
+        const qint64 lineTotal = item.price * item.quantity;
+
+        subtotal += lineTotal;
+
+        if (item.is_taxable)
+            taxableSubtotal += lineTotal;
+    }
+
+    auto settingsOpt = m_taxSettingsRepo.get();
+    if (!settingsOpt)
+        return false;
+
+    const auto &settings = *settingsOpt;
+
+    qint64 tax = m_taxCalculationService.calculateTax(
+        taxableSubtotal,
+        settings.rate,
+        settings.enabled
+    );
+
+    session.subtotal = subtotal;
+    session.tax = tax;
+
+    session.total = subtotal + tax - session.discount;
+
+    qDebug()
+        << "Subtotal:" << subtotal
+        << "TaxableSubtotal:" << taxableSubtotal
+        << "Tax:" << tax;
+
+    if (session.total < 0)
+        session.total = 0;
+
+    m_orderSessionRepo.update(session);
+
+    return true;
+}
+
+QVariantList CheckoutService::loadActiveCheckoutSessions()
 {
     QVariantList result;
 
     auto activeSessions = m_orderSessionRepo.getAllActiveOrderSessions();
+
+    for (const auto &session : activeSessions)
+    {
+        recalculateSessionTotals(session.id);
+    }
+
+    activeSessions = m_orderSessionRepo.getAllActiveOrderSessions();
 
     auto tables = m_tableRepo.getAllTables();
     QMap<int, QString> tableMap;
@@ -53,27 +119,28 @@ QVariantList CheckoutService::getActiveOrdersForCheckout() const
     for (const auto &session : activeSessions)
     {
         QVariantMap sessionMap;
+
         sessionMap["id"] = session.id;
         sessionMap["display_number"] = session.display_number;
 
-        if (session.table_id.has_value())
-        {
-            int tableId = session.table_id.value();
-            sessionMap["table_name"] = tableMap.value(tableId);
-        }
-        else
-        {
-            sessionMap["table_name"] = QVariant();
-        }
+        sessionMap["table_name"] =
+            session.table_id.has_value()
+                ? tableMap.value(session.table_id.value())
+                : QVariant();
 
         sessionMap["order_type"] = session.order_type;
         sessionMap["status"] = session.status;
+
         sessionMap["subtotal"] = static_cast<double>(session.subtotal) / CURRENCY_SCALE;
         sessionMap["tax"] = static_cast<double>(session.tax) / CURRENCY_SCALE;
         sessionMap["discount"] = static_cast<double>(session.discount) / CURRENCY_SCALE;
         sessionMap["total"] = static_cast<double>(session.total) / CURRENCY_SCALE;
-        sessionMap["opened_at"] = session.opened_at.has_value() ? session.opened_at.value() : QVariant();
-        sessionMap["closed_at"] = session.closed_at.has_value() ? session.closed_at.value() : QVariant();
+
+        sessionMap["opened_at"] =
+            session.opened_at.has_value() ? session.opened_at.value() : QVariant();
+
+        sessionMap["closed_at"] =
+            session.closed_at.has_value() ? session.closed_at.value() : QVariant();
 
         result.append(sessionMap);
     }
@@ -136,66 +203,7 @@ bool CheckoutService::processMembershipPoints(int orderSessionId, const QString 
     return true;
 }
 
-bool CheckoutService::recalculateSessionTotals(int orderSessionId)
-{
-    auto sessionOpt = m_orderSessionRepo.getById(orderSessionId);
-    if (!sessionOpt.has_value())
-        return false;
-
-    OrderSession session = sessionOpt.value();
-
-    auto orders = m_orderRepo.getOrdersBySessionId(orderSessionId);
-
-    QList<int> orderIds;
-    for (const auto &order : orders)
-        orderIds.append(order.id);
-
-    auto items = m_orderItemRepo.getOrderItemsByOrderIds(orderIds);
-
-    qint64 subtotal = 0;
-    qint64 taxableSubtotal = 0;
-
-    for (const auto &item : items)
-    {
-        const qint64 lineTotal = item.price * item.quantity;
-
-        subtotal += lineTotal;
-
-        if (item.is_taxable)
-            taxableSubtotal += lineTotal;
-    }
-
-    auto settingsOpt = m_taxSettingsRepo.get();
-    if (!settingsOpt)
-        return false;
-
-    const auto &settings = *settingsOpt;
-
-    qint64 tax = m_taxCalculationService.calculateTax(
-        taxableSubtotal,
-        settings.rate,
-        settings.enabled
-    );
-
-    session.subtotal = subtotal;
-    session.tax = tax;
-
-    session.total = subtotal + tax - session.discount;
-
-    qDebug()
-        << "Subtotal:" << subtotal
-        << "TaxableSubtotal:" << taxableSubtotal
-        << "Tax:" << tax;
-
-    if (session.total < 0)
-        session.total = 0;
-
-    m_orderSessionRepo.update(session);
-
-    return true;
-}
-
-QVariantList CheckoutService::getCheckoutDetails(const int &orderSessionId)
+QVariantList CheckoutService::loadCheckoutDetails(const int &orderSessionId)
 {
     QVariantList result;
 
@@ -206,15 +214,17 @@ QVariantList CheckoutService::getCheckoutDetails(const int &orderSessionId)
     if (!sessionOpt.has_value())
         return result;
 
-    const auto &session = sessionOpt.value();
+    const OrderSession session = sessionOpt.value();
 
-    auto orders = m_orderRepo.getOrdersBySessionId(orderSessionId);
+    const auto orders = m_orderRepo.getOrdersBySessionId(orderSessionId);
 
     QList<int> orderIds;
+    orderIds.reserve(orders.size());
+
     for (const auto &order : orders)
         orderIds.append(order.id);
 
-    auto items = m_orderItemRepo.getOrderItemsByOrderIds(orderIds);
+    const auto items = m_orderItemRepo.getOrderItemsByOrderIds(orderIds);
 
     QMap<int, QVariantList> itemsByOrder;
 
@@ -225,7 +235,9 @@ QVariantList CheckoutService::getCheckoutDetails(const int &orderSessionId)
         itemMap["item_id"] = item.item_id;
         itemMap["item_name"] = item.item_name;
         itemMap["quantity"] = item.quantity;
-        double unitPrice = static_cast<double>(item.price) / CURRENCY_SCALE;
+
+        const double unitPrice = static_cast<double>(item.price) / CURRENCY_SCALE;
+
         itemMap["unit_price"] = unitPrice;
         itemMap["total_price"] = unitPrice * item.quantity;
         itemMap["item_status"] = item.item_status;
@@ -234,7 +246,10 @@ QVariantList CheckoutService::getCheckoutDetails(const int &orderSessionId)
         itemsByOrder[item.order_id].append(itemMap);
     }
 
-    bool totalsAttached = false;
+    const double subtotal = static_cast<double>(session.subtotal) / CURRENCY_SCALE;
+    const double tax = static_cast<double>(session.tax) / CURRENCY_SCALE;
+    const double discount = static_cast<double>(session.discount) / CURRENCY_SCALE;
+    const double total = static_cast<double>(session.total) / CURRENCY_SCALE;
 
     for (const auto &order : orders)
     {
@@ -246,15 +261,10 @@ QVariantList CheckoutService::getCheckoutDetails(const int &orderSessionId)
         orderMap["closed_at"] = order.closed_at.isEmpty() ? QVariant() : order.closed_at;
         orderMap["items"] = itemsByOrder.value(order.id);
 
-        if (!totalsAttached)
-        {
-            // Convert minor units to RM for UI
-            orderMap["subtotal"] = static_cast<double>(session.subtotal) / CURRENCY_SCALE;
-            orderMap["tax"] = static_cast<double>(session.tax) / CURRENCY_SCALE;
-            orderMap["discount"] = static_cast<double>(session.discount) / CURRENCY_SCALE;
-            orderMap["total"] = static_cast<double>(session.total) / CURRENCY_SCALE;
-            totalsAttached = true;
-        }
+        orderMap["subtotal"] = subtotal;
+        orderMap["tax"] = tax;
+        orderMap["discount"] = discount;
+        orderMap["total"] = total;
 
         result.append(orderMap);
     }

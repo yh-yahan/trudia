@@ -32,7 +32,7 @@ Item {
     property string currencySymbol: SettingService.currencySymbol()
 
     function reloadData() {
-        activeSessions = CheckoutService.getActiveOrdersForCheckout();
+        activeSessions = CheckoutService.loadActiveCheckoutSessions();
         recentOrders = CheckoutService.getRecentPaidOrders();
 
         selectedSession = null;
@@ -178,7 +178,7 @@ Item {
                     onClicked: {
                         selectedRecent = null;
                         selectedSession = modelData;
-                        checkoutDetails = CheckoutService.getCheckoutDetails(modelData.id);
+                        checkoutDetails = CheckoutService.loadCheckoutDetails(modelData.id);
                         updateMembershipInfo();
                     }
                 }

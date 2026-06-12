@@ -21,6 +21,7 @@
 #include "./MembershipService.h"
 #include "./SettingService.h"
 #include "./TableService.h"
+#include "./ReservationService.h"
 
 struct TaxComputationResult {
     double subtotal = 0.0;
@@ -47,7 +48,8 @@ public:
                              TaxCalculationService &taxCalculationService,
                              MembershipService &membershipService,
                              SettingService &settingService,
-                             TableService &tableService);
+                             TableService &tableService,
+                             ReservationService &reservationService);
 
     Q_INVOKABLE QVariantList loadActiveCheckoutSessions();
     Q_INVOKABLE bool processMembershipPoints(int orderSessionId, const QString &memberPhone, int pointsToRedeem);
@@ -73,6 +75,7 @@ private:
     TableRepository &m_tableRepo;
     MembershipService &m_membershipService;
     TableService &m_tableService;
+    ReservationService &m_reservationService;
 };
 
 #endif // CHECKOUTSERVICE_H

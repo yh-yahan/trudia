@@ -19,6 +19,7 @@ public:
         TableService &tableService,
         QObject *parent = nullptr);
 
+    QVariantMap getSeatedReservationByTable(int tableId);
     Q_INVOKABLE QVariantMap getActiveReservationByTable(int tableId);
     Q_INVOKABLE bool createReservation(const QVariantMap &data);
     Q_INVOKABLE bool updateReservation(const QVariantMap &data);

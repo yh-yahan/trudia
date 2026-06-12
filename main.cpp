@@ -133,6 +133,7 @@ int main(int argc, char *argv[])
     );
     KitchenTicketBuilder kitchenTicketBuilder(regionalSettingsRepo);
     ReceiptBuilder receiptBuilder(regionalSettingsRepo);
+    ReservationService reservationService(reservationRepo, tableService);
     KitchenOrderService kitchenOrderService(
         orderSessionRepo, 
         orderRepo, 
@@ -153,7 +154,8 @@ int main(int argc, char *argv[])
         taxCalculationService,
         membershipService,
         settingService,
-        tableService
+        tableService,
+        reservationService
     );
     AnalyticsService analyticsService(analyticsRepo);
     FloorPlanService floorPlanService(
@@ -163,7 +165,6 @@ int main(int argc, char *argv[])
         reservationRepo,
         tableService);
     SetupService setupService(appService, dbManager);
-    ReservationService reservationService(reservationRepo, tableService);
     OrderService orderService(
         orderSessionRepo,
         orderRepo,

@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include "../constants/TableStatus.h"
+#include "../constants/ReservationStatus.h"
 
 constexpr qint64 CURRENCY_SCALE = 100; // cents
 
@@ -19,7 +20,8 @@ CheckoutService::CheckoutService(OrderSessionRepository &orderSessionRepo,
                                  TaxCalculationService &taxCalculationService,
                                  MembershipService &membershipService,
                                  SettingService &settingService,
-                                 TableService &tableService)
+                                 TableService &tableService,
+                                 ReservationService &reservationService)
     : m_orderSessionRepo(orderSessionRepo),
       m_orderRepo(orderRepo),
       m_orderItemRepo(orderItemRepo),
@@ -34,7 +36,8 @@ CheckoutService::CheckoutService(OrderSessionRepository &orderSessionRepo,
       m_tableRepo(tableRepo),
       m_membershipService(membershipService),
       m_settingService(settingService),
-      m_tableService(tableService) {}
+      m_tableService(tableService),
+      m_reservationService(reservationService) {}
 
 bool CheckoutService::recalculateSessionTotals(int orderSessionId)
 {
@@ -311,6 +314,17 @@ bool CheckoutService::markOrderPaid(const int &orderSessionId, const QString &me
         );
 
         m_tableService.setTableStatus(session.table_id.value(), TableStatus::Available);
+
+        QVariantMap reservation = m_reservationService.getSeatedReservationByTable(
+                session.table_id.value());
+
+        if (!reservation.isEmpty())
+        {
+            reservation["status"] = ReservationStatus::Completed;
+
+            m_reservationService.updateReservation(
+                reservation);
+        }
     }
 
     return true;

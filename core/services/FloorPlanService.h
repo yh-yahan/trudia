@@ -28,6 +28,8 @@ public:
     FloorModel *floorModel() const;
     CanvasItemModel *canvasModel() const;
 
+    int currentFloorId() const;
+
     Q_INVOKABLE void loadFloors();
     Q_INVOKABLE int createFloor(const QString &name);
     Q_INVOKABLE bool updateFloor(const Floor &floor);
@@ -48,6 +50,8 @@ public slots:
     void onTableStatusChanged(int tableId, const QString &newStatus);
 
 private:
+    int m_currentFloorId = -1;
+
     FloorModel *m_floorModel;
     CanvasItemModel *m_canvasModel;
 

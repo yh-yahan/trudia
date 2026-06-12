@@ -50,9 +50,15 @@ bool ReservationService::createReservation(
         return false;
     }
 
-    m_tableService.setTableStatus(reservation.tableId, TableStatus::Reserved);
+    bool ok = m_reservationRepo.createReservation(reservation);
 
-    return m_reservationRepo.createReservation(reservation);
+    if (ok)
+    {
+        m_tableService.setTableStatus(reservation.tableId, TableStatus::Reserved);
+        emit reservationChanged(reservation.tableId);
+    }
+
+    return ok;
 }
 
 bool ReservationService::updateReservation(
@@ -72,7 +78,14 @@ bool ReservationService::updateReservation(
         return false;
     }
 
-    return m_reservationRepo.updateReservation(reservation);
+    bool ok = m_reservationRepo.updateReservation(reservation);
+
+    if (ok)
+    {
+        emit reservationChanged(reservation.tableId);
+    }
+
+    return ok;
 }
 
 bool ReservationService::deleteReservation(int reservationId)
@@ -90,9 +103,17 @@ bool ReservationService::cancelReservation(int reservationId)
         return false;
     }
 
-    m_tableService.setTableStatus(reservation.tableId, TableStatus::Available);
+    bool ok = m_reservationRepo.updateReservationStatus(
+        reservationId,
+        ReservationStatus::Cancelled);
 
-    return m_reservationRepo.updateReservationStatus(reservationId, ReservationStatus::Cancelled);
+    if (ok)
+    {
+        m_tableService.setTableStatus(reservation.tableId, TableStatus::Available);
+        emit reservationChanged(reservation.tableId);
+    }
+
+    return ok;
 }
 
 QVariantList ReservationService::getReservationsByDate(

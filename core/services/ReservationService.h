@@ -29,6 +29,9 @@ public:
         const QDateTime &start,
         int durationMinutes);
 
+signals:
+    void reservationChanged(int tableId);
+
 private:
     bool hasConflict(
         int tableId,

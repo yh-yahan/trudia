@@ -38,6 +38,11 @@ CanvasItemModel *FloorPlanService::canvasModel() const
     return m_canvasModel;
 }
 
+int FloorPlanService::currentFloorId() const
+{
+    return m_currentFloorId;
+}
+
 void FloorPlanService::onTableStatusChanged(int tableId, const QString &newStatus)
 {
     if (!m_canvasModel) {
@@ -58,6 +63,7 @@ void FloorPlanService::loadFloors()
 
 void FloorPlanService::loadCanvas(int floorId)
 {
+    m_currentFloorId = floorId;
     std::vector<CanvasItem> items = m_canvasItemRepo.getByFloorId(floorId);
 
     for (CanvasItem &item : items)

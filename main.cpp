@@ -190,6 +190,16 @@ int main(int argc, char *argv[])
     QObject::connect(&orderService, &OrderService::orderUpdated,
                  &kitchenOrderService, &KitchenOrderService::ordersChanged);
 
+    QObject::connect(&reservationService, &ReservationService::reservationChanged,
+        &floorPlanService,
+        [&floorPlanService](int tableId)
+        {
+            Q_UNUSED(tableId);
+
+            floorPlanService.loadCanvas(
+                floorPlanService.currentFloorId());
+        });
+
     qmlRegisterSingletonInstance("trudia.System", 1, 0, "SystemTheme", &systemTheme);
     qmlRegisterSingletonInstance("trudia.Theme", 1, 0, "Theme", &theme);
 

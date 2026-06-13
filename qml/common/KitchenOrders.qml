@@ -28,6 +28,16 @@ Item {
 
     Component.onCompleted: loadOrders()
 
+    Timer {
+        interval: 1000
+        running: true
+        repeat: true
+
+        onTriggered: {
+            loadOrders()
+        }
+    }
+
     Rectangle {
         anchors.fill: parent
         color: Theme.background

@@ -61,6 +61,377 @@
     </message>
 </context>
 <context>
+    <name>AdminDatabaseSettings</name>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="38"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="38"/>
+        <location filename="../qml/admin/settings/AdminDatabaseSettings.qml" line="38"/>
+        <source>Database moved successfully.</source>
+        <translation>数据库迁移成功。</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="41"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="41"/>
+        <location filename="../qml/admin/settings/AdminDatabaseSettings.qml" line="41"/>
+        <source>Failed to move database.</source>
+        <translation>数据库迁移失败。</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="52"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="52"/>
+        <location filename="../qml/admin/settings/AdminDatabaseSettings.qml" line="52"/>
+        <source>Database backup created successfully.</source>
+        <translation>数据库备份创建成功。</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="54"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="54"/>
+        <location filename="../qml/admin/settings/AdminDatabaseSettings.qml" line="54"/>
+        <source>Failed to create database backup.</source>
+        <translation>创建数据库备份失败。</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="69"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="69"/>
+        <location filename="../qml/admin/settings/AdminDatabaseSettings.qml" line="69"/>
+        <source>Database restored successfully.</source>
+        <translation>数据库恢复成功。</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="72"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="72"/>
+        <location filename="../qml/admin/settings/AdminDatabaseSettings.qml" line="72"/>
+        <source>Failed to restore database.</source>
+        <translation>数据库恢复失败。</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="79"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="79"/>
+        <location filename="../qml/admin/settings/AdminDatabaseSettings.qml" line="79"/>
+        <source>Select New Database Location</source>
+        <translation>选择新的数据库位置</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="98"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="98"/>
+        <location filename="../qml/admin/settings/AdminDatabaseSettings.qml" line="98"/>
+        <source>Select Restore Database File</source>
+        <translation>选择“恢复数据库文件”</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="125"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="222"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="539"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="554"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="125"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="222"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="539"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="554"/>
+        <location filename="../qml/admin/settings/AdminDatabaseSettings.qml" line="125"/>
+        <location filename="../qml/admin/settings/AdminDatabaseSettings.qml" line="222"/>
+        <location filename="../qml/admin/settings/AdminDatabaseSettings.qml" line="539"/>
+        <location filename="../qml/admin/settings/AdminDatabaseSettings.qml" line="554"/>
+        <source>Move Database</source>
+        <translation>移动数据库</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="133"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="133"/>
+        <location filename="../qml/admin/settings/AdminDatabaseSettings.qml" line="133"/>
+        <source>The database will be moved from its current location to the following location:</source>
+        <translation>数据库将从当前位置迁移到以下位置：</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="142"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="142"/>
+        <location filename="../qml/admin/settings/AdminDatabaseSettings.qml" line="142"/>
+        <source>Current Location</source>
+        <translation>当前位置</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="169"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="169"/>
+        <location filename="../qml/admin/settings/AdminDatabaseSettings.qml" line="169"/>
+        <source>New Location</source>
+        <translation>新位置</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="197"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="197"/>
+        <location filename="../qml/admin/settings/AdminDatabaseSettings.qml" line="197"/>
+        <source>App will restart after moving.</source>
+        <translation>移动后应用将重新启动。</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="249"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="368"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="249"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="368"/>
+        <location filename="../qml/admin/settings/AdminDatabaseSettings.qml" line="249"/>
+        <location filename="../qml/admin/settings/AdminDatabaseSettings.qml" line="368"/>
+        <source>Cancel</source>
+        <translation>取消</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="280"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="507"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="522"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="280"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="507"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="522"/>
+        <location filename="../qml/admin/settings/AdminDatabaseSettings.qml" line="280"/>
+        <location filename="../qml/admin/settings/AdminDatabaseSettings.qml" line="507"/>
+        <location filename="../qml/admin/settings/AdminDatabaseSettings.qml" line="522"/>
+        <source>Restore Database</source>
+        <translation>恢复数据库</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="288"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="288"/>
+        <location filename="../qml/admin/settings/AdminDatabaseSettings.qml" line="288"/>
+        <source>This will replace the current database and restart the application. It is recommended a backup to be created before restoration.</source>
+        <translation>这将替换当前数据库并重启应用程序。建议在恢复之前创建备份。</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="316"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="316"/>
+        <location filename="../qml/admin/settings/AdminDatabaseSettings.qml" line="316"/>
+        <source>Make sure you selected the correct restore file.</source>
+        <translation>请确保您选择了正确的恢复文件。</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="338"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="338"/>
+        <location filename="../qml/admin/settings/AdminDatabaseSettings.qml" line="338"/>
+        <source>Restore</source>
+        <translation>恢复</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="390"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="390"/>
+        <location filename="../qml/admin/settings/AdminDatabaseSettings.qml" line="390"/>
+        <source>Database Settings</source>
+        <translation>数据库设置</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="400"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="400"/>
+        <location filename="../qml/admin/settings/AdminDatabaseSettings.qml" line="400"/>
+        <source>Current Database</source>
+        <translation>当前数据库</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="435"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="435"/>
+        <location filename="../qml/admin/settings/AdminDatabaseSettings.qml" line="435"/>
+        <source>This database contains restaurant information, orders, memberships, tables, reservations, application settings and other operational data.</source>
+        <translation>该数据库包含餐厅信息、订单、会员信息、餐桌信息、预订信息、应用程序设置和其他运营数据。</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="450"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="450"/>
+        <location filename="../qml/admin/settings/AdminDatabaseSettings.qml" line="450"/>
+        <source>Database Management</source>
+        <translation>数据库管理</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="457"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="457"/>
+        <location filename="../qml/admin/settings/AdminDatabaseSettings.qml" line="457"/>
+        <source>Backups are stored in a &apos;backups&apos; folder next to the database file.</source>
+        <translation>备份文件存储在数据库文件旁边的“backups”文件夹中。</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="476"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="491"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="476"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminDatabaseSettings.qml" line="491"/>
+        <location filename="../qml/admin/settings/AdminDatabaseSettings.qml" line="476"/>
+        <location filename="../qml/admin/settings/AdminDatabaseSettings.qml" line="491"/>
+        <source>Backup Database</source>
+        <translation>备份数据库</translation>
+    </message>
+</context>
+<context>
+    <name>AdminFloorPlanManagement</name>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="133"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="133"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="133"/>
+        <location filename="../qml/admin/management/AdminFloorPlanManagement.qml" line="133"/>
+        <source>Delete Floor</source>
+        <translation>删除楼层</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="167"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="182"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="167"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="182"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="167"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="182"/>
+        <location filename="../qml/admin/management/AdminFloorPlanManagement.qml" line="167"/>
+        <location filename="../qml/admin/management/AdminFloorPlanManagement.qml" line="182"/>
+        <source>+ New Floor</source>
+        <translation>+ 新楼层</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="205"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="219"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="205"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="219"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="205"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="219"/>
+        <location filename="../qml/admin/management/AdminFloorPlanManagement.qml" line="205"/>
+        <location filename="../qml/admin/management/AdminFloorPlanManagement.qml" line="219"/>
+        <source>Add Table</source>
+        <translation>添加桌子</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="234"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="248"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="234"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="248"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="234"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="248"/>
+        <location filename="../qml/admin/management/AdminFloorPlanManagement.qml" line="234"/>
+        <location filename="../qml/admin/management/AdminFloorPlanManagement.qml" line="248"/>
+        <source>Add Divider</source>
+        <translation>添加分隔线</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="298"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="332"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="346"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="298"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="332"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="346"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="298"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="332"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="346"/>
+        <location filename="../qml/admin/management/AdminFloorPlanManagement.qml" line="298"/>
+        <location filename="../qml/admin/management/AdminFloorPlanManagement.qml" line="332"/>
+        <location filename="../qml/admin/management/AdminFloorPlanManagement.qml" line="346"/>
+        <source>Create Floor</source>
+        <translation>创建楼层</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="305"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="305"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="305"/>
+        <location filename="../qml/admin/management/AdminFloorPlanManagement.qml" line="305"/>
+        <source>Floor Name</source>
+        <translation>楼层名称</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="311"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="311"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="311"/>
+        <location filename="../qml/admin/management/AdminFloorPlanManagement.qml" line="311"/>
+        <source>Enter Floor Name</source>
+        <translation>输入楼层名称</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="364"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="375"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="533"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="544"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="364"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="375"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="533"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="544"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="364"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="375"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="533"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="544"/>
+        <location filename="../qml/admin/management/AdminFloorPlanManagement.qml" line="364"/>
+        <location filename="../qml/admin/management/AdminFloorPlanManagement.qml" line="375"/>
+        <location filename="../qml/admin/management/AdminFloorPlanManagement.qml" line="533"/>
+        <location filename="../qml/admin/management/AdminFloorPlanManagement.qml" line="544"/>
+        <source>Cancel</source>
+        <translation>取消</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="402"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="402"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="402"/>
+        <location filename="../qml/admin/management/AdminFloorPlanManagement.qml" line="402"/>
+        <source>Table</source>
+        <translation>餐桌</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="410"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="495"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="509"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="410"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="495"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="509"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="410"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="495"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="509"/>
+        <location filename="../qml/admin/management/AdminFloorPlanManagement.qml" line="410"/>
+        <location filename="../qml/admin/management/AdminFloorPlanManagement.qml" line="495"/>
+        <location filename="../qml/admin/management/AdminFloorPlanManagement.qml" line="509"/>
+        <source>Create Table</source>
+        <translation>创建餐桌</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="417"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="417"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="417"/>
+        <location filename="../qml/admin/management/AdminFloorPlanManagement.qml" line="417"/>
+        <source>Table Label</source>
+        <translation>桌子标签</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="423"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="423"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="423"/>
+        <location filename="../qml/admin/management/AdminFloorPlanManagement.qml" line="423"/>
+        <source>Enter Table Label</source>
+        <translation>输入桌子标签</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="448"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="448"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="448"/>
+        <location filename="../qml/admin/management/AdminFloorPlanManagement.qml" line="448"/>
+        <source>Number Of Seats</source>
+        <translation>座位数</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="462"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="462"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="462"/>
+        <location filename="../qml/admin/management/AdminFloorPlanManagement.qml" line="462"/>
+        <source>Type Of Table</source>
+        <translation>桌子类型</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="470"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="470"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="470"/>
+        <location filename="../qml/admin/management/AdminFloorPlanManagement.qml" line="470"/>
+        <source>Square Table</source>
+        <translation>方桌</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="473"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="473"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="473"/>
+        <location filename="../qml/admin/management/AdminFloorPlanManagement.qml" line="473"/>
+        <source>Rectangle Table</source>
+        <translation>矩形桌</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="476"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="476"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/management/AdminFloorPlanManagement.qml" line="476"/>
+        <location filename="../qml/admin/management/AdminFloorPlanManagement.qml" line="476"/>
+        <source>Circle Table</source>
+        <translation>圆桌</translation>
+    </message>
+</context>
+<context>
     <name>AdminKitchenSettings</name>
     <message>
         <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminKitchenSettings.qml" line="33"/>
@@ -194,26 +565,34 @@
 <context>
     <name>AdminManagementSidebar</name>
     <message>
-        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminManagementSidebar.qml" line="19"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminManagementSidebar.qml" line="19"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/management/AdminManagementSidebar.qml" line="19"/>
-        <location filename="../qml/admin/management/AdminManagementSidebar.qml" line="19"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminManagementSidebar.qml" line="25"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminManagementSidebar.qml" line="25"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/management/AdminManagementSidebar.qml" line="25"/>
+        <location filename="../qml/admin/management/AdminManagementSidebar.qml" line="25"/>
         <source>Menu</source>
         <translation>菜单</translation>
     </message>
     <message>
-        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminManagementSidebar.qml" line="23"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminManagementSidebar.qml" line="23"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/management/AdminManagementSidebar.qml" line="23"/>
-        <location filename="../qml/admin/management/AdminManagementSidebar.qml" line="23"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminManagementSidebar.qml" line="30"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminManagementSidebar.qml" line="30"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/management/AdminManagementSidebar.qml" line="30"/>
+        <location filename="../qml/admin/management/AdminManagementSidebar.qml" line="30"/>
         <source>Table</source>
         <translation>餐桌</translation>
     </message>
     <message>
-        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminManagementSidebar.qml" line="27"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminManagementSidebar.qml" line="27"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/management/AdminManagementSidebar.qml" line="27"/>
-        <location filename="../qml/admin/management/AdminManagementSidebar.qml" line="27"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminManagementSidebar.qml" line="30"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminManagementSidebar.qml" line="30"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/management/AdminManagementSidebar.qml" line="30"/>
+        <location filename="../qml/admin/management/AdminManagementSidebar.qml" line="30"/>
+        <source>Floor Plan</source>
+        <translation>桌位布局</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminManagementSidebar.qml" line="35"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminManagementSidebar.qml" line="35"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/management/AdminManagementSidebar.qml" line="35"/>
+        <location filename="../qml/admin/management/AdminManagementSidebar.qml" line="35"/>
         <source>User</source>
         <translation>用户</translation>
     </message>
@@ -222,89 +601,83 @@
     <name>AdminMembershipSettings</name>
     <message>
         <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="36"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="36"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="36"/>
-        <location filename="../qml/admin/settings/AdminMembershipSettings.qml" line="36"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="38"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="38"/>
+        <location filename="../qml/admin/settings/AdminMembershipSettings.qml" line="38"/>
         <source>Membership Settings</source>
         <translation>会员设置</translation>
     </message>
     <message>
         <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="46"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="46"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="46"/>
-        <location filename="../qml/admin/settings/AdminMembershipSettings.qml" line="46"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="48"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="48"/>
+        <location filename="../qml/admin/settings/AdminMembershipSettings.qml" line="48"/>
         <source>General</source>
         <translation>常规</translation>
     </message>
     <message>
         <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="62"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="62"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="62"/>
-        <location filename="../qml/admin/settings/AdminMembershipSettings.qml" line="62"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="64"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="64"/>
+        <location filename="../qml/admin/settings/AdminMembershipSettings.qml" line="64"/>
         <source>Enable Points Loyalty</source>
         <translation>启用积分系统</translation>
     </message>
     <message>
         <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="82"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="82"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="82"/>
-        <location filename="../qml/admin/settings/AdminMembershipSettings.qml" line="82"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="84"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="84"/>
+        <location filename="../qml/admin/settings/AdminMembershipSettings.qml" line="84"/>
         <source>Earning Rules</source>
         <translation>积分获取规则</translation>
     </message>
     <message>
         <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="99"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="99"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="99"/>
-        <location filename="../qml/admin/settings/AdminMembershipSettings.qml" line="99"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="101"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="101"/>
+        <location filename="../qml/admin/settings/AdminMembershipSettings.qml" line="101"/>
         <source>Earn</source>
         <translation>获得</translation>
     </message>
     <message>
         <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="125"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="125"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="125"/>
-        <location filename="../qml/admin/settings/AdminMembershipSettings.qml" line="125"/>
         <source>point(s) for every RM</source>
         <translation>积分 / 每RM</translation>
     </message>
     <message>
         <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="147"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="147"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="147"/>
-        <location filename="../qml/admin/settings/AdminMembershipSettings.qml" line="147"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="149"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="149"/>
+        <location filename="../qml/admin/settings/AdminMembershipSettings.qml" line="149"/>
         <source>spent</source>
         <translation>消费</translation>
     </message>
     <message>
         <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="171"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="171"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="171"/>
-        <location filename="../qml/admin/settings/AdminMembershipSettings.qml" line="171"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="173"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="173"/>
+        <location filename="../qml/admin/settings/AdminMembershipSettings.qml" line="173"/>
         <source>Total</source>
         <translation>总计</translation>
     </message>
     <message>
         <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="175"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="175"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="175"/>
-        <location filename="../qml/admin/settings/AdminMembershipSettings.qml" line="175"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="177"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="177"/>
+        <location filename="../qml/admin/settings/AdminMembershipSettings.qml" line="177"/>
         <source>Subtotal</source>
         <translation>小计</translation>
     </message>
     <message>
         <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="207"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="207"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="207"/>
-        <location filename="../qml/admin/settings/AdminMembershipSettings.qml" line="207"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="209"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="209"/>
+        <location filename="../qml/admin/settings/AdminMembershipSettings.qml" line="209"/>
         <source>Redemption</source>
         <translation>兑换</translation>
     </message>
     <message>
         <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="233"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="233"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="233"/>
-        <location filename="../qml/admin/settings/AdminMembershipSettings.qml" line="233"/>
         <source>points = RM</source>
         <translation>积分 = RM</translation>
     </message>
@@ -318,9 +691,9 @@
     </message>
     <message>
         <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="158"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="158"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="158"/>
-        <location filename="../qml/admin/settings/AdminMembershipSettings.qml" line="158"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="160"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="160"/>
+        <location filename="../qml/admin/settings/AdminMembershipSettings.qml" line="160"/>
         <source>Earn Based On</source>
         <translation>积分依据</translation>
     </message>
@@ -334,9 +707,9 @@
     </message>
     <message>
         <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="190"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="190"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="190"/>
-        <location filename="../qml/admin/settings/AdminMembershipSettings.qml" line="190"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="192"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="192"/>
+        <location filename="../qml/admin/settings/AdminMembershipSettings.qml" line="192"/>
         <source>Redemption Rules</source>
         <translation>积分兑换规则</translation>
     </message>
@@ -354,11 +727,25 @@
     </message>
     <message>
         <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="285"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="285"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="285"/>
-        <location filename="../qml/admin/settings/AdminMembershipSettings.qml" line="285"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="287"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="287"/>
+        <location filename="../qml/admin/settings/AdminMembershipSettings.qml" line="287"/>
         <source>Save</source>
         <translation>保存</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="127"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="127"/>
+        <location filename="../qml/admin/settings/AdminMembershipSettings.qml" line="127"/>
+        <source>point(s) for every %1</source>
+        <translation>积分，每消费 %1</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="235"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminMembershipSettings.qml" line="235"/>
+        <location filename="../qml/admin/settings/AdminMembershipSettings.qml" line="235"/>
+        <source>points = %1</source>
+        <translation>积分 = %1</translation>
     </message>
 </context>
 <context>
@@ -595,16 +982,20 @@
 <context>
     <name>AdminPrinterSettings</name>
     <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="30"/>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="30"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="30"/>
         <location filename="../qml/admin/settings/AdminPrinterSettings.qml" line="30"/>
         <source>Printing</source>
         <translation>打印</translation>
     </message>
     <message>
-        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="24"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="42"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="303"/>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="42"/>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="303"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="24"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="42"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="303"/>
         <location filename="../qml/admin/settings/AdminPrinterSettings.qml" line="42"/>
         <location filename="../qml/admin/settings/AdminPrinterSettings.qml" line="303"/>
         <source>Printers</source>
@@ -612,17 +1003,21 @@
         <translation>打印机</translation>
     </message>
     <message>
-        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="31"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="56"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="66"/>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="56"/>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="66"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="31"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="56"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="66"/>
         <location filename="../qml/admin/settings/AdminPrinterSettings.qml" line="56"/>
         <location filename="../qml/admin/settings/AdminPrinterSettings.qml" line="66"/>
         <source>+ Add Printer</source>
         <translation>+ 添加打印机</translation>
     </message>
     <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="130"/>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="130"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="130"/>
         <location filename="../qml/admin/settings/AdminPrinterSettings.qml" line="130"/>
         <source>Printer</source>
         <translation>打印机</translation>
@@ -632,15 +1027,17 @@
         <translation type="vanished">未知</translation>
     </message>
     <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="189"/>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="189"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="189"/>
         <location filename="../qml/admin/settings/AdminPrinterSettings.qml" line="189"/>
         <source>Test</source>
         <translation>测试</translation>
     </message>
     <message>
-        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="66"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="160"/>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="160"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="66"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="160"/>
         <location filename="../qml/admin/settings/AdminPrinterSettings.qml" line="160"/>
         <source>Edit</source>
         <translation>编辑</translation>
@@ -650,67 +1047,89 @@
         <translation type="vanished">纸张和格式</translation>
     </message>
     <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="124"/>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="124"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="124"/>
         <location filename="../qml/admin/settings/AdminPrinterSettings.qml" line="124"/>
         <source>Receipt Printer</source>
         <translation>收据打印机</translation>
     </message>
     <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="126"/>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="126"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="126"/>
         <location filename="../qml/admin/settings/AdminPrinterSettings.qml" line="126"/>
         <source>Kitchen Printer</source>
         <translation>厨房打印机</translation>
     </message>
     <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="128"/>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="128"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="128"/>
         <location filename="../qml/admin/settings/AdminPrinterSettings.qml" line="128"/>
         <source>Receipt + Kitchen Printer</source>
         <translation>收据 + 厨房打印机</translation>
     </message>
     <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="338"/>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="338"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="338"/>
         <location filename="../qml/admin/settings/AdminPrinterSettings.qml" line="338"/>
         <source>Role</source>
         <translation>角色</translation>
     </message>
     <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="348"/>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="348"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="348"/>
         <location filename="../qml/admin/settings/AdminPrinterSettings.qml" line="348"/>
         <source>Receipt</source>
         <translation>收据</translation>
     </message>
     <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="351"/>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="351"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="351"/>
         <location filename="../qml/admin/settings/AdminPrinterSettings.qml" line="351"/>
         <source>Kitchen Ticket</source>
         <translation>厨房小票</translation>
     </message>
     <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="354"/>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="354"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="354"/>
         <location filename="../qml/admin/settings/AdminPrinterSettings.qml" line="354"/>
         <source>Receipt + Kitchen Ticket</source>
         <translation>收据 + 厨房打印机</translation>
     </message>
     <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="365"/>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="365"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="365"/>
         <location filename="../qml/admin/settings/AdminPrinterSettings.qml" line="365"/>
         <source>Paper Width</source>
         <translation>纸张宽度</translation>
     </message>
     <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="399"/>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="399"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="399"/>
         <location filename="../qml/admin/settings/AdminPrinterSettings.qml" line="399"/>
         <source>Full Cut</source>
         <translation>全切</translation>
     </message>
     <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="402"/>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="402"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="402"/>
         <location filename="../qml/admin/settings/AdminPrinterSettings.qml" line="402"/>
         <source>Partial Cut</source>
         <translation>半切</translation>
     </message>
     <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="405"/>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="405"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="405"/>
         <location filename="../qml/admin/settings/AdminPrinterSettings.qml" line="405"/>
         <source>None</source>
         <translation>不切纸</translation>
@@ -720,8 +1139,12 @@
         <translation type="vanished">不切纸</translation>
     </message>
     <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="481"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="490"/>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="481"/>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="490"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="481"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="490"/>
         <location filename="../qml/admin/settings/AdminPrinterSettings.qml" line="481"/>
         <location filename="../qml/admin/settings/AdminPrinterSettings.qml" line="490"/>
         <source>Add Printer</source>
@@ -740,13 +1163,17 @@
         <translation type="vanished">USB打印机</translation>
     </message>
     <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="310"/>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="310"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="310"/>
         <location filename="../qml/admin/settings/AdminPrinterSettings.qml" line="310"/>
         <source>No printers found</source>
         <translation>未找到打印机</translation>
     </message>
     <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="310"/>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="310"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="310"/>
         <location filename="../qml/admin/settings/AdminPrinterSettings.qml" line="310"/>
         <source>Select a printer</source>
         <translation>选择打印机</translation>
@@ -756,13 +1183,17 @@
         <translation type="vanished">返回</translation>
     </message>
     <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="455"/>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="455"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="455"/>
         <location filename="../qml/admin/settings/AdminPrinterSettings.qml" line="455"/>
         <source>Test Printer</source>
         <translation>测试打印机</translation>
     </message>
     <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="389"/>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="389"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="389"/>
         <location filename="../qml/admin/settings/AdminPrinterSettings.qml" line="389"/>
         <source>Cut Mode</source>
         <translation>切纸方式</translation>
@@ -772,15 +1203,17 @@
         <translation type="vanished">未知打印机</translation>
     </message>
     <message>
-        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="71"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="218"/>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="218"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="71"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="218"/>
         <location filename="../qml/admin/settings/AdminPrinterSettings.qml" line="218"/>
         <source>Remove</source>
         <translation>移除</translation>
     </message>
     <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="232"/>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="232"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="232"/>
         <location filename="../qml/admin/settings/AdminPrinterSettings.qml" line="232"/>
         <source>Failed to remove printer</source>
         <translation>无法删除打印机</translation>
@@ -794,27 +1227,37 @@
         <translation type="vanished">保存打印机设置失败。</translation>
     </message>
     <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="434"/>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="434"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="434"/>
         <location filename="../qml/admin/settings/AdminPrinterSettings.qml" line="434"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
     <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="467"/>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="467"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="467"/>
         <location filename="../qml/admin/settings/AdminPrinterSettings.qml" line="467"/>
         <source>Testing...</source>
         <translation>测试中...</translation>
     </message>
     <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="481"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="490"/>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="481"/>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="490"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="481"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="490"/>
         <location filename="../qml/admin/settings/AdminPrinterSettings.qml" line="481"/>
         <location filename="../qml/admin/settings/AdminPrinterSettings.qml" line="490"/>
         <source>Save Changes</source>
         <translation>保存更改</translation>
     </message>
     <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="504"/>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="504"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminPrinterSettings.qml" line="504"/>
         <location filename="../qml/admin/settings/AdminPrinterSettings.qml" line="504"/>
         <source>No printer selected</source>
         <translation>未选择打印机</translation>
@@ -843,26 +1286,24 @@
         <translation>地区及语言</translation>
     </message>
     <message>
-        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminRegionalSettings.qml" line="57"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminRegionalSettings.qml" line="57"/>
         <source>Locale</source>
-        <translation>语言</translation>
+        <translation type="vanished">语言</translation>
     </message>
     <message>
         <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminRegionalSettings.qml" line="85"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminRegionalSettings.qml" line="101"/>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminRegionalSettings.qml" line="85"/>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminRegionalSettings.qml" line="101"/>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminRegionalSettings.qml" line="85"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminRegionalSettings.qml" line="101"/>
         <location filename="../qml/admin/settings/AdminRegionalSettings.qml" line="85"/>
         <location filename="../qml/admin/settings/AdminRegionalSettings.qml" line="101"/>
         <source>Currency</source>
         <translation>货币</translation>
     </message>
     <message>
-        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminRegionalSettings.qml" line="101"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminRegionalSettings.qml" line="101"/>
         <source>Default Currency</source>
-        <translation>默认货币</translation>
+        <translation type="vanished">默认货币</translation>
     </message>
     <message>
         <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminRegionalSettings.qml" line="136"/>
@@ -877,7 +1318,9 @@
         <translation>保存</translation>
     </message>
     <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminRegionalSettings.qml" line="57"/>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminRegionalSettings.qml" line="57"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminRegionalSettings.qml" line="57"/>
         <location filename="../qml/admin/settings/AdminRegionalSettings.qml" line="57"/>
         <source>App Language</source>
         <translation>语言</translation>
@@ -898,40 +1341,55 @@
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminSettingsSidebar.qml" line="23"/>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminSettingsSidebar.qml" line="23"/>
         <location filename="../qml/admin/settings/AdminSettingsSidebar.qml" line="23"/>
-        <source>Printer</source>
-        <translation>打印机</translation>
+        <source>Tables</source>
+        <translation>餐桌</translation>
     </message>
     <message>
         <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminSettingsSidebar.qml" line="27"/>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminSettingsSidebar.qml" line="27"/>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminSettingsSidebar.qml" line="27"/>
         <location filename="../qml/admin/settings/AdminSettingsSidebar.qml" line="27"/>
-        <source>Tax</source>
-        <translation>税务</translation>
+        <source>Printer</source>
+        <translation>打印机</translation>
     </message>
     <message>
         <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminSettingsSidebar.qml" line="31"/>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminSettingsSidebar.qml" line="31"/>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminSettingsSidebar.qml" line="31"/>
         <location filename="../qml/admin/settings/AdminSettingsSidebar.qml" line="31"/>
-        <source>Membership</source>
-        <translation>会员</translation>
+        <source>Tax</source>
+        <translation>税务</translation>
     </message>
     <message>
         <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminSettingsSidebar.qml" line="35"/>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminSettingsSidebar.qml" line="35"/>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminSettingsSidebar.qml" line="35"/>
         <location filename="../qml/admin/settings/AdminSettingsSidebar.qml" line="35"/>
-        <source>Kitchen</source>
-        <translation>厨房</translation>
+        <source>Membership</source>
+        <translation>会员</translation>
     </message>
     <message>
         <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminSettingsSidebar.qml" line="39"/>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminSettingsSidebar.qml" line="39"/>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminSettingsSidebar.qml" line="39"/>
         <location filename="../qml/admin/settings/AdminSettingsSidebar.qml" line="39"/>
+        <source>Kitchen</source>
+        <translation>厨房</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminSettingsSidebar.qml" line="43"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminSettingsSidebar.qml" line="43"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminSettingsSidebar.qml" line="43"/>
+        <location filename="../qml/admin/settings/AdminSettingsSidebar.qml" line="43"/>
         <source>Region &amp; Formats</source>
         <translation>区域和格式设置</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminSettingsSidebar.qml" line="47"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminSettingsSidebar.qml" line="47"/>
+        <location filename="../qml/admin/settings/AdminSettingsSidebar.qml" line="47"/>
+        <source>Database</source>
+        <translation>数据库</translation>
     </message>
 </context>
 <context>
@@ -1177,12 +1635,86 @@
     </message>
     <message>
         <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminTableManagement.qml" line="271"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminTableManagement.qml" line="283"/>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminTableManagement.qml" line="271"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/management/AdminTableManagement.qml" line="283"/>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/management/AdminTableManagement.qml" line="271"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/management/AdminTableManagement.qml" line="283"/>
         <location filename="../qml/admin/management/AdminTableManagement.qml" line="271"/>
         <location filename="../qml/admin/management/AdminTableManagement.qml" line="283"/>
         <source>Add Table</source>
         <translation>添加桌子</translation>
+    </message>
+</context>
+<context>
+    <name>AdminTableSettings</name>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminTableSettings.qml" line="31"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminTableSettings.qml" line="31"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminTableSettings.qml" line="31"/>
+        <location filename="../qml/admin/settings/AdminTableSettings.qml" line="31"/>
+        <source>Table Settings</source>
+        <translation>桌位设置</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminTableSettings.qml" line="41"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminTableSettings.qml" line="41"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminTableSettings.qml" line="41"/>
+        <location filename="../qml/admin/settings/AdminTableSettings.qml" line="41"/>
+        <source>Table Layout</source>
+        <translation>桌位布局</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminTableSettings.qml" line="57"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminTableSettings.qml" line="57"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminTableSettings.qml" line="57"/>
+        <location filename="../qml/admin/settings/AdminTableSettings.qml" line="57"/>
+        <source>Layout Mode</source>
+        <translation>布局模式</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminTableSettings.qml" line="72"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminTableSettings.qml" line="72"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminTableSettings.qml" line="72"/>
+        <location filename="../qml/admin/settings/AdminTableSettings.qml" line="72"/>
+        <source>Simple Layout</source>
+        <translation>列表模式</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminTableSettings.qml" line="76"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminTableSettings.qml" line="76"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminTableSettings.qml" line="76"/>
+        <location filename="../qml/admin/settings/AdminTableSettings.qml" line="76"/>
+        <source>Visual Floor Plan</source>
+        <translation>平面图模式</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminTableSettings.qml" line="98"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminTableSettings.qml" line="98"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminTableSettings.qml" line="98"/>
+        <location filename="../qml/admin/settings/AdminTableSettings.qml" line="98"/>
+        <source>Visual floor plans allow tables to be positioned freely and support advanced restaurant layouts.</source>
+        <translation>可视化平面图支持自由摆放桌位。</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminTableSettings.qml" line="133"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminTableSettings.qml" line="148"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminTableSettings.qml" line="133"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminTableSettings.qml" line="148"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminTableSettings.qml" line="133"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminTableSettings.qml" line="148"/>
+        <location filename="../qml/admin/settings/AdminTableSettings.qml" line="133"/>
+        <location filename="../qml/admin/settings/AdminTableSettings.qml" line="148"/>
+        <source>Save</source>
+        <translation>保存</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminTableSettings.qml" line="169"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/admin/settings/AdminTableSettings.qml" line="169"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/admin/settings/AdminTableSettings.qml" line="169"/>
+        <location filename="../qml/admin/settings/AdminTableSettings.qml" line="169"/>
+        <source>Failed to save table settings.</source>
+        <translation>桌位设置保存失败。</translation>
     </message>
 </context>
 <context>
@@ -1962,6 +2494,27 @@ Do you want to replace it?</source>
     </message>
 </context>
 <context>
+    <name>FloorCanvas</name>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/components/FloorCanvas.qml" line="90"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/components/floor/FloorCanvas.qml" line="64"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/components/floor/FloorCanvas.qml" line="96"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/components/FloorCanvas.qml" line="90"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/components/FloorCanvas.qml" line="90"/>
+        <location filename="../qml/components/FloorCanvas.qml" line="90"/>
+        <source>Delete</source>
+        <translation>删除</translation>
+    </message>
+</context>
+<context>
+    <name>FloorItemBase</name>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/components/floor/FloorItemBase.qml" line="41"/>
+        <source>Delete</source>
+        <translation>删除</translation>
+    </message>
+</context>
+<context>
     <name>FolderBreadcrumbBar</name>
     <message>
         <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/qml/QtQuick/Dialogs/quickimpl/qml/+Fusion/FolderBreadcrumbBar.qml" line="70"/>
@@ -2042,57 +2595,57 @@ Do you want to replace it?</source>
     <name>KitchenOrders</name>
     <message>
         <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/KitchenOrders.qml" line="42"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/KitchenOrders.qml" line="42"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/KitchenOrders.qml" line="42"/>
-        <location filename="../qml/common/KitchenOrders.qml" line="42"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/KitchenOrders.qml" line="52"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/KitchenOrders.qml" line="52"/>
+        <location filename="../qml/common/KitchenOrders.qml" line="52"/>
         <source>NEW</source>
         <translation>新订单</translation>
     </message>
     <message>
         <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/KitchenOrders.qml" line="44"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/KitchenOrders.qml" line="44"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/KitchenOrders.qml" line="44"/>
-        <location filename="../qml/common/KitchenOrders.qml" line="44"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/KitchenOrders.qml" line="54"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/KitchenOrders.qml" line="54"/>
+        <location filename="../qml/common/KitchenOrders.qml" line="54"/>
         <source>START</source>
         <translation>开始制作</translation>
     </message>
     <message>
         <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/KitchenOrders.qml" line="49"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/KitchenOrders.qml" line="49"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/KitchenOrders.qml" line="49"/>
-        <location filename="../qml/common/KitchenOrders.qml" line="49"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/KitchenOrders.qml" line="59"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/KitchenOrders.qml" line="59"/>
+        <location filename="../qml/common/KitchenOrders.qml" line="59"/>
         <source>PREPARING</source>
         <translation>制作中</translation>
     </message>
     <message>
         <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/KitchenOrders.qml" line="51"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/KitchenOrders.qml" line="51"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/KitchenOrders.qml" line="51"/>
-        <location filename="../qml/common/KitchenOrders.qml" line="51"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/KitchenOrders.qml" line="61"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/KitchenOrders.qml" line="61"/>
+        <location filename="../qml/common/KitchenOrders.qml" line="61"/>
         <source>MARK READY</source>
         <translation>标记为已出餐</translation>
     </message>
     <message>
         <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/KitchenOrders.qml" line="56"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/KitchenOrders.qml" line="56"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/KitchenOrders.qml" line="56"/>
-        <location filename="../qml/common/KitchenOrders.qml" line="56"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/KitchenOrders.qml" line="66"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/KitchenOrders.qml" line="66"/>
+        <location filename="../qml/common/KitchenOrders.qml" line="66"/>
         <source>READY</source>
         <translation>已出餐</translation>
     </message>
     <message>
         <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/KitchenOrders.qml" line="58"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/KitchenOrders.qml" line="58"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/KitchenOrders.qml" line="58"/>
-        <location filename="../qml/common/KitchenOrders.qml" line="58"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/KitchenOrders.qml" line="68"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/KitchenOrders.qml" line="68"/>
+        <location filename="../qml/common/KitchenOrders.qml" line="68"/>
         <source>SERVE</source>
         <translation>上菜</translation>
     </message>
     <message>
         <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/KitchenOrders.qml" line="161"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/KitchenOrders.qml" line="161"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/KitchenOrders.qml" line="161"/>
-        <location filename="../qml/common/KitchenOrders.qml" line="161"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/KitchenOrders.qml" line="171"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/KitchenOrders.qml" line="171"/>
+        <location filename="../qml/common/KitchenOrders.qml" line="171"/>
         <source>NOTE: </source>
         <translation>备注： </translation>
     </message>
@@ -2181,198 +2734,271 @@ Do you want to replace it?</source>
     </message>
 </context>
 <context>
-    <name>OrderTaking</name>
+    <name>OrderEditor</name>
     <message>
-        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="92"/>
-        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="108"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="92"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="108"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTaking.qml" line="92"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTaking.qml" line="108"/>
-        <location filename="../qml/common/OrderTaking.qml" line="92"/>
-        <location filename="../qml/common/OrderTaking.qml" line="108"/>
-        <source>Dine In</source>
-        <translation>堂食</translation>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/components/OrderEditor.qml" line="81"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/components/OrderEditor.qml" line="96"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/components/OrderEditor.qml" line="81"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/components/OrderEditor.qml" line="96"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/components/OrderEditor.qml" line="81"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/components/OrderEditor.qml" line="96"/>
+        <location filename="../qml/components/OrderEditor.qml" line="81"/>
+        <location filename="../qml/components/OrderEditor.qml" line="96"/>
+        <source>Back</source>
+        <translation>返回</translation>
     </message>
     <message>
-        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="126"/>
-        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="142"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="126"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="142"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTaking.qml" line="126"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTaking.qml" line="142"/>
-        <location filename="../qml/common/OrderTaking.qml" line="126"/>
-        <location filename="../qml/common/OrderTaking.qml" line="142"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/components/OrderEditor.qml" line="130"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/components/OrderEditor.qml" line="130"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/components/OrderEditor.qml" line="130"/>
+        <location filename="../qml/components/OrderEditor.qml" line="130"/>
+        <source>Takeaway Order</source>
+        <translation>打包订单</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/components/OrderEditor.qml" line="132"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/components/OrderEditor.qml" line="132"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/components/OrderEditor.qml" line="132"/>
+        <location filename="../qml/components/OrderEditor.qml" line="132"/>
+        <source>Delivery Order</source>
+        <translation>外送订单</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/components/OrderEditor.qml" line="148"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/components/OrderEditor.qml" line="148"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/components/OrderEditor.qml" line="148"/>
+        <location filename="../qml/components/OrderEditor.qml" line="148"/>
         <source>Takeaway</source>
         <translation>打包</translation>
     </message>
     <message>
-        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="160"/>
-        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="176"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="160"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="176"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTaking.qml" line="160"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTaking.qml" line="176"/>
-        <location filename="../qml/common/OrderTaking.qml" line="160"/>
-        <location filename="../qml/common/OrderTaking.qml" line="176"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/components/OrderEditor.qml" line="150"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/components/OrderEditor.qml" line="150"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/components/OrderEditor.qml" line="150"/>
+        <location filename="../qml/components/OrderEditor.qml" line="150"/>
         <source>Delivery</source>
         <translation>外卖</translation>
     </message>
     <message>
-        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="210"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="210"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTaking.qml" line="210"/>
-        <location filename="../qml/common/OrderTaking.qml" line="210"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/components/OrderEditor.qml" line="152"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/components/OrderEditor.qml" line="152"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/components/OrderEditor.qml" line="152"/>
+        <location filename="../qml/components/OrderEditor.qml" line="152"/>
+        <source>Dine In</source>
+        <translation>堂食</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/components/OrderEditor.qml" line="187"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/components/OrderEditor.qml" line="187"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/components/OrderEditor.qml" line="187"/>
+        <location filename="../qml/components/OrderEditor.qml" line="187"/>
         <source>Categories</source>
         <translation>类别</translation>
     </message>
     <message>
-        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="265"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="265"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTaking.qml" line="265"/>
-        <location filename="../qml/common/OrderTaking.qml" line="265"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/components/OrderEditor.qml" line="258"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/components/OrderEditor.qml" line="258"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/components/OrderEditor.qml" line="258"/>
+        <location filename="../qml/components/OrderEditor.qml" line="258"/>
         <source>Menu Items</source>
         <translation>菜单项</translation>
     </message>
     <message>
-        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="265"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="265"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTaking.qml" line="265"/>
-        <location filename="../qml/common/OrderTaking.qml" line="265"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/components/OrderEditor.qml" line="259"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/components/OrderEditor.qml" line="259"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/components/OrderEditor.qml" line="259"/>
+        <location filename="../qml/components/OrderEditor.qml" line="259"/>
         <source>Select a category</source>
         <translation>选择一个类别</translation>
     </message>
     <message>
-        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="284"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="284"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTaking.qml" line="284"/>
-        <location filename="../qml/common/OrderTaking.qml" line="284"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/components/OrderEditor.qml" line="281"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/components/OrderEditor.qml" line="281"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/components/OrderEditor.qml" line="281"/>
+        <location filename="../qml/components/OrderEditor.qml" line="281"/>
         <source>Item</source>
         <translation>菜品</translation>
     </message>
     <message>
-        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="291"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="291"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTaking.qml" line="291"/>
-        <location filename="../qml/common/OrderTaking.qml" line="291"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/components/OrderEditor.qml" line="291"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/components/OrderEditor.qml" line="291"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/components/OrderEditor.qml" line="291"/>
+        <location filename="../qml/components/OrderEditor.qml" line="291"/>
         <source>Price</source>
         <translation>价格</translation>
     </message>
     <message>
-        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="298"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="298"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTaking.qml" line="298"/>
-        <location filename="../qml/common/OrderTaking.qml" line="298"/>
-        <source>Portion</source>
-        <translation>份量</translation>
-    </message>
-    <message>
-        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="363"/>
-        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="374"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="363"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="374"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTaking.qml" line="363"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTaking.qml" line="374"/>
-        <location filename="../qml/common/OrderTaking.qml" line="363"/>
-        <location filename="../qml/common/OrderTaking.qml" line="374"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/components/OrderEditor.qml" line="348"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/components/OrderEditor.qml" line="363"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/components/OrderEditor.qml" line="372"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/components/OrderEditor.qml" line="387"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/components/OrderEditor.qml" line="372"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/components/OrderEditor.qml" line="387"/>
+        <location filename="../qml/components/OrderEditor.qml" line="372"/>
+        <location filename="../qml/components/OrderEditor.qml" line="387"/>
         <source>Add</source>
         <translation>添加</translation>
     </message>
     <message>
-        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="428"/>
-        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="440"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="428"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="440"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTaking.qml" line="428"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTaking.qml" line="440"/>
-        <location filename="../qml/common/OrderTaking.qml" line="428"/>
-        <location filename="../qml/common/OrderTaking.qml" line="440"/>
-        <source>New Order</source>
-        <translation>新订单</translation>
-    </message>
-    <message>
-        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="462"/>
-        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="474"/>
-        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="854"/>
-        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="872"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="462"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="474"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="854"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="872"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTaking.qml" line="462"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTaking.qml" line="474"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTaking.qml" line="854"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTaking.qml" line="872"/>
-        <location filename="../qml/common/OrderTaking.qml" line="462"/>
-        <location filename="../qml/common/OrderTaking.qml" line="474"/>
-        <location filename="../qml/common/OrderTaking.qml" line="854"/>
-        <location filename="../qml/common/OrderTaking.qml" line="872"/>
-        <source>Edit Order</source>
-        <translation>编辑订单</translation>
-    </message>
-    <message>
-        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="494"/>
-        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="506"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="494"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="506"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTaking.qml" line="494"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTaking.qml" line="506"/>
-        <location filename="../qml/common/OrderTaking.qml" line="494"/>
-        <location filename="../qml/common/OrderTaking.qml" line="506"/>
-        <source>Print Ticket</source>
-        <translation>打印小票</translation>
-    </message>
-    <message>
-        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="526"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="526"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTaking.qml" line="526"/>
-        <location filename="../qml/common/OrderTaking.qml" line="526"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/components/OrderEditor.qml" line="416"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/components/OrderEditor.qml" line="440"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/components/OrderEditor.qml" line="440"/>
+        <location filename="../qml/components/OrderEditor.qml" line="440"/>
         <source>Current Order</source>
         <translation>当前订单</translation>
     </message>
     <message>
-        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="672"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="672"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTaking.qml" line="672"/>
-        <location filename="../qml/common/OrderTaking.qml" line="672"/>
-        <source>Add a remark</source>
-        <translation>添加备注</translation>
-    </message>
-    <message>
-        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="697"/>
-        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="703"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="697"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="703"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTaking.qml" line="697"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTaking.qml" line="703"/>
-        <location filename="../qml/common/OrderTaking.qml" line="697"/>
-        <location filename="../qml/common/OrderTaking.qml" line="703"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/components/OrderEditor.qml" line="512"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/components/OrderEditor.qml" line="520"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/components/OrderEditor.qml" line="536"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/components/OrderEditor.qml" line="544"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/components/OrderEditor.qml" line="536"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/components/OrderEditor.qml" line="544"/>
+        <location filename="../qml/components/OrderEditor.qml" line="536"/>
+        <location filename="../qml/components/OrderEditor.qml" line="544"/>
         <source>Remove</source>
         <translation>移除</translation>
     </message>
     <message>
-        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="819"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="819"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTaking.qml" line="819"/>
-        <location filename="../qml/common/OrderTaking.qml" line="819"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/components/OrderEditor.qml" line="552"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/components/OrderEditor.qml" line="576"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/components/OrderEditor.qml" line="576"/>
+        <location filename="../qml/components/OrderEditor.qml" line="576"/>
+        <source>Items:</source>
+        <translation>菜品:</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/components/OrderEditor.qml" line="574"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/components/OrderEditor.qml" line="598"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/components/OrderEditor.qml" line="598"/>
+        <location filename="../qml/components/OrderEditor.qml" line="598"/>
         <source>Subtotal:</source>
         <translation>小计:</translation>
     </message>
     <message>
-        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="834"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="834"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTaking.qml" line="834"/>
-        <location filename="../qml/common/OrderTaking.qml" line="834"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/components/OrderEditor.qml" line="596"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/components/OrderEditor.qml" line="620"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/components/OrderEditor.qml" line="620"/>
+        <location filename="../qml/components/OrderEditor.qml" line="620"/>
         <source>Total:</source>
         <translation>总计：</translation>
     </message>
     <message>
-        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="804"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="804"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTaking.qml" line="804"/>
-        <location filename="../qml/common/OrderTaking.qml" line="804"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/components/OrderEditor.qml" line="621"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/components/OrderEditor.qml" line="640"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/components/OrderEditor.qml" line="645"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/components/OrderEditor.qml" line="664"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/components/OrderEditor.qml" line="645"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/components/OrderEditor.qml" line="664"/>
+        <location filename="../qml/components/OrderEditor.qml" line="645"/>
+        <location filename="../qml/components/OrderEditor.qml" line="664"/>
+        <source>Update Order</source>
+        <translation>更新订单</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/components/OrderEditor.qml" line="622"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/components/OrderEditor.qml" line="641"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/components/OrderEditor.qml" line="646"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/components/OrderEditor.qml" line="665"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/components/OrderEditor.qml" line="646"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/components/OrderEditor.qml" line="665"/>
+        <location filename="../qml/components/OrderEditor.qml" line="646"/>
+        <location filename="../qml/components/OrderEditor.qml" line="665"/>
+        <source>Place Order</source>
+        <translation>下单</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/components/OrderEditor.qml" line="301"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/components/OrderEditor.qml" line="301"/>
+        <location filename="../qml/components/OrderEditor.qml" line="301"/>
+        <source>Portion</source>
+        <translation>份量</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/components/OrderEditor.qml" line="348"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/components/OrderEditor.qml" line="348"/>
+        <location filename="../qml/components/OrderEditor.qml" line="348"/>
+        <source>Unavailable</source>
+        <translation>不可用</translation>
+    </message>
+</context>
+<context>
+    <name>OrderTaking</name>
+    <message>
+        <source>Dine In</source>
+        <translation type="vanished">堂食</translation>
+    </message>
+    <message>
+        <source>Takeaway</source>
+        <translation type="vanished">打包</translation>
+    </message>
+    <message>
+        <source>Delivery</source>
+        <translation type="vanished">外卖</translation>
+    </message>
+    <message>
+        <source>Categories</source>
+        <translation type="vanished">类别</translation>
+    </message>
+    <message>
+        <source>Menu Items</source>
+        <translation type="vanished">菜单项</translation>
+    </message>
+    <message>
+        <source>Select a category</source>
+        <translation type="vanished">选择一个类别</translation>
+    </message>
+    <message>
+        <source>Item</source>
+        <translation type="vanished">菜品</translation>
+    </message>
+    <message>
+        <source>Price</source>
+        <translation type="vanished">价格</translation>
+    </message>
+    <message>
+        <source>Portion</source>
+        <translation type="vanished">份量</translation>
+    </message>
+    <message>
+        <source>Add</source>
+        <translation type="vanished">添加</translation>
+    </message>
+    <message>
+        <source>New Order</source>
+        <translation type="vanished">新订单</translation>
+    </message>
+    <message>
+        <source>Edit Order</source>
+        <translation type="vanished">编辑订单</translation>
+    </message>
+    <message>
+        <source>Print Ticket</source>
+        <translation type="vanished">打印小票</translation>
+    </message>
+    <message>
+        <source>Current Order</source>
+        <translation type="vanished">当前订单</translation>
+    </message>
+    <message>
+        <source>Add a remark</source>
+        <translation type="vanished">添加备注</translation>
+    </message>
+    <message>
+        <source>Remove</source>
+        <translation type="vanished">移除</translation>
+    </message>
+    <message>
+        <source>Subtotal:</source>
+        <translation type="vanished">小计:</translation>
+    </message>
+    <message>
+        <source>Total:</source>
+        <translation type="vanished">总计：</translation>
+    </message>
+    <message>
         <source>Total Items:</source>
-        <translation>菜品总数：</translation>
+        <translation type="vanished">菜品总数：</translation>
     </message>
     <message>
         <source>Table:</source>
@@ -2383,21 +3009,496 @@ Do you want to replace it?</source>
         <translation type="vanished">折扣：</translation>
     </message>
     <message>
-        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="854"/>
-        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="872"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="854"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTaking.qml" line="872"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTaking.qml" line="854"/>
-        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTaking.qml" line="872"/>
-        <location filename="../qml/common/OrderTaking.qml" line="854"/>
-        <location filename="../qml/common/OrderTaking.qml" line="872"/>
+        <source>Place Order</source>
+        <translation type="vanished">下单</translation>
+    </message>
+    <message>
+        <source>Table</source>
+        <translation type="vanished">餐桌</translation>
+    </message>
+</context>
+<context>
+    <name>OrderTakingFloorPlan</name>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingFloorPlan.qml" line="204"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingFloorPlan.qml" line="219"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingFloorPlan.qml" line="219"/>
+        <location filename="../qml/common/OrderTakingFloorPlan.qml" line="219"/>
+        <source>Table Session</source>
+        <translation>桌位信息</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingFloorPlan.qml" line="225"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingFloorPlan.qml" line="240"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingFloorPlan.qml" line="240"/>
+        <location filename="../qml/common/OrderTakingFloorPlan.qml" line="240"/>
+        <source>Select a table for dine in</source>
+        <translation>请选择桌位进行堂食</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingFloorPlan.qml" line="238"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingFloorPlan.qml" line="253"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingFloorPlan.qml" line="253"/>
+        <location filename="../qml/common/OrderTakingFloorPlan.qml" line="253"/>
+        <source>Quick Orders</source>
+        <translation>快速下单</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingFloorPlan.qml" line="263"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingFloorPlan.qml" line="278"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingFloorPlan.qml" line="278"/>
+        <location filename="../qml/common/OrderTakingFloorPlan.qml" line="278"/>
+        <source>Takeaway</source>
+        <translation>打包</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingFloorPlan.qml" line="300"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingFloorPlan.qml" line="315"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingFloorPlan.qml" line="315"/>
+        <location filename="../qml/common/OrderTakingFloorPlan.qml" line="315"/>
+        <source>Delivery</source>
+        <translation>外卖</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingFloorPlan.qml" line="334"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingFloorPlan.qml" line="349"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingFloorPlan.qml" line="349"/>
+        <location filename="../qml/common/OrderTakingFloorPlan.qml" line="349"/>
+        <source>Unknown Table</source>
+        <translation>未知桌位</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingFloorPlan.qml" line="343"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingFloorPlan.qml" line="358"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingFloorPlan.qml" line="358"/>
+        <location filename="../qml/common/OrderTakingFloorPlan.qml" line="358"/>
+        <source>Capacity: </source>
+        <translation>容纳人数: </translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingFloorPlan.qml" line="358"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingFloorPlan.qml" line="373"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingFloorPlan.qml" line="375"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingFloorPlan.qml" line="390"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingFloorPlan.qml" line="375"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingFloorPlan.qml" line="390"/>
+        <location filename="../qml/common/OrderTakingFloorPlan.qml" line="375"/>
+        <location filename="../qml/common/OrderTakingFloorPlan.qml" line="390"/>
+        <source>Create Dine-In Order</source>
+        <translation>创建堂食订单</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingFloorPlan.qml" line="415"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingFloorPlan.qml" line="430"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingFloorPlan.qml" line="676"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingFloorPlan.qml" line="851"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingFloorPlan.qml" line="867"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingFloorPlan.qml" line="415"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingFloorPlan.qml" line="430"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingFloorPlan.qml" line="676"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingFloorPlan.qml" line="851"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingFloorPlan.qml" line="867"/>
+        <location filename="../qml/common/OrderTakingFloorPlan.qml" line="415"/>
+        <location filename="../qml/common/OrderTakingFloorPlan.qml" line="430"/>
+        <location filename="../qml/common/OrderTakingFloorPlan.qml" line="676"/>
+        <location filename="../qml/common/OrderTakingFloorPlan.qml" line="851"/>
+        <location filename="../qml/common/OrderTakingFloorPlan.qml" line="867"/>
+        <source>Create Reservation</source>
+        <translation>创建预订</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingFloorPlan.qml" line="458"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingFloorPlan.qml" line="458"/>
+        <location filename="../qml/common/OrderTakingFloorPlan.qml" line="458"/>
+        <source>Reservation Details</source>
+        <translation>预订详情</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingFloorPlan.qml" line="466"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingFloorPlan.qml" line="466"/>
+        <location filename="../qml/common/OrderTakingFloorPlan.qml" line="466"/>
+        <source>Customer: </source>
+        <translation>顾客: </translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingFloorPlan.qml" line="473"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingFloorPlan.qml" line="473"/>
+        <location filename="../qml/common/OrderTakingFloorPlan.qml" line="473"/>
+        <source>Phone: </source>
+        <translation>电话: </translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingFloorPlan.qml" line="480"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingFloorPlan.qml" line="480"/>
+        <location filename="../qml/common/OrderTakingFloorPlan.qml" line="480"/>
+        <source>Guests: </source>
+        <translation>宾客人数: </translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingFloorPlan.qml" line="487"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingFloorPlan.qml" line="487"/>
+        <location filename="../qml/common/OrderTakingFloorPlan.qml" line="487"/>
+        <source>Time: </source>
+        <translation>时间: </translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingFloorPlan.qml" line="495"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingFloorPlan.qml" line="495"/>
+        <location filename="../qml/common/OrderTakingFloorPlan.qml" line="495"/>
+        <source>Duration: </source>
+        <translation>预订时长: </translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingFloorPlan.qml" line="495"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingFloorPlan.qml" line="495"/>
+        <location filename="../qml/common/OrderTakingFloorPlan.qml" line="495"/>
+        <source> mins</source>
+        <translation> 分钟</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingFloorPlan.qml" line="503"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingFloorPlan.qml" line="503"/>
+        <location filename="../qml/common/OrderTakingFloorPlan.qml" line="503"/>
+        <source>Status: </source>
+        <translation>状态: </translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingFloorPlan.qml" line="512"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingFloorPlan.qml" line="512"/>
+        <location filename="../qml/common/OrderTakingFloorPlan.qml" line="512"/>
+        <source>Notes: </source>
+        <translation>备注: </translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingFloorPlan.qml" line="522"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingFloorPlan.qml" line="538"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingFloorPlan.qml" line="676"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingFloorPlan.qml" line="851"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingFloorPlan.qml" line="866"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingFloorPlan.qml" line="522"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingFloorPlan.qml" line="538"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingFloorPlan.qml" line="676"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingFloorPlan.qml" line="851"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingFloorPlan.qml" line="866"/>
+        <location filename="../qml/common/OrderTakingFloorPlan.qml" line="522"/>
+        <location filename="../qml/common/OrderTakingFloorPlan.qml" line="538"/>
+        <location filename="../qml/common/OrderTakingFloorPlan.qml" line="676"/>
+        <location filename="../qml/common/OrderTakingFloorPlan.qml" line="851"/>
+        <location filename="../qml/common/OrderTakingFloorPlan.qml" line="866"/>
+        <source>Update Reservation</source>
+        <translation>更新预订</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingFloorPlan.qml" line="565"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingFloorPlan.qml" line="581"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingFloorPlan.qml" line="565"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingFloorPlan.qml" line="581"/>
+        <location filename="../qml/common/OrderTakingFloorPlan.qml" line="565"/>
+        <location filename="../qml/common/OrderTakingFloorPlan.qml" line="581"/>
+        <source>Cancel Reservation</source>
+        <translation>取消预订</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingFloorPlan.qml" line="685"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingFloorPlan.qml" line="685"/>
+        <location filename="../qml/common/OrderTakingFloorPlan.qml" line="685"/>
+        <source>Customer Name</source>
+        <translation>顾客姓名</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingFloorPlan.qml" line="694"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingFloorPlan.qml" line="694"/>
+        <location filename="../qml/common/OrderTakingFloorPlan.qml" line="694"/>
+        <source>Enter Customer Name</source>
+        <translation>输入顾客姓名</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingFloorPlan.qml" line="712"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingFloorPlan.qml" line="712"/>
+        <location filename="../qml/common/OrderTakingFloorPlan.qml" line="712"/>
+        <source>Customer Phone</source>
+        <translation>顾客电话</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingFloorPlan.qml" line="721"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingFloorPlan.qml" line="721"/>
+        <location filename="../qml/common/OrderTakingFloorPlan.qml" line="721"/>
+        <source>Enter Customer Phone</source>
+        <translation>输入顾客电话</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingFloorPlan.qml" line="739"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingFloorPlan.qml" line="739"/>
+        <location filename="../qml/common/OrderTakingFloorPlan.qml" line="739"/>
+        <source>Number Of Guests</source>
+        <translation>用餐人数</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingFloorPlan.qml" line="753"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingFloorPlan.qml" line="753"/>
+        <location filename="../qml/common/OrderTakingFloorPlan.qml" line="753"/>
+        <source>Reservation Date</source>
+        <translation>预订日期</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingFloorPlan.qml" line="765"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingFloorPlan.qml" line="765"/>
+        <location filename="../qml/common/OrderTakingFloorPlan.qml" line="765"/>
+        <source>Reservation Time</source>
+        <translation>预订时间</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingFloorPlan.qml" line="778"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingFloorPlan.qml" line="778"/>
+        <location filename="../qml/common/OrderTakingFloorPlan.qml" line="778"/>
+        <source>Duration (minutes)</source>
+        <translation>时长（分钟）</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingFloorPlan.qml" line="795"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingFloorPlan.qml" line="795"/>
+        <location filename="../qml/common/OrderTakingFloorPlan.qml" line="795"/>
+        <source>Notes</source>
+        <translation>备注</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingFloorPlan.qml" line="805"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingFloorPlan.qml" line="805"/>
+        <location filename="../qml/common/OrderTakingFloorPlan.qml" line="805"/>
+        <source>Enter notes</source>
+        <translation>输入备注</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingFloorPlan.qml" line="824"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingFloorPlan.qml" line="837"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingFloorPlan.qml" line="824"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingFloorPlan.qml" line="837"/>
+        <location filename="../qml/common/OrderTakingFloorPlan.qml" line="824"/>
+        <location filename="../qml/common/OrderTakingFloorPlan.qml" line="837"/>
+        <source>Cancel</source>
+        <translation>取消</translation>
+    </message>
+</context>
+<context>
+    <name>OrderTakingSimple</name>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="92"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="108"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="92"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="108"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingSimple.qml" line="92"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingSimple.qml" line="108"/>
+        <location filename="../qml/common/OrderTakingSimple.qml" line="92"/>
+        <location filename="../qml/common/OrderTakingSimple.qml" line="108"/>
+        <source>Dine In</source>
+        <translation>堂食</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="126"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="142"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="126"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="142"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingSimple.qml" line="126"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingSimple.qml" line="142"/>
+        <location filename="../qml/common/OrderTakingSimple.qml" line="126"/>
+        <location filename="../qml/common/OrderTakingSimple.qml" line="142"/>
+        <source>Takeaway</source>
+        <translation>打包</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="160"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="176"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="160"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="176"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingSimple.qml" line="160"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingSimple.qml" line="176"/>
+        <location filename="../qml/common/OrderTakingSimple.qml" line="160"/>
+        <location filename="../qml/common/OrderTakingSimple.qml" line="176"/>
+        <source>Delivery</source>
+        <translation>外卖</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="210"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="210"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingSimple.qml" line="210"/>
+        <location filename="../qml/common/OrderTakingSimple.qml" line="210"/>
+        <source>Categories</source>
+        <translation>类别</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="265"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="264"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingSimple.qml" line="264"/>
+        <location filename="../qml/common/OrderTakingSimple.qml" line="264"/>
+        <source>Menu Items</source>
+        <translation>菜单项</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="265"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="264"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingSimple.qml" line="264"/>
+        <location filename="../qml/common/OrderTakingSimple.qml" line="264"/>
+        <source>Select a category</source>
+        <translation>选择一个类别</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="284"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="283"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingSimple.qml" line="283"/>
+        <location filename="../qml/common/OrderTakingSimple.qml" line="283"/>
+        <source>Item</source>
+        <translation>菜品</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="291"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="290"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingSimple.qml" line="290"/>
+        <location filename="../qml/common/OrderTakingSimple.qml" line="290"/>
+        <source>Price</source>
+        <translation>价格</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="298"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="297"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingSimple.qml" line="297"/>
+        <location filename="../qml/common/OrderTakingSimple.qml" line="297"/>
+        <source>Portion</source>
+        <translation>份量</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="363"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="374"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="371"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="382"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingSimple.qml" line="371"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingSimple.qml" line="382"/>
+        <location filename="../qml/common/OrderTakingSimple.qml" line="371"/>
+        <location filename="../qml/common/OrderTakingSimple.qml" line="382"/>
+        <source>Add</source>
+        <translation>添加</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="428"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="440"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="436"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="448"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingSimple.qml" line="436"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingSimple.qml" line="448"/>
+        <location filename="../qml/common/OrderTakingSimple.qml" line="436"/>
+        <location filename="../qml/common/OrderTakingSimple.qml" line="448"/>
+        <source>New Order</source>
+        <translation>新订单</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="462"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="474"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="854"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="872"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="470"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="482"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="862"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="880"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingSimple.qml" line="470"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingSimple.qml" line="482"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingSimple.qml" line="862"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingSimple.qml" line="880"/>
+        <location filename="../qml/common/OrderTakingSimple.qml" line="470"/>
+        <location filename="../qml/common/OrderTakingSimple.qml" line="482"/>
+        <location filename="../qml/common/OrderTakingSimple.qml" line="862"/>
+        <location filename="../qml/common/OrderTakingSimple.qml" line="880"/>
+        <source>Edit Order</source>
+        <translation>编辑订单</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="494"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="506"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="502"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="514"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingSimple.qml" line="502"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingSimple.qml" line="514"/>
+        <location filename="../qml/common/OrderTakingSimple.qml" line="502"/>
+        <location filename="../qml/common/OrderTakingSimple.qml" line="514"/>
+        <source>Print Ticket</source>
+        <translation>打印小票</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="526"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="534"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingSimple.qml" line="534"/>
+        <location filename="../qml/common/OrderTakingSimple.qml" line="534"/>
+        <source>Current Order</source>
+        <translation>当前订单</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="539"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="547"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingSimple.qml" line="547"/>
+        <location filename="../qml/common/OrderTakingSimple.qml" line="547"/>
+        <source>Table</source>
+        <translation>餐桌</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="672"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="680"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingSimple.qml" line="680"/>
+        <location filename="../qml/common/OrderTakingSimple.qml" line="680"/>
+        <source>Add a remark</source>
+        <translation>添加备注</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="697"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="703"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="705"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="711"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingSimple.qml" line="705"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingSimple.qml" line="711"/>
+        <location filename="../qml/common/OrderTakingSimple.qml" line="705"/>
+        <location filename="../qml/common/OrderTakingSimple.qml" line="711"/>
+        <source>Remove</source>
+        <translation>移除</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="804"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="812"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingSimple.qml" line="812"/>
+        <location filename="../qml/common/OrderTakingSimple.qml" line="812"/>
+        <source>Total Items:</source>
+        <translation>菜品总数：</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="819"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="827"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingSimple.qml" line="827"/>
+        <location filename="../qml/common/OrderTakingSimple.qml" line="827"/>
+        <source>Subtotal:</source>
+        <translation>小计:</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="834"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="842"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingSimple.qml" line="842"/>
+        <location filename="../qml/common/OrderTakingSimple.qml" line="842"/>
+        <source>Total:</source>
+        <translation>总计：</translation>
+    </message>
+    <message>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="854"/>
+        <location filename="../build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="872"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="862"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="880"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingSimple.qml" line="862"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingSimple.qml" line="880"/>
+        <location filename="../qml/common/OrderTakingSimple.qml" line="862"/>
+        <location filename="../qml/common/OrderTakingSimple.qml" line="880"/>
         <source>Place Order</source>
         <translation>下单</translation>
     </message>
     <message>
-        <location filename="../qml/common/OrderTaking.qml" line="539"/>
-        <source>Table</source>
-        <translation>餐桌</translation>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Debug/trudia/qml/common/OrderTakingSimple.qml" line="348"/>
+        <location filename="../build/Desktop_Qt_6_10_2_MinGW_64_bit-Release/trudia/qml/common/OrderTakingSimple.qml" line="348"/>
+        <location filename="../qml/common/OrderTakingSimple.qml" line="348"/>
+        <source>Unavailable</source>
+        <translation>不可用</translation>
     </message>
 </context>
 <context>

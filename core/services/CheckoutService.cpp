@@ -68,11 +68,18 @@ bool CheckoutService::recalculateSessionTotals(int orderSessionId)
             taxableSubtotal += lineTotal;
     }
 
-    auto settingsOpt = m_taxSettingsRepo.get();
-    if (!settingsOpt)
-        return false;
+    TaxSettings settings;
 
-    const auto &settings = *settingsOpt;
+    auto settingsOpt = m_taxSettingsRepo.get();
+    if (settingsOpt)
+    {
+        settings = *settingsOpt;
+    }
+    else
+    {
+        settings.enabled = false;
+        settings.rate = 0;
+    }
 
     qint64 tax = m_taxCalculationService.calculateTax(
         taxableSubtotal,

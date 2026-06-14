@@ -61,7 +61,7 @@ ScrollView {
 
                     Switch {
                         id: enableTaxSwitch
-                        checked: true
+                        checked: false
                         font.pixelSize: Theme.fontNormal
                     }
                 }
@@ -131,7 +131,7 @@ ScrollView {
                     TextField {
                         id: registrationField
                         Layout.fillWidth: true
-                        placeholderText: qsTr("Optional")
+                        placeholderText: qsTr("Registration Number")
                         color: Theme.text
                         placeholderTextColor: Theme.secondaryText
                         font.pixelSize: Theme.fontNormal

@@ -13,39 +13,18 @@ Rectangle {
 
     signal selectionChanged(int index)
 
+    property int membershipIndex: 4
+
     ListModel {
         id: buttonModel
-        ListElement {
-            text: qsTr("Restaurant")
-        }
-
-        ListElement {
-            text: qsTr("Tables")
-        }
-
-        ListElement {
-            text: qsTr("Printer")
-        }
-
-        ListElement {
-            text: qsTr("Tax")
-        }
-
-        ListElement {
-            text: qsTr("Membership")
-        }
-
-        ListElement {
-            text: qsTr("Kitchen")
-        }
-
-        ListElement {
-            text: qsTr("Region & Formats")
-        }
-
-        ListElement {
-            text: qsTr("Database")
-        }
+        ListElement { text: qsTr("Restaurant") }
+        ListElement { text: qsTr("Tables") }
+        ListElement { text: qsTr("Printer") }
+        ListElement { text: qsTr("Tax") }
+        ListElement { text: qsTr("Membership") }
+        ListElement { text: qsTr("Kitchen") }
+        ListElement { text: qsTr("Region & Formats") }
+        ListElement { text: qsTr("Database") }
     }
 
     ColumnLayout {
@@ -54,12 +33,17 @@ Rectangle {
 
         Repeater {
             model: buttonModel
+
             delegate: Button {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 50
 
+                enabled: index !== sidebarBackground.membershipIndex
+
                 background: Rectangle {
-                    color: sidebarBackground.selectedIndex === index ? Theme.primary() : Theme.background
+                    color: sidebarBackground.selectedIndex === index
+                           ? Theme.primary()
+                           : Theme.background
                     radius: 4
                 }
 
@@ -67,7 +51,11 @@ Rectangle {
                     text: model.text
                     font.bold: true
                     anchors.centerIn: parent
-                    color: sidebarBackground.selectedIndex === index ? "white" : Theme.text
+
+                    color: sidebarBackground.selectedIndex === index
+                        ? "white"
+                        : (enabled ? Theme.text : Theme.secondaryText)
+
                     font.family: "Arial"
                     font.pixelSize: Theme.fontNormal
                     elide: Text.ElideRight
@@ -77,6 +65,9 @@ Rectangle {
                 focusPolicy: Qt.NoFocus
 
                 onClicked: {
+                    if (!enabled)
+                        return
+
                     sidebarBackground.selectedIndex = index
                     sidebarBackground.selectionChanged(index)
                 }

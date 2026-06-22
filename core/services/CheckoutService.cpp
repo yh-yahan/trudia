@@ -180,15 +180,13 @@ bool CheckoutService::processMembershipPoints(int orderSessionId, const QString 
 
     if (pointsToRedeem > 0)
     {
-        double discountRM =
-            m_membershipService.redeemPoints(
+        double discountRM = m_membershipService.redeemPoints(
                 memberId,
                 pointsToRedeem,
                 session.total,
                 orderSessionId);
 
-        qint64 discountCents =
-            static_cast<qint64>(std::llround(discountRM * CURRENCY_SCALE));
+        qint64 discountCents = static_cast<qint64>(std::llround(discountRM * CURRENCY_SCALE));
 
         if (discountCents > 0)
         {
@@ -197,8 +195,7 @@ bool CheckoutService::processMembershipPoints(int orderSessionId, const QString 
         }
     }
 
-    int earnedPoints =
-        m_membershipService.calculateEarnedPoints(session.subtotal, session.total);
+    int earnedPoints = m_membershipService.calculateEarnedPoints(session.subtotal, session.total);
 
     if (earnedPoints > 0)
     {
@@ -293,6 +290,9 @@ bool CheckoutService::markOrderPaid(const int &orderSessionId, const QString &me
         return false;
 
     OrderSession session = sessionOpt.value();
+
+    if (session.status == "paid")
+        return true;
 
     // process membership points
     if (!processMembershipPoints(orderSessionId, memberPhone, pointsToRedeem))

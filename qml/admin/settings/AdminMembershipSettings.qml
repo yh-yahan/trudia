@@ -23,7 +23,8 @@ ScrollView {
         redeemPointsField.text = membershipData.redeem_points || "";
         redeemValueField.text = membershipData.redeem_value;
 
-        earnBaseCombo.currentValue = membershipData.earn_on || "subtotal";
+        earnBaseCombo.currentValue = membershipData.earn_on || "total";
+        redeemBaseCombo.currentValue = membershipData.redeem_on || "total";
     }
 
     anchors.fill: parent
@@ -254,6 +255,35 @@ ScrollView {
                         }
                     }
                 }
+
+                RowLayout {
+                    Layout.fillWidth: true
+
+                    Label {
+                        text: qsTr("Redeem On")
+                        color: Theme.text
+                        font.pixelSize: Theme.fontNormal
+                        Layout.preferredWidth: 230
+                    }
+
+                    ComboBox {
+                        id: redeemBaseCombo
+                        Layout.preferredWidth: 220
+                        font.pixelSize: Theme.fontNormal
+                        model: [
+                            {
+                                value: "total",
+                                label: qsTr("Total")
+                            },
+                            {
+                                value: "subtotal",
+                                label: qsTr("Subtotal")
+                            }
+                        ]
+                        textRole: "label"
+                        valueRole: "value"
+                    }
+                }
             }
         }
     }
@@ -307,6 +337,7 @@ ScrollView {
                 payload.redeem_value = parseFloat(redeemValueField.text || 0);
 
                 payload.earn_on = earnBaseCombo.currentValue;
+                payload.redeem_on = redeemBaseCombo.currentValue;
 
                 SettingService.saveMembershipSettings(payload);
             }

@@ -13,6 +13,7 @@ public:
     int redeem_points = 0;
     int redeem_value = 0;
     QString earn_on;
+    QString redeem_on;
 };
 
 #endif // MEMBERSHIPSETTINGS_H

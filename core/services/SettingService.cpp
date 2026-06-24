@@ -237,6 +237,7 @@ QVariantMap SettingService::getMembershipSettings()
     map["redeem_value"] = ms.redeem_value / 100.0;
 
     map["earn_on"] = ms.earn_on;
+    map["redeem_on"] = ms.redeem_on;
 
     return map;
 }
@@ -249,14 +250,12 @@ bool SettingService::saveMembershipSettings(const QVariantMap &map)
     membershipSettings.enabled = map["enabled"].toBool();
 
     membershipSettings.earn_points = map["earn_points"].toInt();
-
     membershipSettings.earn_spend = map["earn_spend"].toDouble() * 100.0;
-
     membershipSettings.redeem_points = map["redeem_points"].toInt();
-
     membershipSettings.redeem_value = map["redeem_value"].toDouble() * 100.0;
 
     membershipSettings.earn_on = map["earn_on"].toString();
+    membershipSettings.redeem_on = map["redeem_on"].toString();
 
     m_membershipSettingsRepo.save(membershipSettings);
 

@@ -151,6 +151,10 @@ QByteArray ReceiptBuilder::build(const ReceiptData &data, const Printer &printer
 
     if (data.membershipEnabled && !data.memberPhone.isEmpty())
     {
+        b.addText(QObject::tr("Balance Before: %1")
+              .arg(data.pointsBalanceBefore));
+        b.newLine();
+        
         if (data.pointsRedeemed > 0)
         {
             b.addText(QObject::tr("Points Redeemed: -%1")
@@ -165,8 +169,8 @@ QByteArray ReceiptBuilder::build(const ReceiptData &data, const Printer &printer
             b.newLine();
         }
 
-        b.addText(QObject::tr("Balance: %1")
-              .arg(data.pointsBalance));
+        b.addText(QObject::tr("Balance After: %1")
+              .arg(data.pointsBalanceAfter));
         b.newLine();
 
         b.addText(QString(width, '-'));

@@ -36,9 +36,10 @@ public:
     bool membershipEnabled = false;
 
     QString memberPhone;
+    int pointsBalanceBefore = 0;
     int pointsRedeemed = 0;
     int pointsEarned = 0;
-    int pointsBalance = 0; 
+    int pointsBalanceAfter = 0; 
 };
 
 #endif // RECEIPTDATA_H

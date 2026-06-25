@@ -408,22 +408,20 @@ bool CheckoutService::printReceipt(int orderSessionId)
 
     if (data.membershipEnabled)
     {
-        int membershipId =
-            m_membershipTransactionRepository.getMembershipIdBySession(orderSessionId);
+        int membershipId = m_membershipTransactionRepository.getMembershipIdBySession(orderSessionId);
 
         if (membershipId > 0)
         {
-            auto membership =
-                m_membershipRepo.getMembershipById(membershipId);
+            auto membership = m_membershipRepo.getMembershipById(membershipId);
 
             data.memberPhone = membership.phone_number;
-            data.pointsBalance = membership.total_points;
+            
+            data.pointsBalanceAfter = membership.total_points;
 
-            data.pointsRedeemed =
-                m_membershipTransactionRepository.getRedeemedPoints(orderSessionId);
-
-            data.pointsEarned =
-                m_membershipTransactionRepository.getEarnedPoints(orderSessionId);
+            data.pointsRedeemed = m_membershipTransactionRepository.getRedeemedPoints(orderSessionId);
+            data.pointsEarned = m_membershipTransactionRepository.getEarnedPoints(orderSessionId);
+            
+            data.pointsBalanceBefore = data.pointsBalanceAfter + data.pointsRedeemed - data.pointsEarned;
         }
     }
 

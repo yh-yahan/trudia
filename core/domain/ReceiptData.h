@@ -26,6 +26,10 @@ public:
     QString email;
     QString website;
 
+    QString displayNumber;
+    QString orderType;
+    std::optional<QString> tableName;
+
     QList<ReceiptItem> items;
 
     double subtotal = 0.0;
@@ -34,12 +38,11 @@ public:
     double total = 0.0;
 
     bool membershipEnabled = false;
-
     QString memberPhone;
     int pointsBalanceBefore = 0;
     int pointsRedeemed = 0;
     int pointsEarned = 0;
-    int pointsBalanceAfter = 0; 
+    int pointsBalanceAfter = 0;
 };
 
 #endif // RECEIPTDATA_H

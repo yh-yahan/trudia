@@ -356,6 +356,25 @@ bool CheckoutService::printReceipt(int orderSessionId)
     data.email = restaurantOpt->email.value_or("");
     data.website = restaurantOpt->website.value_or("");
 
+    data.displayNumber = QString::number(session.display_number);
+
+    if (session.order_type == "dine_in")
+        data.orderType = QObject::tr("Dine In");
+    else if (session.order_type == "takeout")
+        data.orderType = QObject::tr("Takeout");
+    else if (session.order_type == "delivery")
+        data.orderType = QObject::tr("Delivery");
+    else
+        data.orderType = session.order_type;
+
+    if (session.table_id.has_value())
+    {
+        auto tableOpt = m_tableRepo.getTableById(session.table_id.value());
+
+        if (tableOpt.has_value())
+            data.tableName = tableOpt->table_name;
+    }
+
     data.subtotal = static_cast<double>(session.subtotal) / CURRENCY_SCALE;
     data.tax = static_cast<double>(session.tax) / CURRENCY_SCALE;
     data.total = static_cast<double>(session.total) / CURRENCY_SCALE;

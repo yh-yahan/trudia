@@ -94,6 +94,39 @@ QByteArray ReceiptBuilder::build(const ReceiptData &data, const Printer &printer
     }
 
     b.newLine();
+    b.addText(QString(width, '-'));
+    b.newLine();
+
+    b.setAlignLeft();
+
+    if (!data.displayNumber.isEmpty())
+    {
+        b.addText(QObject::tr("Order #: %1").arg(data.displayNumber));
+        b.newLine();
+    }
+
+    if (!data.orderType.isEmpty())
+    {
+        b.addText(QObject::tr("Order Type: %1").arg(data.orderType));
+        b.newLine();
+    }
+
+    if (data.tableName.has_value())
+    {
+        b.addText(QObject::tr("Table: %1").arg(data.tableName.value()));
+        b.newLine();
+    }
+
+    QLocale locale = getLocale();
+    QString date = locale.toString(
+        QDate::currentDate(),
+        QLocale::ShortFormat
+    );
+
+    QString time = QTime::currentTime().toString("HH:mm:ss");
+
+    b.addText(QObject::tr("Date: %1 %2").arg(date, time));
+    b.newLine();
 
     b.addText(QString(width, '-'));
     b.newLine();
@@ -181,18 +214,6 @@ QByteArray ReceiptBuilder::build(const ReceiptData &data, const Printer &printer
 
     b.setAlignCenter();
     b.addText(QObject::tr("Thank you!"));
-    b.newLine();
-
-    b.setAlignCenter();
-    QLocale locale = getLocale();
-    QString date = locale.toString(
-        QDate::currentDate(),
-        QLocale::ShortFormat
-    );
-
-    QString time = QTime::currentTime().toString("HH:mm:ss");
-
-    b.addText(date + " " + time);
     b.newLine();
 
     b.newLine();

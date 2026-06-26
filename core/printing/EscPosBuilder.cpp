@@ -2,30 +2,35 @@
 
 EscPosBuilder::EscPosBuilder() {}
 
+void EscPosBuilder::command(std::initializer_list<char> bytes)
+{
+    for (char b : bytes)
+        m_buffer.append(b);
+}
+
 void EscPosBuilder::initialize()
 {
-    m_buffer.append("\x1B\x40");
+    command({0x1B, 0x40});
 }
 
 void EscPosBuilder::setBold(bool enabled)
 {
-    m_buffer.append("\x1B\x45");
-    m_buffer.append(enabled ? "\x01" : "\x00");
+    command({0x1B, 0x45, enabled ? 0x01 : 0x00});
 }
 
 void EscPosBuilder::setAlignLeft()
 {
-    m_buffer.append("\x1B\x61\x00");
+    command({0x1B, 0x61, 0x00});
 }
 
 void EscPosBuilder::setAlignCenter()
 {
-    m_buffer.append("\x1B\x61\x01");
+    command({0x1B, 0x61, 0x01});
 }
 
 void EscPosBuilder::setAlignRight()
 {
-    m_buffer.append("\x1B\x61\x02");
+    command({0x1B, 0x61, 0x02});
 }
 
 void EscPosBuilder::addText(const QString &text)
@@ -35,17 +40,17 @@ void EscPosBuilder::addText(const QString &text)
 
 void EscPosBuilder::newLine()
 {
-    m_buffer.append("\n");
+    command({'\n'});
 }
 
 void EscPosBuilder::cut(const QString &cut_mode)
 {
     if (cut_mode == "full"){
-        m_buffer.append("\x1B\x64\x03");
-        m_buffer.append("\x1D\x56\x00");
+        command({0x1B, 0x64, 0x03});
+        command({0x1D, 0x56, 0x00});
     } else if (cut_mode == "partial"){
-        m_buffer.append("\x1B\x64\x03");
-        m_buffer.append("\x1D\x56\x01");
+        command({0x1B, 0x64, 0x03});
+        command({0x1D, 0x56, 0x01});
     } else {
         return;
     };

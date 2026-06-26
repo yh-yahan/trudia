@@ -26,6 +26,8 @@ public:
 
 private:
     QByteArray m_buffer;
+
+    void command(std::initializer_list<char> bytes);
 };
 
 #endif // ESCPOSBUILDER_H

@@ -108,6 +108,7 @@ bool DatabaseManager::runMigrations()
         "core/database/migrations/017_create_canvas_items.sql",
         "core/database/migrations/018_create_table_settings.sql",
         "core/database/migrations/019_create_reservations.sql",
+        "core/database/migrations/020_create_app_state.sql",
     };
 
     for (const QString &fileName : migrationFiles)

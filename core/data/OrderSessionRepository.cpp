@@ -25,6 +25,9 @@ std::vector<OrderSession> OrderSessionRepository::getAllActiveOrderSessions()
         OrderSession orderSession;
         orderSession.id = query.value("id").toInt();
         orderSession.display_number = query.value("display_number").toInt();
+        orderSession.receipt_number = query.value("receipt_number").isNull() ? 
+                                    std::nullopt
+                                    : std::make_optional(query.value("receipt_number").toString());
         orderSession.table_id = query.value("table_id").isNull() ? std::nullopt : std::make_optional(query.value("table_id").toInt());
         orderSession.order_type = query.value("order_type").toString();
         orderSession.status = query.value("status").toString();
@@ -60,6 +63,9 @@ std::optional<OrderSession> OrderSessionRepository::getById(const int &orderSess
         OrderSession session;
         session.id = query.value("id").toInt();
         session.display_number = query.value("display_number").toInt();
+        session.receipt_number = query.value("receipt_number").isNull() ? 
+                                    std::nullopt
+                                    : std::make_optional(query.value("receipt_number").toString());
         session.table_id = query.value("table_id").isNull() ? std::nullopt : std::make_optional(query.value("table_id").toInt());
         session.order_type = query.value("order_type").toString();
         session.status = query.value("status").toString();
@@ -102,6 +108,9 @@ std::optional<OrderSession> OrderSessionRepository::getByOrderId(int orderId)
     OrderSession session;
     session.id = query.value("id").toInt();
     session.display_number = query.value("display_number").toInt();
+    session.receipt_number = query.value("receipt_number").isNull() ? 
+                                std::nullopt
+                                : std::make_optional(query.value("receipt_number").toString());
     session.table_id = query.value("table_id").isNull()
                            ? std::nullopt
                            : std::make_optional(query.value("table_id").toInt());
@@ -167,8 +176,8 @@ int OrderSessionRepository::create(const OrderSession &orderSession)
 {
     QSqlQuery query(m_db);
     query.prepare(R"(INSERT INTO order_sessions
-                     (display_number, table_id, order_type, status, points_earned, points_redeemed, subtotal, tax, discount, total, closed_at)
-                     VALUES (:display_number, :table_id, :order_type, :status, :points_earned, :points_redeemed, :subtotal, :tax, :discount, :total, NULL))");
+                     (display_number, receipt_number, table_id, order_type, status, points_earned, points_redeemed, subtotal, tax, discount, total, closed_at)
+                     VALUES (:display_number, NULL, :table_id, :order_type, :status, :points_earned, :points_redeemed, :subtotal, :tax, :discount, :total, NULL))");
 
     query.bindValue(":display_number", orderSession.display_number);
     if (orderSession.table_id.has_value())
@@ -202,6 +211,7 @@ void OrderSessionRepository::update(const OrderSession &orderSession)
     QSqlQuery query(m_db);
     query.prepare(R"(UPDATE order_sessions SET
                      display_number = :display_number,
+                     receipt_number = :receipt_number
                      table_id = :table_id,
                      order_type = :order_type,
                      status = :status,
@@ -214,6 +224,13 @@ void OrderSessionRepository::update(const OrderSession &orderSession)
                      WHERE id = :id)");
 
     query.bindValue(":display_number", orderSession.display_number);
+    
+    if (orderSession.receipt_number.has_value()) {
+        query.bindValue(":receipt_number", orderSession.receipt_number.value());
+    } else {
+        query.bindValue(":receipt_number", QVariant());
+    }
+
     if (orderSession.table_id.has_value()) {
         query.bindValue(":table_id", orderSession.table_id.value());
     } else {
@@ -277,6 +294,9 @@ std::vector<OrderSession> OrderSessionRepository::getRecentPaidSessions(int limi
 
         orderSession.id = query.value("id").toInt();
         orderSession.display_number = query.value("display_number").toInt();
+        orderSession.receipt_number = query.value("receipt_number").isNull() ? 
+                                    std::nullopt
+                                    : std::make_optional(query.value("receipt_number").toString());
         orderSession.table_id = query.value("table_id").isNull()
                                     ? std::nullopt
                                     : std::make_optional(query.value("table_id").toInt());

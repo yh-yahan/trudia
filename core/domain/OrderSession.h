@@ -8,6 +8,7 @@ class OrderSession
 public:
     int id = -1;
     int display_number;
+    std::optional<QString> receipt_number;
     std::optional<int> table_id;
     QString order_type;
     QString status;

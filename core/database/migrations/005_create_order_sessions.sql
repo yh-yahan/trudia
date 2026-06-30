@@ -1,6 +1,7 @@
 CREATE TABLE IF NOT EXISTS order_sessions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     display_number INTEGER NOT NULL,
+    receipt_number TEXT NULL,
     table_id INTEGER NULL,
     order_type TEXT NOT NULL,
     status TEXT NOT NULL DEFAULT 'open',

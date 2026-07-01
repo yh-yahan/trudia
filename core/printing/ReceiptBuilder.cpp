@@ -99,6 +99,12 @@ QByteArray ReceiptBuilder::build(const ReceiptData &data, const Printer &printer
 
     b.setAlignLeft();
 
+    if (!data.receiptNumber.isEmpty())
+    {
+        b.addText(QObject::tr("Receipt #: %1").arg(data.receiptNumber));
+        b.newLine();
+    }
+
     if (!data.displayNumber.isEmpty())
     {
         b.addText(QObject::tr("Order #: %1").arg(data.displayNumber));

@@ -15,6 +15,7 @@ CheckoutService::CheckoutService(OrderSessionRepository &orderSessionRepo,
                                  MembershipRepository &membershipRepo,
                                  MembershipTransactionRepository &membershipTransactionRepo,
                                  TaxSettingsRepository &taxSettingsRepo,
+                                 AppStateRepository &appStateRepo,
                                  ReceiptBuilder &receiptBuilder,
                                  WindowsPrinterService &windowsPrinterService,
                                  TaxCalculationService &taxCalculationService,
@@ -30,6 +31,7 @@ CheckoutService::CheckoutService(OrderSessionRepository &orderSessionRepo,
       m_membershipRepo(membershipRepo),
       m_membershipTransactionRepository(membershipTransactionRepo),
       m_taxSettingsRepo(taxSettingsRepo),
+      m_appStateRepo(appStateRepo),
       m_receiptBuilder(receiptBuilder),
       m_windowsPrinterService(windowsPrinterService),
       m_taxCalculationService(taxCalculationService),
@@ -309,6 +311,11 @@ bool CheckoutService::markOrderPaid(const int &orderSessionId, const QString &me
         m_orderItemRepo.markItemsByOrderId(order.id, "served");
     }
 
+    if (!assignReceiptNumber(session))
+        return false;
+
+    m_orderSessionRepo.update(session);
+
     // mark order session paid
     m_orderSessionRepo.markAsPaid(orderSessionId);
 
@@ -355,6 +362,8 @@ bool CheckoutService::printReceipt(int orderSessionId)
     data.phone = restaurantOpt->phone_number.value_or("");
     data.email = restaurantOpt->email.value_or("");
     data.website = restaurantOpt->website.value_or("");
+
+    data.receiptNumber = session.receipt_number.value_or(QString());
 
     data.displayNumber = QString::number(session.display_number);
 
@@ -483,4 +492,39 @@ QVariantList CheckoutService::getRecentPaidOrders() const
     }
 
     return result;
+}
+
+bool CheckoutService::assignReceiptNumber(OrderSession &session)
+{
+    const int currentYear = QDate::currentDate().year();
+
+    int storedYear = m_appStateRepo.get("receipt.year")
+        .value_or(QString::number(currentYear))
+        .toInt();
+
+    int counter = m_appStateRepo.get("receipt.counter")
+        .value_or("1")
+        .toInt();
+
+    if (storedYear != currentYear)
+    {
+        storedYear = currentYear;
+        counter = 1;
+
+        m_appStateRepo.set({
+            "receipt.year",
+            QString::number(currentYear)
+        });
+    }
+
+    session.receipt_number = QString("%1-%2")
+        .arg(storedYear)
+        .arg(counter, 6, 10, QChar('0'));
+
+    m_appStateRepo.set({
+        "receipt.counter",
+        QString::number(counter + 1)
+    });
+
+    return true;
 }

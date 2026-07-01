@@ -211,7 +211,7 @@ void OrderSessionRepository::update(const OrderSession &orderSession)
     QSqlQuery query(m_db);
     query.prepare(R"(UPDATE order_sessions SET
                      display_number = :display_number,
-                     receipt_number = :receipt_number
+                     receipt_number = :receipt_number,
                      table_id = :table_id,
                      order_type = :order_type,
                      status = :status,

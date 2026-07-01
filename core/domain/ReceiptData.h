@@ -26,6 +26,7 @@ public:
     QString email;
     QString website;
 
+    QString receiptNumber;
     QString displayNumber;
     QString orderType;
     std::optional<QString> tableName;

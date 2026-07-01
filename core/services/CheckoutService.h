@@ -15,6 +15,7 @@
 #include "../data/MembershipRepository.h"
 #include "../data/MembershipTransactionRepository.h"
 #include "../data/TaxSettingsRepository.h"
+#include "../data/AppStateRepository.h"
 #include "../printing/ReceiptBuilder.h"
 #include "../printing/WindowsPrinterService.h"
 #include "./TaxCalculationService.h"
@@ -43,6 +44,7 @@ public:
                              MembershipRepository &membershipRepo,
                              MembershipTransactionRepository &membershipTransactionRepo,
                              TaxSettingsRepository &taxSettingsRepository,
+                             AppStateRepository &appStateRepo,
                              ReceiptBuilder &receiptBuilder,
                              WindowsPrinterService &windowsPrinterService,
                              TaxCalculationService &taxCalculationService,
@@ -68,6 +70,7 @@ private:
     MembershipRepository &m_membershipRepo;
     MembershipTransactionRepository &m_membershipTransactionRepository;
     TaxSettingsRepository &m_taxSettingsRepo;
+    AppStateRepository &m_appStateRepo;
     ReceiptBuilder &m_receiptBuilder;
     WindowsPrinterService &m_windowsPrinterService;
     TaxCalculationService &m_taxCalculationService;
@@ -76,6 +79,8 @@ private:
     MembershipService &m_membershipService;
     TableService &m_tableService;
     ReservationService &m_reservationService;
+
+    bool assignReceiptNumber(OrderSession &session);
 };
 
 #endif // CHECKOUTSERVICE_H

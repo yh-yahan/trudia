@@ -93,6 +93,14 @@ QByteArray ReceiptBuilder::build(const ReceiptData &data, const Printer &printer
         b.newLine();
     }
 
+    if (data.taxRegistrationNumber && !data.taxRegistrationNumber->isEmpty())
+    {
+        b.addText(QObject::tr("%1 Reg. No.: %2")
+                        .arg((data.taxName && !data.taxName->isEmpty()) ? *data.taxName : "Tax")
+                        .arg(*data.taxRegistrationNumber));
+        b.newLine();
+    }
+
     b.newLine();
     b.addText(QString(width, '-'));
     b.newLine();
@@ -162,9 +170,28 @@ QByteArray ReceiptBuilder::build(const ReceiptData &data, const Printer &printer
     b.addText(QObject::tr("Subtotal: %1").arg(formatAmount(data.subtotal)));
     b.newLine();
 
-    if (data.tax > 0.0)
+    if (data.tax > 0.0 || (data.taxName && !data.taxName->isEmpty()))
     {
-        b.addText(QObject::tr("Tax: %1").arg(formatAmount(data.tax)));
+        QString taxLabel;
+
+        if (data.taxName && !data.taxName->isEmpty() && data.taxRate.has_value() && data.taxRate.value() > 0.0)
+        {
+            taxLabel = QObject::tr("Tax (%1 %2%)")
+            .arg(*data.taxName)
+                .arg(QString::number(data.taxRate.value(), 'f', 2));
+        }
+        else if (data.taxName && !data.taxName->isEmpty())
+        {
+            taxLabel = *data.taxName;
+        }
+        else
+        {
+            taxLabel = QObject::tr("Tax");
+        }
+
+        b.addText(QObject::tr("%1: %2")
+                      .arg(taxLabel)
+                      .arg(formatAmount(data.tax)));
         b.newLine();
     }
 

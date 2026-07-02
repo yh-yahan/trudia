@@ -384,6 +384,23 @@ bool CheckoutService::printReceipt(int orderSessionId)
             data.tableName = tableOpt->table_name;
     }
 
+    auto taxOpt = m_taxSettingsRepo.get();
+
+    if (taxOpt.has_value() && taxOpt->enabled)
+    {
+        const auto &tax = taxOpt.value();
+
+        data.taxName = tax.name;
+        data.taxRate = tax.rate / 100;
+        data.taxRegistrationNumber = tax.registration_number.value_or("");
+    }
+    else
+    {
+        data.taxName = "";
+        data.taxRate = 0;
+        data.taxRegistrationNumber = "";
+    }
+
     data.subtotal = static_cast<double>(session.subtotal) / CURRENCY_SCALE;
     data.tax = static_cast<double>(session.tax) / CURRENCY_SCALE;
     data.total = static_cast<double>(session.total) / CURRENCY_SCALE;

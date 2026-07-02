@@ -33,6 +33,10 @@ public:
 
     QList<ReceiptItem> items;
 
+    std::optional<QString> taxName;
+    std::optional<double> taxRate;
+    std::optional<QString> taxRegistrationNumber;
+
     double subtotal = 0.0;
     double tax = 0.0;
     double discount = 0.0;

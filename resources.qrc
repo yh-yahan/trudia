@@ -20,5 +20,6 @@
         <file>core/database/migrations/018_create_table_settings.sql</file>
         <file>core/database/migrations/019_create_reservations.sql</file>
         <file>core/database/migrations/020_create_app_state.sql</file>
+        <file>core/database/migrations/021_create_receipt_snapshot.sql</file>
     </qresource>
 </RCC>

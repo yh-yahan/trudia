@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS receipt_snapshot (
     website TEXT,
 
     tax_name TEXT,
-    tax_rate REAL,
+    tax_rate INTEGER,
     tax_registration_number TEXT,
 
     order_type TEXT,

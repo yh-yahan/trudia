@@ -25,6 +25,7 @@
 #include "core/data/TableSettingsRepository.h"
 #include "core/data/ReservationRepository.h"
 #include "core/data/AppStateRepository.h"
+#include "core/data/ReceiptSnapshotRepository.h"
 #include "core/services/CurrencyService.h"
 #include "core/services/OrderService.h"
 #include "core/services/TableService.h"
@@ -114,6 +115,7 @@ int main(int argc, char *argv[])
     TableSettingsRepository tableSettingsRepo(DatabaseManager::db());
     ReservationRepository reservationRepo(DatabaseManager::db());
     AppStateRepository appStateRepo(DatabaseManager::db());
+    ReceiptSnapshotRepository receiptSnapshotRepo(DatabaseManager::db());
 
     WindowsPrinterService windowsPrinterService;
     CurrencyService currencyService;

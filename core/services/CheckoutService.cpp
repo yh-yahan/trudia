@@ -402,16 +402,19 @@ bool CheckoutService::printReceipt(int orderSessionId)
 
     const auto &session = sessionOpt.value();
 
-    auto restaurantOpt = m_restaurantRepo.get();
-    if (!restaurantOpt.has_value())
+    auto snapshotOpt = m_receiptSnapshotRepo.getByOrderSessionId(orderSessionId);
+
+    if (!snapshotOpt)
         return false;
 
+    const auto &snapshot = *snapshotOpt;
+
     ReceiptData data;
-    data.storeName = restaurantOpt->name;
-    data.address = restaurantOpt->address;
-    data.phone = restaurantOpt->phone_number.value_or("");
-    data.email = restaurantOpt->email.value_or("");
-    data.website = restaurantOpt->website.value_or("");
+    data.storeName = snapshot.store_name.value_or("");
+    data.address = snapshot.address.value_or("");
+    data.phone = snapshot.phone.value_or("");
+    data.email = snapshot.email.value_or("");
+    data.website = snapshot.website.value_or("");
 
     data.receiptNumber = session.receipt_number.value_or(QString());
 
@@ -434,22 +437,9 @@ bool CheckoutService::printReceipt(int orderSessionId)
             data.tableName = tableOpt->table_name;
     }
 
-    auto taxOpt = m_taxSettingsRepo.get();
-
-    if (taxOpt.has_value() && taxOpt->enabled)
-    {
-        const auto &tax = taxOpt.value();
-
-        data.taxName = tax.name;
-        data.taxRate = tax.rate / 100;
-        data.taxRegistrationNumber = tax.registration_number.value_or("");
-    }
-    else
-    {
-        data.taxName = "";
-        data.taxRate = 0;
-        data.taxRegistrationNumber = "";
-    }
+    data.taxName = snapshot.tax_name.value_or("");
+    data.taxRate = snapshot.tax_rate.value_or(0);
+    data.taxRegistrationNumber = snapshot.tax_registration_number.value_or("");
 
     data.subtotal = static_cast<double>(session.subtotal) / CURRENCY_SCALE;
     data.tax = static_cast<double>(session.tax) / CURRENCY_SCALE;

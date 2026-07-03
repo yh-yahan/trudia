@@ -43,8 +43,7 @@ int ReceiptSnapshotRepository::create(const ReceiptSnapshot &snapshot)
     return query.lastInsertId().toInt();
 }
 
-std::optional<ReceiptSnapshot>
-ReceiptSnapshotRepository::getByOrderSessionId(int orderSessionId)
+std::optional<ReceiptSnapshot> ReceiptSnapshotRepository::getByOrderSessionId(int orderSessionId)
 {
     QSqlQuery query(m_db);
 

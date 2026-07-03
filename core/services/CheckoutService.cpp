@@ -16,6 +16,7 @@ CheckoutService::CheckoutService(OrderSessionRepository &orderSessionRepo,
                                  MembershipTransactionRepository &membershipTransactionRepo,
                                  TaxSettingsRepository &taxSettingsRepo,
                                  AppStateRepository &appStateRepo,
+                                 ReceiptSnapshotRepository &receiptSnapshotRepo,
                                  ReceiptBuilder &receiptBuilder,
                                  WindowsPrinterService &windowsPrinterService,
                                  TaxCalculationService &taxCalculationService,
@@ -29,9 +30,10 @@ CheckoutService::CheckoutService(OrderSessionRepository &orderSessionRepo,
       m_restaurantRepo(restaurantRepo),
       m_printerRepo(printerRepo),
       m_membershipRepo(membershipRepo),
-      m_membershipTransactionRepository(membershipTransactionRepo),
+      m_membershipTransactionRepo(membershipTransactionRepo),
       m_taxSettingsRepo(taxSettingsRepo),
       m_appStateRepo(appStateRepo),
+      m_receiptSnapshotRepo(receiptSnapshotRepo),
       m_receiptBuilder(receiptBuilder),
       m_windowsPrinterService(windowsPrinterService),
       m_taxCalculationService(taxCalculationService),
@@ -319,6 +321,54 @@ bool CheckoutService::markOrderPaid(const int &orderSessionId, const QString &me
     // mark order session paid
     m_orderSessionRepo.markAsPaid(orderSessionId);
 
+    // get data for creating receipt snapshot
+    auto restaurantOpt = m_restaurantRepo.get();
+    if (!restaurantOpt.has_value())
+        return false;
+
+    auto taxOpt = m_taxSettingsRepo.get();
+
+    QString tableName;
+
+    if (session.table_id.has_value())
+    {
+        auto tableOpt = m_tableRepo.getTableById(session.table_id.value());
+
+        if (tableOpt.has_value())
+            tableName = tableOpt->table_name;
+    }
+
+    // create receipt snapshot
+    ReceiptSnapshot receipt;
+
+    receipt.order_session_id = session.id;
+
+    receipt.store_name = restaurantOpt->name;
+    receipt.address = restaurantOpt->address;
+    receipt.phone = restaurantOpt->phone_number.value_or("");
+    receipt.email = restaurantOpt->email.value_or("");
+    receipt.website = restaurantOpt->website.value_or("");
+
+    if (taxOpt.has_value() && taxOpt->enabled)
+    {
+        const auto &tax = taxOpt.value();
+
+        receipt.tax_name = tax.name;
+        receipt.tax_rate = tax.rate / 100;
+        receipt.tax_registration_number = tax.registration_number.value_or("");
+    }
+    else
+    {
+        receipt.tax_name = "";
+        receipt.tax_rate = 0;
+        receipt.tax_registration_number = "";
+    }
+
+    receipt.order_type = session.order_type;
+    receipt.table_name = tableName;
+
+    m_receiptSnapshotRepo.create(receipt);
+
     // set table state
     if (session.table_id.has_value())
     {
@@ -453,7 +503,7 @@ bool CheckoutService::printReceipt(int orderSessionId)
 
     if (data.membershipEnabled)
     {
-        int membershipId = m_membershipTransactionRepository.getMembershipIdBySession(orderSessionId);
+        int membershipId = m_membershipTransactionRepo.getMembershipIdBySession(orderSessionId);
 
         if (membershipId > 0)
         {
@@ -463,8 +513,8 @@ bool CheckoutService::printReceipt(int orderSessionId)
             
             data.pointsBalanceAfter = membership.total_points;
 
-            data.pointsRedeemed = m_membershipTransactionRepository.getRedeemedPoints(orderSessionId);
-            data.pointsEarned = m_membershipTransactionRepository.getEarnedPoints(orderSessionId);
+            data.pointsRedeemed = m_membershipTransactionRepo.getRedeemedPoints(orderSessionId);
+            data.pointsEarned = m_membershipTransactionRepo.getEarnedPoints(orderSessionId);
             
             data.pointsBalanceBefore = data.pointsBalanceAfter + data.pointsRedeemed - data.pointsEarned;
         }

@@ -16,6 +16,7 @@
 #include "../data/MembershipTransactionRepository.h"
 #include "../data/TaxSettingsRepository.h"
 #include "../data/AppStateRepository.h"
+#include "../data/ReceiptSnapshotRepository.h"
 #include "../printing/ReceiptBuilder.h"
 #include "../printing/WindowsPrinterService.h"
 #include "./TaxCalculationService.h"
@@ -45,6 +46,7 @@ public:
                              MembershipTransactionRepository &membershipTransactionRepo,
                              TaxSettingsRepository &taxSettingsRepository,
                              AppStateRepository &appStateRepo,
+                             ReceiptSnapshotRepository &receiptSnapshotRepo,
                              ReceiptBuilder &receiptBuilder,
                              WindowsPrinterService &windowsPrinterService,
                              TaxCalculationService &taxCalculationService,
@@ -68,9 +70,10 @@ private:
     RestaurantRepository &m_restaurantRepo;
     PrinterRepository &m_printerRepo;
     MembershipRepository &m_membershipRepo;
-    MembershipTransactionRepository &m_membershipTransactionRepository;
+    MembershipTransactionRepository &m_membershipTransactionRepo;
     TaxSettingsRepository &m_taxSettingsRepo;
     AppStateRepository &m_appStateRepo;
+    ReceiptSnapshotRepository &m_receiptSnapshotRepo;
     ReceiptBuilder &m_receiptBuilder;
     WindowsPrinterService &m_windowsPrinterService;
     TaxCalculationService &m_taxCalculationService;

@@ -16,11 +16,13 @@ int ReceiptSnapshotRepository::create(const ReceiptSnapshot &snapshot)
         INSERT INTO receipt_snapshot (
             order_session_id, store_name, address, phone,
             email, website, tax_name, tax_rate, tax_registration_number,
+            member_phone, points_balance_before, points_balance_after,
             order_type, table_name
         )
         VALUES (
             :order_session_id, :store_name, :address, :phone,
             :email, :website, :tax_name, :tax_rate, :tax_registration_number,
+            :member_phone, :points_balance_before, :points_balance_after,
             :order_type, :table_name
         )
     )");
@@ -34,6 +36,9 @@ int ReceiptSnapshotRepository::create(const ReceiptSnapshot &snapshot)
     query.bindValue(":tax_name", snapshot.tax_name ? *snapshot.tax_name : QVariant());
     query.bindValue(":tax_rate", snapshot.tax_rate ? *snapshot.tax_rate : QVariant());
     query.bindValue(":tax_registration_number", snapshot.tax_registration_number ? *snapshot.tax_registration_number : QVariant());
+    query.bindValue(":member_phone", snapshot.member_phone ? *snapshot.member_phone : QVariant());
+    query.bindValue(":points_balance_before", snapshot.points_balance_before ? *snapshot.points_balance_before : QVariant());
+    query.bindValue(":points_balance_after", snapshot.points_balance_after ? *snapshot.points_balance_after : QVariant());
     query.bindValue(":order_type", snapshot.order_type ? *snapshot.order_type : QVariant());
     query.bindValue(":table_name", snapshot.table_name ? *snapshot.table_name : QVariant());
 
@@ -51,6 +56,7 @@ std::optional<ReceiptSnapshot> ReceiptSnapshotRepository::getByOrderSessionId(in
         SELECT
             id, order_session_id, store_name, address, phone,
             email, website, tax_name, tax_rate, tax_registration_number,
+            member_phone, points_balance_before, points_balance_after,
             order_type, table_name, created_at
         FROM receipt_snapshot
         WHERE order_session_id = :order_session_id
@@ -93,6 +99,15 @@ std::optional<ReceiptSnapshot> ReceiptSnapshotRepository::getByOrderSessionId(in
 
     if (!query.value("tax_registration_number").isNull())
         snapshot.tax_registration_number = query.value("tax_registration_number").toString();
+
+    if (!query.value("member_phone").isNull())
+        snapshot.member_phone = query.value("member_phone").toString();
+
+    if (!query.value("points_balance_before").isNull())
+        snapshot.points_balance_before = query.value("points_balance_before").toInt();
+
+    if (!query.value("points_balance_after").isNull())
+        snapshot.points_balance_after = query.value("points_balance_after").toInt();
 
     if (!query.value("order_type").isNull())
         snapshot.order_type = query.value("order_type").toString();

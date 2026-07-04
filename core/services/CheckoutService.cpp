@@ -316,6 +316,17 @@ bool CheckoutService::markOrderPaid(const int &orderSessionId, const QString &me
     if (!assignReceiptNumber(session))
         return false;
 
+    if (m_settingService.membershipEnabled())
+    {
+        int membershipId = m_membershipTransactionRepo.getMembershipIdBySession(orderSessionId);
+
+        if (membershipId > 0)
+        {
+            session.points_redeemed = m_membershipTransactionRepo.getRedeemedPoints(orderSessionId);
+            session.points_earned = m_membershipTransactionRepo.getEarnedPoints(orderSessionId);
+        }
+    }
+
     m_orderSessionRepo.update(session);
 
     // mark order session paid
@@ -362,6 +373,23 @@ bool CheckoutService::markOrderPaid(const int &orderSessionId, const QString &me
         receipt.tax_name = "";
         receipt.tax_rate = 0;
         receipt.tax_registration_number = "";
+    }
+
+    if (m_settingService.membershipEnabled())
+    {
+        int membershipId = m_membershipTransactionRepo.getMembershipIdBySession(orderSessionId);
+
+        if (membershipId > 0)
+        {
+            auto membership = m_membershipRepo.getMembershipById(membershipId);
+
+            auto pointsRedeemed = m_membershipTransactionRepo.getRedeemedPoints(orderSessionId);
+            auto pointsEarned = m_membershipTransactionRepo.getEarnedPoints(orderSessionId);
+
+            receipt.member_phone = membership.phone_number;
+            receipt.points_balance_after = membership.total_points;
+            receipt.points_balance_before = receipt.points_balance_after.value_or(0) + pointsRedeemed - pointsEarned;
+        }
     }
 
     receipt.order_type = session.order_type;
@@ -489,25 +517,14 @@ bool CheckoutService::printReceipt(int orderSessionId)
         data.items.append(rItem);
     }
 
-    data.membershipEnabled = m_settingService.membershipEnabled();
-
-    if (data.membershipEnabled)
+    if (snapshot.member_phone.has_value())
     {
-        int membershipId = m_membershipTransactionRepo.getMembershipIdBySession(orderSessionId);
+        data.memberPhone = snapshot.member_phone.value_or("");
 
-        if (membershipId > 0)
-        {
-            auto membership = m_membershipRepo.getMembershipById(membershipId);
-
-            data.memberPhone = membership.phone_number;
-            
-            data.pointsBalanceAfter = membership.total_points;
-
-            data.pointsRedeemed = m_membershipTransactionRepo.getRedeemedPoints(orderSessionId);
-            data.pointsEarned = m_membershipTransactionRepo.getEarnedPoints(orderSessionId);
-            
-            data.pointsBalanceBefore = data.pointsBalanceAfter + data.pointsRedeemed - data.pointsEarned;
-        }
+        data.pointsBalanceBefore = snapshot.points_balance_before.value_or(0);
+        data.pointsEarned = session.points_earned;
+        data.pointsRedeemed = session.points_redeemed;
+        data.pointsBalanceAfter = snapshot.points_balance_after.value_or(0);
     }
 
     auto printers = m_printerRepo.getAll();

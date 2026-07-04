@@ -12,6 +12,10 @@ CREATE TABLE IF NOT EXISTS receipt_snapshot (
     tax_rate INTEGER,
     tax_registration_number TEXT,
 
+    member_phone TEXT,
+    points_balance_before INTEGER,
+    points_balance_after INTEGER,
+
     order_type TEXT,
     table_name TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,

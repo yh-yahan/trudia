@@ -215,7 +215,7 @@ QByteArray ReceiptBuilder::build(const ReceiptData &data, const Printer &printer
     b.addText(QString(width, '-'));
     b.newLine();
 
-    if (data.membershipEnabled && !data.memberPhone.isEmpty())
+    if (!data.memberPhone.isEmpty())
     {
         b.addText(QObject::tr("Balance Before: %1")
               .arg(data.pointsBalanceBefore));

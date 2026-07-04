@@ -42,7 +42,6 @@ public:
     double discount = 0.0;
     double total = 0.0;
 
-    bool membershipEnabled = false;
     QString memberPhone;
     int pointsBalanceBefore = 0;
     int pointsRedeemed = 0;

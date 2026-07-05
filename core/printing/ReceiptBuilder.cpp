@@ -131,6 +131,12 @@ QByteArray ReceiptBuilder::build(const ReceiptData &data, const Printer &printer
         b.newLine();
     }
 
+    if (data.isReprint && data.checkoutAt.has_value())
+    {
+        b.addText(QObject::tr("Sale: %1").arg(data.checkoutAt.value()));
+        b.newLine();
+    }
+
     QLocale locale = getLocale();
     QString date = locale.toString(
         QDate::currentDate(),
@@ -139,7 +145,11 @@ QByteArray ReceiptBuilder::build(const ReceiptData &data, const Printer &printer
 
     QString time = QTime::currentTime().toString("HH:mm:ss");
 
-    b.addText(QObject::tr("Date: %1 %2").arg(date, time));
+    if (data.isReprint) {
+        b.addText(QObject::tr("Reprint: %1 %2").arg(date, time));
+    } else {
+        b.addText(QObject::tr("Date: %1 %2").arg(date, time));
+    }
     b.newLine();
 
     b.addText(QString(width, '-'));

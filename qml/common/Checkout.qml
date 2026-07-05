@@ -587,7 +587,7 @@ Item {
                             if (!selectedSession)
                                 return;
                             if (CheckoutService.markOrderPaid(selectedSession.id, memberPhone, redeemPointsRequested)) {
-                                var printed = CheckoutService.printReceipt(selectedSession.id);
+                                var printed = CheckoutService.printReceipt(selectedSession.id, false);
 
                                 if (!printed) {
                                     console.log("Receipt printing failed");
@@ -636,7 +636,7 @@ Item {
                         focusPolicy: Qt.NoFocus
 
                         onClicked: {
-                            var printed = CheckoutService.printReceipt(selectedRecent.id);
+                            var printed = CheckoutService.printReceipt(selectedRecent.id, true);
 
                             if (!printed) {
                                 console.log("Receipt printing failed");

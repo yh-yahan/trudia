@@ -1,6 +1,7 @@
 #include "CheckoutService.h"
 
 #include <cmath>
+#include <QTimeZone>
 #include "../constants/TableStatus.h"
 #include "../constants/ReservationStatus.h"
 
@@ -17,6 +18,7 @@ CheckoutService::CheckoutService(OrderSessionRepository &orderSessionRepo,
                                  TaxSettingsRepository &taxSettingsRepo,
                                  AppStateRepository &appStateRepo,
                                  ReceiptSnapshotRepository &receiptSnapshotRepo,
+                                 RegionalSettingsRepository &regionalSettingsRepo,
                                  ReceiptBuilder &receiptBuilder,
                                  WindowsPrinterService &windowsPrinterService,
                                  TaxCalculationService &taxCalculationService,
@@ -34,6 +36,7 @@ CheckoutService::CheckoutService(OrderSessionRepository &orderSessionRepo,
       m_taxSettingsRepo(taxSettingsRepo),
       m_appStateRepo(appStateRepo),
       m_receiptSnapshotRepo(receiptSnapshotRepo),
+      m_regionalSettingsRepo(regionalSettingsRepo),
       m_receiptBuilder(receiptBuilder),
       m_windowsPrinterService(windowsPrinterService),
       m_taxCalculationService(taxCalculationService),
@@ -422,7 +425,7 @@ bool CheckoutService::markOrderPaid(const int &orderSessionId, const QString &me
     return true;
 }
 
-bool CheckoutService::printReceipt(int orderSessionId)
+bool CheckoutService::printReceipt(int orderSessionId, const bool &isReprint)
 {
     auto sessionOpt = m_orderSessionRepo.getById(orderSessionId);
     if (!sessionOpt.has_value())
@@ -443,6 +446,35 @@ bool CheckoutService::printReceipt(int orderSessionId)
     data.phone = snapshot.phone.value_or("");
     data.email = snapshot.email.value_or("");
     data.website = snapshot.website.value_or("");
+
+    if (isReprint)
+    {
+        data.isReprint = true;
+        QDateTime dt = QDateTime::fromString(
+            snapshot.created_at.value_or(""),
+            "yyyy-MM-dd HH:mm:ss"
+        );
+
+        dt.setTimeZone(QTimeZone::UTC);
+
+        QDateTime local = dt.toLocalTime();
+
+        auto settings = m_regionalSettingsRepo.get();
+
+        QLocale locale;
+        if (settings.has_value() && !settings->locale.isEmpty()) {
+            locale = QLocale(settings->locale);
+        }
+
+        QString date = locale.toString(local.date(), QLocale::ShortFormat);
+        QString time = local.time().toString("HH:mm:ss");
+
+        data.checkoutAt = QString("%1 %2").arg(date, time);
+    } 
+    else
+    {
+        data.isReprint = false;
+    }
 
     data.receiptNumber = session.receipt_number.value_or(QString());
 

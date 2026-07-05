@@ -155,6 +155,7 @@ int main(int argc, char *argv[])
         taxSettingsRepo,
         appStateRepo,
         receiptSnapshotRepo,
+        regionalSettingsRepo,
         receiptBuilder,
         windowsPrinterService,
         taxCalculationService,

@@ -26,6 +26,9 @@ public:
     QString email;
     QString website;
 
+    bool isReprint;
+    std::optional<QString> checkoutAt;
+
     QString receiptNumber;
     QString displayNumber;
     QString orderType;

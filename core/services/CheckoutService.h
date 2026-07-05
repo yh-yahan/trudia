@@ -17,6 +17,7 @@
 #include "../data/TaxSettingsRepository.h"
 #include "../data/AppStateRepository.h"
 #include "../data/ReceiptSnapshotRepository.h"
+#include "../data/RegionalSettingsRepository.h"
 #include "../printing/ReceiptBuilder.h"
 #include "../printing/WindowsPrinterService.h"
 #include "./TaxCalculationService.h"
@@ -47,6 +48,7 @@ public:
                              TaxSettingsRepository &taxSettingsRepository,
                              AppStateRepository &appStateRepo,
                              ReceiptSnapshotRepository &receiptSnapshotRepo,
+                             RegionalSettingsRepository &regionalSettingsRepo,
                              ReceiptBuilder &receiptBuilder,
                              WindowsPrinterService &windowsPrinterService,
                              TaxCalculationService &taxCalculationService,
@@ -60,7 +62,7 @@ public:
     Q_INVOKABLE bool markOrderPaid(const int &orderSessionId, const QString &memberPhone, int pointsToRedeem);
     bool recalculateSessionTotals(int orderSessionId);
     Q_INVOKABLE QVariantList loadCheckoutDetails(const int &orderSessionId);
-    Q_INVOKABLE bool printReceipt(int orderSessionId);
+    Q_INVOKABLE bool printReceipt(int orderSessionId, const bool &isReprint);
     Q_INVOKABLE QVariantList getRecentPaidOrders() const;
 
 private:
@@ -74,6 +76,7 @@ private:
     TaxSettingsRepository &m_taxSettingsRepo;
     AppStateRepository &m_appStateRepo;
     ReceiptSnapshotRepository &m_receiptSnapshotRepo;
+    RegionalSettingsRepository &m_regionalSettingsRepo;
     ReceiptBuilder &m_receiptBuilder;
     WindowsPrinterService &m_windowsPrinterService;
     TaxCalculationService &m_taxCalculationService;

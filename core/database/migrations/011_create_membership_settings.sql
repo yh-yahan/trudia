@@ -6,6 +6,5 @@ CREATE TABLE membership_settings (
     redeem_points INTEGER, -- x points
     redeem_value INTEGER,   -- RM value (in cents)
     earn_on TEXT, -- subtotal/total
-    redeem_on TEXT, -- subtotal/total
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );

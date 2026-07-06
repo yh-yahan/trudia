@@ -24,7 +24,6 @@ ScrollView {
         redeemValueField.text = membershipData.redeem_value;
 
         earnBaseCombo.currentValue = membershipData.earn_on || "total";
-        redeemBaseCombo.currentValue = membershipData.redeem_on || "total";
     }
 
     anchors.fill: parent
@@ -337,7 +336,6 @@ ScrollView {
                 payload.redeem_value = parseFloat(redeemValueField.text || 0);
 
                 payload.earn_on = earnBaseCombo.currentValue;
-                payload.redeem_on = redeemBaseCombo.currentValue;
 
                 SettingService.saveMembershipSettings(payload);
             }

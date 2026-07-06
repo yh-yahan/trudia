@@ -14,7 +14,7 @@ std::optional<MembershipSettings> MembershipSettingsRepository::get()
         SELECT id, enabled,
             earn_points, earn_spend,
             redeem_points, redeem_value,
-            earn_on, redeem_on, created_at
+            earn_on, created_at
         FROM membership_settings
         LIMIT 1
     )");
@@ -39,7 +39,6 @@ std::optional<MembershipSettings> MembershipSettingsRepository::get()
     membershipSettings.redeem_points = query.value("redeem_points").toInt();
     membershipSettings.redeem_value = query.value("redeem_value").toInt();
     membershipSettings.earn_on = query.value("earn_on").toString();
-    membershipSettings.redeem_on = query.value("redeem_on").toString();
 
     return membershipSettings;
 }
@@ -53,20 +52,19 @@ void MembershipSettingsRepository::save(const MembershipSettings &membershipSett
             (id, enabled,
             earn_points, earn_spend,
             redeem_points, redeem_value,
-            earn_on, redeem_on)
+            earn_on)
         VALUES
             (1, :enabled,
             :earn_points, :earn_spend,
             :redeem_points, :redeem_value,
-            :earn_on, :redeem_on)
+            :earn_on)
         ON CONFLICT(id) DO UPDATE SET
             enabled = excluded.enabled,
             earn_points = excluded.earn_points,
             earn_spend = excluded.earn_spend,
             redeem_points = excluded.redeem_points,
             redeem_value = excluded.redeem_value,
-            earn_on = excluded.earn_on,
-            redeem_on = excluded.redeem_on
+            earn_on = excluded.earn_on
     )");
 
     query.bindValue(":enabled", membershipSettings.enabled);
@@ -75,7 +73,6 @@ void MembershipSettingsRepository::save(const MembershipSettings &membershipSett
     query.bindValue(":redeem_points", membershipSettings.redeem_points);
     query.bindValue(":redeem_value", membershipSettings.redeem_value);
     query.bindValue(":earn_on", membershipSettings.earn_on);
-    query.bindValue(":redeem_on", membershipSettings.redeem_on);
 
     if (!query.exec())
     {

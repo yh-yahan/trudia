@@ -148,6 +148,7 @@ qt_add_qml_module(apptrudia
     SOURCES core/domain/AppState.h
     SOURCES core/data/ReceiptSnapshotRepository.h core/data/ReceiptSnapshotRepository.cpp
     SOURCES core/domain/ReceiptSnapshot.h
+    SOURCES core/domain/MembershipResult.h
 )
 
 qt_add_translations(apptrudia

@@ -68,56 +68,31 @@ Item {
         return true;
     }
 
-    function updateMembershipInfo() {
-        memberId = 0;
-        currentPoints = 0;
-        earnedPointsPreview = 0;
+    function updateMembershipPreview() {
         membershipChecked = false;
 
-        redeemPointsRequested = 0;
-
-        if (!memberPhone || memberPhone.length === 0)
+        if (!memberPhone || !selectedSession)
             return;
-        var member = MembershipService.getMemberByPhone(memberPhone);
+
+        var preview = MembershipService.preview(
+            memberPhone,
+            selectedSession.subtotal * 100,
+            selectedSession.total * 100,
+            redeemPointsRequested
+        );
+
+        console.log(JSON.stringify(preview));
 
         membershipChecked = true;
 
-        if (member && member.id) {
-            memberId = member.id;
-            currentPoints = member.total_points;
-        }
+        memberId = preview.memberId || 0;
+        currentPoints = preview.currentPoints || 0;
 
-        if (selectedSession) {
-            earnedPointsPreview = MembershipService.calculateEarnedPoints(selectedSession.subtotal * 100, selectedSession.total * 100);
-            updateRedemptionPreview();
-        }
-    }
+        earnedPointsPreview = preview.earnedPoints || 0;
 
-    function updateRedemptionPreview() {
-        redeemDiscountPreview = 0;
-        finalTotalPreview = selectedSession ? selectedSession.total : 0;
+        redeemDiscountPreview = (preview.redeemDiscountCents || 0) / 100.0;
 
-        if (!selectedSession || memberId <= 0 || currentPoints <= 0)
-            return;
-
-        var settings = SettingService.getMembershipSettings();
-        if (!settings || settings.redeem_points <= 0)
-            return;
-
-        var points = redeemPointsRequested;
-
-        if (points <= 0) {
-            redeemDiscountPreview = 0;
-            finalTotalPreview = selectedSession.total;
-            return;
-        }
-
-        var valuePerPoint = settings.redeem_value / settings.redeem_points;
-
-        var maxDiscount = points * valuePerPoint;
-
-        redeemDiscountPreview = Math.min(maxDiscount, selectedSession.total);
-        finalTotalPreview = selectedSession.total - redeemDiscountPreview;
+        finalTotalPreview = (preview.finalTotalCents || selectedSession.total * 100) / 100.0;
     }
 
     Component.onCompleted: {
@@ -150,7 +125,7 @@ Item {
     }
 
     onSelectedSessionChanged: {
-        updateRedemptionPreview();
+        updateMembershipPreview();
     }
 
     RowLayout {
@@ -179,7 +154,7 @@ Item {
                         selectedRecent = null;
                         selectedSession = modelData;
                         checkoutDetails = CheckoutService.loadCheckoutDetails(modelData.id);
-                        updateMembershipInfo();
+                        updateMembershipPreview();
                     }
                 }
 
@@ -408,7 +383,7 @@ Item {
                                             currentPoints = 0;
                                             earnedPointsPreview = 0;
                                         }
-                                        onAccepted: updateMembershipInfo()
+                                        onAccepted: updateMembershipPreview()
 
                                         background: Rectangle {
                                             radius: 4
@@ -437,7 +412,7 @@ Item {
                                         }
                                         hoverEnabled: false
                                         focusPolicy: Qt.NoFocus
-                                        onClicked: updateMembershipInfo()
+                                        onClicked: updateMembershipPreview()
                                         height: memberPhoneField.height
                                         anchors.verticalCenter: memberPhoneField.verticalCenter
                                     }
@@ -494,7 +469,7 @@ Item {
 
                                 onClicked: {
                                     redeemPointsRequested = currentPoints;
-                                    updateRedemptionPreview();
+                                    updateMembershipPreview();
                                 }
                             }
 
@@ -519,7 +494,7 @@ Item {
 
                                 onClicked: {
                                     redeemPointsRequested = 0;
-                                    updateRedemptionPreview();
+                                    updateMembershipPreview();
                                 }
                             }
                         }

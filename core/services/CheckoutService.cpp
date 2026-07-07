@@ -165,58 +165,6 @@ QVariantList CheckoutService::loadActiveCheckoutSessions()
     return result;
 }
 
-bool CheckoutService::processMembershipPoints(int orderSessionId, const QString &memberPhone, int pointsToRedeem)
-{
-    if (memberPhone.isEmpty())
-        return true;
-
-    if (!m_membershipService.createMember(memberPhone))
-        return false;
-
-    QVariantMap member = m_membershipService.getMemberByPhone(memberPhone);
-    int memberId = member.value("id").toInt();
-
-    if (memberId <= 0)
-        return false;
-
-    auto sessionOpt = m_orderSessionRepo.getById(orderSessionId);
-    if (!sessionOpt.has_value())
-        return false;
-
-    OrderSession session = sessionOpt.value();
-
-    if (pointsToRedeem > 0)
-    {
-        double discountRM = m_membershipService.redeemPoints(
-                memberId,
-                pointsToRedeem,
-                session.total,
-                orderSessionId);
-
-        qint64 discountCents = static_cast<qint64>(std::llround(discountRM * CURRENCY_SCALE));
-
-        if (discountCents > 0)
-        {
-            session.discount += discountCents;
-            session.total -= discountCents;
-        }
-    }
-
-    int earnedPoints = m_membershipService.calculateEarnedPoints(session.subtotal, session.total);
-
-    if (earnedPoints > 0)
-    {
-        m_membershipService.addTransaction(
-            memberId, earnedPoints, "earn", orderSessionId);
-
-        m_membershipRepo.adjustPoints(memberId, "add", earnedPoints);
-    }
-
-    m_orderSessionRepo.update(session);
-
-    return true;
-}
-
 QVariantList CheckoutService::loadCheckoutDetails(const int &orderSessionId)
 {
     QVariantList result;
@@ -302,8 +250,27 @@ bool CheckoutService::markOrderPaid(const int &orderSessionId, const QString &me
         return true;
 
     // process membership points
-    if (!processMembershipPoints(orderSessionId, memberPhone, pointsToRedeem))
-        return false;
+    if (m_settingService.membershipEnabled() && !memberPhone.isEmpty())
+    {
+        MembershipResult membershipResult = m_membershipService.applyToOrder(
+            orderSessionId,
+            memberPhone,
+            session.subtotal,
+            session.total,
+            pointsToRedeem
+        );
+
+        if (!membershipResult.success)
+        {
+            return false;
+        }
+
+        session.discount += membershipResult.discount;
+        session.total -= membershipResult.discount;
+
+        session.points_redeemed = membershipResult.redeemedPoints;
+        session.points_earned = membershipResult.earnedPoints;
+    }
 
     // mark orders and items served
     auto orders = m_orderRepo.getOrdersBySessionId(orderSessionId);

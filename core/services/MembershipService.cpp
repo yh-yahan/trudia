@@ -7,19 +7,187 @@ MembershipService::MembershipService(MembershipRepository &membershipRepo,
                 m_membershipSettingsRepo(membershipSettingsRepo),
                 m_membershipTransactionRepository(membershipTransactionRepository) {}
 
-QVariantMap MembershipService::getMemberByPhone(const QString &phone)
+MembershipResult MembershipService::applyToOrder(int orderSessionId, const QString &phone,
+    int orderSubtotalCents, 
+    int orderTotalCents, 
+    int requestedRedeemPoints)
 {
-    QVariantMap result;
-    Membership member = m_membershipRepo.getMembershipByPhoneNumber(phone);
+    // resolve & validate member
+    Membership member = resolveMember(phone);
+    if (member.status == "revoked") return MembershipResult{false, "MEMBER_REVOKED"};
 
-    if (member.id > 0) {
-        result["id"] = member.id;
-        result["phone_number"] = member.phone_number;
-        result["total_points"] = member.total_points;
-        result["status"] = member.status;
+    // get membership settings
+    auto membershipSettingsOpt = m_membershipSettingsRepo.get();
+    if (!membershipSettingsOpt.has_value())
+    {
+        return MembershipResult{false, "MEMBERSHIP_SETTINGS_NOT_FOUND"};
     }
 
+    const MembershipSettings &membershipSettings = membershipSettingsOpt.value();
+
+    // calculate redeem points
+    auto redeem = calculateRedemption(member, membershipSettings, requestedRedeemPoints, orderTotalCents);
+
+    int finalTotal = orderTotalCents - redeem.discountCents;
+
+    // calculate earn points
+    int earnedPoints = calculateEarning(membershipSettings, orderSubtotalCents, finalTotal);
+
+    // add transaction & update member total points
+    if (redeem.pointsRedeemed > 0)
+    {
+        m_membershipRepo.adjustPoints(member.id, "subtract", redeem.pointsRedeemed);
+
+        addTransaction(member.id, redeem.pointsRedeemed, "redeem", orderSessionId);
+    }
+
+    if (earnedPoints > 0)
+    {
+        m_membershipRepo.adjustPoints(member.id, "add", earnedPoints);
+
+        addTransaction(member.id, earnedPoints, "earn", orderSessionId);
+    }
+
+    // build & return membership result
+    MembershipResult membershipResult;
+    membershipResult.success = true;
+    membershipResult.error = "";
+    membershipResult.redeemedPoints = redeem.pointsRedeemed;
+    membershipResult.earnedPoints = earnedPoints;
+    membershipResult.discount = redeem.discountCents;
+
+    return membershipResult;
+}
+
+QVariantMap MembershipService::preview(
+    const QString &phone,
+    int subtotalCents,
+    int totalCents,
+    int requestedRedeemPoints)
+{
+    QVariantMap result;
+
+    result["success"] = false;
+    result["memberFound"] = false;
+    result["memberId"] = 0;
+    result["currentPoints"] = 0;
+    result["redeemedPoints"] = 0;
+    result["redeemDiscountCents"] = 0;
+    result["earnedPoints"] = 0;
+    result["finalTotalCents"] = totalCents;
+
+    if (phone.isEmpty())
+        return result;
+
+    Membership member = m_membershipRepo.getMembershipByPhoneNumber(phone);
+
+    bool memberFound = member.id > 0;
+
+    result["memberFound"] = memberFound;
+
+    if (memberFound)
+    {
+        result["memberId"] = member.id;
+        result["currentPoints"] = member.total_points;
+
+        if (member.status == "revoked")
+        {
+            result["error"] = "MEMBER_REVOKED";
+            return result;
+        }
+    }
+
+    auto settingsOpt = m_membershipSettingsRepo.get();
+
+    if (!settingsOpt.has_value())
+    {
+        result["error"] = "MEMBERSHIP_SETTINGS_NOT_FOUND";
+        return result;
+    }
+
+    const MembershipSettings &settings = settingsOpt.value();
+
+    RedeemResult redeem;
+
+    if (memberFound)
+    {
+        redeem = calculateRedemption(
+            member,
+            settings,
+            requestedRedeemPoints,
+            totalCents);
+    }
+
+    int finalTotal = totalCents - redeem.discountCents;
+
+    int earnedPoints = calculateEarning(settings, subtotalCents, finalTotal);
+
+    result["success"] = true;
+    result["redeemedPoints"] = redeem.pointsRedeemed;
+    result["redeemDiscountCents"] = redeem.discountCents;
+    result["earnedPoints"] = earnedPoints;
+    result["finalTotalCents"] = finalTotal;
+
     return result;
+}
+
+Membership MembershipService::resolveMember(const QString &phone)
+{
+    Membership member = m_membershipRepo.getMembershipByPhoneNumber(phone);
+
+    if (member.id <= 0)
+    {
+        if (createMember(phone))
+        {
+            member = m_membershipRepo.getMembershipByPhoneNumber(phone);
+        }
+    }
+
+    return member;
+}
+
+RedeemResult MembershipService::calculateRedemption(const Membership &member, 
+    const MembershipSettings &membershipSettings, 
+    const int requestedRedeemPoints, 
+    const int orderTotalCents)
+{
+    RedeemResult result;
+
+    if (requestedRedeemPoints <= 0) return result;
+    if (membershipSettings.redeem_points <= 0 || membershipSettings.redeem_value <= 0) return result;
+    if (member.total_points <= 0) return result;
+
+    int points = std::min(requestedRedeemPoints, member.total_points);
+
+    int discountCents = (points * membershipSettings.redeem_value) / membershipSettings.redeem_points;
+
+    if (discountCents > orderTotalCents)
+    {
+        discountCents = orderTotalCents;
+
+        // adjust points so they match the capped discount
+        points = (discountCents * membershipSettings.redeem_points) / membershipSettings.redeem_value;
+    }
+
+    result.pointsRedeemed = points;
+    result.discountCents = discountCents;
+
+    return result;
+}
+
+int MembershipService::calculateEarning(const MembershipSettings &membershipSettings, 
+    const int orderSubtotalCents, const int finalTotalCents)
+{
+    if (!membershipSettings.enabled) return 0;
+    if (membershipSettings.earn_points <= 0 || membershipSettings.earn_spend <= 0) return 0;
+
+    int baseAmount = (membershipSettings.earn_on == "subtotal")
+            ? orderSubtotalCents
+            : finalTotalCents;
+
+    int pointsEarned = (baseAmount / membershipSettings.earn_spend) * membershipSettings.earn_points;
+
+    return pointsEarned;
 }
 
 bool MembershipService::createMember(const QString &phone)
@@ -37,59 +205,6 @@ bool MembershipService::createMember(const QString &phone)
     return m_membershipRepo.create(newMember);
 }
 
-int MembershipService::calculateEarnedPoints(int subtotalCents, int totalCents)
-{
-    auto settingsOpt = m_membershipSettingsRepo.get();
-    if (!settingsOpt.has_value())
-        return 0;
-
-    const auto &s = settingsOpt.value();
-
-    if (!s.enabled || s.earn_spend <= 0)
-        return 0;
-
-    int baseAmount = (s.earn_on == "subtotal")
-            ? subtotalCents
-            : totalCents;
-
-    return (baseAmount / s.earn_spend) * s.earn_points;
-}
-
-double MembershipService::redeemPoints(int memberId, int pointsToRedeem, int orderTotalCents, int orderSessionId)
-{
-    auto settingsOpt = m_membershipSettingsRepo.get();
-    if (!settingsOpt.has_value())
-        return 0.0;
-
-    const MembershipSettings &s = settingsOpt.value();
-
-    if (s.redeem_points <= 0 || s.redeem_value <= 0)
-        return 0.0;
-
-    int availablePoints = getAvailablePoints(memberId);
-    if (availablePoints <= 0)
-        return 0.0;
-
-    int points = std::min(pointsToRedeem, availablePoints);
-    int discountCents = (points * s.redeem_value) / s.redeem_points;
-
-    if (discountCents > orderTotalCents) {
-        discountCents = orderTotalCents;
-
-        points = (orderTotalCents * s.redeem_points) / s.redeem_value;
-    }
-
-    if (points <= 0 || discountCents <= 0)
-        return 0.0;
-
-    if (!m_membershipRepo.adjustPoints(memberId, "subtract", points))
-        return 0.0;
-
-    addTransaction(memberId, points, "redeem", orderSessionId);
-
-    return discountCents / 100.0;
-}
-
 bool MembershipService::addTransaction(int memberId, int points, const QString &type, int orderSessionId)
 {
     MembershipTransaction txn;
@@ -99,10 +214,4 @@ bool MembershipService::addTransaction(int memberId, int points, const QString &
     txn.order_session_id = orderSessionId;
 
     return m_membershipTransactionRepository.create(txn);
-}
-
-int MembershipService::getAvailablePoints(int memberId)
-{
-    Membership member = m_membershipRepo.getMembershipById(memberId);
-    return member.id > 0 ? member.total_points : 0;
 }

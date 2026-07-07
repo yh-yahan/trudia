@@ -58,7 +58,6 @@ public:
                              ReservationService &reservationService);
 
     Q_INVOKABLE QVariantList loadActiveCheckoutSessions();
-    Q_INVOKABLE bool processMembershipPoints(int orderSessionId, const QString &memberPhone, int pointsToRedeem);
     Q_INVOKABLE bool markOrderPaid(const int &orderSessionId, const QString &memberPhone, int pointsToRedeem);
     bool recalculateSessionTotals(int orderSessionId);
     Q_INVOKABLE QVariantList loadCheckoutDetails(const int &orderSessionId);

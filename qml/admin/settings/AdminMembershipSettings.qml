@@ -254,35 +254,6 @@ ScrollView {
                         }
                     }
                 }
-
-                RowLayout {
-                    Layout.fillWidth: true
-
-                    Label {
-                        text: qsTr("Redeem On")
-                        color: Theme.text
-                        font.pixelSize: Theme.fontNormal
-                        Layout.preferredWidth: 230
-                    }
-
-                    ComboBox {
-                        id: redeemBaseCombo
-                        Layout.preferredWidth: 220
-                        font.pixelSize: Theme.fontNormal
-                        model: [
-                            {
-                                value: "total",
-                                label: qsTr("Total")
-                            },
-                            {
-                                value: "subtotal",
-                                label: qsTr("Subtotal")
-                            }
-                        ]
-                        textRole: "label"
-                        valueRole: "value"
-                    }
-                }
             }
         }
     }

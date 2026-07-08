@@ -9,8 +9,9 @@ class MembershipSettingsRepository
 {
 public:
     explicit MembershipSettingsRepository(QSqlDatabase db);
+    virtual ~MembershipSettingsRepository() = default;
 
-    std::optional<MembershipSettings> get();
+    virtual std::optional<MembershipSettings> get();
     void save(const MembershipSettings &membershipSettings);
 
 private:

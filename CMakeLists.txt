@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_PREFIX_PATH "C:/Qt/6.10.2/mingw_64")
 
-find_package(Qt6 REQUIRED COMPONENTS Quick Sql LinguistTools Concurrent SerialPort)
+find_package(Qt6 REQUIRED COMPONENTS Quick Sql LinguistTools Concurrent Test)
 
 set(LIBSODIUM_ROOT "C:/libsodium/libsodium-win64")
 
@@ -15,6 +15,11 @@ include_directories("${LIBSODIUM_ROOT}/include")
 link_directories("${LIBSODIUM_ROOT}/lib")
 
 qt_standard_project_setup(REQUIRES 6.8)
+
+add_subdirectory(core)
+
+enable_testing()
+add_subdirectory(tests)
 
 qt_add_executable(apptrudia
     main.cpp
@@ -65,90 +70,6 @@ qt_add_qml_module(apptrudia
         qml/serviceStaff/ServiceStaffHome.qml
         qml/serviceStaff/ServiceStaffSidebar.qml
         qml/kitchenStaff/KitchenStaffHome.qml
-
-    SOURCES core/database/DatabaseManager.h
-    SOURCES core/database/DatabaseManager.cpp
-    SOURCES core/domain/User.h
-    SOURCES core/data/UserRepository.h core/data/UserRepository.cpp
-    SOURCES core/services/AuthService.h core/services/AuthService.cpp
-    SOURCES core/services/MenuService.h core/services/MenuService.cpp
-    SOURCES core/data/CategoryRepository.h core/data/CategoryRepository.cpp
-    SOURCES core/data/MenuRepository.h core/data/MenuRepository.cpp
-    SOURCES core/data/TableRepository.h core/data/TableRepository.cpp
-    SOURCES core/data/OrderRepository.h core/data/OrderRepository.cpp
-    SOURCES core/data/OrderItemRepository.h core/data/OrderItemRepository.cpp
-    SOURCES core/domain/Table.h
-    SOURCES core/domain/Category.h
-    SOURCES core/domain/Menu.h
-    SOURCES core/domain/Order.h
-    SOURCES core/domain/OrderItem.h
-    SOURCES core/services/TableService.h core/services/TableService.cpp
-    SOURCES core/services/OrderService.h core/services/OrderService.cpp
-    SOURCES core/domain/OrderSession.h
-    SOURCES core/data/OrderSessionRepository.h core/data/OrderSessionRepository.cpp
-    SOURCES core/services/KitchenOrderService.h core/services/KitchenOrderService.cpp
-    SOURCES core/services/CheckoutService.h core/services/CheckoutService.cpp
-    SOURCES core/data/RestaurantRepository.h core/data/RestaurantRepository.cpp
-    SOURCES core/domain/Restaurant.h
-    SOURCES core/services/SettingService.h core/services/SettingService.cpp
-    SOURCES core/printing/EscPosBuilder.h core/printing/EscPosBuilder.cpp
-    SOURCES core/domain/TaxSettings.h
-    SOURCES core/data/TaxSettingsRepository.h core/data/TaxSettingsRepository.cpp
-    SOURCES core/services/TaxCalculationService.h core/services/TaxCalculationService.cpp
-    SOURCES core/domain/MembershipSettings.h
-    SOURCES core/data/MembershipSettingsRepository.h core/data/MembershipSettingsRepository.cpp
-    SOURCES core/domain/Membership.h
-    SOURCES core/domain/MembershipTransaction.h
-    SOURCES core/data/MembershipRepository.h core/data/MembershipRepository.cpp
-    SOURCES core/data/MembershipTransactionRepository.h core/data/MembershipTransactionRepository.cpp
-    SOURCES core/services/MembershipService.h core/services/MembershipService.cpp
-    SOURCES core/services/UserService.h core/services/UserService.cpp
-    SOURCES core/utilities/PasswordHasher.h core/utilities/PasswordHasher.cpp
-    SOURCES core/services/AnalyticsService.h core/services/AnalyticsService.cpp
-    SOURCES core/data/AnalyticsRepository.h core/data/AnalyticsRepository.cpp
-    SOURCES core/domain/KitchenSettings.h
-    SOURCES core/data/KitchenSettingsRepository.h core/data/KitchenSettingsRepository.cpp
-    SOURCES core/domain/OpenOrderView.h
-    SOURCES core/printing/PrintLayoutHelper.h core/printing/PrintLayoutHelper.cpp
-    SOURCES core/printing/WindowsPrinterService.h core/printing/WindowsPrinterService.cpp
-    SOURCES core/printing/KitchenTicketBuilder.h core/printing/KitchenTicketBuilder.cpp
-    SOURCES core/services/AppService.h core/services/AppService.cpp
-    SOURCES core/services/SetupService.h core/services/SetupService.cpp
-    SOURCES core/printing/ReceiptBuilder.h core/printing/ReceiptBuilder.cpp
-    SOURCES core/domain/ReceiptData.h
-    SOURCES core/models/CategoryModel.h core/models/CategoryModel.cpp
-    SOURCES core/models/MenuItemModel.h core/models/MenuItemModel.cpp
-    SOURCES core/models/TableModel.h core/models/TableModel.cpp
-    SOURCES core/models/UserModel.h core/models/UserModel.cpp
-    SOURCES core/utilities/SystemTheme.h core/utilities/SystemTheme.cpp
-    SOURCES core/utilities/Theme.h
-    SOURCES core/data/RegionalSettingsRepository.h core/data/RegionalSettingsRepository.cpp
-    SOURCES core/domain/RegionalSettings.h
-    SOURCES core/services/CurrencyService.h core/services/CurrencyService.cpp
-    SOURCES core/domain/Printer.h
-    SOURCES core/data/PrinterRepository.h core/data/PrinterRepository.cpp
-    SOURCES core/services/RegionalSettingsService.h core/services/RegionalSettingsService.cpp
-    SOURCES core/domain/CanvasItem.h
-    SOURCES core/domain/Floor.h
-    SOURCES core/data/CanvasItemRepository.h core/data/CanvasItemRepository.cpp
-    SOURCES core/data/FloorRepository.h core/data/FloorRepository.cpp
-    SOURCES core/services/FloorPlanService.h core/services/FloorPlanService.cpp
-    SOURCES core/models/FloorModel.h core/models/FloorModel.cpp
-    SOURCES core/models/CanvasItemModel.h core/models/CanvasItemModel.cpp
-    SOURCES core/domain/TableSettings.h
-    SOURCES core/data/TableSettingsRepository.h core/data/TableSettingsRepository.cpp
-    SOURCES core/constants/TableStatus.h
-    SOURCES core/domain/Reservation.h
-    SOURCES core/data/ReservationRepository.h core/data/ReservationRepository.cpp
-    SOURCES core/constants/ReservationStatus.h
-    SOURCES core/services/ReservationService.h core/services/ReservationService.cpp
-    SOURCES core/services/DatabaseService.h core/services/DatabaseService.cpp
-    SOURCES core/services/DatabaseRestoreService.h core/services/DatabaseRestoreService.cpp
-    SOURCES core/data/AppStateRepository.h core/data/AppStateRepository.cpp
-    SOURCES core/domain/AppState.h
-    SOURCES core/data/ReceiptSnapshotRepository.h core/data/ReceiptSnapshotRepository.cpp
-    SOURCES core/domain/ReceiptSnapshot.h
-    SOURCES core/domain/MembershipResult.h
 )
 
 qt_add_translations(apptrudia
@@ -169,10 +90,10 @@ set_target_properties(apptrudia PROPERTIES
 
 target_link_libraries(apptrudia
     PRIVATE
+        trudia_core
         Qt6::Quick
         Qt6::Sql
         Qt6::Concurrent
-        Qt6::SerialPort
         sodium
 )
 

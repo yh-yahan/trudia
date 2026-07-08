@@ -9,8 +9,9 @@ class MembershipTransactionRepository
 {
 public:
     explicit MembershipTransactionRepository(QSqlDatabase db);
+    virtual ~MembershipTransactionRepository() = default;
 
-    bool create(const MembershipTransaction &transaction);
+    virtual bool create(const MembershipTransaction &transaction);
     MembershipTransaction getById(int id);
     std::vector<MembershipTransaction> getByMembershipId(int membershipId);
     std::vector<MembershipTransaction> getByOrderSessionId(int orderSessionId);

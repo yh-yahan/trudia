@@ -9,13 +9,14 @@ class MembershipRepository
 {
 public:
     explicit MembershipRepository(QSqlDatabase db);
+    virtual ~MembershipRepository() = default;
 
-    bool create(const Membership &membership);
+    virtual bool create(const Membership &membership);
     Membership getMembershipById(const int &id);
-    Membership getMembershipByPhoneNumber(const QString &phoneNumber);
+    virtual Membership getMembershipByPhoneNumber(const QString &phoneNumber);
     QList<Membership> getAllMemberships();
     bool update(const Membership &membership);
-    bool adjustPoints(const int &id, const QString &operation, const int &points); // operation => add/subtract
+    virtual bool adjustPoints(const int &id, const QString &operation, const int &points); // operation => add/subtract
     QList<Membership> getMembershipsByStatus(const QString &status);
     bool remove(const int &id);
 

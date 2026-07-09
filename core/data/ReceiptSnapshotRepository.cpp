@@ -14,13 +14,13 @@ int ReceiptSnapshotRepository::create(const ReceiptSnapshot &snapshot)
 
     query.prepare(R"(
         INSERT INTO receipt_snapshot (
-            order_session_id, store_name, address, phone,
+            order_session_id, cashier_name, store_name, address, phone,
             email, website, tax_name, tax_rate, tax_registration_number,
             member_phone, points_balance_before, points_balance_after,
             order_type, table_name
         )
         VALUES (
-            :order_session_id, :store_name, :address, :phone,
+            :order_session_id, :cashier_name, :store_name, :address, :phone,
             :email, :website, :tax_name, :tax_rate, :tax_registration_number,
             :member_phone, :points_balance_before, :points_balance_after,
             :order_type, :table_name
@@ -28,6 +28,7 @@ int ReceiptSnapshotRepository::create(const ReceiptSnapshot &snapshot)
     )");
 
     query.bindValue(":order_session_id", snapshot.order_session_id);
+    query.bindValue(":cashier_name", snapshot.cashier_name ? *snapshot.cashier_name : QVariant());
     query.bindValue(":store_name", snapshot.store_name ? *snapshot.store_name : QVariant());
     query.bindValue(":address", snapshot.address ? *snapshot.address : QVariant());
     query.bindValue(":phone", snapshot.phone ? *snapshot.phone : QVariant());
@@ -54,7 +55,7 @@ std::optional<ReceiptSnapshot> ReceiptSnapshotRepository::getByOrderSessionId(in
 
     query.prepare(R"(
         SELECT
-            id, order_session_id, store_name, address, phone,
+            id, order_session_id, cashier_name, store_name, address, phone,
             email, website, tax_name, tax_rate, tax_registration_number,
             member_phone, points_balance_before, points_balance_after,
             order_type, table_name, created_at
@@ -75,6 +76,9 @@ std::optional<ReceiptSnapshot> ReceiptSnapshotRepository::getByOrderSessionId(in
 
     snapshot.id = query.value("id").toInt();
     snapshot.order_session_id = query.value("order_session_id").toInt();
+
+    if (!query.value("cashier_name").isNull())
+        snapshot.cashier_name = query.value("cashier_name").toString();
 
     if (!query.value("store_name").isNull())
         snapshot.store_name = query.value("store_name").toString();

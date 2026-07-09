@@ -2,6 +2,8 @@ CREATE TABLE IF NOT EXISTS receipt_snapshot (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     order_session_id INTEGER NOT NULL,
 
+    cashier_name TEXT,
+
     store_name TEXT,
     address TEXT,
     phone TEXT,

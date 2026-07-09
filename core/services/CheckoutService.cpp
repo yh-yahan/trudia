@@ -25,7 +25,8 @@ CheckoutService::CheckoutService(OrderSessionRepository &orderSessionRepo,
                                  MembershipService &membershipService,
                                  SettingService &settingService,
                                  TableService &tableService,
-                                 ReservationService &reservationService)
+                                 ReservationService &reservationService,
+                                 AuthService &authService)
     : m_orderSessionRepo(orderSessionRepo),
       m_orderRepo(orderRepo),
       m_orderItemRepo(orderItemRepo),
@@ -44,7 +45,8 @@ CheckoutService::CheckoutService(OrderSessionRepository &orderSessionRepo,
       m_membershipService(membershipService),
       m_settingService(settingService),
       m_tableService(tableService),
-      m_reservationService(reservationService) {}
+      m_reservationService(reservationService),
+      m_authService(authService) {}
 
 bool CheckoutService::recalculateSessionTotals(int orderSessionId)
 {
@@ -324,6 +326,8 @@ bool CheckoutService::markOrderPaid(const int &orderSessionId, const QString &me
 
     receipt.order_session_id = session.id;
 
+    receipt.cashier_name = m_authService.currentUsername();
+
     receipt.store_name = restaurantOpt->name;
     receipt.address = restaurantOpt->address;
     receipt.phone = restaurantOpt->phone_number.value_or("");
@@ -408,6 +412,8 @@ bool CheckoutService::printReceipt(int orderSessionId, const bool &isReprint)
     const auto &snapshot = *snapshotOpt;
 
     ReceiptData data;
+    data.cashierName = snapshot.cashier_name.value_or("");
+
     data.storeName = snapshot.store_name.value_or("");
     data.address = snapshot.address.value_or("");
     data.phone = snapshot.phone.value_or("");

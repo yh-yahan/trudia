@@ -113,6 +113,12 @@ QByteArray ReceiptBuilder::build(const ReceiptData &data, const Printer &printer
         b.newLine();
     }
 
+    if (!data.cashierName.isEmpty())
+    {
+        b.addText(QObject::tr("Cashier: %1").arg(data.cashierName));
+        b.newLine();
+    }
+
     if (!data.displayNumber.isEmpty())
     {
         b.addText(QObject::tr("Order #: %1").arg(data.displayNumber));

@@ -162,7 +162,8 @@ int main(int argc, char *argv[])
         membershipService,
         settingService,
         tableService,
-        reservationService
+        reservationService,
+        authService
     );
     AnalyticsService analyticsService(analyticsRepo);
     FloorPlanService floorPlanService(

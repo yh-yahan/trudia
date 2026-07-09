@@ -20,6 +20,8 @@ public:
 class ReceiptData
 {
 public:
+    QString cashierName;
+
     QString storeName;
     QString address;
     QString phone;

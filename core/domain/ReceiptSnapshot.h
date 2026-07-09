@@ -8,6 +8,9 @@ class ReceiptSnapshot
 public:
     int id = -1;
     int order_session_id;
+
+    std::optional<QString> cashier_name;
+
     std::optional<QString> store_name;
     std::optional<QString> address;
     std::optional<QString> phone;

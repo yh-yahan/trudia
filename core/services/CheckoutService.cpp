@@ -607,3 +607,81 @@ bool CheckoutService::assignReceiptNumber(OrderSession &session)
 
     return true;
 }
+
+QVariantMap CheckoutService::loadPaidOrderDetails(const int &orderSessionId) {
+    QVariantMap result;
+
+    auto sessionOpt = m_orderSessionRepo.getById(orderSessionId);
+
+    if (!sessionOpt.has_value())
+        return result;
+
+    const OrderSession session = sessionOpt.value();
+
+    const auto orders = m_orderRepo.getOrdersBySessionId(orderSessionId);
+
+    QList<int> orderIds;
+    orderIds.reserve(orders.size());
+
+    for (const auto &order : orders)
+        orderIds.append(order.id);
+
+    const auto items = m_orderItemRepo.getOrderItemsByOrderIds(orderIds);
+
+    QMap<int, QVariantList> itemsByOrder;
+
+    for (const auto &item : items)
+    {
+        QVariantMap itemMap;
+
+        itemMap["id"] = item.id;
+        itemMap["item_id"] = item.item_id;
+        itemMap["item_name"] = item.item_name;
+        itemMap["quantity"] = item.quantity;
+
+        const double unitPrice = static_cast<double>(item.price) / CURRENCY_SCALE;
+
+        itemMap["unit_price"] = unitPrice;
+        itemMap["total_price"] = unitPrice * item.quantity;
+
+        itemMap["item_status"] = item.item_status;
+        itemMap["notes"] = item.notes;
+
+        itemsByOrder[item.order_id].append(itemMap);
+    }
+
+    QVariantMap sessionMap;
+
+    sessionMap["id"] = session.id;
+    sessionMap["display_number"] = session.display_number;
+
+    sessionMap["subtotal"] = static_cast<double>(session.subtotal) / CURRENCY_SCALE;
+    sessionMap["tax"] = static_cast<double>(session.tax) / CURRENCY_SCALE;
+    sessionMap["discount"] = static_cast<double>(session.discount) / CURRENCY_SCALE;
+    sessionMap["total"] = static_cast<double>(session.total) / CURRENCY_SCALE;
+
+    // sessionMap["created_at"] = session.created_at;
+    // sessionMap["closed_at"] = session.closed_at;
+
+    QVariantList orderList;
+
+    for (const auto &order : orders)
+    {
+        QVariantMap orderMap;
+
+        orderMap["id"] = order.id;
+        orderMap["display_number"] = order.display_number;
+        orderMap["status"] = order.status;
+        orderMap["notes"] = order.notes;
+
+        orderMap["closed_at"] = order.closed_at.isEmpty() ? QVariant() : order.closed_at;
+
+        orderMap["items"] = itemsByOrder.value(order.id);
+
+        orderList.append(orderMap);
+    }
+
+    sessionMap["orders"] = orderList;
+
+    return sessionMap;
+}

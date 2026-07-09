@@ -65,6 +65,7 @@ public:
     Q_INVOKABLE QVariantList loadCheckoutDetails(const int &orderSessionId);
     Q_INVOKABLE bool printReceipt(int orderSessionId, const bool &isReprint);
     Q_INVOKABLE QVariantList getRecentPaidOrders() const;
+    Q_INVOKABLE QVariantMap loadPaidOrderDetails(const int &orderSessionId);
 
 private:
     OrderSessionRepository &m_orderSessionRepo;

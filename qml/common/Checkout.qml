@@ -23,6 +23,7 @@ Item {
 
     property var selectedSession: null
     property var selectedRecent: null
+    property var selectedRecentDetails: null
     property var checkoutDetails: []
 
     property bool canCheckout: false
@@ -37,6 +38,7 @@ Item {
 
         selectedSession = null;
         selectedRecent = null;
+        selectedRecentDetails = null;
         checkoutDetails = [];
 
         memberPhone = "";
@@ -574,18 +576,195 @@ Item {
                     }
                 }
 
-                Column {
-                    visible: selectedRecent !== null
-                    spacing: 10
+                // recent orders detail
+                ColumnLayout {
+                    visible: selectedRecentDetails !== null
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
 
                     Text {
-                        text: qsTr("Recent Order #") + selectedRecent.display_number
+                        text: qsTr("Order #") + selectedRecentDetails.display_number
                         color: Theme.text
                         font.pixelSize: Theme.fontNormal
                         font.bold: true
                     }
 
+                    ListView {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        spacing: 16
+                        clip: true
+
+                        model: selectedRecentDetails.orders
+
+                        delegate: Column {
+                            width: parent.width
+                            spacing: 8
+
+                            RowLayout {
+                                width: parent.width
+                                spacing: 12
+
+                                Text {
+                                    text: qsTr("Order ") + modelData.display_number
+                                    color: '#9f9fff'
+                                    font.bold: true
+                                    font.pixelSize: Theme.fontNormal
+                                    Layout.fillWidth: true
+                                }
+                            }
+
+                            readonly property int qtyCol: 60
+                            readonly property int unitCol: 80
+                            readonly property int totalCol: 80
+                            readonly property int itemCol: parent.width - (qtyCol + unitCol + totalCol)
+
+                            RowLayout {
+                                width: parent.width
+                                spacing: 0
+
+                                Text {
+                                    text: qsTr("Item")
+                                    color: Theme.text
+                                    font.bold: true
+                                    font.pixelSize: Theme.fontSmall
+                                    Layout.preferredWidth: itemCol
+                                    elide: Text.ElideRight
+                                }
+
+                                Text {
+                                    text: qsTr("Qty")
+                                    color: Theme.text
+                                    font.bold: true
+                                    font.pixelSize: Theme.fontSmall
+                                    Layout.preferredWidth: qtyCol
+                                    horizontalAlignment: Text.AlignRight
+                                }
+
+                                Text {
+                                    text: qsTr("Unit")
+                                    color: Theme.text
+                                    font.bold: true
+                                    font.pixelSize: Theme.fontSmall
+                                    Layout.preferredWidth: unitCol
+                                    horizontalAlignment: Text.AlignRight
+                                }
+
+                                Text {
+                                    text: qsTr("Total")
+                                    color: Theme.text
+                                    font.bold: true
+                                    font.pixelSize: Theme.fontSmall
+                                    Layout.preferredWidth: totalCol
+                                    horizontalAlignment: Text.AlignRight
+                                }
+                            }
+
+                            Repeater {
+                                model: modelData.items
+
+                                delegate: RowLayout {
+                                    width: parent.width
+                                    spacing: 0
+                                    height: 32
+
+                                    Row {
+                                        Layout.preferredWidth: itemCol
+                                        spacing: 6
+
+                                        Text {
+                                            text: modelData.item_name
+                                            color: Theme.text
+                                            font.pixelSize: Theme.fontNormal
+                                            elide: Text.ElideRight
+                                        }
+
+                                        Text {
+                                            visible: modelData.notes && modelData.notes.length > 0
+                                            text: "(" + modelData.notes + ")"
+                                            color: Theme.orange
+                                            font.pixelSize: Theme.fontSmall
+                                            elide: Text.ElideRight
+                                        }
+                                    }
+
+                                    Text {
+                                        Layout.preferredWidth: qtyCol
+                                        text: "x" + modelData.quantity
+                                        color: Theme.text
+                                        font.pixelSize: Theme.fontNormal
+                                        horizontalAlignment: Text.AlignRight
+                                    }
+
+                                    Text {
+                                        Layout.preferredWidth: unitCol
+                                        text: Number(modelData.unit_price).toFixed(2)
+                                        color: Theme.text
+                                        font.pixelSize: Theme.fontNormal
+                                        horizontalAlignment: Text.AlignRight
+                                    }
+
+                                    Text {
+                                        Layout.preferredWidth: totalCol
+                                        text: Number(modelData.total_price).toFixed(2)
+                                        color: Theme.text
+                                        font.pixelSize: Theme.fontNormal
+                                        horizontalAlignment: Text.AlignRight
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    Rectangle {
+                        Layout.fillWidth: true
+                        height: 1
+                        color: Theme.border
+                    }
+
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        spacing: 6
+
+                        Text {
+                            text: qsTr("Subtotal: ") +
+                                currencySymbol +
+                                selectedRecentDetails.subtotal.toFixed(2)
+                            color: Theme.text
+                            font.pixelSize: Theme.fontNormal
+                        }
+
+                        Text {
+                            text: qsTr("Tax: ") +
+                                currencySymbol +
+                                selectedRecentDetails.tax.toFixed(2)
+                            color: Theme.text
+                            font.pixelSize: Theme.fontNormal
+                        }
+
+                        Text {
+                            visible: selectedRecentDetails.discount > 0
+                            text: qsTr("Discount: -") +
+                                currencySymbol +
+                                selectedRecentDetails.discount.toFixed(2)
+                            color: Theme.orange
+                            font.pixelSize: Theme.fontNormal
+                            font.bold: true
+                        }
+
+                        Text {
+                            text: qsTr("Total: ") +
+                                currencySymbol +
+                                selectedRecentDetails.total.toFixed(2)
+                            color: Theme.green
+                            font.bold: true
+                            font.pixelSize: Theme.fontNormal
+                        }
+                    }
+
                     Button {
+                        Layout.topMargin: 15
+
                         leftPadding: 10
                         rightPadding: 10
                         topPadding: 10
@@ -595,27 +774,29 @@ Item {
 
                         background: Rectangle {
                             radius: 6
-                            color: enabled ? Theme.primary() : Theme.surface
+                            color: Theme.primary()
                         }
 
                         contentItem: Text {
                             text: qsTr("Reprint Receipt")
-                            color: enabled ? "white" : Theme.secondaryText
+                            color: "white"
                             font.bold: true
+                            font.pixelSize: Theme.fontNormal
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
-                            font.pixelSize: Theme.fontNormal
                         }
 
                         hoverEnabled: false
                         focusPolicy: Qt.NoFocus
 
                         onClicked: {
-                            var printed = CheckoutService.printReceipt(selectedRecent.id, true);
+                            var printed = CheckoutService.printReceipt(
+                                selectedRecentDetails.id,
+                                true
+                            );
 
-                            if (!printed) {
+                            if (!printed)
                                 console.log("Receipt printing failed");
-                            }
                         }
                     }
                 }
@@ -653,7 +834,11 @@ Item {
                     anchors.fill: parent
                     onClicked: {
                         selectedSession = null;
+
                         selectedRecent = modelData;
+
+                        selectedRecentDetails =
+                            CheckoutService.loadPaidOrderDetails(modelData.id);
                     }
                 }
 

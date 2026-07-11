@@ -90,6 +90,10 @@ private:
     AuthService &m_authService;
 
     bool assignReceiptNumber(OrderSession &session);
+    bool applyMembershipToSession(OrderSession &session, const QString &memberPhone, int pointsToRedeem);
+    void markOrdersServed(int orderSessionId);
+    bool createReceiptSnapshot(const OrderSession &session);
+    void freeTable(const OrderSession &session);
 };
 
 #endif // CHECKOUTSERVICE_H

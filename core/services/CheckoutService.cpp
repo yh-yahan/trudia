@@ -241,8 +241,8 @@ bool CheckoutService::markOrderPaid(const int &orderSessionId, const QString &me
     if (!recalculateSessionTotals(orderSessionId))
         return false;
 
-    // get order session
     auto sessionOpt = m_orderSessionRepo.getById(orderSessionId);
+
     if (!sessionOpt.has_value())
         return false;
 
@@ -251,147 +251,26 @@ bool CheckoutService::markOrderPaid(const int &orderSessionId, const QString &me
     if (session.status == "paid")
         return true;
 
-    // process membership points
-    if (m_settingService.membershipEnabled() && !memberPhone.isEmpty())
-    {
-        MembershipResult membershipResult = m_membershipService.applyToOrder(
-            orderSessionId,
+    if (!applyMembershipToSession(
+            session,
             memberPhone,
-            session.subtotal,
-            session.total,
-            pointsToRedeem
-        );
-
-        if (!membershipResult.success)
-        {
-            return false;
-        }
-
-        session.discount += membershipResult.discount;
-        session.total -= membershipResult.discount;
-
-        session.points_redeemed = membershipResult.redeemedPoints;
-        session.points_earned = membershipResult.earnedPoints;
-    }
-
-    // mark orders and items served
-    auto orders = m_orderRepo.getOrdersBySessionId(orderSessionId);
-
-    for (auto &order : orders)
+            pointsToRedeem))
     {
-        order.status = "served";
-        m_orderRepo.update(order);
-
-        m_orderItemRepo.markItemsByOrderId(order.id, "served");
+        return false;
     }
+
+    markOrdersServed(orderSessionId);
 
     if (!assignReceiptNumber(session))
         return false;
 
-    if (m_settingService.membershipEnabled())
-    {
-        int membershipId = m_membershipTransactionRepo.getMembershipIdBySession(orderSessionId);
-
-        if (membershipId > 0)
-        {
-            session.points_redeemed = m_membershipTransactionRepo.getRedeemedPoints(orderSessionId);
-            session.points_earned = m_membershipTransactionRepo.getEarnedPoints(orderSessionId);
-        }
-    }
-
     m_orderSessionRepo.update(session);
 
-    // mark order session paid
     m_orderSessionRepo.markAsPaid(orderSessionId);
 
-    // get data for creating receipt snapshot
-    auto restaurantOpt = m_restaurantRepo.get();
-    if (!restaurantOpt.has_value())
-        return false;
+    if (!createReceiptSnapshot(session)) return false;
 
-    auto taxOpt = m_taxSettingsRepo.get();
-
-    QString tableName;
-
-    if (session.table_id.has_value())
-    {
-        auto tableOpt = m_tableRepo.getTableById(session.table_id.value());
-
-        if (tableOpt.has_value())
-            tableName = tableOpt->table_name;
-    }
-
-    // create receipt snapshot
-    ReceiptSnapshot receipt;
-
-    receipt.order_session_id = session.id;
-
-    receipt.cashier_name = m_authService.currentUsername();
-
-    receipt.store_name = restaurantOpt->name;
-    receipt.address = restaurantOpt->address;
-    receipt.phone = restaurantOpt->phone_number.value_or("");
-    receipt.email = restaurantOpt->email.value_or("");
-    receipt.website = restaurantOpt->website.value_or("");
-
-    if (taxOpt.has_value() && taxOpt->enabled)
-    {
-        const auto &tax = taxOpt.value();
-
-        receipt.tax_name = tax.name;
-        receipt.tax_rate = tax.rate / 100;
-        receipt.tax_registration_number = tax.registration_number.value_or("");
-    }
-    else
-    {
-        receipt.tax_name = "";
-        receipt.tax_rate = 0;
-        receipt.tax_registration_number = "";
-    }
-
-    if (m_settingService.membershipEnabled())
-    {
-        int membershipId = m_membershipTransactionRepo.getMembershipIdBySession(orderSessionId);
-
-        if (membershipId > 0)
-        {
-            auto membership = m_membershipRepo.getMembershipById(membershipId);
-
-            auto pointsRedeemed = m_membershipTransactionRepo.getRedeemedPoints(orderSessionId);
-            auto pointsEarned = m_membershipTransactionRepo.getEarnedPoints(orderSessionId);
-
-            receipt.member_phone = membership.phone_number;
-            receipt.points_balance_after = membership.total_points;
-            receipt.points_balance_before = receipt.points_balance_after.value_or(0) + pointsRedeemed - pointsEarned;
-        }
-    }
-
-    receipt.order_type = session.order_type;
-    receipt.table_name = tableName;
-
-    m_receiptSnapshotRepo.create(receipt);
-
-    // set table state
-    if (session.table_id.has_value())
-    {
-        m_tableRepo.setTableState(
-            session.table_id.value(),
-            TableStatus::Available
-        );
-
-        m_tableService.setTableStatus(session.table_id.value(), TableStatus::Available);
-
-        QVariantMap reservation = m_reservationService.getSeatedReservationByTable(
-                session.table_id.value());
-
-        if (!reservation.isEmpty())
-        {
-            reservation["status"] = ReservationStatus::Completed;
-
-            m_reservationService.updateReservation(
-                reservation);
-        }
-    }
+    freeTable(session);
 
     return true;
 }
@@ -684,4 +563,137 @@ QVariantMap CheckoutService::loadPaidOrderDetails(const int &orderSessionId) {
     sessionMap["orders"] = orderList;
 
     return sessionMap;
+}
+
+bool CheckoutService::applyMembershipToSession(OrderSession &session, const QString &memberPhone, int pointsToRedeem)
+{
+    if (!m_settingService.membershipEnabled() || memberPhone.isEmpty())
+        return true;
+
+    MembershipResult result = m_membershipService.applyToOrder(
+        session.id,
+        memberPhone,
+        session.subtotal,
+        session.total,
+        pointsToRedeem
+    );
+
+    if (!result.success)
+        return false;
+
+    session.discount += result.discount;
+    session.total -= result.discount;
+
+    session.points_redeemed = result.redeemedPoints;
+    session.points_earned = result.earnedPoints;
+
+    return true;
+}
+
+void CheckoutService::markOrdersServed(int orderSessionId)
+{
+    auto orders = m_orderRepo.getOrdersBySessionId(orderSessionId);
+
+    for (auto &order : orders)
+    {
+        order.status = "served";
+
+        m_orderRepo.update(order);
+
+        m_orderItemRepo.markItemsByOrderId(
+            order.id,
+            "served"
+        );
+    }
+}
+
+bool CheckoutService::createReceiptSnapshot(const OrderSession &session)
+{
+    auto restaurantOpt = m_restaurantRepo.get();
+
+    if (!restaurantOpt.has_value())
+        return false;
+
+    ReceiptSnapshot receipt;
+
+    receipt.order_session_id = session.id;
+    receipt.cashier_name = m_authService.currentUsername();
+
+    receipt.store_name = restaurantOpt->name;
+    receipt.address = restaurantOpt->address;
+    receipt.phone = restaurantOpt->phone_number.value_or("");
+    receipt.email = restaurantOpt->email.value_or("");
+    receipt.website = restaurantOpt->website.value_or("");
+
+    auto taxOpt = m_taxSettingsRepo.get();
+
+    if (taxOpt.has_value() && taxOpt->enabled)
+    {
+        receipt.tax_name = taxOpt->name;
+        receipt.tax_rate = taxOpt->rate / 100;
+        receipt.tax_registration_number =
+            taxOpt->registration_number.value_or("");
+    }
+    else
+    {
+        receipt.tax_name = "";
+        receipt.tax_rate = 0;
+        receipt.tax_registration_number = "";
+    }
+
+    if (m_settingService.membershipEnabled())
+    {
+        int membershipId =
+            m_membershipTransactionRepo.getMembershipIdBySession(session.id);
+
+        if (membershipId > 0)
+        {
+            Membership membership =
+                m_membershipRepo.getMembershipById(membershipId);
+
+            int redeemed =
+                m_membershipTransactionRepo.getRedeemedPoints(session.id);
+
+            int earned =
+                m_membershipTransactionRepo.getEarnedPoints(session.id);
+
+            receipt.member_phone = membership.phone_number;
+            receipt.points_balance_after = membership.total_points;
+            receipt.points_balance_before =
+                membership.total_points + redeemed - earned;
+        }
+    }
+
+    receipt.order_type = session.order_type;
+
+    if (session.table_id.has_value())
+    {
+        auto table = m_tableRepo.getTableById(session.table_id.value());
+
+        if (table.has_value())
+            receipt.table_name = table->table_name;
+    }
+
+    return m_receiptSnapshotRepo.create(receipt);
+}
+
+void CheckoutService::freeTable(const OrderSession &session)
+{
+    if (!session.table_id.has_value())
+        return;
+
+    int tableId = session.table_id.value();
+
+    m_tableRepo.setTableState(tableId, TableStatus::Available);
+
+    m_tableService.setTableStatus(tableId, TableStatus::Available);
+
+    QVariantMap reservation = m_reservationService.getSeatedReservationByTable(tableId);
+
+    if (!reservation.isEmpty())
+    {
+        reservation["status"] = ReservationStatus::Completed;
+
+        m_reservationService.updateReservation(reservation);
+    }
 }

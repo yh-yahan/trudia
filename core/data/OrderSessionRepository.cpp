@@ -206,7 +206,7 @@ int OrderSessionRepository::create(const OrderSession &orderSession)
     return query.lastInsertId().toInt();
 }
 
-void OrderSessionRepository::update(const OrderSession &orderSession)
+bool OrderSessionRepository::update(const OrderSession &orderSession)
 {
     QSqlQuery query(m_db);
     query.prepare(R"(UPDATE order_sessions SET
@@ -248,10 +248,13 @@ void OrderSessionRepository::update(const OrderSession &orderSession)
 
     if (!query.exec()) {
         qWarning() << "Failed to update order session:" << query.lastError().text();
+        return false;
     }
+
+    return true;
 }
 
-void OrderSessionRepository::markAsPaid(int orderId)
+bool OrderSessionRepository::markAsPaid(int orderId)
 {
     QSqlQuery query(m_db);
     query.prepare(R"(UPDATE order_sessions
@@ -263,7 +266,10 @@ void OrderSessionRepository::markAsPaid(int orderId)
     if (!query.exec())
     {
         qWarning() << "Failed to mark order as closed:" << query.lastError().text();
+        return false;
     }
+
+    return true;
 }
 
 std::vector<OrderSession> OrderSessionRepository::getRecentPaidSessions(int limit)

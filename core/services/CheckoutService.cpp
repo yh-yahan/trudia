@@ -26,7 +26,8 @@ CheckoutService::CheckoutService(OrderSessionRepository &orderSessionRepo,
                                  SettingService &settingService,
                                  TableService &tableService,
                                  ReservationService &reservationService,
-                                 AuthService &authService)
+                                 AuthService &authService,
+                                 DatabaseManager &databaseManager)
     : m_orderSessionRepo(orderSessionRepo),
       m_orderRepo(orderRepo),
       m_orderItemRepo(orderItemRepo),
@@ -46,7 +47,8 @@ CheckoutService::CheckoutService(OrderSessionRepository &orderSessionRepo,
       m_settingService(settingService),
       m_tableService(tableService),
       m_reservationService(reservationService),
-      m_authService(authService) {}
+      m_authService(authService),
+      m_databaseManager(databaseManager) {}
 
 bool CheckoutService::recalculateSessionTotals(int orderSessionId)
 {
@@ -238,39 +240,89 @@ QVariantList CheckoutService::loadCheckoutDetails(const int &orderSessionId)
 
 bool CheckoutService::markOrderPaid(const int &orderSessionId, const QString &memberPhone, int pointsToRedeem)
 {
-    if (!recalculateSessionTotals(orderSessionId))
+    if (!m_databaseManager.beginTransaction())
+    {
+        qWarning() << "[Checkout] Failed to begin transaction";
         return false;
+    }
+
+    auto rollback = [&]()
+    {
+        qWarning() << "[Checkout] Rolling back transaction";
+        m_databaseManager.rollback();
+        return false;
+    };
+
+    if (!recalculateSessionTotals(orderSessionId))
+    {
+        qWarning() << "[Checkout] Failed to recalculate totals";
+        return rollback();
+    }
 
     auto sessionOpt = m_orderSessionRepo.getById(orderSessionId);
 
     if (!sessionOpt.has_value())
-        return false;
+    {
+        qWarning() << "[Checkout] Session not found:" << orderSessionId;
+        return rollback();
+    }
 
     OrderSession session = sessionOpt.value();
 
     if (session.status == "paid")
-        return true;
-
-    if (!applyMembershipToSession(
-            session,
-            memberPhone,
-            pointsToRedeem))
     {
-        return false;
+        qDebug() << "[Checkout] Session already paid";
+        m_databaseManager.rollback();
+        return true;
     }
 
-    markOrdersServed(orderSessionId);
+    if (!applyMembershipToSession(session, memberPhone, pointsToRedeem))
+    {
+        qWarning() << "[Checkout] Failed applying membership";
+        return rollback();
+    }
+
+    if (!markOrdersServed(orderSessionId))
+    {
+        qWarning() << "[Checkout] Failed marking orders served";
+        return rollback();
+    }
 
     if (!assignReceiptNumber(session))
+    {
+        qWarning() << "[Checkout] Failed assigning receipt number";
+        return rollback();
+    }
+
+    if (!m_orderSessionRepo.update(session))
+    {
+        qWarning() << "[Checkout] Failed updating session";
+        return rollback();
+    }
+
+    if (!m_orderSessionRepo.markAsPaid(orderSessionId))
+    {
+        qWarning() << "[Checkout] Failed marking session paid";
+        return rollback();
+    }
+
+    if (!freeTable(session))
+    {
+        qWarning() << "[Checkout] Failed freeing table";
+        return rollback();
+    }
+
+    if (!createReceiptSnapshot(session))
+    {
+        qWarning() << "[Checkout] Failed creating receipt snapshot";
+        return rollback();
+    }
+
+    if (!m_databaseManager.commit())
+    {
+        qWarning() << "[Checkout] Commit failed";
         return false;
-
-    m_orderSessionRepo.update(session);
-
-    m_orderSessionRepo.markAsPaid(orderSessionId);
-
-    if (!createReceiptSnapshot(session)) return false;
-
-    freeTable(session);
+    }
 
     return true;
 }
@@ -590,7 +642,7 @@ bool CheckoutService::applyMembershipToSession(OrderSession &session, const QStr
     return true;
 }
 
-void CheckoutService::markOrdersServed(int orderSessionId)
+bool CheckoutService::markOrdersServed(int orderSessionId)
 {
     auto orders = m_orderRepo.getOrdersBySessionId(orderSessionId);
 
@@ -598,13 +650,12 @@ void CheckoutService::markOrdersServed(int orderSessionId)
     {
         order.status = "served";
 
-        m_orderRepo.update(order);
+        if (!m_orderRepo.update(order)) return false;
 
-        m_orderItemRepo.markItemsByOrderId(
-            order.id,
-            "served"
-        );
+        if (!m_orderItemRepo.markItemsByOrderId(order.id, "served")) return false;
     }
+
+    return true;
 }
 
 bool CheckoutService::createReceiptSnapshot(const OrderSession &session)
@@ -643,8 +694,7 @@ bool CheckoutService::createReceiptSnapshot(const OrderSession &session)
 
     if (m_settingService.membershipEnabled())
     {
-        int membershipId =
-            m_membershipTransactionRepo.getMembershipIdBySession(session.id);
+        int membershipId = m_membershipTransactionRepo.getMembershipIdBySession(session.id);
 
         if (membershipId > 0)
         {
@@ -677,16 +727,18 @@ bool CheckoutService::createReceiptSnapshot(const OrderSession &session)
     return m_receiptSnapshotRepo.create(receipt);
 }
 
-void CheckoutService::freeTable(const OrderSession &session)
+bool CheckoutService::freeTable(const OrderSession &session)
 {
     if (!session.table_id.has_value())
-        return;
+        return true;
 
     int tableId = session.table_id.value();
 
-    m_tableRepo.setTableState(tableId, TableStatus::Available);
+    if (!m_tableRepo.setTableState(tableId, TableStatus::Available))
+        return false;
 
-    m_tableService.setTableStatus(tableId, TableStatus::Available);
+    if (!m_tableService.setTableStatus(tableId, TableStatus::Available))
+        return false;
 
     QVariantMap reservation = m_reservationService.getSeatedReservationByTable(tableId);
 
@@ -694,6 +746,9 @@ void CheckoutService::freeTable(const OrderSession &session)
     {
         reservation["status"] = ReservationStatus::Completed;
 
-        m_reservationService.updateReservation(reservation);
+        if (!m_reservationService.updateReservation(reservation))
+            return false;
     }
+
+    return true;
 }

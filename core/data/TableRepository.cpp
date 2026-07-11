@@ -120,7 +120,7 @@ void TableRepository::update(const Table &table)
     }
 }
 
-void TableRepository::setTableState(int tableId, const QString &status)
+bool TableRepository::setTableState(int tableId, const QString &status)
 {
     QSqlQuery query(m_db);
 
@@ -135,7 +135,10 @@ void TableRepository::setTableState(int tableId, const QString &status)
 
     if (!query.exec()) {
         qWarning() << "setTableState failed:" << query.lastError();
+        return false;
     }
+
+    return true;
 }
 
 void TableRepository::remove(const Table &table)

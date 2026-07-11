@@ -192,7 +192,7 @@ int OrderRepository::create(const Order &order)
     return query.lastInsertId().toInt();
 }
 
-void OrderRepository::update(const Order &order)
+bool OrderRepository::update(const Order &order)
 {
     QSqlQuery query(m_db);
     query.prepare(R"(
@@ -210,7 +210,10 @@ void OrderRepository::update(const Order &order)
 
     if (!query.exec()) {
         qWarning() << "update failed:" << query.lastError();
+        return false;
     }
+
+    return true;
 }
 
 void OrderRepository::remove(const Order &order)

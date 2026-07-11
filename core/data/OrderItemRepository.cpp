@@ -152,7 +152,7 @@ std::vector<OrderItem> OrderItemRepository::getOrderItemsByOrderIds(const QList<
     return items;
 }
 
-void OrderItemRepository::markItemsByOrderId(int orderId, const QString &status)
+bool OrderItemRepository::markItemsByOrderId(int orderId, const QString &status)
 {
     QSqlQuery query(m_db);
     query.prepare(R"(
@@ -166,7 +166,10 @@ void OrderItemRepository::markItemsByOrderId(int orderId, const QString &status)
 
     if (!query.exec()) {
         qWarning() << "markItemsByOrderId failed:" << query.lastError();
+        return false;
     }
+
+    return true;
 }
 
 void OrderItemRepository::create(const OrderItem &orderItem)

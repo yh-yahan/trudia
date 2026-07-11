@@ -263,6 +263,87 @@ void DatabaseManager::close()
     QSqlDatabase::removeDatabase(MAIN_CONN);
 }
 
+bool DatabaseManager::beginTransaction()
+{
+    if (!QSqlDatabase::contains(MAIN_CONN))
+    {
+        qWarning() << "Cannot begin transaction: database connection does not exist.";
+        return false;
+    }
+
+    QSqlDatabase database = QSqlDatabase::database(MAIN_CONN);
+
+    if (!database.isOpen())
+    {
+        qWarning() << "Cannot begin transaction: database is not open.";
+        return false;
+    }
+
+    if (database.transaction())
+    {
+        return true;
+    }
+
+    qWarning() << "Failed to begin transaction:"
+               << database.lastError().text();
+
+    return false;
+}
+
+bool DatabaseManager::commit()
+{
+    if (!QSqlDatabase::contains(MAIN_CONN))
+    {
+        qWarning() << "Cannot commit: database connection does not exist.";
+        return false;
+    }
+
+    QSqlDatabase database = QSqlDatabase::database(MAIN_CONN);
+
+    if (!database.isOpen())
+    {
+        qWarning() << "Cannot commit: database is not open.";
+        return false;
+    }
+
+    if (database.commit())
+    {
+        return true;
+    }
+
+    qWarning() << "Failed to commit transaction:"
+               << database.lastError().text();
+
+    return false;
+}
+
+bool DatabaseManager::rollback()
+{
+    if (!QSqlDatabase::contains(MAIN_CONN))
+    {
+        qWarning() << "Cannot rollback: database connection does not exist.";
+        return false;
+    }
+
+    QSqlDatabase database = QSqlDatabase::database(MAIN_CONN);
+
+    if (!database.isOpen())
+    {
+        qWarning() << "Cannot rollback: database is not open.";
+        return false;
+    }
+
+    if (database.rollback())
+    {
+        return true;
+    }
+
+    qWarning() << "Failed to rollback transaction:"
+               << database.lastError().text();
+
+    return false;
+}
+
 QSqlDatabase DatabaseManager::db()
 {
     return QSqlDatabase::database(MAIN_CONN);

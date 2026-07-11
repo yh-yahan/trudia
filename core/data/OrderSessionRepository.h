@@ -16,8 +16,8 @@ public:
     int getMaxDisplayNumberForDate(const QString &date);
     int findOpenSessionByTableId(int const &tableId);
     int create(const OrderSession &orderSession);
-    void update(const OrderSession &orderSession);
-    void markAsPaid(int orderId);
+    bool update(const OrderSession &orderSession);
+    bool markAsPaid(int orderId);
     std::vector<OrderSession> getRecentPaidSessions(int limit);
 
 private:

@@ -26,6 +26,7 @@
 #include "./TableService.h"
 #include "./ReservationService.h"
 #include "./AuthService.h"
+#include "../database/DatabaseManager.h"
 
 struct TaxComputationResult {
     double subtotal = 0.0;
@@ -57,7 +58,8 @@ public:
                              SettingService &settingService,
                              TableService &tableService,
                              ReservationService &reservationService,
-                             AuthService &authService);
+                             AuthService &authService,
+                             DatabaseManager &databaseManager);
 
     Q_INVOKABLE QVariantList loadActiveCheckoutSessions();
     Q_INVOKABLE bool markOrderPaid(const int &orderSessionId, const QString &memberPhone, int pointsToRedeem);
@@ -88,12 +90,13 @@ private:
     TableService &m_tableService;
     ReservationService &m_reservationService;
     AuthService &m_authService;
+    DatabaseManager &m_databaseManager;
 
     bool assignReceiptNumber(OrderSession &session);
     bool applyMembershipToSession(OrderSession &session, const QString &memberPhone, int pointsToRedeem);
-    void markOrdersServed(int orderSessionId);
+    bool markOrdersServed(int orderSessionId);
     bool createReceiptSnapshot(const OrderSession &session);
-    void freeTable(const OrderSession &session);
+    bool freeTable(const OrderSession &session);
 };
 
 #endif // CHECKOUTSERVICE_H

@@ -18,7 +18,7 @@ public:
     std::vector<Order> getOrdersBySessionId(int orderSessionId);
     int getMaxDisplayNumberForDate(const QString &date);
     int create(const Order &order);
-    void update(const Order &order);
+    bool update(const Order &order);
     void remove(const Order &order);
 
 private:

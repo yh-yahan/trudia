@@ -163,7 +163,8 @@ int main(int argc, char *argv[])
         settingService,
         tableService,
         reservationService,
-        authService
+        authService,
+        dbManager
     );
     AnalyticsService analyticsService(analyticsRepo);
     FloorPlanService floorPlanService(

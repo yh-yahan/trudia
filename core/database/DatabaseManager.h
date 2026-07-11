@@ -14,6 +14,10 @@ public:
     static bool checkpoint();
     static void close();
 
+    bool beginTransaction();
+    bool commit();
+    bool rollback();
+
     static QSqlDatabase db();
 };
 

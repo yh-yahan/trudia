@@ -563,7 +563,7 @@ Item {
                         onClicked: {
                             if (!selectedSession)
                                 return;
-                            if (CheckoutService.markOrderPaid(selectedSession.id, memberPhone, redeemPointsRequested)) {
+                            if (CheckoutService.completeCheckout(selectedSession.id, memberPhone, redeemPointsRequested)) {
                                 var printed = CheckoutService.printReceipt(selectedSession.id, false);
 
                                 if (!printed) {

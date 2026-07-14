@@ -238,7 +238,7 @@ QVariantList CheckoutService::loadCheckoutDetails(const int &orderSessionId)
     return result;
 }
 
-bool CheckoutService::markOrderPaid(const int &orderSessionId, const QString &memberPhone, int pointsToRedeem)
+bool CheckoutService::completeCheckout(const int &orderSessionId, const QString &memberPhone, int pointsToRedeem)
 {
     if (!m_databaseManager.beginTransaction())
     {

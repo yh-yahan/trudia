@@ -170,7 +170,7 @@ int OrderRepository::getMaxDisplayNumberForDate(const QString &date) {
     return 0;
 }
 
-int OrderRepository::create(const Order &order)
+int OrderRepository::create(Order &order)
 {
     QSqlQuery query(m_db);
     query.prepare(R"(
@@ -188,6 +188,8 @@ int OrderRepository::create(const Order &order)
         qCritical() << "Failed to create order:" << query.lastError().text();
         return 0;
     }
+
+    order.id = query.lastInsertId().toInt();
 
     return query.lastInsertId().toInt();
 }

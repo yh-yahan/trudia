@@ -7,6 +7,7 @@
 #include <QSqlQuery>
 #include <QDateTime>
 #include <QDebug>
+#include <QCoreApplication>
 
 namespace
 {
@@ -135,11 +136,24 @@ bool DatabaseManager::runMigrations()
             continue;
 
         QFile file(":/migrations/" + fileName);
+
         if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         {
-            qCritical() << "Cannot open migration file:" << fileName;
-            db.rollback();
-            return false;
+            QDir dir(QCoreApplication::applicationDirPath());
+            dir.cdUp();
+            dir.cdUp();
+
+            QString fsPath = dir.absoluteFilePath("core/database/migrations/" + fileName.split('/').last());
+
+            file.setFileName(fsPath);
+
+            if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+            {
+                qCritical() << "Cannot open migration file:" << fileName;
+                qCritical() << "Tried resource and filesystem:" << fsPath;
+                db.rollback();
+                return false;
+            }
         }
 
         QString sql = QString::fromUtf8(file.readAll());

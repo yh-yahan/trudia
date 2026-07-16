@@ -15,7 +15,7 @@ public:
     std::optional<OrderSession> getByOrderId(int orderId);
     int getMaxDisplayNumberForDate(const QString &date);
     int findOpenSessionByTableId(int const &tableId);
-    int create(const OrderSession &orderSession);
+    int create(OrderSession &orderSession);
     bool update(const OrderSession &orderSession);
     bool markAsPaid(int orderId);
     std::vector<OrderSession> getRecentPaidSessions(int limit);

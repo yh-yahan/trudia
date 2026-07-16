@@ -17,7 +17,7 @@ public:
     std::vector<OpenOrderView> getActiveOrderSessionOrders();
     std::vector<Order> getOrdersBySessionId(int orderSessionId);
     int getMaxDisplayNumberForDate(const QString &date);
-    int create(const Order &order);
+    int create(Order &order);
     bool update(const Order &order);
     void remove(const Order &order);
 

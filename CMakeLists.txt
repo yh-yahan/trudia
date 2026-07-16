@@ -26,6 +26,10 @@ qt_add_executable(apptrudia
     app.rc
 )
 
+set_source_files_properties(resources.qrc
+    PROPERTIES QT_RESOURCE_ALIAS resources.qrc
+)
+
 qt_add_resources(app_resources resources.qrc)
 target_sources(apptrudia PRIVATE ${app_resources})
 

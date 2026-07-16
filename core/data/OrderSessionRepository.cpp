@@ -172,7 +172,7 @@ int OrderSessionRepository::findOpenSessionByTableId(int const &tableId)
     return 0;
 }
 
-int OrderSessionRepository::create(const OrderSession &orderSession)
+int OrderSessionRepository::create(OrderSession &orderSession)
 {
     QSqlQuery query(m_db);
     query.prepare(R"(INSERT INTO order_sessions
@@ -202,6 +202,8 @@ int OrderSessionRepository::create(const OrderSession &orderSession)
         qWarning() << "Failed to create order session:" << query.lastError().text();
         return 0;
     }
+
+    orderSession.id = query.lastInsertId().toInt();
 
     return query.lastInsertId().toInt();
 }

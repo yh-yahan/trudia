@@ -3,6 +3,8 @@
 
 #include "../../core/database/DatabaseManager.h"
 #include "../../core/services/CheckoutService.h"
+#include "../../core/constants/TableStatus.h"
+#include "../../core/constants/ReservationStatus.h"
 #include "../../core/data/MenuRepository.h"
 #include "../../core/data/CategoryRepository.h"
 #include "../../core/data/OrderSessionRepository.h"
@@ -46,6 +48,8 @@ public:
     OrderItemRepository &orderItemRepo() { return *m_orderItemRepo; }
     TableRepository &tableRepo() { return *m_tableRepo; }
     TaxSettingsRepository &taxSettingsRepo() { return *m_taxSettingsRepo; }
+    ReceiptSnapshotRepository &receiptSnapshotRepo() { return *m_receiptSnapshotRepo; };
+    AppStateRepository &appStateRepo() { return *m_appStateRepo; };
 
     DatabaseManager &dbManager() { return m_dbManager; }
 
@@ -63,6 +67,41 @@ public:
     int createSessionWithItems(int displayNumber = 1001,
                                qint64 discount = 0,
                                const QList<QVariantMap>& items = {});
+
+    void createRestaurant(
+        const QString &name = "Test Restaurant",
+        const QString &address = "123 Test Street",
+        const QString &phone = "0123456789",
+        const QString &email = "test@example.com",
+        const QString &website = "example.com");
+
+    void setupTestCashier(
+        const QString &username = "cashier",
+        const QString &password = "password",
+        const QString &role = "admin");
+
+    void setReceiptCounter(int year, int counter);
+
+    int createTable(
+        const QString &name = "A1",
+        const QString &status = TableStatus::Occupied);
+
+    void assignTableToSession(int sessionId, int tableId);
+
+    void enableMembership(
+        bool enabled = true,
+        int earnPoints = 1,
+        int earnSpend = 100,
+        QString earnOn = "total",
+        int redeemPoints = 100,
+        int redeemValue = 100);
+
+    int createMember(const QString &phone = "0123456789", int points = 500);
+
+    int createReservation(
+        int tableId,
+        const QString &customer = "John",
+        const QString &status = ReservationStatus::Seated);
 
 private:
     DatabaseManager m_dbManager;

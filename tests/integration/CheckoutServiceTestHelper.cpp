@@ -1,5 +1,7 @@
 #include "CheckoutServiceTestHelper.h"
 
+#include "../../core/utilities/PasswordHasher.h"
+
 CheckoutServiceTestHelper::CheckoutServiceTestHelper()
 {
     if (!m_dbManager.initialize(":memory:"))
@@ -182,6 +184,131 @@ int CheckoutServiceTestHelper::createSessionWithItems(int displayNumber,
     }
 
     return sessionId;
+}
+
+void CheckoutServiceTestHelper::createRestaurant(
+    const QString &name,
+    const QString &address,
+    const QString &phone,
+    const QString &email,
+    const QString &website)
+{
+    Restaurant restaurant;
+
+    restaurant.name = name;
+    restaurant.address = address;
+    restaurant.phone_number = phone;
+    restaurant.email = email;
+    restaurant.website = website;
+
+    m_restaurantRepo->save(restaurant);
+}
+
+void CheckoutServiceTestHelper::setupTestCashier(
+    const QString &username,
+    const QString &password,
+    const QString &role)
+{
+    User user;
+
+    user.username = username;
+    user.password = PasswordHasher::hash(password);
+    user.role = role;
+
+    m_userRepo->create(user);
+    m_authService->login(username, password);
+}
+
+void CheckoutServiceTestHelper::setReceiptCounter(int year, int counter)
+{
+    m_appStateRepo->set({
+        "receipt.year",
+        QString::number(year)
+    });
+
+    m_appStateRepo->set({
+        "receipt.counter",
+        QString::number(counter)
+    });
+}
+
+int CheckoutServiceTestHelper::createTable(const QString &name, const QString &status)
+{
+    Table table;
+
+    table.table_name = name;
+    table.status = status;
+
+    m_tableRepo->create(table);
+
+    auto tables = m_tableRepo->getAllTables();
+
+    return tables.back().id;
+}
+
+void CheckoutServiceTestHelper::assignTableToSession(int sessionId, int tableId)
+{
+    auto sessionOpt = m_orderSessionRepo->getById(sessionId);
+
+    sessionOpt.has_value();
+
+    OrderSession session = sessionOpt.value();
+
+    session.table_id = tableId;
+
+    m_orderSessionRepo->update(session);
+}
+
+void CheckoutServiceTestHelper::enableMembership(
+    bool enabled,
+    int earnPoints,
+    int earnSpend,
+    QString earnOn,
+    int redeemPoints,
+    int redeemValue)
+{
+    QVariantMap map;
+    map["enabled"] = enabled;
+    map["earn_points"] = earnPoints;
+    map["earn_spend"] = earnSpend / 100.0;
+    map["redeem_points"] = redeemPoints;
+    map["redeem_value"] = redeemValue / 100.0;
+    map["earn_on"] = earnOn;
+
+    m_settingService->saveMembershipSettings(map);
+}
+
+int CheckoutServiceTestHelper::createMember(const QString &phone, int points)
+{
+    Membership membership;
+
+    membership.phone_number = phone;
+    membership.total_points = points;
+    membership.status = "active";
+
+    m_membershipRepo->create(membership);
+
+    auto members = m_membershipRepo->getAllMemberships();
+
+    return members.back().id;
+}
+
+int CheckoutServiceTestHelper::createReservation(
+    int tableId,
+    const QString &customer,
+    const QString &status)
+{
+    Reservation reservation;
+
+    reservation.tableId = tableId;
+    reservation.customerName = customer;
+    reservation.status = status;
+
+    m_reservationRepo->createReservation(reservation);
+
+    auto reservations = m_reservationRepo->getReservations();
+
+    return reservations.back().id;
 }
 
 CheckoutServiceTestHelper::~CheckoutServiceTestHelper() = default;

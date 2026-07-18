@@ -3,7 +3,7 @@
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QVariant>
-#include <QDebug>
+#include "../logging/LoggingCategories.h"
 
 MenuRepository::MenuRepository(QSqlDatabase db): m_db(db) {}
 
@@ -15,7 +15,7 @@ std::vector<Menu> MenuRepository::getAllMenuItems()
     query.prepare("SELECT id, item, category_id, price, portion_size, is_available, is_taxable FROM menu");
 
     if (!query.exec()) {
-        qWarning() << "getAllCategories failed:" << query.lastError();
+        qCWarning(logDatabase) << "getAllCategories failed:" << query.lastError();
         return menuItems;
     }
 
@@ -44,7 +44,7 @@ std::optional<Menu> MenuRepository::getMenuItemById(int menuId)
     query.bindValue(":id", menuId);
 
     if (!query.exec()) {
-        qWarning() << "getMenuItemById failed:" << query.lastError();
+        qCWarning(logDatabase) << "getMenuItemById failed:" << query.lastError();
         return std::nullopt;
     }
 
@@ -78,7 +78,7 @@ std::vector<Menu> MenuRepository::getMenuItemsByCategory(int categoryId)
     query.bindValue(":category_id", categoryId);
 
     if (!query.exec()) {
-        qWarning() << "getMenuItemsByCategory failed:" << query.lastError();
+        qCWarning(logDatabase) << "getMenuItemsByCategory failed:" << query.lastError();
         return menuItems;
     }
 
@@ -118,7 +118,7 @@ void MenuRepository::create(const Menu &menu)
     query.bindValue(":is_taxable", menu.is_taxable);
 
     if (!query.exec()) {
-        qWarning() << "create failed:" << query.lastError();
+        qCWarning(logDatabase) << "create failed:" << query.lastError();
     }
 }
 
@@ -149,7 +149,7 @@ void MenuRepository::update(const Menu &menu)
     query.bindValue(":is_taxable", menu.is_taxable);
 
     if (!query.exec()) {
-        qWarning() << "update failed:" << query.lastError();
+        qCWarning(logDatabase) << "update failed:" << query.lastError();
     }
 }
 
@@ -164,6 +164,6 @@ void MenuRepository::remove(const Menu &menu)
     query.bindValue(":menu_item_id", menu.id);
 
     if (!query.exec()) {
-        qWarning() << "remove failed:" << query.lastError();
+        qCWarning(logDatabase) << "remove failed:" << query.lastError();
     }
 }

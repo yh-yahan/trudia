@@ -3,7 +3,7 @@
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QVariant>
-#include <QDebug>
+#include "../logging/LoggingCategories.h"
 
 MembershipRepository::MembershipRepository(QSqlDatabase db): m_db(db) {}
 
@@ -21,7 +21,7 @@ Membership MembershipRepository::getMembershipById(const int &id)
     query.bindValue(":id", id);
 
     if (!query.exec()) {
-        qDebug() << "Failed to fetch membership:" << query.lastError().text();
+        qCWarning(logDatabase) << "Failed to fetch membership:" << query.lastError().text();
         return membership;
     }
 
@@ -30,8 +30,6 @@ Membership MembershipRepository::getMembershipById(const int &id)
         membership.phone_number = query.value("phone_number").toString();
         membership.total_points = query.value("total_points").toInt();
         membership.status = query.value("status").toString();
-    } else {
-        qDebug() << "No membership found with ID:" << id;
     }
 
     return membership;
@@ -51,7 +49,7 @@ Membership MembershipRepository::getMembershipByPhoneNumber(const QString &phone
     query.bindValue(":phone_number", phoneNumber);
 
     if (!query.exec()) {
-        qDebug() << "Failed to fetch membership:" << query.lastError().text();
+        qCWarning(logDatabase) << "Failed to fetch membership:" << query.lastError().text();
 
         return membership;
     }
@@ -61,8 +59,6 @@ Membership MembershipRepository::getMembershipByPhoneNumber(const QString &phone
         membership.phone_number = query.value("phone_number").toString();
         membership.total_points = query.value("total_points").toInt();
         membership.status = query.value("status").toString();
-    } else {
-        qDebug() << "No membership found with phone number:" << phoneNumber;
     }
 
     return membership;
@@ -74,7 +70,7 @@ QList<Membership> MembershipRepository::getAllMemberships()
 
     QSqlQuery query(m_db);
     if (!query.exec("SELECT id, phone_number, total_points, status FROM memberships")) {
-        qDebug() << "Failed to fetch all memberships:" << query.lastError().text();
+        qCWarning(logDatabase) << "Failed to fetch all memberships:" << query.lastError().text();
         return memberships;
     }
 
@@ -103,7 +99,7 @@ bool MembershipRepository::create(const Membership &membership)
     query.bindValue(":status", membership.status);
 
     if (!query.exec()) {
-        qDebug() << "Failed to insert membership:" << query.lastError().text();
+        qCWarning(logDatabase) << "Failed to insert membership:" << query.lastError().text();
         return false;
     }
 
@@ -126,7 +122,7 @@ bool MembershipRepository::update(const Membership &membership)
     query.bindValue(":id", membership.id);
 
     if (!query.exec()) {
-        qDebug() << "Failed to update membership:" << query.lastError().text();
+        qCWarning(logDatabase) << "Failed to update membership:" << query.lastError().text();
         return false;
     }
 
@@ -137,7 +133,7 @@ bool MembershipRepository::update(const Membership &membership)
 bool MembershipRepository::adjustPoints(const int &id, const QString &operation, const int &points)
 {
     if (points < 0) {
-        qDebug() << "Points to adjust must be non-negative.";
+        qCWarning(logMembership) << "Points to adjust must be non-negative.";
         return false;
     }
 
@@ -157,7 +153,7 @@ bool MembershipRepository::adjustPoints(const int &id, const QString &operation,
             WHERE id = :id
         )";
     } else {
-        qDebug() << "Invalid operation. Must be 'add' or 'subtract'.";
+        qCWarning(logMembership) << "Invalid points adjustment operation:" << operation;
         return false;
     }
 
@@ -167,7 +163,7 @@ bool MembershipRepository::adjustPoints(const int &id, const QString &operation,
     query.bindValue(":id", id);
 
     if (!query.exec()) {
-        qDebug() << "Failed to adjust points:" << query.lastError().text();
+        qCWarning(logDatabase) << "Failed to adjust points:" << query.lastError().text();
         return false;
     }
 
@@ -187,7 +183,7 @@ QList<Membership> MembershipRepository::getMembershipsByStatus(const QString &st
     query.bindValue(":status", status);
 
     if (!query.exec()) {
-        qDebug() << "Failed to fetch memberships by status:" << query.lastError().text();
+        qCWarning(logDatabase) << "Failed to fetch memberships by status:" << query.lastError().text();
         return memberships;
     }
 
@@ -214,7 +210,7 @@ bool MembershipRepository::remove(const int &id)
     query.bindValue(":id", id);
 
     if (!query.exec()) {
-        qDebug() << "Failed to delete membership:" << query.lastError().text();
+        qCWarning(logDatabase) << "Failed to delete membership:" << query.lastError().text();
         return false;
     }
 

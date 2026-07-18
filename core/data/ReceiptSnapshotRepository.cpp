@@ -4,6 +4,7 @@
 #include <QSqlError>
 #include <QVariant>
 #include <optional>
+#include "../logging/LoggingCategories.h"
 
 ReceiptSnapshotRepository::ReceiptSnapshotRepository(QSqlDatabase db)
     : m_db(db) {}
@@ -44,7 +45,13 @@ int ReceiptSnapshotRepository::create(const ReceiptSnapshot &snapshot)
     query.bindValue(":table_name", snapshot.table_name ? *snapshot.table_name : QVariant());
 
     if (!query.exec())
+    {
+        qCWarning(logDatabase)
+            << "Failed to create receipt snapshot:"
+            << query.lastError().text();
+
         return -1;
+    }
 
     return query.lastInsertId().toInt();
 }
@@ -67,7 +74,13 @@ std::optional<ReceiptSnapshot> ReceiptSnapshotRepository::getByOrderSessionId(in
     query.bindValue(":order_session_id", orderSessionId);
 
     if (!query.exec())
+    {
+        qCWarning(logDatabase)
+            << "Failed to fetch receipt snapshot:"
+            << query.lastError().text();
+
         return std::nullopt;
+    }
 
     if (!query.next())
         return std::nullopt;

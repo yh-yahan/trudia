@@ -3,7 +3,7 @@
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QVariant>
-#include <QDebug>
+#include "../logging/LoggingCategories.h"
 
 PrinterRepository::PrinterRepository(QSqlDatabase db)
     : m_db(db) {}
@@ -25,7 +25,7 @@ std::vector<Printer> PrinterRepository::getAll()
     )");
 
     if (!query.exec()) {
-        qWarning() << "Failed to get all printers:" << query.lastError().text();
+        qCWarning(logDatabase) << "Failed to get all printers:" << query.lastError().text();
         return printers;
     }
 
@@ -61,7 +61,7 @@ std::optional<Printer> PrinterRepository::get(int printerId)
     query.addBindValue(printerId);
 
     if (!query.exec()) {
-        qWarning() << "Failed to get printer:" << query.lastError().text();
+        qCWarning(logDatabase) << "Failed to get printer:" << query.lastError().text();
         return std::nullopt;
     }
 
@@ -98,7 +98,7 @@ void PrinterRepository::add(const Printer &printer)
     query.addBindValue(printer.cut_mode);
 
     if (!query.exec()) {
-        qWarning() << "Failed to insert printer:" << query.lastError().text();
+        qCWarning(logDatabase) << "Failed to insert printer:" << query.lastError().text();
     }
 }
 
@@ -124,7 +124,7 @@ void PrinterRepository::update(const Printer &printer)
     query.addBindValue(printer.id);
 
     if (!query.exec()) {
-        qWarning() << "Failed to update printer:" << query.lastError().text();
+        qCWarning(logDatabase) << "Failed to update printer:" << query.lastError().text();
     }
 }
 
@@ -140,6 +140,6 @@ void PrinterRepository::remove(const Printer &printer)
     query.addBindValue(printer.id);
 
     if (!query.exec()) {
-        qWarning() << "Failed to delete printer:" << query.lastError().text();
+        qCWarning(logDatabase) << "Failed to delete printer:" << query.lastError().text();
     }
 }

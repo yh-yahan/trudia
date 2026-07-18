@@ -1,0 +1,12 @@
+#include "LoggingCategories.h"
+
+Q_LOGGING_CATEGORY(logApplication, "application")
+Q_LOGGING_CATEGORY(logDatabase, "database")
+Q_LOGGING_CATEGORY(logMigration, "migration")
+Q_LOGGING_CATEGORY(logCheckout, "checkout")
+Q_LOGGING_CATEGORY(logMembership, "membership")
+Q_LOGGING_CATEGORY(logPrinter, "printer")
+Q_LOGGING_CATEGORY(logFloorPlan, "floor_plan")
+Q_LOGGING_CATEGORY(logAuth, "auth")
+Q_LOGGING_CATEGORY(logOrder, "order")
+Q_LOGGING_CATEGORY(logMenu, "menu")

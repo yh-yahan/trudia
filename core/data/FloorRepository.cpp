@@ -3,7 +3,7 @@
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QVariant>
-#include <QDebug>
+#include "../logging/LoggingCategories.h"
 
 FloorRepository::FloorRepository(QSqlDatabase db)
     : m_db(db) {}
@@ -20,7 +20,7 @@ std::vector<Floor> FloorRepository::getAll()
     )");
 
     if (!query.exec()) {
-        qWarning() << "Failed to fetch floors:" << query.lastError();
+        qCWarning(logDatabase) << "Failed to fetch floors:" << query.lastError();
         return floors;
     }
 
@@ -51,7 +51,7 @@ Floor FloorRepository::getById(int id)
     query.bindValue(":id", id);
 
     if (!query.exec()) {
-        qWarning() << "Failed to fetch floor:" << query.lastError();
+        qCWarning(logDatabase) << "Failed to fetch floor:" << query.lastError();
         return Floor{};
     }
 
@@ -95,7 +95,7 @@ int FloorRepository::create(const Floor &floor)
     query.bindValue(":is_active", floor.is_active);
 
     if (!query.exec()) {
-        qWarning() << "Failed to create floor:" << query.lastError();
+        qCWarning(logDatabase) << "Failed to create floor:" << query.lastError();
         return -1;
     }
 

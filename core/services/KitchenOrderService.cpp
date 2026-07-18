@@ -1,6 +1,7 @@
 #include "KitchenOrderService.h"
 
 #include <QDate>
+#include "../logging/LoggingCategories.h"
 
 KitchenOrderService::KitchenOrderService(OrderSessionRepository &orderSessionRepo,
                                          OrderRepository &orderRepo,
@@ -77,7 +78,7 @@ bool KitchenOrderService::markState(const int &orderId, const QString state)
 {
     auto orderOpt = m_orderRepo.getOrderById(orderId);
     if (!orderOpt.has_value()) {
-        qWarning() << "markState failed: order not found, id=" << orderId;
+        qCWarning(logOrder) << "markState failed: order not found, id=" << orderId;
         return false;
     }
 

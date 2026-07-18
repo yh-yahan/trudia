@@ -3,7 +3,7 @@
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QVariant>
-#include <QDebug>
+#include "../logging/LoggingCategories.h"
 
 MembershipSettingsRepository::MembershipSettingsRepository(QSqlDatabase db) : m_db(db) {}
 
@@ -21,7 +21,7 @@ std::optional<MembershipSettings> MembershipSettingsRepository::get()
 
     if (!query.exec())
     {
-        qWarning() << "Failed to fetch membership_settings:"
+        qCWarning(logDatabase) << "Failed to fetch membership_settings:"
                    << query.lastError().text();
         return std::nullopt;
     }
@@ -76,6 +76,6 @@ void MembershipSettingsRepository::save(const MembershipSettings &membershipSett
 
     if (!query.exec())
     {
-        qWarning() << "Failed to save membership_settings:" << query.lastError().text();
+        qCWarning(logDatabase) << "Failed to save membership_settings:" << query.lastError().text();
     }
 }

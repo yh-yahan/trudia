@@ -3,7 +3,7 @@
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QVariant>
-#include <QDebug>
+#include "../logging/LoggingCategories.h"
 
 OrderRepository::OrderRepository(QSqlDatabase db): m_db(db) {}
 
@@ -16,7 +16,7 @@ std::optional<Order> OrderRepository::getOrderById(int orderId)
     query.bindValue(":id", orderId);
 
     if (!query.exec()) {
-        qWarning() << "getOrderById failed:" << query.lastError();
+        qCWarning(logDatabase) << "getOrderById failed:" << query.lastError();
         return std::nullopt;
     }
 
@@ -50,7 +50,7 @@ std::vector<Order> OrderRepository::getOrdersByStatus(const QString &status)
     query.bindValue(":status", status);
 
     if (!query.exec()) {
-        qWarning() << "getOrdersByStatus failed:" << query.lastError();
+        qCWarning(logDatabase) << "getOrdersByStatus failed:" << query.lastError();
         return orders;
     }
 
@@ -130,7 +130,7 @@ std::vector<Order> OrderRepository::getOrdersBySessionId(int orderSessionId)
     query.bindValue(":sessionId", orderSessionId);
 
     if (!query.exec()) {
-        qWarning() << "Failed to get orders for session:" << query.lastError().text();
+        qCWarning(logDatabase) << "Failed to get orders for session:" << query.lastError().text();
         return orders;
     }
 
@@ -159,7 +159,7 @@ int OrderRepository::getMaxDisplayNumberForDate(const QString &date) {
     query.bindValue(":date", date);
 
     if (!query.exec()) {
-        qWarning() << "Failed to get max display number:" << query.lastError();
+        qCWarning(logDatabase) << "Failed to get max display number:" << query.lastError();
         return 0;
     }
 
@@ -211,7 +211,7 @@ bool OrderRepository::update(const Order &order)
     query.bindValue(":closed_at", order.closed_at);
 
     if (!query.exec()) {
-        qWarning() << "update failed:" << query.lastError();
+        qCWarning(logDatabase) << "update failed:" << query.lastError();
         return false;
     }
 
@@ -229,6 +229,6 @@ void OrderRepository::remove(const Order &order)
     query.bindValue(":order_id", order.id);
 
     if (!query.exec()) {
-        qWarning() << "remove failed:" << query.lastError();
+        qCWarning(logDatabase) << "remove failed:" << query.lastError();
     }
 }

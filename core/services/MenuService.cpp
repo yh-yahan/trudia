@@ -2,6 +2,7 @@
 
 #include "../models/CategoryModel.h"
 #include "../models/MenuItemModel.h"
+#include "../logging/LoggingCategories.h"
 
 MenuService::MenuService(MenuRepository &menuRepo, 
                          CategoryRepository &categoryRepo,
@@ -32,7 +33,7 @@ int MenuService::currentCategoryId() const
 bool MenuService::addCategory(const QString &categoryName)
 {
     if (categoryName.trimmed().isEmpty()) {
-        qWarning() << "Cannot add empty category name";
+        qCWarning(logMenu) << "Cannot add empty category name";
         return false;
     }
 
@@ -49,13 +50,13 @@ bool MenuService::addCategory(const QString &categoryName)
 bool MenuService::renameCategory(const int &categoryId, const QString &newName)
 {
     if (newName.trimmed().isEmpty()) {
-        qWarning() << "Cannot rename category to empty name";
+        qCWarning(logMenu) << "Cannot rename category to empty name";
         return false;
     }
 
     auto categoryOpt = m_categoryRepo.getCategoryById(categoryId);
     if (!categoryOpt.has_value()) {
-        qWarning() << "Category with ID" << categoryId << "not found";
+        qCWarning(logMenu) << "Category with ID" << categoryId << "not found";
         return false;
     }
 
@@ -73,7 +74,7 @@ bool MenuService::removeCategory(const int &categoryId)
 {
     auto categoryOpt = m_categoryRepo.getCategoryById(categoryId);
     if (!categoryOpt.has_value()) {
-        qWarning() << "Category with ID" << categoryId << "not found";
+        qCWarning(logMenu) << "Category with ID" << categoryId << "not found";
         return false;
     }
 
@@ -98,12 +99,12 @@ bool MenuService::addMenuItem(const QString &itemName,
                               const QString &portionSize)
 {
     if (itemName.trimmed().isEmpty()) {
-        qWarning() << "Item name cannot be empty";
+        qCWarning(logMenu) << "Item name cannot be empty";
         return false;
     }
 
     if (!m_categoryRepo.getCategoryById(categoryId).has_value()) {
-        qWarning() << "Category with ID" << categoryId << "not found";
+        qCWarning(logMenu) << "Category with ID" << categoryId << "not found";
         return false;
     }
 
@@ -134,7 +135,7 @@ bool MenuService::editMenuItem(const int &menuItemId,
 {
     auto menuItemOpt = m_menuRepo.getMenuItemById(menuItemId);
     if (!menuItemOpt.has_value()) {
-        qWarning() << "Menu item with ID" << menuItemId << "not found";
+        qCWarning(logMenu) << "Menu item with ID" << menuItemId << "not found";
         return false;
     }
 
@@ -143,12 +144,12 @@ bool MenuService::editMenuItem(const int &menuItemId,
     if (!itemName.trimmed().isEmpty()) {
         menuItem.item = itemName;
     } else {
-        qWarning() << "Item name cannot be empty";
+        qCWarning(logMenu) << "Item name cannot be empty";
         return false;
     }
 
     if (!m_categoryRepo.getCategoryById(categoryId).has_value()) {
-        qWarning() << "Category with ID" << categoryId << "not found";
+        qCWarning(logMenu) << "Category with ID" << categoryId << "not found";
         return false;
     }
 
@@ -171,7 +172,7 @@ bool MenuService::removeMenuItem(const int &menuItemId)
 {
     auto menuItemOpt = m_menuRepo.getMenuItemById(menuItemId);
     if (!menuItemOpt.has_value()) {
-        qWarning() << "Menu item with ID" << menuItemId << "not found";
+        qCWarning(logMenu) << "Menu item with ID" << menuItemId << "not found";
         return false;
     }
 

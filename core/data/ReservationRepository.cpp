@@ -3,7 +3,7 @@
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QVariant>
-#include <QDebug>
+#include "../logging/LoggingCategories.h"
 
 ReservationRepository::ReservationRepository(QSqlDatabase db)
     : m_db(db) {}
@@ -12,34 +12,15 @@ Reservation ReservationRepository::mapQueryToReservation(const QSqlQuery &query)
 {
     Reservation reservation;
 
-    reservation.id =
-        query.value("id").toInt();
-
-    reservation.customerName =
-        query.value("customer_name").toString();
-
-    reservation.customerPhone =
-        query.value("customer_phone").toString();
-
-    reservation.pax =
-        query.value("pax").toInt();
-
-    reservation.tableId =
-        query.value("table_id").toInt();
-
-    reservation.reservationDateTime =
-        QDateTime::fromString(
-            query.value("reservation_datetime").toString(),
-            "yyyy-MM-dd HH:mm:ss");
-
-    reservation.durationMinutes =
-        query.value("duration_minutes").toInt();
-
-    reservation.status =
-        query.value("status").toString();
-
-    reservation.notes =
-        query.value("notes").toString();
+    reservation.id = query.value("id").toInt();
+    reservation.customerName = query.value("customer_name").toString();
+    reservation.customerPhone = query.value("customer_phone").toString();
+    reservation.pax = query.value("pax").toInt();
+    reservation.tableId = query.value("table_id").toInt();
+    reservation.reservationDateTime = QDateTime::fromString(query.value("reservation_datetime").toString(), "yyyy-MM-dd HH:mm:ss");
+    reservation.durationMinutes = query.value("duration_minutes").toInt();
+    reservation.status = query.value("status").toString();
+    reservation.notes = query.value("notes").toString();
 
     return reservation;
 }
@@ -71,43 +52,18 @@ bool ReservationRepository::createReservation(const Reservation &reservation)
         )
     )");
 
-    query.bindValue(
-        ":customer_name",
-        reservation.customerName);
-
-    query.bindValue(
-        ":customer_phone",
-        reservation.customerPhone);
-
-    query.bindValue(
-        ":pax",
-        reservation.pax);
-
-    query.bindValue(
-        ":table_id",
-        reservation.tableId);
-
-    query.bindValue(
-        ":reservation_datetime",
-        reservation.reservationDateTime.toString(
-        "yyyy-MM-dd HH:mm:ss"));
-
-    query.bindValue(
-        ":duration_minutes",
-        reservation.durationMinutes);
-
-    query.bindValue(
-        ":status",
-        reservation.status);
-
-    query.bindValue(
-        ":notes",
-        reservation.notes);
+    query.bindValue(":customer_name", reservation.customerName);
+    query.bindValue(":customer_phone", reservation.customerPhone);
+    query.bindValue(":pax", reservation.pax);
+    query.bindValue(":table_id", reservation.tableId);
+    query.bindValue(":reservation_datetime", reservation.reservationDateTime.toString("yyyy-MM-dd HH:mm:ss"));
+    query.bindValue(":duration_minutes", reservation.durationMinutes);
+    query.bindValue(":status", reservation.status);
+    query.bindValue(":notes", reservation.notes);
 
     if (!query.exec())
     {
-        qWarning() << "Failed to create reservation:"
-                   << query.lastError();
+        qCWarning(logDatabase) << "Failed to create reservation:" << query.lastError();
 
         return false;
     }
@@ -139,16 +95,14 @@ bool ReservationRepository::updateReservation(const Reservation &reservation)
     query.bindValue(":customer_phone", reservation.customerPhone);
     query.bindValue(":pax", reservation.pax);
     query.bindValue(":table_id", reservation.tableId);
-    query.bindValue(":reservation_datetime", 
-        reservation.reservationDateTime.toString("yyyy-MM-dd HH:mm:ss"));
+    query.bindValue(":reservation_datetime", reservation.reservationDateTime.toString("yyyy-MM-dd HH:mm:ss"));
     query.bindValue(":duration_minutes", reservation.durationMinutes);
     query.bindValue(":status", reservation.status);
     query.bindValue(":notes", reservation.notes);
 
     if (!query.exec())
     {
-        qWarning() << "Failed to update reservation:"
-                   << query.lastError();
+        qCWarning(logDatabase) << "Failed to update reservation:" << query.lastError();
 
         return false;
     }
@@ -172,8 +126,7 @@ bool ReservationRepository::updateReservationStatus(int reservationId, const QSt
 
     if (!query.exec())
     {
-        qWarning() << "Failed to update status:"
-                   << query.lastError();
+        qCWarning(logDatabase) << "Failed to update status:" << query.lastError();
 
         return false;
     }
@@ -196,7 +149,7 @@ bool ReservationRepository::deleteReservation(int reservationId)
 
     if (!query.exec())
     {
-        qWarning() << "Failed to delete reservation:"
+        qCWarning(logDatabase) << "Failed to delete reservation:"
                    << query.lastError();
 
         return false;
@@ -219,14 +172,13 @@ Reservation ReservationRepository::getReservationById(int reservationId)
 
     if (!query.exec())
     {
-        qWarning() << "Failed to get reservation:"
+        qCWarning(logDatabase) << "Failed to get reservation:"
                    << query.lastError();
 
         return {};
     }
 
-    if (!query.next())
-        return {};
+    if (!query.next()) return {};
 
     return mapQueryToReservation(query);
 }
@@ -245,16 +197,14 @@ QList<Reservation> ReservationRepository::getReservations()
 
     if (!query.exec())
     {
-        qWarning() << "Failed to get reservations:"
-                   << query.lastError();
+        qCWarning(logDatabase) << "Failed to get reservations:" << query.lastError();
 
         return reservations;
     }
 
     while (query.next())
     {
-        reservations.append(
-            mapQueryToReservation(query));
+        reservations.append(mapQueryToReservation(query));
     }
 
     return reservations;
@@ -273,22 +223,18 @@ QList<Reservation> ReservationRepository::getReservationsByDate(const QDate &dat
         ORDER BY reservation_datetime ASC
     )");
 
-    query.bindValue(
-        ":date",
-        date.toString("yyyy-MM-dd"));
+    query.bindValue(":date", date.toString("yyyy-MM-dd"));
 
     if (!query.exec())
     {
-        qWarning() << "Failed to get reservations by date:"
-                   << query.lastError();
+        qCWarning(logDatabase) << "Failed to get reservations by date:" << query.lastError();
 
         return reservations;
     }
 
     while (query.next())
     {
-        reservations.append(
-            mapQueryToReservation(query));
+        reservations.append(mapQueryToReservation(query));
     }
 
     return reservations;
@@ -308,7 +254,7 @@ QList<Reservation> ReservationRepository::getReservationsByTable(int tableId)
     query.addBindValue(tableId);
 
     if (!query.exec()) {
-        qWarning() << "Failed to get reservations by table:" << query.lastError().text();
+        qCWarning(logDatabase) << "Failed to get reservations by table:" << query.lastError().text();
         return reservations;
     }
 

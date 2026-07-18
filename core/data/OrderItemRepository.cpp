@@ -3,7 +3,7 @@
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QVariant>
-#include <QDebug>
+#include "../logging/LoggingCategories.h"
 
 OrderItemRepository::OrderItemRepository(QSqlDatabase db): m_db(db) {}
 
@@ -18,7 +18,7 @@ std::vector<OrderItem> OrderItemRepository::getAllOrderItems()
         FROM order_items)");
 
     if (!query.exec()) {
-        qWarning() << "getAllOrderItems failed:" << query.lastError();
+        qCWarning(logDatabase) << "getAllOrderItems failed:" << query.lastError();
         return orderItems;
     }
 
@@ -49,7 +49,7 @@ std::optional<OrderItem> OrderItemRepository::getOrderItemById(int orderItemId)
     query.bindValue(":id", orderItemId);
 
     if (!query.exec()) {
-        qWarning() << "getOrderItemById failed:" << query.lastError();
+        qCWarning(logDatabase) << "getOrderItemById failed:" << query.lastError();
         return std::nullopt;
     }
 
@@ -85,7 +85,7 @@ std::vector<OrderItem> OrderItemRepository::getOrderItemsByOrderId(int orderId)
     query.bindValue(":order_id", orderId);
 
     if (!query.exec()) {
-        qWarning() << "getOrderItemsByOrderId failed:" << query.lastError();
+        qCWarning(logDatabase) << "getOrderItemsByOrderId failed:" << query.lastError();
         return items;
     }
 
@@ -130,7 +130,7 @@ std::vector<OrderItem> OrderItemRepository::getOrderItemsByOrderIds(const QList<
         query.addBindValue(orderIds[i]);
 
     if (!query.exec()) {
-        qWarning() << "getOrderItemsByOrderIds failed:" << query.lastError();
+        qCWarning(logDatabase) << "getOrderItemsByOrderIds failed:" << query.lastError();
         return items;
     }
 
@@ -165,7 +165,7 @@ bool OrderItemRepository::markItemsByOrderId(int orderId, const QString &status)
     query.bindValue(":order_id", orderId);
 
     if (!query.exec()) {
-        qWarning() << "markItemsByOrderId failed:" << query.lastError();
+        qCWarning(logDatabase) << "markItemsByOrderId failed:" << query.lastError();
         return false;
     }
 
@@ -190,7 +190,7 @@ void OrderItemRepository::create(OrderItem &orderItem)
     query.bindValue(":notes", orderItem.notes);
 
     if (!query.exec()) {
-        qWarning() << "[OrderItemRepository] create failed:" << query.lastError();
+        qCWarning(logDatabase) << "[OrderItemRepository] create failed:" << query.lastError();
     }
 
     orderItem.id = query.lastInsertId().toInt();
@@ -220,7 +220,7 @@ void OrderItemRepository::update(const OrderItem &orderItem){
     query.bindValue(":notes", orderItem.notes);
 
     if (!query.exec()) {
-        qWarning() << "update failed:" << query.lastError();
+        qCWarning(logDatabase) << "update failed:" << query.lastError();
     }
 }
 
@@ -235,7 +235,7 @@ void OrderItemRepository::remove(const OrderItem &orderItem)
     query.bindValue(":order_item_id", orderItem.id);
 
     if (!query.exec()) {
-        qWarning() << "remove failed:" << query.lastError();
+        qCWarning(logDatabase) << "remove failed:" << query.lastError();
     }
 }
 

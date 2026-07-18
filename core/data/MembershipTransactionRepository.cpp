@@ -3,24 +3,24 @@
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QVariant>
-#include <QDebug>
+#include "../logging/LoggingCategories.h"
 
 MembershipTransactionRepository::MembershipTransactionRepository(QSqlDatabase db): m_db(db) {}
 
 bool MembershipTransactionRepository::create(const MembershipTransaction &transaction)
 {
     if (transaction.membership_id <= 0) {
-        qDebug() << "Invalid membership_id.";
+        qCWarning(logMembership) << "Invalid membership ID:" << transaction.membership_id;
         return false;
     }
 
     if (transaction.points <= 0) {
-        qDebug() << "Points must be greater than zero.";
+        qCWarning(logMembership) << "Points must be greater than zero.";
         return false;
     }
 
     if (transaction.type != "earn" && transaction.type != "redeem") {
-        qDebug() << "Invalid transaction type. Must be 'earn' or 'redeem'.";
+        qCWarning(logMembership) << "Invalid transaction type:" << transaction.type;
         return false;
     }
 
@@ -38,7 +38,7 @@ bool MembershipTransactionRepository::create(const MembershipTransaction &transa
     query.bindValue(":points", transaction.points);
 
     if (!query.exec()) {
-        qDebug() << "Failed to insert membership transaction:"
+        qCWarning(logDatabase) << "Failed to insert membership transaction:"
                  << query.lastError().text();
         return false;
     }
@@ -51,7 +51,7 @@ MembershipTransaction MembershipTransactionRepository::getById(int id)
     MembershipTransaction transaction;
 
     if (id <= 0) {
-        qDebug() << "Invalid transaction ID.";
+        qCWarning(logMembership) << "Invalid transaction ID:" << id;
         return transaction;
     }
 
@@ -65,7 +65,7 @@ MembershipTransaction MembershipTransactionRepository::getById(int id)
     query.bindValue(":id", id);
 
     if (!query.exec()) {
-        qDebug() << "Failed to fetch membership transaction:"
+        qCWarning(logDatabase) << "Failed to fetch membership transaction:"
                  << query.lastError().text();
         return transaction;
     }
@@ -77,7 +77,7 @@ MembershipTransaction MembershipTransactionRepository::getById(int id)
         transaction.type = query.value("type").toString();
         transaction.points = query.value("points").toInt();
     } else {
-        qDebug() << "No membership transaction found with ID:" << id;
+        qCWarning(logMembership) << "No membership transaction found with ID:" << id;
     }
 
     return transaction;
@@ -88,7 +88,7 @@ std::vector<MembershipTransaction> MembershipTransactionRepository::getByMembers
     std::vector<MembershipTransaction> transactions;
 
     if (membershipId <= 0) {
-        qDebug() << "Invalid membership ID.";
+        qCWarning(logMembership) << "Invalid membership ID:" << membershipId;
         return transactions;
     }
 
@@ -103,7 +103,7 @@ std::vector<MembershipTransaction> MembershipTransactionRepository::getByMembers
     query.bindValue(":membership_id", membershipId);
 
     if (!query.exec()) {
-        qDebug() << "Failed to fetch transactions for membership:"
+        qCWarning(logDatabase) << "Failed to fetch transactions for membership:"
                  << query.lastError().text();
         return transactions;
     }
@@ -127,7 +127,7 @@ std::vector<MembershipTransaction> MembershipTransactionRepository::getByOrderSe
     std::vector<MembershipTransaction> transactions;
 
     if (orderSessionId <= 0) {
-        qDebug() << "Invalid order session ID.";
+        qCWarning(logMembership) << "Invalid order session ID:" << orderSessionId;
         return transactions;
     }
 
@@ -142,7 +142,7 @@ std::vector<MembershipTransaction> MembershipTransactionRepository::getByOrderSe
     query.bindValue(":order_session_id", orderSessionId);
 
     if (!query.exec()) {
-        qDebug() << "Failed to fetch transactions for order session:"
+        qCWarning(logDatabase) << "Failed to fetch transactions for order session:"
                  << query.lastError().text();
         return transactions;
     }
@@ -166,7 +166,7 @@ std::vector<MembershipTransaction> MembershipTransactionRepository::getByType(co
     std::vector<MembershipTransaction> transactions;
 
     if (type != "earn" && type != "redeem") {
-        qDebug() << "Invalid transaction type. Must be 'earn' or 'redeem'.";
+        qCWarning(logMembership) << "Invalid transaction type:" << type;
         return transactions;
     }
 
@@ -181,7 +181,7 @@ std::vector<MembershipTransaction> MembershipTransactionRepository::getByType(co
     query.bindValue(":type", type);
 
     if (!query.exec()) {
-        qDebug() << "Failed to fetch transactions by type:"
+        qCWarning(logDatabase) << "Failed to fetch transactions by type:"
                  << query.lastError().text();
         return transactions;
     }
@@ -217,7 +217,7 @@ int MembershipTransactionRepository::getPointsByType(int orderSessionId, const Q
     query.bindValue(":type", type);
 
     if (!query.exec() || !query.next()) {
-        qDebug() << "Failed to sum points:" << query.lastError().text();
+        qCWarning(logDatabase) << "Failed to sum points:" << query.lastError().text();
         return 0;
     }
 

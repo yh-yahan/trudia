@@ -6,8 +6,8 @@
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QDateTime>
-#include <QDebug>
 #include <QCoreApplication>
+#include "../logging/LoggingCategories.h"
 
 namespace
 {
@@ -31,7 +31,7 @@ bool DatabaseManager::initialize(const QString &dbPath)
 
     if (!database.open())
     {
-        qCritical() << "Cannot open database:" << database.lastError().text();
+        qCCritical(logDatabase) << "Cannot open database:" << database.lastError().text();
         return false;
     }
 
@@ -39,12 +39,12 @@ bool DatabaseManager::initialize(const QString &dbPath)
 
     if (!q.exec("PRAGMA foreign_keys = ON;"))
     {
-        qWarning() << "Failed to enable foreign keys:" << q.lastError().text();
+        qCWarning(logDatabase) << "Failed to enable foreign keys:" << q.lastError().text();
     }
 
     if (!q.exec("PRAGMA journal_mode = WAL;"))
     {
-        qWarning() << "Failed to enable WAL:" << q.lastError().text();
+        qCWarning(logDatabase) << "Failed to enable WAL:" << q.lastError().text();
     }
     else
     {
@@ -63,13 +63,13 @@ bool DatabaseManager::runMigrations()
 
     if (!db.isOpen())
     {
-        qCritical() << "Database is not open.";
+        qCCritical(logDatabase) << "Database is not open.";
         return false;
     }
 
     if (!db.transaction())
     {
-        qCritical() << "Failed to begin transaction:" << db.lastError().text();
+        qCCritical(logDatabase) << "Failed to begin transaction:" << db.lastError().text();
         return false;
     }
 
@@ -83,7 +83,7 @@ bool DatabaseManager::runMigrations()
             )
         )"))
         {
-            qCritical() << "Failed to create applied_migrations:" << q.lastError().text();
+            qCCritical(logMigration) << "Failed to create applied_migrations:" << q.lastError().text();
             db.rollback();
             return false;
         }
@@ -124,7 +124,7 @@ bool DatabaseManager::runMigrations()
 
             if (!check.exec())
             {
-                qCritical() << "Failed to check migration:" << check.lastError().text();
+                qCCritical(logMigration) << "Failed to check migration:" << check.lastError().text();
                 db.rollback();
                 return false;
             }
@@ -149,8 +149,7 @@ bool DatabaseManager::runMigrations()
 
             if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
             {
-                qCritical() << "Cannot open migration file:" << fileName;
-                qCritical() << "Tried resource and filesystem:" << fsPath;
+                qCCritical(logMigration) << "Cannot open migration file:" << fileName << "Tried:" << fsPath;
                 db.rollback();
                 return false;
             }
@@ -170,7 +169,7 @@ bool DatabaseManager::runMigrations()
             QSqlQuery q(db);
             if (!q.exec(stmt))
             {
-                qCritical() << "Migration failed:" << fileName
+                qCCritical(logMigration) << "Migration failed:" << fileName
                             << "\nStatement:" << stmt
                             << "\nError:" << q.lastError().text();
                 db.rollback();
@@ -180,25 +179,24 @@ bool DatabaseManager::runMigrations()
 
         {
             QSqlQuery insert(db);
-            insert.prepare(
-                "INSERT INTO applied_migrations (migration_name, applied_at) VALUES (?, ?)");
+            insert.prepare("INSERT INTO applied_migrations (migration_name, applied_at) VALUES (?, ?)");
             insert.addBindValue(fileName);
             insert.addBindValue(QDateTime::currentDateTimeUtc().toString(Qt::ISODate));
 
             if (!insert.exec())
             {
-                qCritical() << "Failed to record migration:" << insert.lastError().text();
+                qCCritical(logMigration) << "Failed to record migration:" << insert.lastError().text();
                 db.rollback();
                 return false;
             }
         }
 
-        qDebug() << "Migration applied:" << fileName;
+        qCInfo(logMigration) << "Migration applied:" << fileName;
     }
 
     if (!db.commit())
     {
-        qCritical() << "Failed to commit transaction:" << db.lastError().text();
+        qCCritical(logDatabase) << "Failed to commit transaction:" << db.lastError().text();
         return false;
     }
 
@@ -218,6 +216,15 @@ bool DatabaseManager::canOpen(const QString &dbPath)
     db.setDatabaseName(dbPath);
 
     bool ok = db.open();
+
+    if (!ok)
+    {
+        qCWarning(logDatabase)
+            << "Failed to open database test connection:"
+            << dbPath
+            << db.lastError().text();
+    }
+
     db.close();
 
     db = QSqlDatabase();
@@ -250,8 +257,7 @@ bool DatabaseManager::checkpoint()
 
     if (!q.exec("PRAGMA wal_checkpoint(FULL);"))
     {
-        qWarning() << "Failed to checkpoint WAL:"
-                   << q.lastError().text();
+        qCWarning(logDatabase) << "Failed to checkpoint WAL:" << q.lastError().text();
         return false;
     }
 
@@ -275,13 +281,15 @@ void DatabaseManager::close()
     }
 
     QSqlDatabase::removeDatabase(MAIN_CONN);
+
+    qCInfo(logDatabase) << "Database closed";
 }
 
 bool DatabaseManager::beginTransaction()
 {
     if (!QSqlDatabase::contains(MAIN_CONN))
     {
-        qWarning() << "Cannot begin transaction: database connection does not exist.";
+        qCWarning(logDatabase) << "Cannot begin transaction: database connection does not exist.";
         return false;
     }
 
@@ -289,7 +297,7 @@ bool DatabaseManager::beginTransaction()
 
     if (!database.isOpen())
     {
-        qWarning() << "Cannot begin transaction: database is not open.";
+        qCWarning(logDatabase) << "Cannot begin transaction: database is not open.";
         return false;
     }
 
@@ -298,7 +306,7 @@ bool DatabaseManager::beginTransaction()
         return true;
     }
 
-    qWarning() << "Failed to begin transaction:"
+    qCWarning(logDatabase) << "Failed to begin transaction:"
                << database.lastError().text();
 
     return false;
@@ -308,7 +316,7 @@ bool DatabaseManager::commit()
 {
     if (!QSqlDatabase::contains(MAIN_CONN))
     {
-        qWarning() << "Cannot commit: database connection does not exist.";
+        qCWarning(logDatabase) << "Cannot commit: database connection does not exist.";
         return false;
     }
 
@@ -316,7 +324,7 @@ bool DatabaseManager::commit()
 
     if (!database.isOpen())
     {
-        qWarning() << "Cannot commit: database is not open.";
+        qCWarning(logDatabase) << "Cannot commit: database is not open.";
         return false;
     }
 
@@ -325,7 +333,7 @@ bool DatabaseManager::commit()
         return true;
     }
 
-    qWarning() << "Failed to commit transaction:"
+    qCWarning(logDatabase) << "Failed to commit transaction:"
                << database.lastError().text();
 
     return false;
@@ -335,7 +343,7 @@ bool DatabaseManager::rollback()
 {
     if (!QSqlDatabase::contains(MAIN_CONN))
     {
-        qWarning() << "Cannot rollback: database connection does not exist.";
+        qCWarning(logDatabase) << "Cannot rollback: database connection does not exist.";
         return false;
     }
 
@@ -343,7 +351,7 @@ bool DatabaseManager::rollback()
 
     if (!database.isOpen())
     {
-        qWarning() << "Cannot rollback: database is not open.";
+        qCWarning(logDatabase) << "Cannot rollback: database is not open.";
         return false;
     }
 
@@ -352,7 +360,7 @@ bool DatabaseManager::rollback()
         return true;
     }
 
-    qWarning() << "Failed to rollback transaction:"
+    qCWarning(logDatabase) << "Failed to rollback transaction:"
                << database.lastError().text();
 
     return false;

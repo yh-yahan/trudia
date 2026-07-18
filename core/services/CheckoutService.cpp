@@ -4,6 +4,7 @@
 #include <QTimeZone>
 #include "../constants/TableStatus.h"
 #include "../constants/ReservationStatus.h"
+#include "../logging/LoggingCategories.h"
 
 constexpr qint64 CURRENCY_SCALE = 100; // cents
 
@@ -102,11 +103,6 @@ bool CheckoutService::recalculateSessionTotals(int orderSessionId)
     session.tax = tax;
 
     session.total = subtotal + tax - session.discount;
-
-    qDebug()
-        << "Subtotal:" << subtotal
-        << "TaxableSubtotal:" << taxableSubtotal
-        << "Tax:" << tax;
 
     if (session.total < 0)
         session.total = 0;
@@ -242,20 +238,20 @@ bool CheckoutService::completeCheckout(const int &orderSessionId, const QString 
 {
     if (!m_databaseManager.beginTransaction())
     {
-        qWarning() << "[Checkout] Failed to begin transaction";
+        qCWarning(logCheckout) << "Failed to begin transaction";
         return false;
     }
 
     auto rollback = [&]()
     {
-        qWarning() << "[Checkout] Rolling back transaction";
+        qCWarning(logCheckout) << "[Checkout] Rolling back transaction";
         m_databaseManager.rollback();
         return false;
     };
 
     if (!recalculateSessionTotals(orderSessionId))
     {
-        qWarning() << "[Checkout] Failed to recalculate totals";
+        qCWarning(logCheckout) << "[Checkout] Failed to recalculate totals";
         return rollback();
     }
 
@@ -263,7 +259,7 @@ bool CheckoutService::completeCheckout(const int &orderSessionId, const QString 
 
     if (!sessionOpt.has_value())
     {
-        qWarning() << "[Checkout] Session not found:" << orderSessionId;
+        qCWarning(logCheckout) << "Session not found:" << orderSessionId;
         return rollback();
     }
 
@@ -271,56 +267,56 @@ bool CheckoutService::completeCheckout(const int &orderSessionId, const QString 
 
     if (session.status == "paid")
     {
-        qDebug() << "[Checkout] Session already paid";
+        qCWarning(logCheckout) << "Session already paid";
         m_databaseManager.rollback();
         return true;
     }
 
     if (!applyMembershipToSession(session, memberPhone, pointsToRedeem))
     {
-        qWarning() << "[Checkout] Failed applying membership";
+        qCWarning(logCheckout) << "Failed applying membership";
         return rollback();
     }
 
     if (!markOrdersServed(orderSessionId))
     {
-        qWarning() << "[Checkout] Failed marking orders served";
+        qCWarning(logCheckout) << "Failed marking orders served";
         return rollback();
     }
 
     if (!assignReceiptNumber(session))
     {
-        qWarning() << "[Checkout] Failed assigning receipt number";
+        qCWarning(logCheckout) << "Failed assigning receipt number";
         return rollback();
     }
 
     if (!m_orderSessionRepo.update(session))
     {
-        qWarning() << "[Checkout] Failed updating session";
+        qCWarning(logCheckout) << "Failed updating session";
         return rollback();
     }
 
     if (!m_orderSessionRepo.markAsPaid(orderSessionId))
     {
-        qWarning() << "[Checkout] Failed marking session paid";
+        qCWarning(logCheckout) << "Failed marking session paid";
         return rollback();
     }
 
     if (!freeTable(session))
     {
-        qWarning() << "[Checkout] Failed freeing table";
+        qCWarning(logCheckout) << "Failed freeing table";
         return rollback();
     }
 
     if (!createReceiptSnapshot(session))
     {
-        qWarning() << "[Checkout] Failed creating receipt snapshot";
+        qCWarning(logCheckout) << "Failed creating receipt snapshot";
         return rollback();
     }
 
     if (!m_databaseManager.commit())
     {
-        qWarning() << "[Checkout] Commit failed";
+        qCWarning(logCheckout) << "Commit failed";
         return false;
     }
 

@@ -3,7 +3,7 @@
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QVariant>
-#include <QDebug>
+#include "../logging/LoggingCategories.h"
 
 CanvasItemRepository::CanvasItemRepository(QSqlDatabase db)
     : m_db(db) {}
@@ -24,7 +24,7 @@ std::vector<CanvasItem> CanvasItemRepository::getByFloorId(int floorId)
     query.bindValue(":floor_id", floorId);
 
     if (!query.exec()) {
-        qWarning() << "Failed to fetch canvas items:"
+        qCWarning(logDatabase) << "Failed to fetch canvas items:"
                    << query.lastError();
 
         return items;
@@ -70,7 +70,7 @@ bool CanvasItemRepository::saveAll(
     const std::vector<CanvasItem>& items)
 {
     if (!m_db.transaction()) {
-        qWarning() << "Failed to begin transaction for saveAll";
+        qCWarning(logDatabase) << "Failed to begin transaction for saveAll";
         return false;
     }
 
@@ -84,7 +84,7 @@ bool CanvasItemRepository::saveAll(
     deleteQuery.bindValue(":floor_id", floorId);
 
     if (!deleteQuery.exec()) {
-        qWarning() << "Delete failed:"
+        qCWarning(logDatabase) << "Delete failed:"
                    << deleteQuery.lastError();
 
         m_db.rollback();
@@ -182,7 +182,7 @@ bool CanvasItemRepository::saveAll(
                 );
 
             if (!insertQuery.exec()) {
-                qWarning() << "Insert failed:"
+                qCWarning(logDatabase) << "Insert failed:"
                            << insertQuery.lastError();
 
                 m_db.rollback();
@@ -192,7 +192,7 @@ bool CanvasItemRepository::saveAll(
     }
 
     if (!m_db.commit()) {
-        qWarning() << "Commit failed";
+        qCWarning(logDatabase) << "Commit failed";
 
         m_db.rollback();
         return false;

@@ -1,7 +1,7 @@
 #include "WindowsPrinterService.h"
 
 #include <QVariantMap>
-#include <QDebug>
+#include "../logging/LoggingCategories.h"
 #ifdef Q_OS_WIN
 #include <windows.h>
 #endif
@@ -15,7 +15,7 @@ bool WindowsPrinterService::print(const QString &printerName, const QByteArray &
     #ifdef Q_OS_WIN
     if (printerName.isEmpty())
     {
-        qWarning() << "Print failed: empty printer name";
+        qCWarning(logPrinter) << "Print failed: empty printer name";
         return false;
     }
 
@@ -23,7 +23,7 @@ bool WindowsPrinterService::print(const QString &printerName, const QByteArray &
 
     if (!OpenPrinterW((LPWSTR)printerName.utf16(), &hPrinter, NULL))
     {
-        qWarning() << "Failed to open printer:" << printerName;
+        qCWarning(logPrinter) << "Failed to open printer:" << printerName << "error:" << GetLastError();
         return false;
     }
 
@@ -34,14 +34,14 @@ bool WindowsPrinterService::print(const QString &printerName, const QByteArray &
 
     if (StartDocPrinterW(hPrinter, 1, (LPBYTE)&docInfo) == 0)
     {
-        qWarning() << "StartDocPrinter failed";
+        qCWarning(logPrinter) << "StartDocPrinter failed";
         ClosePrinter(hPrinter);
         return false;
     }
 
     if (!StartPagePrinter(hPrinter))
     {
-        qWarning() << "StartPagePrinter failed";
+        qCWarning(logPrinter) << "StartPagePrinter failed";
         EndDocPrinter(hPrinter);
         ClosePrinter(hPrinter);
         return false;
@@ -57,7 +57,7 @@ bool WindowsPrinterService::print(const QString &printerName, const QByteArray &
 
     if (!success || bytesWritten != (DWORD)data.size())
     {
-        qWarning() << "WritePrinter failed";
+        qCWarning(logPrinter) << "WritePrinter failed";
     }
 
     EndPagePrinter(hPrinter);
@@ -68,7 +68,7 @@ bool WindowsPrinterService::print(const QString &printerName, const QByteArray &
 #else
     Q_UNUSED(printerName)
     Q_UNUSED(data)
-    qWarning() << "Windows printing only supported on Windows";
+    qCWarning(logPrinter) << "Windows printing only supported on Windows";
     return false;
 #endif
 }
@@ -115,6 +115,10 @@ QVariantList WindowsPrinterService::getAvailablePrinters()
             item["port"] = QString::fromWCharArray(printers[i].pPortName);
             list.append(item);
         }
+    }
+    else
+    {
+        qCWarning(logPrinter) << "Failed to enumerate printers:" << GetLastError();
     }
 #endif
 

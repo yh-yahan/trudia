@@ -3,7 +3,7 @@
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QVariant>
-#include <QDebug>
+#include "../logging/LoggingCategories.h"
 
 OrderSessionRepository::OrderSessionRepository(QSqlDatabase db) : m_db(db) {}
 
@@ -16,7 +16,7 @@ std::vector<OrderSession> OrderSessionRepository::getAllActiveOrderSessions()
 
     if (!query.exec())
     {
-        qWarning() << "Failed to get active order sessions:" << query.lastError().text();
+        qCWarning(logDatabase) << "Failed to get active order sessions:" << query.lastError().text();
         return orderSessions;
     }
 
@@ -54,7 +54,7 @@ std::optional<OrderSession> OrderSessionRepository::getById(const int &orderSess
 
     if (!query.exec())
     {
-        qWarning() << "Failed to get order session by id:" << query.lastError().text();
+        qCWarning(logDatabase) << "Failed to get order session by id:" << query.lastError().text();
         return std::nullopt;
     }
 
@@ -97,7 +97,7 @@ std::optional<OrderSession> OrderSessionRepository::getByOrderId(int orderId)
 
     if (!query.exec())
     {
-        qWarning() << "Failed to get order session by order id:"
+        qCWarning(logDatabase) << "Failed to get order session by order id:"
                    << query.lastError().text();
         return std::nullopt;
     }
@@ -140,7 +140,7 @@ int OrderSessionRepository::getMaxDisplayNumberForDate(const QString &date)
 
     if (!query.exec())
     {
-        qWarning() << "Failed to get max display number:" << query.lastError();
+        qCWarning(logDatabase) << "Failed to get max display number:" << query.lastError();
         return 0;
     }
 
@@ -199,7 +199,7 @@ int OrderSessionRepository::create(OrderSession &orderSession)
 
     if (!query.exec())
     {
-        qWarning() << "Failed to create order session:" << query.lastError().text();
+        qCWarning(logDatabase) << "Failed to create order session:" << query.lastError().text();
         return 0;
     }
 
@@ -249,7 +249,7 @@ bool OrderSessionRepository::update(const OrderSession &orderSession)
     query.bindValue(":id", orderSession.id);
 
     if (!query.exec()) {
-        qWarning() << "Failed to update order session:" << query.lastError().text();
+        qCWarning(logDatabase) << "Failed to update order session:" << query.lastError().text();
         return false;
     }
 
@@ -267,7 +267,7 @@ bool OrderSessionRepository::markAsPaid(int orderId)
 
     if (!query.exec())
     {
-        qWarning() << "Failed to mark order as closed:" << query.lastError().text();
+        qCWarning(logDatabase) << "Failed to mark order as closed:" << query.lastError().text();
         return false;
     }
 
@@ -291,7 +291,7 @@ std::vector<OrderSession> OrderSessionRepository::getRecentPaidSessions(int limi
 
     if (!query.exec())
     {
-        qWarning() << "Failed to get recent paid sessions:"
+        qCWarning(logDatabase) << "Failed to get recent paid sessions:"
                    << query.lastError().text();
         return orderSessions;
     }

@@ -2,8 +2,8 @@
 
 #include <QFileInfo>
 #include <QDir>
-#include <QDebug>
 #include <QSettings>
+#include "../logging/LoggingCategories.h"
 
 DatabaseService::DatabaseService(
     AppService &appService,
@@ -19,7 +19,7 @@ bool DatabaseService::backupDatabase()
 
     if (!dbInfo.exists())
     {
-        qWarning() << "Database file does not exist:" << dbInfo.absoluteFilePath();
+        qCWarning(logDatabase) << "Database file does not exist:" << dbInfo.absoluteFilePath();
         return false;
     }
 
@@ -27,7 +27,7 @@ bool DatabaseService::backupDatabase()
 
     if (!QDir().mkpath(backupDir))
     {
-        qWarning() << "Failed to create backup directory:" << backupDir;
+        qCWarning(logDatabase) << "Failed to create backup directory.";
         return false;
     }
 
@@ -39,14 +39,14 @@ bool DatabaseService::backupDatabase()
 
     if (!db.isOpen())
     {
-        qWarning() << "Database is not open.";
+        qCWarning(logDatabase) << "Database is not open.";
         return false;
     }
 
     // flush WAL to main db before backup
     if (!DatabaseManager::checkpoint())
     {
-        qWarning() << "Failed to checkpoint database before backup.";
+        qCWarning(logDatabase) << "Failed to checkpoint database before backup.";
         return false;
     }
 
@@ -57,15 +57,13 @@ bool DatabaseService::backupDatabase()
 
     QString sql = QString("VACUUM INTO '%1'").arg(escapedPath);
 
-    qDebug() << "Creating backup with SQL:" << sql;
+    qCInfo(logDatabase) << "Creating backup with SQL.";
 
     if (!query.exec(sql))
     {
-        qWarning() << "Backup failed:" << query.lastError().text();
+        qCWarning(logDatabase) << "Backup failed:" << query.lastError().text();
         return false;
     }
-
-    qDebug() << "Backup created at:" << backupPath;
 
     return true;
 }
@@ -76,7 +74,7 @@ bool DatabaseService::restoreDatabase(const QString &dbFilePath) {
 
     if (!dbInfo.exists())
     {
-        qWarning() << "Database file does not exist:" << dbInfo.absoluteFilePath();
+        qCWarning(logDatabase) << "Database file does not exist";
         return false;
     }
 
@@ -93,7 +91,7 @@ bool DatabaseService::moveDatabase(const QString &destinationFolder)
 
     if (currentPath.isEmpty())
     {
-        qWarning() << "No database configured.";
+        qCWarning(logDatabase) << "No database configured.";
         return false;
     }
 
@@ -101,8 +99,7 @@ bool DatabaseService::moveDatabase(const QString &destinationFolder)
 
     if (!currentInfo.exists())
     {
-        qWarning() << "Database file does not exist:"
-                   << currentPath;
+        qCWarning(logDatabase) << "Database file does not exist.";
         return false;
     }
 
@@ -111,8 +108,7 @@ bool DatabaseService::moveDatabase(const QString &destinationFolder)
 
     if (!QDir().mkpath(appDataDir))
     {
-        qWarning() << "Failed to create destination directory:"
-                   << appDataDir;
+        qCWarning(logDatabase) << "Failed to create destination directory.";
         return false;
     }
 
@@ -120,25 +116,20 @@ bool DatabaseService::moveDatabase(const QString &destinationFolder)
 
     if (destinationPath == currentPath)
     {
-        qWarning() << "Source and destination are identical.";
+        qCWarning(logDatabase) << "Source and destination are identical.";
         return false;
     }
 
     if (QFile::exists(destinationPath))
     {
-        qWarning() << "Destination database already exists:"
-                   << destinationPath;
+        qCWarning(logDatabase) << "Destination database already exists.";
         return false;
     }
-
-    qDebug() << "Moving database:";
-    qDebug() << "From:" << currentPath;
-    qDebug() << "To:" << destinationPath;
 
     // flush wal contents into main db
     if (!DatabaseManager::checkpoint())
     {
-        qWarning() << "Failed to checkpoint database.";
+        qCWarning(logDatabase) << "Failed to checkpoint database.";
         return false;
     }
 
@@ -147,10 +138,7 @@ bool DatabaseService::moveDatabase(const QString &destinationFolder)
     // copy db file
     if (!QFile::copy(currentPath, destinationPath))
     {
-        qWarning() << "Failed to copy database:"
-                   << currentPath
-                   << "->"
-                   << destinationPath;
+        qCWarning(logDatabase) << "Failed to copy database.";
 
         m_databaseManager.initialize(currentPath);
 
@@ -160,7 +148,7 @@ bool DatabaseService::moveDatabase(const QString &destinationFolder)
     // verify copied db
     if (!DatabaseManager::canOpen(destinationPath))
     {
-        qWarning() << "Copied database could not be opened.";
+        qCWarning(logDatabase) << "Copied database could not be opened.";
 
         QFile::remove(destinationPath);
 
@@ -172,7 +160,7 @@ bool DatabaseService::moveDatabase(const QString &destinationFolder)
     // open db from new location
     if (!m_databaseManager.initialize(destinationPath))
     {
-        qWarning() << "Failed to initialize moved database.";
+        qCWarning(logDatabase) << "Failed to initialize moved database.";
 
         QFile::remove(destinationPath);
 
@@ -187,8 +175,7 @@ bool DatabaseService::moveDatabase(const QString &destinationFolder)
     // cleanup old files
     if (!QFile::remove(currentPath))
     {
-        qWarning() << "Failed to delete old database:"
-                   << currentPath;
+        qCWarning(logDatabase) << "Failed to delete old database.";
     }
 
     QFile::remove(currentPath + "-wal");
@@ -204,12 +191,11 @@ bool DatabaseService::moveDatabase(const QString &destinationFolder)
     {
         if (!QDir(trudiaPath).removeRecursively())
         {
-            qWarning() << "Failed to remove empty directory:"
-                    << trudiaPath;
+            qCWarning(logDatabase) << "Failed to remove empty directory.";
         }
     }
 
-    qDebug() << "Database moved successfully.";
+    qCInfo(logDatabase) << "Database moved successfully.";
 
     return true;
 }

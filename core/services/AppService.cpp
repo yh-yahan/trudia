@@ -2,7 +2,7 @@
 
 #include <QSettings>
 #include <QFile>
-#include <QDebug>
+#include "../logging/LoggingCategories.h"
 #include "../database/DatabaseManager.h"
 
 AppService::AppService(QObject *parent)
@@ -29,24 +29,24 @@ bool AppService::hasDatabasePath() const
 AppService::AppState AppService::determineState() const
 {
     if (!hasDatabasePath()) {
-        qDebug() << "No DB path configured";
+        qCInfo(logApplication) << "No DB path configured";
         return NeedsSetup;
     }
 
     QString path = databasePath();
 
     if (!QFile::exists(path)) {
-        qDebug() << "DB file missing";
+        qCWarning(logApplication) << "DB file not found";
         return NeedsSetup;
     }
 
     if (!DatabaseManager::canOpen(path)) {
-        qDebug() << "DB cannot be opened";
+        qCWarning(logApplication) << "DB cannot be opened";
         return NeedsSetup;
     }
 
     if (!hasAnyUser()) {
-        qDebug() << "No users found";
+        qCInfo(logApplication) << "No users found";
         return NeedsAdminSetup;
     }
 

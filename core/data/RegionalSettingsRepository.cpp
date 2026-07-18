@@ -3,7 +3,7 @@
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QVariant>
-#include <QDebug>
+#include "../logging/LoggingCategories.h"
 
 RegionalSettingsRepository::RegionalSettingsRepository(QSqlDatabase db): m_db(db) {}
 
@@ -14,7 +14,7 @@ std::optional<RegionalSettings> RegionalSettingsRepository::get()
                   "FROM regional_settings");
 
     if (!query.exec()) {
-        qDebug() << "Failed to fetch regional setting:" << query.lastError().text();
+        qCWarning(logDatabase) << "Failed to fetch regional setting:" << query.lastError().text();
         return std::nullopt;
     }
 
@@ -49,6 +49,6 @@ void RegionalSettingsRepository::save(const RegionalSettings &setting)
     query.bindValue(":currency_code", setting.currency_code);
 
     if (!query.exec()) {
-        qDebug() << "Failed to save regional setting:" << query.lastError().text();
+        qCWarning(logDatabase) << "Failed to save regional setting:" << query.lastError().text();
     }
 }

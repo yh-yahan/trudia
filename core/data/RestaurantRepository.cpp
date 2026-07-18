@@ -3,7 +3,7 @@
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QVariant>
-#include <QDebug>
+#include "../logging/LoggingCategories.h"
 
 RestaurantRepository::RestaurantRepository(QSqlDatabase db): m_db(db) {}
 
@@ -18,7 +18,7 @@ std::optional<Restaurant> RestaurantRepository::get()
     )");
 
     if (!query.exec()) {
-        qWarning() << "Failed to fetch restaurant:"
+        qCWarning(logDatabase) << "Failed to fetch restaurant:"
                    << query.lastError().text();
         return std::nullopt;
     }
@@ -80,13 +80,8 @@ void RestaurantRepository::save(const Restaurant &restaurant)
                         : QVariant());
 
     if (!query.exec()) {
-        qWarning() << "Failed to save restaurant:"
+        qCWarning(logDatabase) << "Failed to save restaurant:"
                    << query.lastError().text();
         return;
-    }
-
-    if (restaurant.id == -1) {
-        qDebug() << "Inserted restaurant with id:"
-                 << query.lastInsertId().toInt();
     }
 }

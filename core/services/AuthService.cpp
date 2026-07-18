@@ -1,6 +1,7 @@
 #include "AuthService.h"
 
 #include "../utilities/PasswordHasher.h"
+#include "../logging/LoggingCategories.h"
 
 AuthService::AuthService(UserRepository &userRepo)
     : m_userRepo(userRepo) {}
@@ -31,7 +32,7 @@ bool AuthService::isFirstAdminSetupNeeded() const {
     auto emptyOpt = m_userRepo.isEmpty();
 
     if (!emptyOpt) {
-        qWarning() << "Failed to check if users table is empty.";
+        qCWarning(logAuth) << "Failed to check if users table is empty.";
         return false;
     }
 

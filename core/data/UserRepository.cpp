@@ -3,7 +3,7 @@
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QVariant>
-#include <QDebug>
+#include "../logging/LoggingCategories.h"
 
 UserRepository::UserRepository(QSqlDatabase db): m_db(db) {}
 
@@ -21,7 +21,7 @@ std::optional<User> UserRepository::findById(int id)
     query.bindValue(":id", id);
 
     if (!query.exec()) {
-        qWarning() << "findById failed:" << query.lastError();
+        qCWarning(logDatabase) << "findById failed:" << query.lastError();
         return std::nullopt;
     }
 
@@ -53,7 +53,7 @@ bool UserRepository::usernameExists(const QString& username)
     query.bindValue(":username", username);
 
     if (!query.exec()) {
-        qWarning() << "usernameExists failed:" << query.lastError();
+        qCWarning(logDatabase) << "usernameExists failed:" << query.lastError();
         return false;
     }
 
@@ -73,7 +73,7 @@ std::optional<User> UserRepository::findByUsername(const QString &username)
     query.bindValue(":username", username);
 
     if (!query.exec()) {
-        qWarning() << "findByUsername failed:" << query.lastError();
+        qCWarning(logDatabase) << "findByUsername failed:" << query.lastError();
         return std::nullopt;
     }
 
@@ -94,7 +94,7 @@ QList<User> UserRepository::getAll()
 
     QSqlQuery query(m_db);
     if (!query.exec("SELECT id, username, role, deactivated_at FROM users")) {
-        qDebug() << "Failed to fetch all users:" << query.lastError().text();
+        qCWarning(logDatabase) << "Failed to fetch all users:" << query.lastError().text();
         return users;
     }
 
@@ -123,7 +123,7 @@ void UserRepository::create(const User &user)
     query.bindValue(":role", user.role);
 
     if (!query.exec()) {
-        qWarning() << "createUser failed:" << query.lastError();
+        qCWarning(logDatabase) << "createUser failed:" << query.lastError();
     }
 }
 
@@ -142,7 +142,7 @@ void UserRepository::update(const User &user)
     query.bindValue(":role", user.role);
 
     if (!query.exec()) {
-        qWarning() << "update failed:" << query.lastError();
+        qCWarning(logDatabase) << "update failed:" << query.lastError();
     }
 }
 
@@ -159,7 +159,7 @@ void UserRepository::updatePassword(const User &user)
     query.bindValue(":password", user.password);
 
     if (!query.exec()) {
-        qWarning() << "updatePassword failed:" << query.lastError();
+        qCWarning(logDatabase) << "updatePassword failed:" << query.lastError();
     }
 }
 
@@ -175,7 +175,7 @@ void UserRepository::remove(int id)
     query.bindValue(":user_id", id);
 
     if (!query.exec()) {
-        qWarning() << "remove failed:" << query.lastError();
+        qCWarning(logDatabase) << "remove failed:" << query.lastError();
     }
 }
 
@@ -184,7 +184,7 @@ std::optional<bool> UserRepository::isEmpty() const {
     query.prepare("SELECT 1 FROM users LIMIT 1");
 
     if (!query.exec()) {
-        qWarning() << "isEmpty failed:" << query.lastError();
+        qCWarning(logDatabase) << "isEmpty failed:" << query.lastError();
         return std::nullopt;
     }
 

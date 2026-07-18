@@ -2,6 +2,7 @@
 
 #include "../constants/ReservationStatus.h"
 #include "../constants/TableStatus.h"
+#include "../logging/LoggingCategories.h"
 
 ReservationService::ReservationService(
     ReservationRepository &reservationRepo,

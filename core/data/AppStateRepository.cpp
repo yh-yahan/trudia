@@ -3,7 +3,7 @@
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QVariant>
-#include <QDebug>
+#include "../logging/LoggingCategories.h"
 
 AppStateRepository::AppStateRepository(QSqlDatabase db): m_db(db) {}
 
@@ -20,7 +20,7 @@ std::optional<QString> AppStateRepository::get(const QString &key) const
 
     if (!query.exec())
     {
-        qWarning() << "Failed to get app state:" << query.lastError();
+        qCWarning(logDatabase) << "Failed to get app state:" << query.lastError();
         return std::nullopt;
     }
 
@@ -47,7 +47,7 @@ bool AppStateRepository::set(const AppState &appState)
 
     if (!query.exec())
     {
-        qWarning() << "Failed to save app state:" << query.lastError();
+        qCWarning(logDatabase) << "Failed to save app state:" << query.lastError();
         return false;
     }
 
@@ -68,7 +68,7 @@ bool AppStateRepository::exists(const QString &key) const
 
     if (!query.exec())
     {
-        qWarning() << "Failed to check app state existence:" << query.lastError();
+        qCWarning(logDatabase) << "Failed to check app state existence:" << query.lastError();
         return false;
     }
 
@@ -87,7 +87,7 @@ bool AppStateRepository::remove(const QString &key)
 
     if (!query.exec())
     {
-        qWarning() << "Failed to delete app state:" << query.lastError();
+        qCWarning(logDatabase) << "Failed to delete app state:" << query.lastError();
         return false;
     }
 

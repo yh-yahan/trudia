@@ -1,9 +1,9 @@
 #include "SetupService.h"
 
 #include <QFile>
-#include <QDebug>
 #include "../data/RegionalSettingsRepository.h"
 #include "./RegionalSettingsService.h"
+#include "../logging/LoggingCategories.h"
 
 SetupService::SetupService(AppService &appService,
                            DatabaseManager &databaseManager,
@@ -14,7 +14,7 @@ SetupService::SetupService(AppService &appService,
 
 bool SetupService::initializeSystem(const QString &dbPath)
 {
-    qDebug() << "Starting system initialization...";
+    qCInfo(logApplication) << "Starting system initialization...";
 
     if (dbPath.isEmpty()) {
         qWarning() << "Invalid setup input.";
@@ -43,7 +43,7 @@ bool SetupService::initializeSystem(const QString &dbPath)
 
     service.ensureInitialized(repo);
 
-    qDebug() << "System initialization completed successfully.";
+    qCInfo(logApplication) << "System initialization completed successfully.";
     return true;
 }
 

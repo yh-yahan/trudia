@@ -3,7 +3,7 @@
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QVariant>
-#include <QDebug>
+#include "../logging/LoggingCategories.h"
 
 TableSettingsRepository::TableSettingsRepository(QSqlDatabase db): m_db(db) {}
 
@@ -17,7 +17,7 @@ std::optional<TableSettings> TableSettingsRepository::get()
     )");
 
     if (!query.exec()) {
-        qWarning() << "Failed to fetch table_settings:"
+        qCWarning(logDatabase) << "Failed to fetch table_settings:"
                    << query.lastError().text();
         return std::nullopt;
     }
@@ -49,6 +49,6 @@ void TableSettingsRepository::save(const TableSettings &tableSettings)
     query.bindValue(":layout_mode", tableSettings.layout_mode);
 
     if (!query.exec()) {
-        qWarning() << "Failed to save table_settings:" << query.lastError().text();
+        qCWarning(logDatabase) << "Failed to save table_settings:" << query.lastError().text();
     }
 }

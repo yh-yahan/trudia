@@ -4,6 +4,7 @@
 #include <QRandomGenerator>
 #include "../constants/TableStatus.h"
 #include "../constants/ReservationStatus.h"
+#include "../logging/LoggingCategories.h"
 
 OrderService::OrderService(OrderSessionRepository &orderSessionRepo,
                            OrderRepository &orderRepo,
@@ -39,7 +40,7 @@ int OrderService::createOrder(
 {
     if (items.isEmpty())
     {
-        qWarning() << "createOrder failed: empty order";
+        qCWarning(logOrder) << "createOrder failed: empty order";
         return -1;
     }
 
@@ -137,7 +138,7 @@ int OrderService::createOrder(
         auto menuOpt = m_menuRepo.getMenuItemById(menuId);
         if (!menuOpt.has_value())
         {
-            qWarning() << "Menu item not found:" << menuId;
+            qCWarning(logOrder) << "Menu item not found:" << menuId;
             continue;
         }
 
@@ -145,7 +146,7 @@ int OrderService::createOrder(
 
         if (!menu.is_available)
         {
-            qWarning() << "Menu item unavailable:" << menuId;
+            qCWarning(logOrder) << "Menu item unavailable:" << menuId;
             continue;
         }
 
@@ -180,8 +181,6 @@ int OrderService::createOrder(
             {
                 auto items = m_orderItemRepo.getOrderItemsByOrderId(orderId);
 
-                qDebug() << orderOpt.value().display_number;
-
                 auto printers = m_printerRepo.getAll();
 
                 for (const auto &printer : printers)
@@ -197,7 +196,7 @@ int OrderService::createOrder(
 
                         if (!m_windowsPrinterService.print(printer.system_name, data))
                         {
-                            qWarning() << "Kitchen print failed for printer:" << printer.system_name;
+                            qCWarning(logPrinter) << "Kitchen print failed.";
                         }
                     }
                 }
@@ -279,7 +278,7 @@ int OrderService::updateOrder(
 {
     if (items.isEmpty())
     {
-        qWarning() << "updateOrder failed: empty items";
+        qCWarning(logOrder) << "updateOrder failed: empty items";
         return -1;
     }
 
@@ -290,7 +289,7 @@ int OrderService::updateOrder(
     auto orderOpt = m_orderRepo.getOrderById(orderId);
     if (!orderOpt.has_value())
     {
-        qWarning() << "updateOrder failed: order not found";
+        qCWarning(logOrder) << "updateOrder failed: order not found";
         db.rollback();
         return -1;
     }
@@ -302,7 +301,7 @@ int OrderService::updateOrder(
     auto sessionOpt = m_orderSessionRepo.getById(orderSessionId);
     if (!sessionOpt.has_value())
     {
-        qWarning() << "updateOrder failed: session not found";
+        qCWarning(logOrder) << "updateOrder failed: session not found";
         db.rollback();
         return -1;
     }
@@ -356,7 +355,7 @@ int OrderService::updateOrder(
         auto menuOpt = m_menuRepo.getMenuItemById(menuId);
         if (!menuOpt.has_value())
         {
-            qWarning() << "Menu item not found:" << menuId;
+            qCWarning(logMenu) << "Menu item not found:" << menuId;
             continue;
         }
 
@@ -364,7 +363,7 @@ int OrderService::updateOrder(
 
         if (!menu.is_available)
         {
-            qWarning() << "Menu unavailable:" << menuId;
+            qCWarning(logMenu) << "Menu unavailable:" << menuId;
             continue;
         }
 
@@ -420,7 +419,7 @@ int OrderService::updateOrder(
 
                         if (!m_windowsPrinterService.print(printer.system_name, data))
                         {
-                            qWarning() << "Kitchen print failed for printer:" << printer.system_name;
+                            qCWarning(logPrinter) << "Kitchen print failed";
                         }
                     }
                 }
@@ -474,7 +473,7 @@ bool OrderService::printKitchenTicket(int orderId)
     auto orderOpt = m_orderRepo.getOrderById(orderId);
     if (!orderOpt.has_value())
     {
-        qWarning() << "printKitchenTicket: order not found" << orderId;
+        qCWarning(logOrder) << "order not found" << orderId;
         return false;
     }
 
@@ -483,14 +482,14 @@ bool OrderService::printKitchenTicket(int orderId)
     auto sessionOpt = m_orderSessionRepo.getById(order.order_session_id);
     if (!sessionOpt.has_value())
     {
-        qWarning() << "printKitchenTicket: session not found" << order.order_session_id;
+        qCWarning(logOrder) << "session not found" << order.order_session_id;
         return false;
     }
 
     auto items = m_orderItemRepo.getOrderItemsByOrderId(orderId);
     if (items.empty())
     {
-        qWarning() << "printKitchenTicket: no items";
+        qCWarning(logOrder) << "no items found";
         return false;
     }
 

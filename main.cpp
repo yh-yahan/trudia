@@ -48,9 +48,12 @@
 #include "core/printing/ReceiptBuilder.h"
 #include "core/printing/WindowsPrinterService.h"
 #include "core/printing/KitchenTicketBuilder.h"
+#include "core/logging/LogManager.h"
 
 int main(int argc, char *argv[])
 {
+    LogManager::initialize();
+
     QGuiApplication app(argc, argv);
 
     QCoreApplication::setOrganizationName("Trudia");

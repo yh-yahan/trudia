@@ -3,9 +3,9 @@
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QVariant>
-#include <QDebug>
 #include <QDate>
 #include <QMap>
+#include "../logging/LoggingCategories.h"
 
 AnalyticsRepository::AnalyticsRepository(QSqlDatabase db): m_db(db) {}
 
@@ -23,7 +23,7 @@ double AnalyticsRepository::revenueToday()
     )");
 
     if (!query.exec()) {
-        qWarning() << "AnalyticsRepository::revenueToday failed:" << query.lastError().text();
+        qCWarning(logDatabase) << "AnalyticsRepository::revenueToday failed:" << query.lastError().text();
         return 0.0;
     }
 
@@ -48,7 +48,7 @@ int AnalyticsRepository::ordersCountToday()
     )");
 
     if (!query.exec()) {
-        qWarning() << "AnalyticsRepository::ordersCountToday failed:" << query.lastError().text();
+        qCWarning(logDatabase) << "AnalyticsRepository::ordersCountToday failed:" << query.lastError().text();
         return 0;
     }
 
@@ -73,7 +73,7 @@ double AnalyticsRepository::averageOrderToday()
     )");
 
     if (!query.exec()) {
-        qWarning() << "AnalyticsRepository::averageOrderToday failed:" << query.lastError().text();
+        qCWarning(logDatabase) << "AnalyticsRepository::averageOrderToday failed:" << query.lastError().text();
         return 0.0;
     }
 
@@ -100,7 +100,7 @@ int AnalyticsRepository::itemsSoldToday()
     )");
 
     if (!query.exec()) {
-        qWarning() << "AnalyticsRepository::itemsSoldToday failed:" << query.lastError().text();
+        qCWarning(logDatabase) << "AnalyticsRepository::itemsSoldToday failed:" << query.lastError().text();
         return 0;
     }
 
@@ -130,7 +130,7 @@ std::vector<ItemCount> AnalyticsRepository::topItemsToday()
     )");
 
     if (!query.exec()) {
-        qWarning() << "AnalyticsRepository::topItemsToday failed:" << query.lastError().text();
+        qCWarning(logDatabase) << "AnalyticsRepository::topItemsToday failed:" << query.lastError().text();
         return topItems;
     }
 
@@ -160,7 +160,7 @@ std::vector<RevenueHour> AnalyticsRepository::revenueByHourToday()
     )");
 
     if (!query.exec()) {
-        qWarning() << "AnalyticsRepository::revenueByHourToday failed:" << query.lastError().text();
+        qCWarning(logDatabase) << "AnalyticsRepository::revenueByHourToday failed:" << query.lastError().text();
         return revenueByHour;
     }
 
@@ -197,7 +197,7 @@ std::vector<RevenueDay> AnalyticsRepository::revenueLastSevenDays()
     QMap<QString, double> revenueMap;
 
     if (!query.exec()) {
-        qWarning() << "AnalyticsRepository::revenueLastSevenDays failed:" << query.lastError().text();
+        qCWarning(logDatabase) << "AnalyticsRepository::revenueLastSevenDays failed:" << query.lastError().text();
     } else {
         while (query.next()) {
             QString day = query.value("day").toString();

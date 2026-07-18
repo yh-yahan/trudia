@@ -3,7 +3,7 @@
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QVariant>
-#include <QDebug>
+#include "../logging/LoggingCategories.h"
 
 TableRepository::TableRepository(QSqlDatabase db)
     : m_db(db) {}
@@ -19,7 +19,7 @@ std::vector<Table> TableRepository::getAllTables()
     )");
 
     if (!query.exec()) {
-        qWarning() << "getAllTables failed:" << query.lastError();
+        qCWarning(logDatabase) << "getAllTables failed:" << query.lastError();
         return tables;
     }
 
@@ -51,7 +51,7 @@ std::optional<Table> TableRepository::getTableById(int tableId)
     query.bindValue(":id", tableId);
 
     if (!query.exec()) {
-        qWarning() << "getTableById failed:" << query.lastError();
+        qCWarning(logDatabase) << "getTableById failed:" << query.lastError();
         return std::nullopt;
     }
 
@@ -91,7 +91,7 @@ int TableRepository::create(const Table &table)
     query.bindValue(":status", table.status);
 
     if (!query.exec()) {
-        qWarning() << "create failed:" << query.lastError();
+        qCWarning(logDatabase) << "create failed:" << query.lastError();
     }
 
     return query.lastInsertId().toInt();
@@ -116,7 +116,7 @@ void TableRepository::update(const Table &table)
     query.bindValue(":status", table.status);
 
     if (!query.exec()) {
-        qWarning() << "update failed:" << query.lastError();
+        qCWarning(logDatabase) << "update failed:" << query.lastError();
     }
 }
 
@@ -134,7 +134,7 @@ bool TableRepository::setTableState(int tableId, const QString &status)
     query.bindValue(":status", status);
 
     if (!query.exec()) {
-        qWarning() << "setTableState failed:" << query.lastError();
+        qCWarning(logDatabase) << "setTableState failed:" << query.lastError();
         return false;
     }
 
@@ -153,6 +153,6 @@ void TableRepository::remove(const Table &table)
     query.bindValue(":table_id", table.id);
 
     if (!query.exec()) {
-        qWarning() << "remove failed:" << query.lastError();
+        qCWarning(logDatabase) << "remove failed:" << query.lastError();
     }
 }

@@ -61,6 +61,9 @@ target_sources(trudia_core PRIVATE
     utilities/PasswordHasher.cpp
     utilities/SystemTheme.cpp
     utilities/Theme.h
+
+    logging/LogManager.cpp
+    logging/LoggingCategories.cpp
 )
 
 target_include_directories(trudia_core

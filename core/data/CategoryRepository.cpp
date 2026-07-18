@@ -3,7 +3,7 @@
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QVariant>
-#include <QDebug>
+#include "../logging/LoggingCategories.h"
 
 CategoryRepository::CategoryRepository(QSqlDatabase db): m_db(db) {}
 
@@ -15,7 +15,7 @@ std::vector<Category> CategoryRepository::getAllCategories()
     query.prepare("SELECT id, category FROM categories");
 
     if (!query.exec()) {
-        qWarning() << "getAllCategories failed:" << query.lastError();
+        qCWarning(logDatabase) << "getAllCategories failed:" << query.lastError();
         return categories;
     }
 
@@ -37,7 +37,7 @@ std::optional<Category> CategoryRepository::getCategoryById(int categoryId)
     query.bindValue(":id", categoryId);
 
     if (!query.exec()) {
-        qWarning() << "getCategoryById failed:" << query.lastError();
+        qCWarning(logDatabase) << "getCategoryById failed:" << query.lastError();
         return std::nullopt;
     }
 
@@ -63,7 +63,7 @@ void CategoryRepository::create(const Category &category)
     query.bindValue(":category", category.category);
 
     if (!query.exec()) {
-        qWarning() << "create failed:" << query.lastError();
+        qCWarning(logDatabase) << "create failed:" << query.lastError();
     }
 }
 
@@ -80,7 +80,7 @@ void CategoryRepository::update(const Category &category)
     query.bindValue(":category", category.category);
 
     if (!query.exec()) {
-        qWarning() << "update failed:" << query.lastError();
+        qCWarning(logDatabase) << "update failed:" << query.lastError();
     }
 }
 
@@ -95,6 +95,6 @@ void CategoryRepository::remove(const Category &category)
     query.bindValue(":category_id", category.id);
 
     if (!query.exec()) {
-        qWarning() << "remove failed:" << query.lastError();
+        qCWarning(logDatabase) << "remove failed:" << query.lastError();
     }
 }

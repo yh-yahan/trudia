@@ -6,6 +6,7 @@
 #include "../models/CanvasItemModel.h"
 #include "../constants/ReservationStatus.h"
 #include "../constants/TableStatus.h"
+#include "../logging/LoggingCategories.h"
 
 FloorPlanService::FloorPlanService(FloorRepository &floorRepo,
                                    CanvasItemRepository &canvasItemRepo,
@@ -46,7 +47,7 @@ int FloorPlanService::currentFloorId() const
 void FloorPlanService::onTableStatusChanged(int tableId, const QString &newStatus)
 {
     if (!m_canvasModel) {
-        qDebug() << "FloorPlanService: No canvas model";
+        qCWarning(logFloorPlan) << "FloorPlanService: No canvas model";
         return;
     }
 

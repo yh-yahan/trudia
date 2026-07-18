@@ -3,7 +3,7 @@
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QVariant>
-#include <QDebug>
+#include "../logging/LoggingCategories.h"
 
 KitchenSettingsRepository::KitchenSettingsRepository(QSqlDatabase db): m_db(db) {}
 
@@ -17,7 +17,7 @@ std::optional<KitchenSettings> KitchenSettingsRepository::get()
     )");
 
     if (!query.exec()) {
-        qWarning() << "Failed to fetch kitchen_settings:"
+        qCWarning(logDatabase) << "Failed to fetch kitchen_settings:"
                    << query.lastError().text();
         return std::nullopt;
     }
@@ -58,6 +58,6 @@ void KitchenSettingsRepository::save(const KitchenSettings &kitchenSettings)
     query.bindValue(":allow_edit_after_send", kitchenSettings.allow_edit_after_send);
 
     if (!query.exec()) {
-        qWarning() << "Failed to save kitchen_settings:" << query.lastError().text();
+        qCWarning(logDatabase) << "Failed to save kitchen_settings:" << query.lastError().text();
     }
 }

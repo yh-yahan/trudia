@@ -3,7 +3,7 @@
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QVariant>
-#include <QDebug>
+#include "../logging/LoggingCategories.h"
 
 TaxSettingsRepository::TaxSettingsRepository(QSqlDatabase db): m_db(db) {}
 
@@ -17,7 +17,7 @@ std::optional<TaxSettings> TaxSettingsRepository::get()
     )");
 
     if (!query.exec()) {
-        qWarning() << "Failed to fetch tax_settings:"
+        qCWarning(logDatabase) << "Failed to fetch tax_settings:"
                    << query.lastError().text();
         return std::nullopt;
     }
@@ -65,6 +65,6 @@ void TaxSettingsRepository::save(const TaxSettings &taxSettings)
                         : QVariant());
 
     if (!query.exec()) {
-        qWarning() << "Failed to save tax_settings:" << query.lastError().text();
+        qCWarning(logDatabase) << "Failed to save tax_settings:" << query.lastError().text();
     }
 }

@@ -36,7 +36,7 @@ ScrollView {
 
         if (success) {
             successMessage = qsTr("Database moved successfully.")
-            SetupService.restartApp();
+            SetupService.restartApp()
         } else {
             errorMessage = qsTr("Failed to move database.")
         }
@@ -79,7 +79,8 @@ ScrollView {
         title: qsTr("Select New Database Location")
 
         onAccepted: {
-            root.selectedFolder = folderDialog.selectedFolder.toString().replace("file:///", "")
+            root.selectedFolder = folderDialog.selectedFolder.toString(
+                        ).replace("file:///", "")
 
             if (root.selectedFolder === "")
                 return
@@ -99,7 +100,8 @@ ScrollView {
         nameFilters: ["Database Files (*.db *.sqlite *.sqlite3)", "All Files (*)"]
 
         onAccepted: {
-            root.selectedRestoreFile = selectedFile.toString().replace("file:///", "")
+            root.selectedRestoreFile = selectedFile.toString().replace(
+                        "file:///", "")
 
             if (root.selectedRestoreFile === "")
                 return
@@ -136,7 +138,9 @@ ScrollView {
                 font.pixelSize: Theme.fontNormal
             }
 
-            Item { Layout.preferredHeight: 8 }
+            Item {
+                Layout.preferredHeight: 8
+            }
 
             Label {
                 text: qsTr("Current Location")
@@ -291,7 +295,9 @@ ScrollView {
                 font.pixelSize: Theme.fontNormal
             }
 
-            Item { Layout.preferredHeight: 10 }
+            Item {
+                Layout.preferredHeight: 10
+            }
 
             Rectangle {
                 Layout.fillWidth: true
@@ -360,7 +366,7 @@ ScrollView {
                         color: "#6b6b6b"
                         radius: 4
                     }
-                    
+
                     hoverEnabled: false
                     focusPolicy: Qt.NoFocus
 
@@ -406,9 +412,7 @@ ScrollView {
             ColumnLayout {
                 spacing: 15
 
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.leftMargin: 20
+                Layout.leftMargin: 20
 
                 Rectangle {
                     Layout.preferredWidth: 700
@@ -465,9 +469,8 @@ ScrollView {
             ColumnLayout {
                 spacing: 15
 
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.leftMargin: 20
+                Layout.fillWidth: true
+                Layout.leftMargin: 20
 
                 RowLayout {
                     spacing: 12

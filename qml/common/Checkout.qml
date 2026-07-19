@@ -33,101 +33,98 @@ Item {
     property string currencySymbol: SettingService.currencySymbol()
 
     function reloadData() {
-        activeSessions = CheckoutService.loadActiveCheckoutSessions();
-        recentOrders = CheckoutService.getRecentPaidOrders();
+        activeSessions = CheckoutService.loadActiveCheckoutSessions()
+        recentOrders = CheckoutService.getRecentPaidOrders()
 
-        selectedSession = null;
-        selectedRecent = null;
-        selectedRecentDetails = null;
-        checkoutDetails = [];
+        selectedSession = null
+        selectedRecent = null
+        selectedRecentDetails = null
+        checkoutDetails = []
 
-        memberPhone = "";
-        memberId = 0;
-        currentPoints = 0;
-        earnedPointsPreview = 0;
+        memberPhone = ""
+        memberId = 0
+        currentPoints = 0
+        earnedPointsPreview = 0
     }
 
     function normalizeStatus(status) {
         if (!status)
-            return "";
-        return (status + "").trim().toLowerCase();
+            return ""
+        return (status + "").trim().toLowerCase()
     }
 
     function isOrderServed(order) {
-        return normalizeStatus(order ? order.status : "") === "served";
+        return normalizeStatus(order ? order.status : "") === "served"
     }
 
     function sessionIsFullyServed(details) {
         if (!details || details.length === 0)
-            return false;
+            return false
 
         for (var i = 0; i < details.length; i++) {
             if (!isOrderServed(details[i])) {
-                return false;
+                return false
             }
         }
 
-        return true;
+        return true
     }
 
     function updateMembershipPreview() {
-        membershipChecked = false;
+        membershipChecked = false
 
         if (!memberPhone || !selectedSession)
-            return;
+            return
 
-        var preview = MembershipService.preview(
-            memberPhone,
-            selectedSession.subtotal * 100,
-            selectedSession.total * 100,
-            redeemPointsRequested
-        );
+        var preview = MembershipService.preview(memberPhone,
+                                                selectedSession.subtotal * 100,
+                                                selectedSession.total * 100,
+                                                redeemPointsRequested)
 
-        console.log(JSON.stringify(preview));
+        membershipChecked = true
 
-        membershipChecked = true;
+        memberId = preview.memberId || 0
+        currentPoints = preview.currentPoints || 0
 
-        memberId = preview.memberId || 0;
-        currentPoints = preview.currentPoints || 0;
+        earnedPointsPreview = preview.earnedPoints || 0
 
-        earnedPointsPreview = preview.earnedPoints || 0;
+        redeemDiscountPreview = (preview.redeemDiscountCents || 0) / 100.0
 
-        redeemDiscountPreview = (preview.redeemDiscountCents || 0) / 100.0;
-
-        finalTotalPreview = (preview.finalTotalCents || selectedSession.total * 100) / 100.0;
+        finalTotalPreview = (preview.finalTotalCents
+                             || selectedSession.total * 100) / 100.0
     }
 
     Component.onCompleted: {
-        reloadData();
+        reloadData()
 
-        var kitchenSettings = SettingService.getKitchenSettings();
+        var kitchenSettings = SettingService.getKitchenSettings()
 
         if (kitchenSettings) {
             if (kitchenSettings.require_ready_for_checkout !== undefined) {
-                requireReadyForCheckout = kitchenSettings.require_ready_for_checkout;
+                requireReadyForCheckout = kitchenSettings.require_ready_for_checkout
             }
 
             if (kitchenSettings.mode !== undefined) {
-                kitchenMode = kitchenSettings.mode;
+                kitchenMode = kitchenSettings.mode
             }
         }
     }
 
     onCheckoutDetailsChanged: {
         if (kitchenMode === "tickets") {
-            canCheckout = true;
-            return;
+            canCheckout = true
+            return
         }
 
         if (requireReadyForCheckout) {
-            canCheckout = sessionIsFullyServed(checkoutDetails);
+            canCheckout = sessionIsFullyServed(checkoutDetails)
         } else {
-            canCheckout = true;
+            canCheckout = true
         }
     }
 
     onSelectedSessionChanged: {
-        updateMembershipPreview();
+        updateMembershipPreview()
     }
 
     RowLayout {
@@ -147,16 +144,18 @@ Item {
                 radius: 6
 
                 color: selectedSession === modelData ? Theme.surface : Theme.background
-                border.color: selectedSession === modelData ? Theme.primary() : "transparent"
+                border.color: selectedSession === modelData ? Theme.primary(
+                                                                  ) : "transparent"
                 border.width: 2
 
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
-                        selectedRecent = null;
-                        selectedSession = modelData;
-                        checkoutDetails = CheckoutService.loadCheckoutDetails(modelData.id);
-                        updateMembershipPreview();
+                        selectedRecent = null
+                        selectedSession = modelData
+                        checkoutDetails = CheckoutService.loadCheckoutDetails(
+                                    modelData.id)
+                        updateMembershipPreview()
                     }
                 }
 
@@ -173,7 +172,8 @@ Item {
                     }
 
                     Text {
-                        text: modelData.table_name ? qsTr("Table ") + modelData.table_name : modelData.order_type
+                        text: modelData.table_name ? qsTr("Table ")
+                                                     + modelData.table_name : modelData.order_type
                         color: Theme.secondaryText
                         font.pixelSize: Theme.fontNormal
                     }
@@ -198,7 +198,8 @@ Item {
                     Layout.fillHeight: true
 
                     Text {
-                        text: qsTr("Order #") + selectedSession.display_number
+                        text: selectedSession ? qsTr(
+                                                    "Order #") + selectedSession.display_number : ""
                         color: Theme.text
                         font.pixelSize: Theme.fontNormal
                         font.bold: true
@@ -228,7 +229,8 @@ Item {
                                 }
 
                                 Text {
-                                    visible: requireReadyForCheckout && !isOrderServed(modelData)
+                                    visible: requireReadyForCheckout
+                                             && !isOrderServed(modelData)
                                     text: qsTr("PENDING")
                                     color: Theme.orange
                                     font.bold: true
@@ -236,7 +238,8 @@ Item {
                                 }
 
                                 Text {
-                                    visible: requireReadyForCheckout && isOrderServed(modelData)
+                                    visible: requireReadyForCheckout
+                                             && isOrderServed(modelData)
                                     text: qsTr("SERVED")
                                     color: Theme.green
                                     font.bold: true
@@ -247,7 +250,8 @@ Item {
                             readonly property int qtyCol: 60
                             readonly property int unitCol: 80
                             readonly property int totalCol: 80
-                            readonly property int itemCol: parent.width - (qtyCol + unitCol + totalCol)
+                            readonly property int itemCol: parent.width
+                                                           - (qtyCol + unitCol + totalCol)
 
                             RowLayout {
                                 width: parent.width
@@ -301,7 +305,7 @@ Item {
                                     Row {
                                         Layout.preferredWidth: itemCol
                                         spacing: 6
-                                        anchors.verticalCenter: parent.verticalCenter
+                                        Layout.alignment: Qt.AlignVCenter
 
                                         Text {
                                             text: modelData.item_name
@@ -311,7 +315,8 @@ Item {
                                         }
 
                                         Text {
-                                            visible: modelData.notes && modelData.notes.length > 0
+                                            visible: modelData.notes
+                                                     && modelData.notes.length > 0
                                             text: "(" + modelData.notes + ")"
                                             color: Theme.orange
                                             font.pixelSize: Theme.fontSmall
@@ -330,7 +335,9 @@ Item {
 
                                     Text {
                                         Layout.preferredWidth: unitCol
-                                        text: Number(modelData.unit_price).toFixed(2)
+                                        text: Number(
+                                                  modelData.unit_price).toFixed(
+                                                  2)
                                         color: Theme.text
                                         font.pixelSize: Theme.fontNormal
                                         horizontalAlignment: Text.AlignRight
@@ -339,7 +346,9 @@ Item {
 
                                     Text {
                                         Layout.preferredWidth: totalCol
-                                        text: Number(modelData.total_price).toFixed(2)
+                                        text: Number(
+                                                  modelData.total_price).toFixed(
+                                                  2)
                                         color: Theme.text
                                         font.pixelSize: Theme.fontNormal
                                         horizontalAlignment: Text.AlignRight
@@ -362,7 +371,8 @@ Item {
                             Column {
                                 spacing: 6
 
-                                visible: selectedSession !== null && membershipEnabled
+                                visible: selectedSession !== null
+                                         && membershipEnabled
 
                                 Text {
                                     text: qsTr("Member Phone (optional)")
@@ -379,11 +389,11 @@ Item {
                                         text: memberPhone
 
                                         onTextChanged: {
-                                            memberPhone = text.trim();
-                                            membershipChecked = false;
-                                            memberId = 0;
-                                            currentPoints = 0;
-                                            earnedPointsPreview = 0;
+                                            memberPhone = text.trim()
+                                            membershipChecked = false
+                                            memberId = 0
+                                            currentPoints = 0
+                                            earnedPointsPreview = 0
                                         }
                                         onAccepted: updateMembershipPreview()
 
@@ -428,7 +438,8 @@ Item {
                         spacing: 4
 
                         Text {
-                            text: memberId > 0 ? qsTr("Current Points: ") + currentPoints : qsTr("New member will be created")
+                            text: memberId > 0 ? qsTr("Current Points: ") + currentPoints : qsTr(
+                                                     "New member will be created")
                             color: memberId > 0 ? Theme.green : Theme.orange
                             font.pixelSize: Theme.fontNormal
                             font.bold: true
@@ -436,7 +447,8 @@ Item {
 
                         Text {
                             visible: selectedSession !== null
-                            text: qsTr("Points to Earn: +") + earnedPointsPreview
+                            text: qsTr(
+                                      "Points to Earn: +") + earnedPointsPreview
                             color: Theme.primary()
                             font.pixelSize: Theme.fontNormal
                             font.bold: true
@@ -444,7 +456,8 @@ Item {
                     }
 
                     Column {
-                        visible: selectedSession !== null && memberId > 0 && currentPoints > 0
+                        visible: selectedSession !== null && memberId > 0
+                                 && currentPoints > 0
                         spacing: 6
 
                         Row {
@@ -470,8 +483,8 @@ Item {
                                 focusPolicy: Qt.NoFocus
 
                                 onClicked: {
-                                    redeemPointsRequested = currentPoints;
-                                    updateMembershipPreview();
+                                    redeemPointsRequested = currentPoints
+                                    updateMembershipPreview()
                                 }
                             }
 
@@ -495,8 +508,8 @@ Item {
                                 focusPolicy: Qt.NoFocus
 
                                 onClicked: {
-                                    redeemPointsRequested = 0;
-                                    updateMembershipPreview();
+                                    redeemPointsRequested = 0
+                                    updateMembershipPreview()
                                 }
                             }
                         }
@@ -506,27 +519,35 @@ Item {
                         spacing: 6
 
                         Text {
-                            text: qsTr("Subtotal: ") + currencySymbol + selectedSession.subtotal.toFixed(2)
+                            text: selectedSession ? qsTr("Subtotal: ") + currencySymbol
+                                                    + selectedSession.subtotal.toFixed(
+                                                        2) : ""
                             color: Theme.text
                             font.pixelSize: Theme.fontNormal
                         }
 
                         Text {
-                            text: qsTr("Tax: ") + currencySymbol + selectedSession.tax.toFixed(2)
+                            text: selectedSession ? qsTr("Tax: ") + currencySymbol
+                                                    + selectedSession.tax.toFixed(
+                                                        2) : ""
                             color: Theme.text
                             font.pixelSize: Theme.fontNormal
                         }
 
                         Text {
                             visible: redeemDiscountPreview > 0
-                            text: qsTr("Discount: -") + currencySymbol + redeemDiscountPreview.toFixed(2)
+                            text: selectedSession ? qsTr("Discount: -") + currencySymbol
+                                                    + redeemDiscountPreview.toFixed(
+                                                        2) : ""
                             color: Theme.orange
                             font.bold: true
                             font.pixelSize: Theme.fontNormal
                         }
 
                         Text {
-                            text: qsTr("Total: ") + currencySymbol + finalTotalPreview.toFixed(2)
+                            text: selectedSession ? qsTr("Total: ") + currencySymbol
+                                                    + finalTotalPreview.toFixed(
+                                                        2) : ""
                             color: Theme.text
                             font.bold: true
                             font.pixelSize: Theme.fontNormal
@@ -562,15 +583,18 @@ Item {
 
                         onClicked: {
                             if (!selectedSession)
-                                return;
-                            if (CheckoutService.completeCheckout(selectedSession.id, memberPhone, redeemPointsRequested)) {
-                                var printed = CheckoutService.printReceipt(selectedSession.id, false);
+                                return
+                            if (CheckoutService.completeCheckout(
+                                        selectedSession.id, memberPhone,
+                                        redeemPointsRequested)) {
+                                var printed = CheckoutService.printReceipt(
+                                            selectedSession.id, false)
 
                                 if (!printed) {
-                                    console.log("Receipt printing failed");
+                                    console.log("Receipt printing failed")
                                 }
 
-                                reloadData();
+                                reloadData()
                             }
                         }
                     }
@@ -583,7 +607,8 @@ Item {
                     Layout.fillHeight: true
 
                     Text {
-                        text: qsTr("Order #") + selectedRecentDetails.display_number
+                        text: selectedRecentDetails
+                              !== null ? qsTr("Order #") + selectedRecentDetails.display_number : ""
                         color: Theme.text
                         font.pixelSize: Theme.fontNormal
                         font.bold: true
@@ -595,7 +620,7 @@ Item {
                         spacing: 16
                         clip: true
 
-                        model: selectedRecentDetails.orders
+                        model: selectedRecentDetails ? selectedRecentDetails.orders : []
 
                         delegate: Column {
                             width: parent.width
@@ -617,7 +642,8 @@ Item {
                             readonly property int qtyCol: 60
                             readonly property int unitCol: 80
                             readonly property int totalCol: 80
-                            readonly property int itemCol: parent.width - (qtyCol + unitCol + totalCol)
+                            readonly property int itemCol: parent.width
+                                                           - (qtyCol + unitCol + totalCol)
 
                             RowLayout {
                                 width: parent.width
@@ -680,7 +706,8 @@ Item {
                                         }
 
                                         Text {
-                                            visible: modelData.notes && modelData.notes.length > 0
+                                            visible: modelData.notes
+                                                     && modelData.notes.length > 0
                                             text: "(" + modelData.notes + ")"
                                             color: Theme.orange
                                             font.pixelSize: Theme.fontSmall
@@ -698,7 +725,9 @@ Item {
 
                                     Text {
                                         Layout.preferredWidth: unitCol
-                                        text: Number(modelData.unit_price).toFixed(2)
+                                        text: Number(
+                                                  modelData.unit_price).toFixed(
+                                                  2)
                                         color: Theme.text
                                         font.pixelSize: Theme.fontNormal
                                         horizontalAlignment: Text.AlignRight
@@ -706,7 +735,9 @@ Item {
 
                                     Text {
                                         Layout.preferredWidth: totalCol
-                                        text: Number(modelData.total_price).toFixed(2)
+                                        text: Number(
+                                                  modelData.total_price).toFixed(
+                                                  2)
                                         color: Theme.text
                                         font.pixelSize: Theme.fontNormal
                                         horizontalAlignment: Text.AlignRight
@@ -727,35 +758,38 @@ Item {
                         spacing: 6
 
                         Text {
-                            text: qsTr("Subtotal: ") +
-                                currencySymbol +
-                                selectedRecentDetails.subtotal.toFixed(2)
+                            text: selectedSession ? qsTr("Subtotal: ") + currencySymbol
+                                                    + selectedSession.subtotal.toFixed(
+                                                        2) : ""
                             color: Theme.text
                             font.pixelSize: Theme.fontNormal
                         }
 
                         Text {
-                            text: qsTr("Tax: ") +
-                                currencySymbol +
-                                selectedRecentDetails.tax.toFixed(2)
+                            text: selectedSession ? qsTr("Tax: ") + currencySymbol
+                                                    + selectedSession.tax.toFixed(
+                                                        2) : ""
                             color: Theme.text
                             font.pixelSize: Theme.fontNormal
                         }
 
                         Text {
-                            visible: selectedRecentDetails.discount > 0
-                            text: qsTr("Discount: -") +
-                                currencySymbol +
-                                selectedRecentDetails.discount.toFixed(2)
+                            visible: selectedRecentDetails
+                                     && selectedRecentDetails.discount > 0
+                            text: selectedRecentDetails
+                                  && selectedSession.discount
+                                  > 0 ? qsTr("Discount: -") + currencySymbol
+                                        + selectedRecentDetails.discount.toFixed(
+                                            2) : ""
                             color: Theme.orange
                             font.pixelSize: Theme.fontNormal
                             font.bold: true
                         }
 
                         Text {
-                            text: qsTr("Total: ") +
-                                currencySymbol +
-                                selectedRecentDetails.total.toFixed(2)
+                            text: selectedSession ? qsTr("Total: ") + currencySymbol
+                                                    + selectedRecentDetails.total.toFixed(
+                                                        2) : ""
                             color: Theme.green
                             font.bold: true
                             font.pixelSize: Theme.fontNormal
@@ -791,12 +825,10 @@ Item {
 
                         onClicked: {
                             var printed = CheckoutService.printReceipt(
-                                selectedRecentDetails.id,
-                                true
-                            );
+                                        selectedRecentDetails.id, true)
 
                             if (!printed)
-                                console.log("Receipt printing failed");
+                                console.log("Receipt printing failed")
                         }
                     }
                 }
@@ -833,12 +865,12 @@ Item {
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
-                        selectedSession = null;
+                        selectedSession = null
 
-                        selectedRecent = modelData;
+                        selectedRecent = modelData
 
-                        selectedRecentDetails =
-                            CheckoutService.loadPaidOrderDetails(modelData.id);
+                        selectedRecentDetails = CheckoutService.loadPaidOrderDetails(
+                                    modelData.id)
                     }
                 }
 

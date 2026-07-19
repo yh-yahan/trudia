@@ -5,7 +5,11 @@ import Trudia.Services 1.0
 import trudia.Theme 1.0
 
 ScrollView {
+    id: root
+
     property var kitchenData: ({})
+
+    property string errorMessage: ""
 
     Component.onCompleted: {
         kitchenData = SettingService.getKitchenSettings()
@@ -48,9 +52,8 @@ ScrollView {
 
             ColumnLayout {
                 spacing: 15
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.leftMargin: 20
+                Layout.fillWidth: true
+                Layout.leftMargin: 20
 
                 RowLayout {
                     Layout.fillWidth: true
@@ -102,9 +105,8 @@ ScrollView {
 
             ColumnLayout {
                 spacing: 15
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.leftMargin: 20
+                Layout.fillWidth: true
+                Layout.leftMargin: 20
 
                 RowLayout {
                     Layout.fillWidth: true
@@ -150,9 +152,8 @@ ScrollView {
 
             ColumnLayout {
                 spacing: 15
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.leftMargin: 20
+                Layout.fillWidth: true
+                Layout.leftMargin: 20
 
                 RowLayout {
                     Layout.fillWidth: true
@@ -185,9 +186,8 @@ ScrollView {
 
             ColumnLayout {
                 spacing: 15
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.leftMargin: 20
+                Layout.fillWidth: true
+                Layout.leftMargin: 20
 
                 RowLayout {
                     Layout.fillWidth: true
@@ -254,7 +254,9 @@ ScrollView {
                 payload.require_ready_for_checkout = requireReadySwitch.checked ? 1 : 0
                 payload.allow_edit_after_send = allowEditSwitch.checked ? 1 : 0
 
-                SettingService.saveKitchenSettings(payload)
+                if (!SettingService.saveKitchenSettings(payload)) {
+                    root.errorMessage = qsTr("Failed to save kitchen settings.")
+                }
             }
         }
 

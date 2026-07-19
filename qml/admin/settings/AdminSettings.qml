@@ -25,7 +25,7 @@ Item {
 
     Connections {
         target: settingsSidebar
-        onSelectionChanged: {
+        function onSelectionChanged() {
             handleSelectionChanged(settingsSidebar.selectedIndex)
         }
     }

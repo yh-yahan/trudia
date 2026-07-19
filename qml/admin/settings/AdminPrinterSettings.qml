@@ -47,9 +47,8 @@ ScrollView {
 
             // add printer
             ColumnLayout {
-                anchors.left: parent.left
-                anchors.leftMargin: 20
-                anchors.right: parent.right
+                Layout.fillWidth: true
+                Layout.leftMargin: 20
                 spacing: 10
 
                 Button {
@@ -197,7 +196,8 @@ ScrollView {
                                 hoverEnabled: false
                                 focusPolicy: Qt.NoFocus
                                 onClicked: {
-                                    console.log("system_name: ", modelData.system_name)
+                                    console.log("system_name: ",
+                                                modelData.system_name)
                                     WindowsPrinterService.testPrint(modelData)
                                 }
                             }
@@ -226,10 +226,12 @@ ScrollView {
                                 hoverEnabled: false
                                 focusPolicy: Qt.NoFocus
                                 onClicked: {
-                                    if (SettingService.removePrinter(modelData.id)) {
+                                    if (SettingService.removePrinter(
+                                                modelData.id)) {
                                         loadPrinters()
                                     } else {
-                                        errorMessage = qsTr("Failed to remove printer")
+                                        errorMessage = qsTr(
+                                                    "Failed to remove printer")
                                     }
                                 }
                             }
@@ -326,11 +328,7 @@ ScrollView {
 
                             onClicked: printerRoot.selectedPrinter = system_name
 
-                            contentItem: Text {
-                                text: "     " + system_name
-                                color: Theme.text
-                                font.pixelSize: Theme.fontNormal
-                            }
+                            text: system_name
                         }
                     }
 
@@ -467,18 +465,19 @@ ScrollView {
                                 printerRoot.testStatus = qsTr("Testing...")
 
                                 var success = WindowsPrinterService.testPrint({
-                                    "system_name": printerRoot.selectedPrinter,
-                                    "role": printerRoot.role,
-                                    "paper_width": printerRoot.paperWidth,
-                                    "cut_mode": printerRoot.cutMode
-                                })
+                                                                                  "system_name": printerRoot.selectedPrinter,
+                                                                                  "role": printerRoot.role,
+                                                                                  "paper_width": printerRoot.paperWidth,
+                                                                                  "cut_mode": printerRoot.cutMode
+                                                                              })
 
                                 printerRoot.testStatus = success ? "Success" : "Failed"
                             }
                         }
 
                         Button {
-                            text: printerRoot.isEditMode ? qsTr("Save Changes") : qsTr("Add Printer")
+                            text: printerRoot.isEditMode ? qsTr("Save Changes") : qsTr(
+                                                               "Add Printer")
                             Layout.fillWidth: true
 
                             background: Rectangle {
@@ -487,7 +486,8 @@ ScrollView {
                             }
 
                             contentItem: Text {
-                                text: printerRoot.isEditMode ? qsTr("Save Changes") : qsTr("Add Printer")
+                                text: printerRoot.isEditMode ? qsTr("Save Changes") : qsTr(
+                                                                   "Add Printer")
                                 color: "white"
                                 font.bold: true
                                 horizontalAlignment: Text.AlignHCenter
@@ -501,7 +501,8 @@ ScrollView {
                             onClicked: {
                                 if (!printerRoot.selectedPrinter
                                         || printerRoot.selectedPrinter.length === 0) {
-                                    printerRoot.testStatus = qsTr("No printer selected")
+                                    printerRoot.testStatus = qsTr(
+                                                "No printer selected")
                                     return
                                 }
 
@@ -523,8 +524,7 @@ ScrollView {
                                     root.loadPrinters()
                                 } else {
                                     printerRoot.testStatus = qsTr(
-                                        printerRoot.isEditMode ? "Failed to update printer"
-                                                            : "Failed to add printer")
+                                                printerRoot.isEditMode ? "Failed to update printer" : "Failed to add printer")
                                 }
                             }
                         }

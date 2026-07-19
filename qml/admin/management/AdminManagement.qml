@@ -26,7 +26,7 @@ Item {
 
     Connections {
         target: managementSidebar
-        onSelectionChanged: {
+        function onSelectionChanged() {
             handleSelectionChanged(managementSidebar.selectedIndex)
         }
     }
@@ -38,7 +38,6 @@ Item {
     function loadPage(index) {
         if (index === 0) {
             pageLoader.sourceComponent = menu
-
         } else if (index === 1) {
 
             if (SettingService.tableLayoutMode === "floor_plan") {
@@ -46,7 +45,6 @@ Item {
             } else {
                 pageLoader.sourceComponent = table
             }
-
         } else if (index === 2) {
             pageLoader.sourceComponent = user
         }

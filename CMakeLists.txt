@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_PREFIX_PATH "C:/Qt/6.10.2/mingw_64")
 
-find_package(Qt6 REQUIRED COMPONENTS Quick Sql LinguistTools Concurrent Test)
+find_package(Qt6 REQUIRED COMPONENTS Quick QuickControls2 Sql LinguistTools Concurrent Test)
 
 set(LIBSODIUM_ROOT "C:/libsodium/libsodium-win64")
 
@@ -96,6 +96,7 @@ target_link_libraries(apptrudia
     PRIVATE
         trudia_core
         Qt6::Quick
+        Qt6::QuickControls2
         Qt6::Sql
         Qt6::Concurrent
         sodium

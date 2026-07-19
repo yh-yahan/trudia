@@ -11,15 +11,16 @@ ScrollView {
     clip: true
 
     property var regionalData: ({})
-    
+    property string errorMessage: ""
+
     Component.onCompleted: {
-        regionalData = SettingService.getRegionalSettings();
+        regionalData = SettingService.getRegionalSettings()
 
         if (!regionalData || Object.keys(regionalData).length === 0)
-            return;
+            return
 
-        localeCombo.currentValue = regionalData.locale || "en_US";
-        currencyCombo.currentValue = regionalData.currency_code || "USD";
+        localeCombo.currentValue = regionalData.locale || "en_US"
+        currencyCombo.currentValue = regionalData.currency_code || "USD"
     }
 
     ColumnLayout {
@@ -46,9 +47,8 @@ ScrollView {
 
             ColumnLayout {
                 spacing: 15
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.leftMargin: 20
+                Layout.fillWidth: true
+                Layout.leftMargin: 20
 
                 RowLayout {
                     Layout.fillWidth: true
@@ -65,10 +65,13 @@ ScrollView {
                         Layout.preferredWidth: 220
                         font.pixelSize: Theme.fontNormal
 
-                        model: [
-                            { value: "en_US", label: "English (United States)" },
-                            { value: "zh_CN", label: "中文 (简体)" }
-                        ]
+                        model: [{
+                                "value": "en_US",
+                                "label": "English (United States)"
+                            }, {
+                                "value": "zh_CN",
+                                "label": "中文 (简体)"
+                            }]
 
                         textRole: "label"
                         valueRole: "value"
@@ -90,9 +93,8 @@ ScrollView {
 
             ColumnLayout {
                 spacing: 15
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.leftMargin: 20
+                Layout.fillWidth: true
+                Layout.leftMargin: 20
 
                 RowLayout {
                     Layout.fillWidth: true
@@ -109,12 +111,19 @@ ScrollView {
                         Layout.preferredWidth: 220
                         font.pixelSize: Theme.fontNormal
 
-                        model: [
-                            { value: "USD", label: "$ (USD)" },
-                            { value: "MYR", label: "RM (MYR)" },
-                            { value: "EUR", label: "€ (EUR)" },
-                            { value: "CNY", label: "¥ (CNY)" }
-                        ]
+                        model: [{
+                                "value": "USD",
+                                "label": "$ (USD)"
+                            }, {
+                                "value": "MYR",
+                                "label": "RM (MYR)"
+                            }, {
+                                "value": "EUR",
+                                "label": "€ (EUR)"
+                            }, {
+                                "value": "CNY",
+                                "label": "¥ (CNY)"
+                            }]
 
                         textRole: "label"
                         valueRole: "value"
@@ -160,15 +169,17 @@ ScrollView {
             focusPolicy: Qt.NoFocus
 
             onClicked: {
-                var payload = {};
+                var payload = {}
 
-                payload.id = regionalData.id || 1;
+                payload.id = regionalData.id || 1
 
-                payload.locale = localeCombo.currentValue;
+                payload.locale = localeCombo.currentValue
 
-                payload.currency_code = currencyCombo.currentValue;
+                payload.currency_code = currencyCombo.currentValue
 
-                SettingService.saveRegionalSettings(payload);
+                if (!SettingService.saveRegionalSettings(payload)) {
+                    root.errorMessage = qsTr("Failed to save regional settings.")
+                }
             }
         }
 

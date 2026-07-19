@@ -5,8 +5,6 @@ import "./management"
 import "../common"
 
 Item {
-    anchors.fill: parent
-
     RowLayout {
         anchors.fill: parent
         spacing: 0
@@ -28,7 +26,8 @@ Item {
 
     Connections {
         target: sidebar
-        onSelectionChanged: {
+
+        function onSelectionChanged() {
             handleSelectionChanged(sidebar.selectedIndex)
         }
     }

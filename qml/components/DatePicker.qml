@@ -147,15 +147,11 @@ Item {
                                                                       0))
                         property bool isFutureAllowed: thisDate <= root.getMaxDate()
 
-                        color: {
-                            if (isSelected)
-                                return Theme.primary
-                            if (isToday)
-                                return Theme.surface
-                            return isCurrentMonth ? "transparent" : Theme.surface
-                        }
+                        color: isSelected ? Theme.primary(
+                                                ) : isToday ? Theme.surface : (isCurrentMonth ? "transparent" : Theme.surface)
 
-                        border.color: isSelected ? Theme.primary : "transparent"
+                        border.color: isSelected ? Theme.primary(
+                                                       ) : "transparent"
                         border.width: 2
 
                         enabled: !isPast && isFutureAllowed && isCurrentMonth
@@ -164,13 +160,8 @@ Item {
                             anchors.centerIn: parent
                             text: dayRect.thisDate.getDate()
 
-                            color: {
-                                if (!dayRect.isCurrentMonth)
-                                    return Theme.secondaryText
-                                if (dayRect.isPast || !dayRect.isFutureAllowed)
-                                    return Theme.secondaryText
-                                return dayRect.isSelected ? "white" : Theme.text
-                            }
+                            color: (!dayRect.isCurrentMonth || dayRect.isPast
+                                    || !dayRect.isFutureAllowed) ? Theme.secondaryText : (dayRect.isSelected ? "white" : Theme.text)
 
                             font.bold: dayRect.isToday || dayRect.isSelected
                         }

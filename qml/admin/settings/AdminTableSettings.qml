@@ -46,9 +46,8 @@ ScrollView {
 
             ColumnLayout {
                 spacing: 15
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.leftMargin: 20
+                Layout.fillWidth: true
+                Layout.leftMargin: 20
 
                 RowLayout {
                     Layout.fillWidth: true
@@ -66,16 +65,13 @@ ScrollView {
                         Layout.preferredWidth: 240
                         font.pixelSize: Theme.fontNormal
 
-                        model: [
-                            {
+                        model: [{
                                 "value": "simple",
                                 "label": qsTr("Simple Layout")
-                            },
-                            {
+                            }, {
                                 "value": "floor_plan",
                                 "label": qsTr("Visual Floor Plan")
-                            }
-                        ]
+                            }]
 
                         textRole: "label"
                         valueRole: "value"
@@ -90,13 +86,11 @@ ScrollView {
 
             ColumnLayout {
                 spacing: 10
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.leftMargin: 20
+                Layout.fillWidth: true
+                Layout.leftMargin: 20
 
                 Text {
-                    text: qsTr(
-                              "Visual floor plans allow tables to be positioned freely and support advanced restaurant layouts.")
+                    text: qsTr("Visual floor plans allow tables to be positioned freely and support advanced restaurant layouts.")
                     wrapMode: Text.WordWrap
                     color: Theme.secondaryText
                     font.pixelSize: Theme.fontNormal
@@ -166,8 +160,7 @@ ScrollView {
                 let success = SettingService.saveTableSettings(payload)
 
                 if (!success)
-                    root.errorMessage = qsTr(
-                                "Failed to save table settings.")
+                    root.errorMessage = qsTr("Failed to save table settings.")
             }
         }
 

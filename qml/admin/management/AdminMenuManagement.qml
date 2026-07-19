@@ -64,7 +64,8 @@ Item {
                         width: parent.width
                         height: 44
                         radius: 4
-                        color: MenuService.currentCategoryId === id ? Theme.primary() : Theme.background
+                        color: MenuService.currentCategoryId === id ? Theme.primary(
+                                                                          ) : Theme.background
 
                         function commitEdit() {
                             var newName = editedCategory.trim()
@@ -152,7 +153,7 @@ Item {
                             background: Rectangle {
                                 color: Theme.background
                                 radius: 4
-                                border.color: Theme.primary
+                                border.color: Theme.primary()
                             }
 
                             onTextChanged: categoryRect.editedCategory = text
@@ -163,15 +164,16 @@ Item {
                                 }
                             }
 
-                            Keys.onPressed: (event) => {
-                                if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
-                                    categoryRect.commitEdit()
-                                    event.accepted = true
-                                } else if (event.key === Qt.Key_Escape) {
-                                    categoryRect.cancelEdit()
-                                    event.accepted = true
-                                }
-                            }
+                            Keys.onPressed: event => {
+                                                if (event.key === Qt.Key_Return
+                                                    || event.key === Qt.Key_Enter) {
+                                                    categoryRect.commitEdit()
+                                                    event.accepted = true
+                                                } else if (event.key === Qt.Key_Escape) {
+                                                    categoryRect.cancelEdit()
+                                                    event.accepted = true
+                                                }
+                                            }
                         }
 
                         MouseArea {
@@ -270,7 +272,7 @@ Item {
 
                 Text {
                     text: MenuService.currentCategoryId !== -1 ? qsTr("Menu Items") : qsTr(
-                                                          "Select a category")
+                                                                     "Select a category")
                     font.bold: true
                     font.pixelSize: Theme.fontNormal
                     color: Theme.text
@@ -710,11 +712,11 @@ Item {
                                 price = 0.00
                             }
 
-                            MenuService.addMenuItem(itemNameTrimmed,
-                                                    MenuService.currentCategoryId, price,
-                                                    newItemAvailable.checked,
-                                                    newItemTaxable.checked,
-                                                    portionTrimmed)
+                            MenuService.addMenuItem(
+                                        itemNameTrimmed,
+                                        MenuService.currentCategoryId, price,
+                                        newItemAvailable.checked,
+                                        newItemTaxable.checked, portionTrimmed)
 
                             newItemName.text = ""
                             newItemPrice.text = ""

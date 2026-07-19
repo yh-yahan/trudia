@@ -141,9 +141,8 @@ Item {
                     text: ""
                     color: Theme.error()
                     font.pixelSize: Theme.fontNormal
-                    anchors.top: button.bottom
-                    anchors.topMargin: 10
-                    anchors.horizontalCenter: parent.horizontalCenter
+                    Layout.alignment: Qt.AlignHCenter
+                    Layout.topMargin: 10
                     wrapMode: Text.WordWrap
                 }
             }

@@ -463,53 +463,57 @@ Item {
                             }
 
                             Label {
-                                text: qsTr("Customer: ") + reservation.customer_name
+                                text: reservation !== null ? qsTr("Customer: ")
+                                                             + reservation.customer_name : ""
 
                                 color: Theme.secondaryText
                                 font.pixelSize: Theme.fontNormal
                             }
 
                             Label {
-                                text: qsTr("Phone: ") + reservation.customer_phone
+                                text: reservation !== null ? qsTr("Phone: ")
+                                                             + reservation.customer_phone : ""
 
                                 color: Theme.secondaryText
                                 font.pixelSize: Theme.fontNormal
                             }
 
                             Label {
-                                text: qsTr("Guests: ") + reservation.pax
+                                text: reservation !== null ? qsTr("Guests: ") + reservation.pax : ""
 
                                 color: Theme.secondaryText
                                 font.pixelSize: Theme.fontNormal
                             }
 
                             Label {
-                                text: qsTr(
-                                          "Time: ") + reservation.datetime_label
+                                text: reservation !== null ? qsTr("Time: ")
+                                                             + reservation.datetime_label : ""
 
                                 color: Theme.secondaryText
                                 font.pixelSize: Theme.fontNormal
                             }
 
                             Label {
-                                text: qsTr("Duration: ") + reservation.duration_minutes + qsTr(
-                                          " mins")
+                                text: reservation !== null ? qsTr("Duration: ")
+                                                             + reservation.duration_minutes + qsTr(
+                                                                 " mins") : ""
 
                                 color: Theme.secondaryText
                                 font.pixelSize: Theme.fontNormal
                             }
 
                             Label {
-                                text: qsTr("Status: ") + reservation.status
+                                text: reservation !== null ? qsTr("Status: ")
+                                                             + reservation.status : ""
 
                                 color: Theme.secondaryText
                                 font.pixelSize: Theme.fontNormal
                             }
 
                             Label {
-                                visible: reservation.notes
+                                visible: reservation
 
-                                text: qsTr("Notes: ") + reservation.notes
+                                text: reservation ? qsTr("Notes: ") + reservation.notes : ""
 
                                 color: Theme.secondaryText
 
@@ -550,9 +554,8 @@ Item {
                                 focusPolicy: Qt.NoFocus
 
                                 onClicked: {
-                                        const reservation = 
-                                        ReservationService.getActiveReservationByTable(
-                                            root.selectedTableId)
+                                    const reservation = ReservationService.getActiveReservationByTable(
+                                                          root.selectedTableId)
 
                                     if (!reservation.id)
                                         return
@@ -878,24 +881,27 @@ Item {
                             const date = reservationDatePicker.selectedDate
                             const time = reservationTimePicker.time
 
-                            const reservationDateTime = new Date(date.getFullYear(),
-                                                                date.getMonth(),
-                                                                date.getDate(),
-                                                                reservationTimePicker.hour,
-                                                                reservationTimePicker.minute,
-                                                                0)
+                            const reservationDateTime = new Date(date.getFullYear(
+                                                                     ),
+                                                                 date.getMonth(
+                                                                     ),
+                                                                 date.getDate(
+                                                                     ),
+                                                                 reservationTimePicker.hour,
+                                                                 reservationTimePicker.minute,
+                                                                 0)
 
                             if (reservationDialog.mode === "create") {
                                 const success = ReservationService.createReservation({
-                                                    "customerName": customerNameField.text,
-                                                    "customerPhone": customerPhoneField.text,
-                                                    "pax": paxSpinBox.value,
-                                                    "tableId": root.selectedTableId,
-                                                    "reservationDateTime": reservationDateTime,
-                                                    "durationMinutes": durationSpinBox.value,
-                                                    "status": "booked",
-                                                    "notes": notesField.text
-                                                })
+                                                                                         "customerName": customerNameField.text,
+                                                                                         "customerPhone": customerPhoneField.text,
+                                                                                         "pax": paxSpinBox.value,
+                                                                                         "tableId": root.selectedTableId,
+                                                                                         "reservationDateTime": reservationDateTime,
+                                                                                         "durationMinutes": durationSpinBox.value,
+                                                                                         "status": "booked",
+                                                                                         "notes": notesField.text
+                                                                                     })
 
                                 if (!success) {
                                     console.log("Reservation conflict")
@@ -903,16 +909,16 @@ Item {
                                 }
                             } else {
                                 const success = ReservationService.updateReservation({
-                                                    "id": reservationDialog.editingReservation.id,
-                                                    "tableId": root.selectedTableId,
-                                                    "customerName": customerNameField.text,
-                                                    "customerPhone": customerPhoneField.text,
-                                                    "pax": paxSpinBox.value,
-                                                    "reservationDateTime": reservationDateTime,
-                                                    "durationMinutes": durationSpinBox.value,
-                                                    "status": reservationDialog.editingReservation.status,
-                                                    "notes": notesField.text
-                                                })
+                                                                                         "id": reservationDialog.editingReservation.id,
+                                                                                         "tableId": root.selectedTableId,
+                                                                                         "customerName": customerNameField.text,
+                                                                                         "customerPhone": customerPhoneField.text,
+                                                                                         "pax": paxSpinBox.value,
+                                                                                         "reservationDateTime": reservationDateTime,
+                                                                                         "durationMinutes": durationSpinBox.value,
+                                                                                         "status": reservationDialog.editingReservation.status,
+                                                                                         "notes": notesField.text
+                                                                                     })
 
                                 if (!success) {
                                     console.log("Update failed")
@@ -949,7 +955,7 @@ Item {
             if (FloorPlanService.floorModel.count <= 0)
                 return
 
-            const first = FloorPlanService.floorModel.get(0)
+            const first = FloorPlanService.floorModel.getFloor(0)
 
             root.currentFloorId = first.id
 

@@ -2,6 +2,7 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QSqlDatabase>
+#include <QQuickStyle>
 #include "core/utilities/Theme.h"
 #include "core/utilities/SystemTheme.h"
 #include "core/data/UserRepository.h"
@@ -52,12 +53,14 @@
 
 int main(int argc, char *argv[])
 {
-    LogManager::initialize();
-
     QGuiApplication app(argc, argv);
 
     QCoreApplication::setOrganizationName("Trudia");
     QCoreApplication::setApplicationName("TrudiaPOS");
+
+    LogManager::initialize();
+
+    QQuickStyle::setStyle("Fusion");
 
     DatabaseRestoreService::processPendingRestore();
 

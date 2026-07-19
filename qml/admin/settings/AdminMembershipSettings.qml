@@ -5,25 +5,29 @@ import Trudia.Services 1.0
 import trudia.Theme 1.0
 
 ScrollView {
+    id: root
+
     property var membershipData: ({})
 
     property string currencySymbol: SettingService.currencySymbol()
 
+    property string errorMessage: ""
+
     Component.onCompleted: {
-        membershipData = SettingService.getMembershipSettings();
+        membershipData = SettingService.getMembershipSettings()
 
         if (!membershipData || Object.keys(membershipData).length === 0)
-            return;
+            return
 
-        enableLoyaltySwitch.checked = membershipData.enabled;
+        enableLoyaltySwitch.checked = membershipData.enabled
 
-        earnPointsField.text = membershipData.earn_points || "";
-        earnSpendField.text = membershipData.earn_spend;
+        earnPointsField.text = membershipData.earn_points || ""
+        earnSpendField.text = membershipData.earn_spend
 
-        redeemPointsField.text = membershipData.redeem_points || "";
-        redeemValueField.text = membershipData.redeem_value;
+        redeemPointsField.text = membershipData.redeem_points || ""
+        redeemValueField.text = membershipData.redeem_value
 
-        earnBaseCombo.currentValue = membershipData.earn_on || "total";
+        earnBaseCombo.currentValue = membershipData.earn_on || "total"
     }
 
     anchors.fill: parent
@@ -53,9 +57,8 @@ ScrollView {
 
             ColumnLayout {
                 spacing: 15
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.leftMargin: 20
+                Layout.fillWidth: true
+                Layout.leftMargin: 20
 
                 RowLayout {
                     Layout.fillWidth: true
@@ -89,9 +92,8 @@ ScrollView {
 
             ColumnLayout {
                 spacing: 15
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.leftMargin: 20
+                Layout.fillWidth: true
+                Layout.leftMargin: 20
 
                 RowLayout {
                     Layout.fillWidth: true
@@ -124,7 +126,8 @@ ScrollView {
                         }
 
                         Label {
-                            text: qsTr("point(s) for every %1").arg(currencySymbol)
+                            text: qsTr("point(s) for every %1").arg(
+                                      currencySymbol)
                             color: Theme.text
                             font.pixelSize: Theme.fontNormal
                         }
@@ -167,16 +170,13 @@ ScrollView {
                         id: earnBaseCombo
                         Layout.preferredWidth: 220
                         font.pixelSize: Theme.fontNormal
-                        model: [
-                            {
-                                value: "total",
-                                label: qsTr("Total")
-                            },
-                            {
-                                value: "subtotal",
-                                label: qsTr("Subtotal")
-                            }
-                        ]
+                        model: [{
+                                "value": "total",
+                                "label": qsTr("Total")
+                            }, {
+                                "value": "subtotal",
+                                "label": qsTr("Subtotal")
+                            }]
                         textRole: "label"
                         valueRole: "value"
                     }
@@ -197,9 +197,8 @@ ScrollView {
 
             ColumnLayout {
                 spacing: 15
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.leftMargin: 20
+                Layout.fillWidth: true
+                Layout.leftMargin: 20
 
                 RowLayout {
                     Layout.fillWidth: true
@@ -295,20 +294,22 @@ ScrollView {
             focusPolicy: Qt.NoFocus
 
             onClicked: {
-                var payload = {};
+                var payload = {}
 
-                payload.id = membershipData.id || 1;
-                payload.enabled = enableLoyaltySwitch.checked;
+                payload.id = membershipData.id || 1
+                payload.enabled = enableLoyaltySwitch.checked
 
-                payload.earn_points = parseInt(earnPointsField.text || 0);
-                payload.earn_spend = parseFloat(earnSpendField.text || 0);
+                payload.earn_points = parseInt(earnPointsField.text || 0)
+                payload.earn_spend = parseFloat(earnSpendField.text || 0)
 
-                payload.redeem_points = parseInt(redeemPointsField.text || 0);
-                payload.redeem_value = parseFloat(redeemValueField.text || 0);
+                payload.redeem_points = parseInt(redeemPointsField.text || 0)
+                payload.redeem_value = parseFloat(redeemValueField.text || 0)
 
-                payload.earn_on = earnBaseCombo.currentValue;
+                payload.earn_on = earnBaseCombo.currentValue
 
-                SettingService.saveMembershipSettings(payload);
+                if (!SettingService.saveMembershipSettings(payload)) {
+                    root.errorMessage = qsTr("Failed to save membership settings.")
+                }
             }
         }
 

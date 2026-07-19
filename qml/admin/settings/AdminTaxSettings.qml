@@ -5,9 +5,13 @@ import Trudia.Services 1.0
 import trudia.Theme 1.0
 
 ScrollView {
+    id: root
+
     anchors.fill: parent
     contentWidth: parent.width
     clip: true
+
+    property string errorMessage: ""
 
     function loadTaxSettings() {
         let data = SettingService.getTaxSettings()
@@ -45,9 +49,8 @@ ScrollView {
 
             ColumnLayout {
                 spacing: 15
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.leftMargin: 20
+                Layout.fillWidth: true
+                Layout.leftMargin: 20
 
                 RowLayout {
                     Layout.fillWidth: true
@@ -193,8 +196,7 @@ ScrollView {
                 let scaledRate = 0
 
                 if (enableTaxSwitch.checked) {
-                    scaledRate = Math.round(parseFloat(
-                                                taxRateField.text) * 100)
+                    scaledRate = Math.round(parseFloat(taxRateField.text) * 100)
                 }
 
                 let taxSettings = {
@@ -204,10 +206,8 @@ ScrollView {
                     "registration_number": registrationField.text
                 }
 
-                if (SettingService.saveTaxSettings(taxSettings)) {
-                    console.log("Tax settings saved")
-                } else {
-                    console.error("Failed to save tax settings")
+                if (!SettingService.saveTaxSettings(taxSettings)) {
+                    root.errorMessage = qsTr("Failed to save tax settings.")
                 }
             }
         }

@@ -52,9 +52,8 @@ ScrollView {
             }
 
             ColumnLayout {
-                anchors.left: parent.left
-                anchors.leftMargin: 20
-                anchors.right: parent.right
+                Layout.fillWidth: true
+                Layout.leftMargin: 20
                 spacing: 10
 
                 Label {
@@ -226,11 +225,10 @@ ScrollView {
                     "email": root.restaurantEmail,
                     "website": root.restaurantWebsite
                 }
-                if (SettingService.saveRestaurantSetting(map)) {
-                    console.log("Saved successfully")
-                    loadRestaurant()
+                if (!SettingService.saveRestaurantSetting(map)) {
+                    root.errorMessage = qsTr("Failed to save restaurant settings.")
                 } else {
-                    root.errorMessage = "Failed to save restaurant settings."
+                    loadRestaurant()
                 }
             }
         }

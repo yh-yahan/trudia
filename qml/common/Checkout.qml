@@ -124,6 +124,7 @@ Item {
     }
 
     onSelectedSessionChanged: {
+        finalTotalPreview = selectedSession.total
         updateMembershipPreview()
     }
 
@@ -152,7 +153,14 @@ Item {
                     anchors.fill: parent
                     onClicked: {
                         selectedRecent = null
+                        selectedRecentDetails = null
                         selectedSession = modelData
+                        memberPhone = ""
+                        memberId = 0
+                        currentPoints = 0
+                        earnedPointsPreview = 0
+                        redeemPointsRequested = 0
+                        redeemDiscountPreview = 0
                         checkoutDetails = CheckoutService.loadCheckoutDetails(
                                     modelData.id)
                         updateMembershipPreview()
@@ -758,16 +766,16 @@ Item {
                         spacing: 6
 
                         Text {
-                            text: selectedSession ? qsTr("Subtotal: ") + currencySymbol
-                                                    + selectedSession.subtotal.toFixed(
+                            text: selectedRecentDetails ? qsTr("Subtotal: ") + currencySymbol
+                                                    + selectedRecentDetails.subtotal.toFixed(
                                                         2) : ""
                             color: Theme.text
                             font.pixelSize: Theme.fontNormal
                         }
 
                         Text {
-                            text: selectedSession ? qsTr("Tax: ") + currencySymbol
-                                                    + selectedSession.tax.toFixed(
+                            text: selectedRecentDetails ? qsTr("Tax: ") + currencySymbol
+                                                    + selectedRecentDetails.tax.toFixed(
                                                         2) : ""
                             color: Theme.text
                             font.pixelSize: Theme.fontNormal
@@ -777,7 +785,7 @@ Item {
                             visible: selectedRecentDetails
                                      && selectedRecentDetails.discount > 0
                             text: selectedRecentDetails
-                                  && selectedSession.discount
+                                  && selectedRecentDetails.discount
                                   > 0 ? qsTr("Discount: -") + currencySymbol
                                         + selectedRecentDetails.discount.toFixed(
                                             2) : ""
@@ -787,7 +795,7 @@ Item {
                         }
 
                         Text {
-                            text: selectedSession ? qsTr("Total: ") + currencySymbol
+                            text: selectedRecentDetails ? qsTr("Total: ") + currencySymbol
                                                     + selectedRecentDetails.total.toFixed(
                                                         2) : ""
                             color: Theme.green

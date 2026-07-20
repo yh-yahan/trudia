@@ -504,7 +504,9 @@ bool CheckoutService::assignReceiptNumber(OrderSession &session)
 {
     const int currentYear = QDate::currentDate().year();
 
-    int storedYear = m_appStateRepo.get("receipt.year")
+    const auto storedYearValue = m_appStateRepo.get("receipt.year");
+
+    int year = storedYearValue
         .value_or(QString::number(currentYear))
         .toInt();
 
@@ -512,20 +514,20 @@ bool CheckoutService::assignReceiptNumber(OrderSession &session)
         .value_or("1")
         .toInt();
 
-    if (storedYear != currentYear)
+    if (!storedYearValue.has_value() || year != currentYear)
     {
-        storedYear = currentYear;
+        year = currentYear;
         counter = 1;
-
-        m_appStateRepo.set({
-            "receipt.year",
-            QString::number(currentYear)
-        });
     }
 
     session.receipt_number = QString("%1-%2")
-        .arg(storedYear)
+        .arg(year)
         .arg(counter, 6, 10, QChar('0'));
+
+    m_appStateRepo.set({
+        "receipt.year",
+        QString::number(year)
+    });
 
     m_appStateRepo.set({
         "receipt.counter",

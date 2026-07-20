@@ -398,7 +398,7 @@ bool CheckoutService::printReceipt(int orderSessionId, const bool &isReprint)
     }
 
     data.taxName = snapshot.tax_name.value_or("");
-    data.taxRate = snapshot.tax_rate.value_or(0);
+    data.taxRate = snapshot.tax_rate.value_or(0) / 100.0;
     data.taxRegistrationNumber = snapshot.tax_registration_number.value_or("");
 
     data.subtotal = static_cast<double>(session.subtotal) / CURRENCY_SCALE;
@@ -677,9 +677,8 @@ bool CheckoutService::createReceiptSnapshot(const OrderSession &session)
     if (taxOpt.has_value() && taxOpt->enabled)
     {
         receipt.tax_name = taxOpt->name;
-        receipt.tax_rate = taxOpt->rate / 100;
-        receipt.tax_registration_number =
-            taxOpt->registration_number.value_or("");
+        receipt.tax_rate = taxOpt->rate;
+        receipt.tax_registration_number = taxOpt->registration_number.value_or("");
     }
     else
     {
@@ -694,19 +693,14 @@ bool CheckoutService::createReceiptSnapshot(const OrderSession &session)
 
         if (membershipId > 0)
         {
-            Membership membership =
-                m_membershipRepo.getMembershipById(membershipId);
+            Membership membership = m_membershipRepo.getMembershipById(membershipId);
 
-            int redeemed =
-                m_membershipTransactionRepo.getRedeemedPoints(session.id);
-
-            int earned =
-                m_membershipTransactionRepo.getEarnedPoints(session.id);
+            int redeemed = m_membershipTransactionRepo.getRedeemedPoints(session.id);
+            int earned = m_membershipTransactionRepo.getEarnedPoints(session.id);
 
             receipt.member_phone = membership.phone_number;
             receipt.points_balance_after = membership.total_points;
-            receipt.points_balance_before =
-                membership.total_points + redeemed - earned;
+            receipt.points_balance_before = membership.total_points + redeemed - earned;
         }
     }
 

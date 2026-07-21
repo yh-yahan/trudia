@@ -163,9 +163,15 @@ QByteArray ReceiptBuilder::build(const ReceiptData &data, const Printer &printer
 
     for (const auto &item : data.items)
     {
+        QString itemName = item.name;
+
+        if (!item.portion_size.isEmpty()) {
+            itemName += " (" + item.portion_size + ")";
+        }
+
         QString left = QString("%1 x %2")
-                           .arg(item.quantity)
-                           .arg(item.name);
+                        .arg(item.quantity)
+                        .arg(itemName);
 
         QString right = formatAmount(item.total());
 

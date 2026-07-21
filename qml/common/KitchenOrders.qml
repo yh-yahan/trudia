@@ -150,7 +150,10 @@ Item {
                                 spacing: 2
 
                                 Text {
-                                    text: modelData.item_name + " x" + modelData.quantity
+                                    text: {
+                                        var portion = modelData.portion_size
+                                        return modelData.item_name + (portion && portion.length > 0 ? " (" + portion + ")" : "") + " x" + modelData.quantity
+                                    }
                                     color: Theme.text
                                     font.pixelSize: Theme.fontNormal
                                 }

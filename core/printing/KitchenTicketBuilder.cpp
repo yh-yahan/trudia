@@ -124,8 +124,14 @@ QByteArray KitchenTicketBuilder::build(const Order &order,
 
     for (const auto &item : items)
     {
+        QString itemName = item.item_name;
+
+        if (!item.portion_size.isEmpty()) {
+            itemName += " (" + item.portion_size + ")";
+        }
+
         QString qty = QString::number(item.quantity) + "x";
-        QString name = " " + item.item_name;
+        QString name = " " + itemName;
 
         QString line = padLeftRight(name, qty, width);
 

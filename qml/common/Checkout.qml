@@ -323,6 +323,14 @@ Item {
                                         }
 
                                         Text {
+                                            visible: modelData.portion_size
+                                            text: "(" + modelData.portion_size + ")"
+                                            color: Theme.text
+                                            font.pixelSize: Theme.fontNormal
+                                            elide: Text.ElideRight
+                                        }
+
+                                        Text {
                                             visible: modelData.notes
                                                      && modelData.notes.length > 0
                                             text: "(" + modelData.notes + ")"
@@ -708,6 +716,14 @@ Item {
 
                                         Text {
                                             text: modelData.item_name
+                                            color: Theme.text
+                                            font.pixelSize: Theme.fontNormal
+                                            elide: Text.ElideRight
+                                        }
+
+                                        Text {
+                                            visible: modelData.portion_size
+                                            text: "(" + modelData.portion_size + ")"
                                             color: Theme.text
                                             font.pixelSize: Theme.fontNormal
                                             elide: Text.ElideRight

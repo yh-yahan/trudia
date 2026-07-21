@@ -32,6 +32,7 @@ QVariantList KitchenOrderService::getOrdersByStatus(const QString &status) const
         itemMap["id"] = item.id;
         itemMap["item_name"] = item.item_name;
         itemMap["quantity"] = item.quantity;
+        itemMap["portion_size"] = item.portion_size;
         itemMap["item_status"] = item.item_status;
         itemMap["notes"] = item.notes;
 

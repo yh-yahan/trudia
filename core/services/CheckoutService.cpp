@@ -197,6 +197,7 @@ QVariantList CheckoutService::loadCheckoutDetails(const int &orderSessionId)
         itemMap["item_id"] = item.item_id;
         itemMap["item_name"] = item.item_name;
         itemMap["quantity"] = item.quantity;
+        itemMap["portion_size"] = item.portion_size;
 
         const double unitPrice = static_cast<double>(item.price) / CURRENCY_SCALE;
 
@@ -417,12 +418,17 @@ bool CheckoutService::printReceipt(int orderSessionId, const bool &isReprint)
     struct GroupKey
     {
         QString name;
+        QString portionSize;
         qint64 price;
 
         bool operator<(const GroupKey &other) const
         {
             if (name != other.name)
                 return name < other.name;
+
+            if (portionSize != other.portionSize)
+                return portionSize < other.portionSize;
+
             return price < other.price;
         }
     };
@@ -433,6 +439,7 @@ bool CheckoutService::printReceipt(int orderSessionId, const bool &isReprint)
     {
         GroupKey key{
             item.item_name,
+            item.portion_size,
             static_cast<qint64>(item.price)
         };
 
@@ -444,6 +451,7 @@ bool CheckoutService::printReceipt(int orderSessionId, const bool &isReprint)
         ReceiptItem rItem;
         rItem.name = it.key().name;
         rItem.quantity = it.value();
+        rItem.portion_size = it.key().portionSize;
         rItem.price = static_cast<double>(it.key().price) / CURRENCY_SCALE;
 
         data.items.append(rItem);
@@ -567,6 +575,7 @@ QVariantMap CheckoutService::loadPaidOrderDetails(const int &orderSessionId) {
         itemMap["item_id"] = item.item_id;
         itemMap["item_name"] = item.item_name;
         itemMap["quantity"] = item.quantity;
+        itemMap["portion_size"] = item.portion_size;
 
         const double unitPrice = static_cast<double>(item.price) / CURRENCY_SCALE;
 

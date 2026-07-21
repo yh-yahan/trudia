@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS order_items (
     item_id INTEGER,
     item_name TEXT,
     quantity INTEGER,
+    portion_size TEXT,
     price NUMERIC,
     is_taxable INTEGER NOT NULL,
     item_status TEXT,

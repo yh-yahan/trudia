@@ -11,6 +11,7 @@ public:
     int item_id;
     QString item_name;
     int quantity;
+    QString portion_size;
     double price;
     bool is_taxable;
     QString item_status;

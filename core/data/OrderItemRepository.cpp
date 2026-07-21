@@ -13,7 +13,7 @@ std::vector<OrderItem> OrderItemRepository::getAllOrderItems()
 
     QSqlQuery query(m_db);
     query.prepare(R"(SELECT id, 
-        order_id, item_id, item_name, quantity, price, 
+        order_id, item_id, item_name, quantity, portion_size, price, 
         is_taxable, item_status, notes 
         FROM order_items)");
 
@@ -29,6 +29,7 @@ std::vector<OrderItem> OrderItemRepository::getAllOrderItems()
         orderItem.item_id = query.value("item_id").toInt();
         orderItem.item_name = query.value("item_name").toString();
         orderItem.quantity = query.value("quantity").toInt();
+        orderItem.portion_size = query.value("portion_size").toString();
         orderItem.price = query.value("price").toDouble();
         orderItem.is_taxable = query.value("is_taxable").toBool();
         orderItem.item_status = query.value("item_status").toString();
@@ -43,7 +44,7 @@ std::vector<OrderItem> OrderItemRepository::getAllOrderItems()
 std::optional<OrderItem> OrderItemRepository::getOrderItemById(int orderItemId)
 {
     QSqlQuery query(m_db);
-    query.prepare(R"(SELECT id, order_id, item_id, item_name, quantity, price, is_taxable, item_status, notes
+    query.prepare(R"(SELECT id, order_id, item_id, item_name, quantity, portion_size, price, is_taxable, item_status, notes
         FROM order_items
         WHERE id = :id)");
     query.bindValue(":id", orderItemId);
@@ -63,6 +64,7 @@ std::optional<OrderItem> OrderItemRepository::getOrderItemById(int orderItemId)
     orderItem.item_id = query.value("item_id").toInt();
     orderItem.item_name = query.value("item_name").toString();
     orderItem.quantity = query.value("quantity").toInt();
+    orderItem.portion_size = query.value("portion_size").toString();
     orderItem.price = query.value("price").toDouble();
     orderItem.is_taxable = query.value("is_taxable").toBool();
     orderItem.item_status = query.value("item_status").toString();
@@ -77,7 +79,7 @@ std::vector<OrderItem> OrderItemRepository::getOrderItemsByOrderId(int orderId)
 
     QSqlQuery query(m_db);
     query.prepare(R"(
-        SELECT id, order_id, item_id, item_name, quantity, price, is_taxable, item_status, notes
+        SELECT id, order_id, item_id, item_name, quantity, portion_size, price, is_taxable, item_status, notes
         FROM order_items
         WHERE order_id = :order_id
     )");
@@ -96,6 +98,7 @@ std::vector<OrderItem> OrderItemRepository::getOrderItemsByOrderId(int orderId)
         item.item_id = query.value("item_id").toInt();
         item.item_name = query.value("item_name").toString();
         item.quantity = query.value("quantity").toInt();
+        item.portion_size = query.value("portion_size").toString();
         item.price = query.value("price").toDouble();
         item.is_taxable = query.value("is_taxable").toBool();
         item.item_status = query.value("item_status").toString();
@@ -118,7 +121,7 @@ std::vector<OrderItem> OrderItemRepository::getOrderItemsByOrderIds(const QList<
         placeholders << "?";
 
     QString sql = QString(
-                      "SELECT id, order_id, item_id, item_name, quantity, price, is_taxable, item_status, notes "
+                      "SELECT id, order_id, item_id, item_name, quantity, portion_size, price, is_taxable, item_status, notes "
                       "FROM order_items "
                       "WHERE order_id IN (%1)"
                       ).arg(placeholders.join(","));
@@ -141,6 +144,7 @@ std::vector<OrderItem> OrderItemRepository::getOrderItemsByOrderIds(const QList<
         item.item_id = query.value("item_id").toInt();
         item.item_name = query.value("item_name").toString();
         item.quantity = query.value("quantity").toInt();
+        item.portion_size = query.value("portion_size").toString();
         item.price = query.value("price").toDouble();
         item.is_taxable = query.value("is_taxable").toBool();
         item.item_status = query.value("item_status").toString();
@@ -176,14 +180,15 @@ void OrderItemRepository::create(OrderItem &orderItem)
 {
     QSqlQuery query(m_db);
     query.prepare(R"(
-        INSERT INTO order_items (order_id, item_id, item_name, quantity, price, is_taxable, item_status, notes)
-        VALUES (:order_id, :item_id, :item_name, :quantity, :price, :is_taxable, :item_status, :notes)
+        INSERT INTO order_items (order_id, item_id, item_name, quantity, portion_size, price, is_taxable, item_status, notes)
+        VALUES (:order_id, :item_id, :item_name, :quantity, :portion_size, :price, :is_taxable, :item_status, :notes)
     )");
 
     query.bindValue(":order_id", orderItem.order_id);
     query.bindValue(":item_id", orderItem.item_id);
     query.bindValue(":item_name", orderItem.item_name);
     query.bindValue(":quantity", orderItem.quantity);
+    query.bindValue(":portion_size", orderItem.portion_size);
     query.bindValue(":price", orderItem.price);
     query.bindValue(":is_taxable", orderItem.is_taxable);
     query.bindValue(":item_status", orderItem.item_status);
@@ -203,6 +208,7 @@ void OrderItemRepository::update(const OrderItem &orderItem){
         SET item_id = :item_id,
         item_name = :item_name,
         quantity = :quantity,
+        portion_size = :portion_size,
         price = :price,
         is_taxable = :is_taxable,
         item_status = :item_status,
@@ -214,6 +220,7 @@ void OrderItemRepository::update(const OrderItem &orderItem){
     query.bindValue(":item_id", orderItem.item_id);
     query.bindValue(":item_name", orderItem.item_name);
     query.bindValue(":quantity", orderItem.quantity);
+    query.bindValue(":portion_size", orderItem.portion_size);
     query.bindValue(":price", orderItem.price);
     query.bindValue(":is_taxable", orderItem.is_taxable);
     query.bindValue(":item_status", orderItem.item_status);

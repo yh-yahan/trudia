@@ -151,6 +151,7 @@ int OrderService::createOrder(
         item.item_id = menu.id;
         item.item_name = menu.item;
         item.quantity = m["qty"].toInt();
+        item.portion_size = menu.portion_size.value_or("");
         item.price = menu.price;
         item.is_taxable = menu.is_taxable;
         item.notes = m["notes"].toString();
@@ -358,6 +359,7 @@ int OrderService::updateOrder(
         item.item_id = menu.id;
         item.item_name = menu.item;
         item.quantity = m["qty"].toInt();
+        item.portion_size = menu.portion_size.value_or("");
         item.price = menu.price;
         item.is_taxable = menu.is_taxable;
         item.notes = m["notes"].toString();

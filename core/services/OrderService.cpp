@@ -69,10 +69,6 @@ int OrderService::createOrder(
             orderSession.total = 0.0;
 
             orderSessionId = m_orderSessionRepo.create(orderSession);
-            m_tableRepo.setTableState(
-                orderSession.table_id.value(),
-                TableStatus::Occupied
-            );
             m_tableService.setTableStatus(orderSession.table_id.value(), TableStatus::Occupied);
             if (orderSessionId <= 0)
             {
@@ -316,21 +312,11 @@ int OrderService::updateOrder(
     if (session.table_id != newTableId)
     {
         if (session.table_id.has_value()) {
-            m_tableRepo.setTableState(
-                session.table_id.value(),
-                TableStatus::Available
-            );
-
             m_tableService.setTableStatus(session.table_id.value(), TableStatus::Available);
         }
 
         if (newTableId.has_value()) {
-            m_tableRepo.setTableState(
-                newTableId.value(),
-                TableStatus::Occupied
-            );
-
-            m_tableService.setTableStatus(session.table_id.value(), TableStatus::Occupied);
+            m_tableService.setTableStatus(newTableId.value(), TableStatus::Occupied);
         }
 
         session.table_id = newTableId;

@@ -726,9 +726,6 @@ bool CheckoutService::freeTable(const OrderSession &session)
 
     int tableId = session.table_id.value();
 
-    if (!m_tableRepo.setTableState(tableId, TableStatus::Available))
-        return false;
-
     if (!m_tableService.setTableStatus(tableId, TableStatus::Available))
         return false;
 

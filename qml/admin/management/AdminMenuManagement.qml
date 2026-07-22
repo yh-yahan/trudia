@@ -61,7 +61,7 @@ Item {
                         property string editedCategory: name
                         property string originalCategory: name
 
-                        width: parent.width
+                        width: categoryListView.width
                         height: 44
                         radius: 4
                         color: MenuService.currentCategoryId === id ? Theme.primary(
@@ -215,11 +215,6 @@ Item {
                             radius: 4
                             border.color: Theme.border
                             border.width: 1
-                        }
-
-                        Component.onCompleted: {
-                            if (categoryRect.isEditing)
-                                forceActiveFocus()
                         }
                     }
 

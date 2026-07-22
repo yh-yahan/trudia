@@ -578,7 +578,7 @@ Item {
     }
 
     Shortcut {
-        sequence: StandardKey.Save
+        sequences: [StandardKey.Save]
 
         onActivated: {
             if (root.currentFloorId > 0) {

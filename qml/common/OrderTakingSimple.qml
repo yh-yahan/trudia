@@ -226,7 +226,8 @@ Item {
                             width: parent.width
                             height: 44
                             radius: 4
-                            color: MenuService.currentCategoryId === id ? Theme.primary() : Theme.background
+                            color: MenuService.currentCategoryId === id ? Theme.primary(
+                                                                              ) : Theme.background
 
                             Text {
                                 visible: true
@@ -261,8 +262,9 @@ Item {
                     spacing: 12
 
                     Text {
-                        text: MenuService.currentCategoryId !== -1 ? qsTr("Menu Items") : qsTr(
-                                                              "Select a category")
+                        text: MenuService.currentCategoryId
+                              !== -1 ? qsTr("Menu Items") : qsTr(
+                                           "Select a category")
                         font.bold: true
                         font.pixelSize: Theme.fontNormal
                         color: Theme.text
@@ -323,10 +325,8 @@ Item {
 
                             property bool isEditing: false
                             property string editedName: item
-                            property string editedPrice: price.toFixed(
-                                                             2)
-                            property string editedPortion: portion
-                                                           || ""
+                            property string editedPrice: price.toFixed(2)
+                            property string editedPortion: portion || ""
                             property bool editedAvailable: available
 
                             RowLayout {
@@ -371,7 +371,8 @@ Item {
                                     text: qsTr("Add")
                                     enabled: available
                                     background: Rectangle {
-                                        color: available ? Theme.primary() : Theme.secondaryText
+                                        color: available ? Theme.primary(
+                                                               ) : Theme.secondaryText
                                         radius: 4
                                     }
                                     leftPadding: 15
@@ -568,7 +569,8 @@ Item {
                                 color: status == "occupied" ? "#ff4d4d" : "#4caf50"
 
                                 border.width: 3
-                                border.color: selectedTableId === id ? Theme.primary() : Theme.background
+                                border.color: selectedTableId === id ? Theme.primary(
+                                                                           ) : Theme.background
 
                                 Label {
                                     anchors.centerIn: parent
@@ -759,8 +761,10 @@ Item {
                                 }
 
                                 Text {
-                                    text: modelData.table_name ? "Table: " + modelData.table_name : ""
-                                    visible: modelData.table_name !== undefined && modelData.table_name !== null
+                                    text: modelData.table_name ? "Table: "
+                                                                 + modelData.table_name : ""
+                                    visible: modelData.table_name !== undefined
+                                             && modelData.table_name !== null
                                     color: Theme.secondaryText
                                     font.pixelSize: Theme.fontNormal
                                 }
@@ -785,9 +789,8 @@ Item {
 
                     ColumnLayout {
                         spacing: 4
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        anchors.margins: 8
+                        Layout.fillWidth: true
+                        Layout.leftMargin: 8
                         visible: !showEditOrdersList
 
                         function calculateMeta() {
@@ -853,8 +856,13 @@ Item {
 
                         Connections {
                             target: orderModel
-                            onCountChanged: recomputeMeta()
-                            onDataChanged: recomputeMeta()
+                            function onCountChanged() {
+                                recomputeMeta()
+                            }
+
+                            function onDataChanged() {
+                                recomputeMeta()
+                            }
                         }
                     }
 
@@ -864,8 +872,9 @@ Item {
                         Layout.fillWidth: true
                         visible: !showEditOrdersList
 
-                        enabled: orderModel.count > 0 &&
-                            (currentOrderType !== "dine_in" || selectedTableId >= 0)
+                        enabled: orderModel.count > 0
+                                 && (currentOrderType !== "dine_in"
+                                     || selectedTableId >= 0)
 
                         leftPadding: 15
                         rightPadding: 15

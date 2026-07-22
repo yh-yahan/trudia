@@ -145,6 +145,14 @@ Item {
                     return centerX + Math.cos(angle) * circleRadius - width / 2;
                 }
 
+                if (root.tableType === "rectangle") {
+                    const seatsPerSide = Math.ceil(capacity / 2)
+                    const pos = index % seatsPerSide
+                    const t = (pos + 1) / (seatsPerSide + 1)
+
+                    return t * root.width - width / 2
+                }
+
                 if (side === 0)
                     return t * root.width - width / 2;
                 if (side === 1)
@@ -158,6 +166,15 @@ Item {
             y: {
                 if (root.tableType === "circle") {
                     return centerY + Math.sin(angle) * circleRadius - height / 2;
+                }
+
+                if (root.tableType === "rectangle") {
+                    const seatsPerSide = Math.ceil(capacity / 2)
+
+                    if (index < seatsPerSide)
+                        return -spacing - height / 2;
+                    else
+                        return root.height + spacing - height / 2;
                 }
 
                 if (side === 0)

@@ -512,12 +512,30 @@ Item {
                         font.pixelSize: Theme.fontNormal
                     }
                     onClicked: {
+                        let width = 80
+                        let height = 80
+
+                        switch (addTableDialog.tableType) {
+                        case "rectangle":
+                            width = 140
+                            height = 80
+                            break
+                        case "square":
+                            width = 80
+                            height = 80
+                            break
+                        case "circle":
+                            width = 80
+                            height = 80
+                            break
+                        }
+
                         FloorPlanService.createTableItem({
                             "type": "table",
                             "x": 100,
                             "y": 100,
-                            "width": 80,
-                            "height": 80,
+                            "width": width,
+                            "height": height,
                             "label": addTableDialog.label,
                             "floor_id": root.currentFloorId,
                             "metadata": JSON.stringify({

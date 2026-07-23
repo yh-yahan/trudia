@@ -21,7 +21,7 @@ public:
 
     TableModel* tableModel() const;
 
-    Q_INVOKABLE bool addTable(const QString &tableName, const int capacity);
+    Q_INVOKABLE int addTable(const QString &tableName, const int capacity);
     Q_INVOKABLE bool editTable(const int &tableId,
                                const QString &tableName,
                                const int capacity);

@@ -18,17 +18,17 @@ TableModel* TableService::tableModel() const
     return m_tableModel;
 }
 
-bool TableService::addTable(const QString &tableName,
+int TableService::addTable(const QString &tableName,
                             const int capacity)
 {
     if (tableName.trimmed().isEmpty()) {
         qWarning() << "Cannot add empty table name";
-        return false;
+        return -1;
     }
 
     if (capacity <= 0) {
         qWarning() << "Capacity must be greater than 0";
-        return false;
+        return -1;
     }
 
     Table table;
@@ -37,12 +37,12 @@ bool TableService::addTable(const QString &tableName,
     table.capacity = capacity;
     table.status = "available";
 
-    m_tableRepo.create(table);
+    int id = m_tableRepo.create(table);
 
     m_tableModel->reload();
     emit tablesChanged();
 
-    return true;
+    return id;
 }
 
 bool TableService::editTable(const int &tableId,

@@ -205,7 +205,7 @@ bool FloorPlanService::deleteFloor(int floorId)
 
     for (const auto &item : items) {
         if (item.type == "table" && item.table_id.has_value()) {
-            m_tableRepo.remove(item.table_id.value());
+            m_tableService.removeTable(item.table_id.value());
         }
     }
 
@@ -263,12 +263,7 @@ void FloorPlanService::createTableItem(const QVariantMap &itemData)
     const QString label = itemData.value("label").toString().trimmed();
     const int capacity = itemData.value("capacity").toInt();
 
-    Table table;
-    table.table_name = label;
-    table.capacity = capacity;
-    table.status = "available";
-
-    const int tableId = m_tableRepo.create(table);
+    const int tableId = m_tableService.addTable(label, capacity);
 
     CanvasItem item;
     item.id = -1;
@@ -310,7 +305,7 @@ void FloorPlanService::deleteItem(int index)
     const CanvasItem &item = items[index];
 
     if (item.type == "table" && item.table_id.has_value()) {
-        m_tableRepo.remove(item.table_id.value());
+        m_tableService.removeTable(item.table_id.value());
     }
 
     m_canvasModel->removeItem(index);

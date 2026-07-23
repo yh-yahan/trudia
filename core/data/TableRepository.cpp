@@ -141,7 +141,12 @@ bool TableRepository::setTableState(int tableId, const QString &status)
     return true;
 }
 
-void TableRepository::remove(const Table &table)
+bool TableRepository::remove(const Table &table)
+{
+    return remove(table.id);
+}
+
+bool TableRepository::remove(int tableId)
 {
     QSqlQuery query(m_db);
 
@@ -150,9 +155,12 @@ void TableRepository::remove(const Table &table)
         WHERE id = :table_id
     )");
 
-    query.bindValue(":table_id", table.id);
+    query.bindValue(":table_id", tableId);
 
     if (!query.exec()) {
         qCWarning(logDatabase) << "remove failed:" << query.lastError();
+        return false;
     }
+
+    return true;
 }

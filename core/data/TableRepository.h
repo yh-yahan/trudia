@@ -15,7 +15,8 @@ public:
     int create(const Table &table);
     bool setTableState(int tableId, const QString &status);
     void update(const Table &table);
-    void remove(const Table &table);
+    bool remove(const Table &table);
+    bool remove(int tableId);
 
 private:
     QSqlDatabase m_db;

@@ -201,10 +201,15 @@ bool FloorPlanService::updateFloor(const Floor &floor)
 
 bool FloorPlanService::deleteFloor(int floorId)
 {
-    bool ok = m_floorRepo.remove(floorId);
+    auto items = m_canvasItemRepo.getByFloorId(floorId);
 
-    if (!ok)
-        return false;
+    for (const auto &item : items) {
+        if (item.type == "table" && item.table_id.has_value()) {
+            m_tableRepo.remove(item.table_id.value());
+        }
+    }
+
+    if (!m_floorRepo.remove(floorId)) return false;
 
     auto floors = m_floorModel->floors();
 
@@ -298,5 +303,15 @@ void FloorPlanService::createTableItem(const QVariantMap &itemData)
 
 void FloorPlanService::deleteItem(int index)
 {
+    const auto items = m_canvasModel->items();
+
+    if (index < 0 || index >= static_cast<int>(items.size())) return;
+
+    const CanvasItem &item = items[index];
+
+    if (item.type == "table" && item.table_id.has_value()) {
+        m_tableRepo.remove(item.table_id.value());
+    }
+
     m_canvasModel->removeItem(index);
 }

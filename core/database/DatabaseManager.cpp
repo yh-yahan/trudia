@@ -18,6 +18,11 @@ bool DatabaseManager::initialize(const QString &dbPath)
 {
     if (QSqlDatabase::contains(MAIN_CONN))
     {
+        {
+            QSqlDatabase db = QSqlDatabase::database(MAIN_CONN);
+            db.close();
+        }
+
         QSqlDatabase::removeDatabase(MAIN_CONN);
     }
 

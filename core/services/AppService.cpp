@@ -55,30 +55,32 @@ AppService::AppState AppService::determineState() const
 
 bool AppService::hasAnyUser() const
 {
-    QString path = databasePath();
-
     const QString connName = "check_users";
 
     if (QSqlDatabase::contains(connName)) {
         QSqlDatabase::removeDatabase(connName);
     }
 
-    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", connName);
-    db.setDatabaseName(path);
-
-    if (!db.open()) {
-        return false;
-    }
-
-    QSqlQuery q(db);
-
     bool hasUser = false;
 
-    if (q.exec("SELECT 1 FROM users LIMIT 1")) {
-        hasUser = q.next();
+    {
+        QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", connName);
+        db.setDatabaseName(databasePath());
+
+        if (!db.open()) {
+            return false;
+        }
+
+        {
+            QSqlQuery q(db);
+
+            if (q.exec("SELECT 1 FROM users LIMIT 1"))
+                hasUser = q.next();
+        }
+
+        db.close();
     }
 
-    db.close();
     QSqlDatabase::removeDatabase(connName);
 
     return hasUser;

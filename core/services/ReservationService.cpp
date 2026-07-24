@@ -116,7 +116,7 @@ bool ReservationService::cancelReservation(int reservationId)
 
     if (reservation.id <= 0)
     {
-        qWarning() << "Cancel failed: reservation not found";
+        qCWarning(logReservation) << "Cancel failed: reservation not found";
         return false;
     }
 

@@ -25,7 +25,7 @@ Item {
         try {
             return JSON.parse(table.canvasItem.metadata)
         } catch (e) {
-            console.log("Failed to parse metadata:", e)
+            console.error("Failed to parse metadata:", e)
             return {}
         }
     }
@@ -904,7 +904,6 @@ Item {
                                                                                      })
 
                                 if (!success) {
-                                    console.log("Reservation conflict")
                                     return
                                 }
                             } else {
@@ -921,7 +920,6 @@ Item {
                                                                                      })
 
                                 if (!success) {
-                                    console.log("Update failed")
                                     return
                                 }
                             }

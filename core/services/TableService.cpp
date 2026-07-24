@@ -22,12 +22,12 @@ int TableService::addTable(const QString &tableName,
                             const int capacity)
 {
     if (tableName.trimmed().isEmpty()) {
-        qWarning() << "Cannot add empty table name";
+        qCWarning(logFloorPlan) << "Cannot add empty table name";
         return -1;
     }
 
     if (capacity <= 0) {
-        qWarning() << "Capacity must be greater than 0";
+        qCWarning(logFloorPlan) << "Capacity must be greater than 0";
         return -1;
     }
 
@@ -51,20 +51,17 @@ bool TableService::editTable(const int &tableId,
 {
     auto tableOpt = m_tableRepo.getTableById(tableId);
 
-    if (!tableOpt.has_value()) {
-        qWarning() << "Table with ID" << tableId << "not found";
-        return false;
-    }
+    if (!tableOpt.has_value()) return false;
 
     Table &table = tableOpt.value();
 
     if (tableName.trimmed().isEmpty()) {
-        qWarning() << "Table name cannot be empty";
+        qCWarning(logFloorPlan) << "Table name cannot be empty";
         return false;
     }
 
     if (capacity <= 0) {
-        qWarning() << "Capacity must be greater than 0";
+        qCWarning(logFloorPlan) << "Capacity must be greater than 0";
         return false;
     }
 
@@ -82,10 +79,7 @@ bool TableService::editTable(const int &tableId,
 bool TableService::removeTable(const int &tableId)
 {
     auto tableOpt = m_tableRepo.getTableById(tableId);
-    if (!tableOpt.has_value()) {
-        qWarning() << "Table with ID" << tableId << "not found";
-        return false;
-    }
+    if (!tableOpt.has_value()) return false;
 
     m_tableRepo.remove(tableOpt.value());
 

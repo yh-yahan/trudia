@@ -187,9 +187,7 @@ ScrollView {
             hoverEnabled: false
             focusPolicy: Qt.NoFocus
             onClicked: {
-                if (enableTaxSwitch.checked && taxRateField.text.trim(
-                            ) === "") {
-                    console.log("Tax rate required")
+                if (enableTaxSwitch.checked && taxRateField.text.trim() === "") {
                     return
                 }
 

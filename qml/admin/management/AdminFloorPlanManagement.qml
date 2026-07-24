@@ -583,8 +583,6 @@ Item {
         onActivated: {
             if (root.currentFloorId > 0) {
                 FloorPlanService.saveCanvas(root.currentFloorId)
-            } else {
-                console.warn("No floor selected, cannot save")
             }
         }
     }

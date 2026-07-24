@@ -606,10 +606,6 @@ Item {
                                 var printed = CheckoutService.printReceipt(
                                             selectedSession.id, false)
 
-                                if (!printed) {
-                                    console.log("Receipt printing failed")
-                                }
-
                                 reloadData()
                             }
                         }
@@ -850,9 +846,6 @@ Item {
                         onClicked: {
                             var printed = CheckoutService.printReceipt(
                                         selectedRecentDetails.id, true)
-
-                            if (!printed)
-                                console.log("Receipt printing failed")
                         }
                     }
                 }

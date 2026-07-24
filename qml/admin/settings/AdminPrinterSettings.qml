@@ -196,8 +196,6 @@ ScrollView {
                                 hoverEnabled: false
                                 focusPolicy: Qt.NoFocus
                                 onClicked: {
-                                    console.log("system_name: ",
-                                                modelData.system_name)
                                     WindowsPrinterService.testPrint(modelData)
                                 }
                             }

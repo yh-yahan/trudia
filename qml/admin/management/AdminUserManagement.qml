@@ -19,8 +19,6 @@ Item {
 
             if (success) {
                 createDialog.close()
-            } else {
-                console.log("Create user failed")
             }
         }
     }

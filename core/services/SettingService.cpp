@@ -1,5 +1,7 @@
 #include "SettingService.h"
 
+#include "../logging/LoggingCategories.h"
+
 SettingService::SettingService(RestaurantRepository &restaurantRepo,
                                PrinterRepository &printerRepo,
                                TaxSettingsRepository &taxSettingsRepo,
@@ -98,7 +100,7 @@ bool SettingService::saveRestaurantSetting(const QVariantMap &map)
         m_restaurantRepo.save(restaurant);
         return true;
     } catch (const std::exception &e) {
-        qWarning() << "Failed to save restaurant:" << e.what();
+        qCWarning(logSettings) << "Failed to save restaurant:" << e.what();
         return false;
     }
 }
@@ -163,7 +165,7 @@ bool SettingService::savePrinter(const QVariantMap &map)
         return true;
 
     } catch (const std::exception &e) {
-        qWarning() << "Failed to save printer:" << e.what();
+        qCWarning(logSettings) << "Failed to save printer:" << e.what();
         return false;
     }
 }
@@ -178,7 +180,7 @@ bool SettingService::removePrinter(int printerId)
         return true;
 
     } catch (const std::exception &e) {
-        qWarning() << "Failed to remove printer:" << e.what();
+        qCWarning(logSettings) << "Failed to remove printer:" << e.what();
         return false;
     }
 }
@@ -214,7 +216,7 @@ bool SettingService::saveTaxSettings(const QVariantMap &map)
         m_taxSettingsRepo.save(taxSettings);
         return true;
     } catch (const std::exception &e) {
-        qWarning() << "Failed to save tax settings:" << e.what();
+        qCWarning(logSettings) << "Failed to save tax settings:" << e.what();
         return false;
     }
 }
@@ -304,7 +306,7 @@ bool SettingService::saveKitchenSettings(const QVariantMap &map)
 
         return true;
     } catch (const std::exception &e) {
-        qWarning() << "Failed to save kitchen settings:" << e.what();
+        qCWarning(logSettings) << "Failed to save kitchen settings:" << e.what();
         return false;
     }
 }
@@ -348,7 +350,7 @@ bool SettingService::saveRegionalSettings(const QVariantMap &map)
 
         return true;
     } catch (const std::exception &e) {
-        qWarning() << "Failed to save regional settings:" << e.what();
+        qCWarning(logSettings) << "Failed to save regional settings:" << e.what();
         return false;
     }
 }
@@ -390,7 +392,7 @@ bool SettingService::saveTableSettings(const QVariantMap &map)
         return true;
 
     } catch (const std::exception &e) {
-        qWarning() << "Failed to save table settings:"
+        qCWarning(logSettings) << "Failed to save table settings:"
                    << e.what();
 
         return false;

@@ -75,9 +75,7 @@ Item {
                                 return
                             }
 
-                            var success = MenuService.renameCategory(id,
-                                                                     newName)
-                            console.log("renameCategory success:", success)
+                            MenuService.renameCategory(id, newName)
 
                             isEditing = false
                         }
@@ -507,7 +505,6 @@ Item {
                                                     itemRect.editedPrice)
 
                                         if (itemNameTrimmed.length === 0) {
-                                            console.warn("Item name cannot be empty")
                                             return
                                         }
 
@@ -698,7 +695,6 @@ Item {
                             if (itemNameTrimmed.length === 0
                                     || newItemPrice.text.length === 0
                                     || MenuService.currentCategoryId === -1) {
-                                console.warn("Item name, price, and category are required")
                                 return
                             }
 

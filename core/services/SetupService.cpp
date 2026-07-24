@@ -17,12 +17,12 @@ bool SetupService::initializeSystem(const QString &dbPath)
     qCInfo(logApplication) << "Starting system initialization...";
 
     if (dbPath.isEmpty()) {
-        qWarning() << "Invalid setup input.";
+        qCWarning(logSetup) << "Invalid setup input.";
         return false;
     }
 
     if (QFile::exists(dbPath)) {
-        qWarning() << "Existing database found. Removing...";
+        qCWarning(logSetup) << "Existing database found. Removing...";
         if (!QFile::remove(dbPath)) {
             qCritical() << "Failed to remove existing database file.";
             return false;
@@ -30,7 +30,7 @@ bool SetupService::initializeSystem(const QString &dbPath)
     }
 
     if (!m_databaseManager.initialize(dbPath)) {
-        qCritical() << "Database initialization failed.";
+        qCCritical(logDatabase) << "Database initialization failed.";
 
         QFile::remove(dbPath);
         return false;

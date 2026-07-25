@@ -1,6 +1,7 @@
 #include "TableService.h"
 
 #include "../models/TableModel.h"
+#include "../logging/LoggingCategories.h"
 
 TableService::TableService(TableRepository &tableRepo, QObject *parent)
     : QObject(parent),

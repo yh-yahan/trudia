@@ -26,7 +26,7 @@ Item {
             }
 
             stackView.push("../admin/AdminHome.qml");
-            Window.window.showMaximized();
+            appWindow.showMaximized();
         }
     }
 
@@ -58,7 +58,7 @@ Item {
                 }
 
                 Text {
-                    text: "v0.2.1-dev"
+                    text: "v0.2.1"
                     font.pixelSize: Theme.fontSmall
                     color: Theme.secondaryText
                     horizontalAlignment: Text.AlignHCenter
@@ -189,9 +189,9 @@ Item {
                     text: ""
                     color: "red"
                     font.pixelSize: Theme.fontNormal
-                    anchors.top: registerButton.bottom
-                    anchors.topMargin: 10
-                    anchors.horizontalCenter: parent.horizontalCenter
+                    Layout.alignment: Qt.AlignHCenter
+                    Layout.fillWidth: true
+                    horizontalAlignment: Text.AlignHCenter
                     wrapMode: Text.WordWrap
                 }
             }

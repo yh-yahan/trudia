@@ -150,7 +150,7 @@ Item {
     }
 
     Text {
-        text: "v0.2.1-dev"
+        text: "v0.2.1"
         font.pixelSize: Theme.fontSmall
         color: "#aaaaaa"
 

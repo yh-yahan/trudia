@@ -5,6 +5,7 @@ import Trudia.Services 1.0
 import trudia.Theme 1.0
 
 Window {
+    id: appWindow
     width: 850
     height: 480
     visible: true

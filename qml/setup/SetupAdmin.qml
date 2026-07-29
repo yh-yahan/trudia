@@ -25,8 +25,8 @@ Item {
                 return;
             }
 
-            stackView.push("../admin/AdminHome.qml");
-            appWindow.showMaximized();
+            // stackView.push("../admin/AdminHome.qml");
+            stackView.push("SetupBetaWelcome.qml");
         }
     }
 

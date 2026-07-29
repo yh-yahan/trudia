@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_PREFIX_PATH "C:/Qt/6.10.2/mingw_64")
 
-find_package(Qt6 REQUIRED COMPONENTS Quick QuickControls2 Sql LinguistTools Concurrent Test)
+find_package(Qt6 REQUIRED COMPONENTS Quick QuickControls2 Network Sql LinguistTools Concurrent Test)
 
 set(LIBSODIUM_ROOT "C:/libsodium/libsodium-win64")
 
@@ -45,6 +45,7 @@ qt_add_qml_module(apptrudia
         qml/components/DatePicker.qml
         qml/setup/SetupAdmin.qml
         qml/setup/SetupDBLocation.qml
+        qml/setup/SetupBetaWelcome.qml
         qml/common/OrderTaking.qml
         qml/common/OrderTakingSimple.qml
         qml/common/OrderTakingFloorPlan.qml
@@ -98,6 +99,7 @@ target_link_libraries(apptrudia
         trudia_core
         Qt6::Quick
         Qt6::QuickControls2
+        Qt6::Network
         Qt6::Sql
         Qt6::Concurrent
         sodium

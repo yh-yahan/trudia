@@ -44,6 +44,7 @@ target_sources(trudia_core PRIVATE
     services/DatabaseRestoreService.cpp
     services/AppService.cpp
     services/SetupService.cpp
+    services/BetaService.cpp
 
     printing/EscPosBuilder.cpp
     printing/PrintLayoutHelper.cpp
@@ -75,6 +76,7 @@ target_link_libraries(trudia_core
     PUBLIC
         Qt6::Core
         Qt6::Gui
+        Qt6::Network
         Qt6::Sql
         Qt6::Concurrent
         sodium

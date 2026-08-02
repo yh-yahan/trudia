@@ -82,43 +82,10 @@ Item {
             }
         }
 
-        RowLayout {
+        ColumnLayout {
             Layout.fillWidth: true
-            Layout.topMargin: 12
-            spacing: 12
-
-            Button {
-                text: qsTr("Skip for now")
-                Layout.fillWidth: true
-                enabled: !submitting
-
-                leftPadding: 12
-                rightPadding: 12
-                topPadding: 12
-                bottomPadding: 12
-
-                background: Rectangle {
-                    color: "transparent"
-                    border.color: Theme.secondaryText
-                    border.width: 1
-                    radius: 4
-                }
-
-                contentItem: Text {
-                    text: qsTr("Skip for now")
-                    font.pixelSize: Theme.fontNormal
-                    color: Theme.secondaryText
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                }
-
-                hoverEnabled: false
-                focusPolicy: Qt.NoFocus
-
-                onClicked: {
-                    goToApp()
-                }
-            }
+            Layout.topMargin: 16
+            spacing: 14
 
             Button {
                 text: submitting ? qsTr("Sending...") : qsTr("Continue")
@@ -159,7 +126,33 @@ Item {
                     }
                 }
             }
+
+            Button {
+                text: qsTr("Skip for now")
+                Layout.alignment: Qt.AlignHCenter
+                enabled: !submitting
+
+                flat: true
+                background: null
+                padding: 4
+
+                contentItem: Text {
+                    text: qsTr("Skip for now")
+                    font.pixelSize: Theme.fontSmall
+                    color: Theme.secondaryText
+                    horizontalAlignment: Text.AlignHCenter
+                    font.underline: true
+                }
+
+                hoverEnabled: false
+                focusPolicy: Qt.NoFocus
+
+                onClicked: {
+                    goToApp()
+                }
+            }
         }
+
     }
 
     Text {

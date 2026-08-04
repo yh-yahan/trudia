@@ -35,6 +35,40 @@ Membership MembershipRepository::getMembershipById(const int &id)
     return membership;
 }
 
+QList<Membership> MembershipRepository::searchMemberships(const QString &search)
+{
+    QList<Membership> memberships;
+
+    QSqlQuery query(m_db);
+
+    query.prepare(R"(
+        SELECT id, phone_number, total_points, status
+        FROM memberships
+        WHERE phone_number LIKE :search
+        ORDER BY id DESC
+    )");
+
+    query.bindValue(":search", "%" + search + "%");
+
+    if (!query.exec()) {
+        qCWarning(logDatabase) << "Failed to search memberships:" << query.lastError().text();
+        return memberships;
+    }
+
+    while (query.next()) {
+        Membership membership;
+
+        membership.id = query.value("id").toInt();
+        membership.phone_number = query.value("phone_number").toString();
+        membership.total_points = query.value("total_points").toInt();
+        membership.status = query.value("status").toString();
+
+        memberships.append(membership);
+    }
+
+    return memberships;
+}
+
 Membership MembershipRepository::getMembershipByPhoneNumber(const QString &phoneNumber)
 {
     Membership membership;

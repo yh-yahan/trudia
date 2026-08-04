@@ -59,6 +59,7 @@ qt_add_qml_module(apptrudia
         qml/admin/management/AdminMenuManagement.qml
         qml/admin/management/AdminTableManagement.qml
         qml/admin/management/AdminFloorPlanManagement.qml
+        qml/admin/management/AdminMembersManagement.qml
         qml/admin/management/AdminUserManagement.qml
         qml/admin/management/AdminManagement.qml
         qml/admin/management/AdminManagementSidebar.qml

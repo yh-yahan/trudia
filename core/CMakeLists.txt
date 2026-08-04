@@ -1,4 +1,5 @@
-add_library(trudia_core STATIC)
+add_library(trudia_core STATIC
+    models/MemberListModel.h models/MemberListModel.cpp)
 
 target_sources(trudia_core PRIVATE
     database/DatabaseManager.cpp
@@ -45,6 +46,7 @@ target_sources(trudia_core PRIVATE
     services/AppService.cpp
     services/SetupService.cpp
     services/BetaService.cpp
+    services/MemberService.cpp
 
     printing/EscPosBuilder.cpp
     printing/PrintLayoutHelper.cpp

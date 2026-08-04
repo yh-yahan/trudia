@@ -13,6 +13,7 @@ public:
 
     virtual bool create(const Membership &membership);
     Membership getMembershipById(const int &id);
+    QList<Membership> searchMemberships(const QString &search);
     virtual Membership getMembershipByPhoneNumber(const QString &phoneNumber);
     QList<Membership> getAllMemberships();
     bool update(const Membership &membership);

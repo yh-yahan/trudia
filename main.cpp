@@ -46,6 +46,7 @@
 #include "core/services/ReservationService.h"
 #include "core/services/DatabaseRestoreService.h"
 #include "core/services/BetaService.h"
+#include "core/services/MemberService.h"
 #include "core/database/DatabaseManager.h"
 #include "core/printing/ReceiptBuilder.h"
 #include "core/printing/WindowsPrinterService.h"
@@ -197,6 +198,7 @@ int main(int argc, char *argv[])
         reservationService,
         checkoutService
     );
+    MemberService memberService(membershipRepo);
     DatabaseService databaseService(
         appService,
         dbManager
@@ -238,6 +240,7 @@ int main(int argc, char *argv[])
     qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "ReservationService", &reservationService);
     qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "DatabaseService", &databaseService);
     qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "BetaService", &betaService);
+    qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "MemberService", &memberService);
 
     QQmlApplicationEngine engine;
     engine.loadFromModule("trudia", "Main");

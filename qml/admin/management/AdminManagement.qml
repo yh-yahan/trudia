@@ -39,13 +39,14 @@ Item {
         if (index === 0) {
             pageLoader.sourceComponent = menu
         } else if (index === 1) {
-
             if (SettingService.tableLayoutMode === "floor_plan") {
                 pageLoader.sourceComponent = floorPlan
             } else {
                 pageLoader.sourceComponent = table
             }
         } else if (index === 2) {
+            pageLoader.sourceComponent = members
+        } else if (index === 3) {
             pageLoader.sourceComponent = user
         }
     }
@@ -58,6 +59,11 @@ Item {
     Component {
         id: table
         AdminTableManagement {}
+    }
+
+    Component {
+        id: members
+        AdminMembersManagement {}
     }
 
     Component {

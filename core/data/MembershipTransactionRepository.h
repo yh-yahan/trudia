@@ -3,13 +3,17 @@
 
 #include <QString>
 #include <QSqlDatabase>
+#include <QDateTime>
 #include "../domain/MembershipTransaction.h"
+#include "../models/MemberTransactionRow.h"
 
 class MembershipTransactionRepository
 {
 public:
     explicit MembershipTransactionRepository(QSqlDatabase db);
     virtual ~MembershipTransactionRepository() = default;
+
+    std::vector<TransactionRow> getTransactionRowsByMembershipId(int membershipId);
 
     virtual bool create(const MembershipTransaction &transaction);
     MembershipTransaction getById(int id);

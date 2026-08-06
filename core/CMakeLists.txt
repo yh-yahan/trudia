@@ -1,5 +1,4 @@
-add_library(trudia_core STATIC
-    models/MemberListModel.h models/MemberListModel.cpp)
+add_library(trudia_core STATIC)
 
 target_sources(trudia_core PRIVATE
     database/DatabaseManager.cpp
@@ -60,6 +59,8 @@ target_sources(trudia_core PRIVATE
     models/UserModel.cpp
     models/FloorModel.cpp
     models/CanvasItemModel.cpp
+    models/MemberListModel.cpp
+    models/MemberTransactionModel.cpp
 
     utilities/PasswordHasher.cpp
     utilities/SystemTheme.cpp

@@ -116,6 +116,7 @@ bool DatabaseManager::runMigrations()
         "core/database/migrations/019_create_reservations.sql",
         "core/database/migrations/020_create_app_state.sql",
         "core/database/migrations/021_create_receipt_snapshot.sql",
+        "core/database/migrations/022_alter_membership_transactions.sql",
     };
 
     for (const QString &fileName : migrationFiles)

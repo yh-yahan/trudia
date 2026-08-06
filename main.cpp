@@ -198,7 +198,7 @@ int main(int argc, char *argv[])
         reservationService,
         checkoutService
     );
-    MemberService memberService(membershipRepo);
+    MemberService memberService(membershipRepo, membershipTransactionRepo);
     DatabaseService databaseService(
         appService,
         dbManager

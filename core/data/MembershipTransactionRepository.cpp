@@ -7,6 +7,59 @@
 
 MembershipTransactionRepository::MembershipTransactionRepository(QSqlDatabase db): m_db(db) {}
 
+std::vector<TransactionRow> MembershipTransactionRepository::getTransactionRowsByMembershipId(int membershipId)
+{
+    std::vector<TransactionRow> rows;
+
+    if (membershipId <= 0) {
+        qCWarning(logMembership) << "Invalid membership ID:" << membershipId;
+        return rows;
+    }
+
+    QSqlQuery query(m_db);
+    query.prepare(R"(
+        SELECT
+            mt.id,
+            mt.membership_id,
+            mt.order_session_id,
+            mt.type,
+            mt.points,
+            mt.created_at,
+            os.display_number
+        FROM membership_transactions mt
+        LEFT JOIN order_sessions os
+            ON mt.order_session_id = os.id
+        WHERE mt.membership_id = :membership_id
+        ORDER BY mt.created_at DESC
+    )");
+
+    query.bindValue(":membership_id", membershipId);
+
+    if (!query.exec()) {
+        qCWarning(logDatabase)
+            << "Failed to fetch membership transaction history:"
+            << query.lastError().text();
+        return rows;
+    }
+
+    while (query.next()) {
+        TransactionRow row;
+
+        row.transaction.id = query.value("id").toInt();
+        row.transaction.membership_id = query.value("membership_id").toInt();
+        row.transaction.order_session_id = query.value("order_session_id").toInt();
+        row.transaction.type = query.value("type").toString();
+        row.transaction.points = query.value("points").toInt();
+
+        row.created_at = query.value("created_at").toDateTime();
+        row.orderDisplayNumber = query.value("display_number").toInt();
+
+        rows.push_back(std::move(row));
+    }
+
+    return rows;
+}
+
 bool MembershipTransactionRepository::create(const MembershipTransaction &transaction)
 {
     if (transaction.membership_id <= 0) {

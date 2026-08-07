@@ -46,8 +46,10 @@ Item {
         } else if (index === 3) {
             pageLoader.sourceComponent = analyticsPage
         } else if (index === 4) {
-            pageLoader.sourceComponent = managementPage
+            pageLoader.sourceComponent = taxReportsPage
         } else if (index === 5) {
+            pageLoader.sourceComponent = managementPage
+        } else if (index === 6) {
             pageLoader.sourceComponent = settingsPage
         }
     }
@@ -70,6 +72,11 @@ Item {
     Component {
         id: analyticsPage
         AdminAnalytics {}
+    }
+
+    Component {
+        id: taxReportsPage
+        AdminTaxReports {}
     }
 
     Component {

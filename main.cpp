@@ -27,6 +27,7 @@
 #include "core/data/ReservationRepository.h"
 #include "core/data/AppStateRepository.h"
 #include "core/data/ReceiptSnapshotRepository.h"
+#include "core/data/TaxReportRepository.h"
 #include "core/services/CurrencyService.h"
 #include "core/services/OrderService.h"
 #include "core/services/TableService.h"
@@ -47,6 +48,7 @@
 #include "core/services/DatabaseRestoreService.h"
 #include "core/services/BetaService.h"
 #include "core/services/MemberService.h"
+#include "core/services/TaxReportService.h"
 #include "core/database/DatabaseManager.h"
 #include "core/printing/ReceiptBuilder.h"
 #include "core/printing/WindowsPrinterService.h"
@@ -124,6 +126,7 @@ int main(int argc, char *argv[])
     ReservationRepository reservationRepo(DatabaseManager::db());
     AppStateRepository appStateRepo(DatabaseManager::db());
     ReceiptSnapshotRepository receiptSnapshotRepo(DatabaseManager::db());
+    TaxReportRepository taxReportRepo(DatabaseManager::db());
 
     WindowsPrinterService windowsPrinterService;
     CurrencyService currencyService;
@@ -203,6 +206,7 @@ int main(int argc, char *argv[])
         appService,
         dbManager
     );
+    TaxReportService taxReportService(taxReportRepo);
 
     QObject::connect(&orderService, &OrderService::orderCreated,
                  &kitchenOrderService, &KitchenOrderService::ordersChanged);
@@ -241,6 +245,7 @@ int main(int argc, char *argv[])
     qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "DatabaseService", &databaseService);
     qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "BetaService", &betaService);
     qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "MemberService", &memberService);
+    qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "TaxReportService", &taxReportService);
 
     QQmlApplicationEngine engine;
     engine.loadFromModule("trudia", "Main");

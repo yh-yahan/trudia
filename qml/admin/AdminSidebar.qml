@@ -20,6 +20,7 @@ Rectangle {
         ListElement { key: "checkout"; text: qsTr("Checkout") }
         ListElement { key: "kitchen"; text: qsTr("Kitchen") }
         ListElement { key: "analytics"; text: qsTr("Analytics") }
+        ListElement { key: "taxReports"; text: qsTr("Tax Reports") }
         ListElement { key: "management"; text: qsTr("Management") }
         ListElement { key: "settings"; text: qsTr("Settings") }
     }

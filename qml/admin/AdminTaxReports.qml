@@ -28,7 +28,7 @@ Item {
         var end = new Date(today)
 
         if (preset === "today") {
-            // already today
+
         } else if (preset === "yesterday") {
             start.setDate(start.getDate() - 1)
             end.setDate(end.getDate() - 1)
@@ -99,7 +99,6 @@ Item {
         anchors.margins: 20
         spacing: 16
 
-        // Header
         RowLayout {
             Layout.fillWidth: true
             spacing: 12
@@ -131,26 +130,46 @@ Item {
             Button {
                 text: qsTr("Today")
                 onClicked: loadPreset("today")
+                contentItem: Label {
+                    text: qsTr("Today")
+                    font.pixelSize: Theme.fontNormal
+                }
             }
 
             Button {
                 text: qsTr("Yesterday")
                 onClicked: loadPreset("yesterday")
+                contentItem: Label {
+                    text: qsTr("Yesterday")
+                    font.pixelSize: Theme.fontNormal
+                }
             }
 
             Button {
                 text: qsTr("This Week")
                 onClicked: loadPreset("week")
+                contentItem: Label {
+                    text: qsTr("This Week")
+                    font.pixelSize: Theme.fontNormal
+                }
             }
 
             Button {
                 text: qsTr("This Month")
                 onClicked: loadPreset("month")
+                contentItem: Label {
+                    text: qsTr("This Month")
+                    font.pixelSize: Theme.fontNormal
+                }
             }
 
             Button {
                 text: qsTr("Last Month")
                 onClicked: loadPreset("lastMonth")
+                contentItem: Label {
+                    text: qsTr("Last Month")
+                    font.pixelSize: Theme.fontNormal
+                }
             }
         }
 
@@ -170,6 +189,7 @@ Item {
                 Label {
                     text: qsTr("From")
                     color: Theme.text
+                    font.pixelSize: Theme.fontNormal
                 }
 
                 TextField {
@@ -187,6 +207,7 @@ Item {
                 Label {
                     text: qsTr("To")
                     color: Theme.text
+                    font.pixelSize: Theme.fontNormal
                 }
 
                 TextField {
@@ -213,7 +234,7 @@ Item {
 
             Rectangle {
                 Layout.fillWidth: true
-                height: 100
+                height: 120
                 radius: 6
                 color: Theme.background
                 border.color: Theme.border
@@ -242,7 +263,7 @@ Item {
 
             Rectangle {
                 Layout.fillWidth: true
-                height: 100
+                height: 120
                 radius: 6
                 color: Theme.background
                 border.color: Theme.border
@@ -275,13 +296,14 @@ Item {
                               : ""
                         color: Theme.text
                         opacity: 0.6
+                        font.pixelSize: Theme.fontNormal
                     }
                 }
             }
 
             Rectangle {
                 Layout.fillWidth: true
-                height: 100
+                height: 120
                 radius: 6
                 color: Theme.background
                 border.color: Theme.border
@@ -310,7 +332,7 @@ Item {
 
             Rectangle {
                 Layout.fillWidth: true
-                height: 100
+                height: 120
                 radius: 6
                 color: Theme.background
                 border.color: Theme.border
@@ -342,6 +364,7 @@ Item {
                               + qsTr("transactions")
                         color: Theme.text
                         opacity: 0.6
+                        font.pixelSize: Theme.fontNormal
                     }
                 }
             }
@@ -356,7 +379,6 @@ Item {
 
         Rectangle {
             Layout.fillWidth: true
-            Layout.fillHeight: true
             Layout.minimumHeight: 180
             radius: 6
             color: Theme.background
@@ -382,6 +404,7 @@ Item {
                             text: qsTr("Date")
                             font.bold: true
                             color: Theme.text
+                            font.pixelSize: Theme.fontNormal
                         }
 
                         Label {
@@ -389,6 +412,7 @@ Item {
                             text: qsTr("Transactions")
                             font.bold: true
                             color: Theme.text
+                            font.pixelSize: Theme.fontNormal
                         }
 
                         Label {
@@ -396,6 +420,7 @@ Item {
                             text: qsTr("Subtotal")
                             font.bold: true
                             color: Theme.text
+                            font.pixelSize: Theme.fontNormal
                         }
 
                         Label {
@@ -403,6 +428,7 @@ Item {
                             text: qsTr("Tax")
                             font.bold: true
                             color: Theme.text
+                            font.pixelSize: Theme.fontNormal
                         }
 
                         Label {
@@ -410,6 +436,7 @@ Item {
                             text: qsTr("Total")
                             font.bold: true
                             color: Theme.text
+                            font.pixelSize: Theme.fontNormal
                         }
                     }
                 }
@@ -437,30 +464,35 @@ Item {
                                 Layout.preferredWidth: 140
                                 text: formatDate(modelData.date)
                                 color: Theme.text
+                                font.pixelSize: Theme.fontNormal
                             }
 
                             Label {
                                 Layout.preferredWidth: 110
                                 text: modelData.transactionCount
                                 color: Theme.text
+                                font.pixelSize: Theme.fontNormal
                             }
 
                             Label {
                                 Layout.preferredWidth: 130
                                 text: currencySymbol + formatMoneyString(modelData.subtotal)
                                 color: Theme.text
+                                font.pixelSize: Theme.fontNormal
                             }
 
                             Label {
                                 Layout.preferredWidth: 130
                                 text: currencySymbol + formatMoneyString(modelData.taxCollected)
                                 color: Theme.text
+                                font.pixelSize: Theme.fontNormal
                             }
 
                             Label {
                                 Layout.fillWidth: true
                                 text: currencySymbol + formatMoneyString(modelData.totalSales)
                                 color: Theme.text
+                                font.pixelSize: Theme.fontNormal
                             }
                         }
                     }
@@ -471,6 +503,176 @@ Item {
                         text: qsTr("No data for this period")
                         color: Theme.text
                         opacity: 0.6
+                    }
+                }
+            }
+        }
+
+        Label {
+            text: qsTr("Transactions")
+            font.bold: true
+            color: Theme.text
+            font.pixelSize: Theme.fontLarge
+        }
+
+        Rectangle {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            color: Theme.surface
+            radius: 8
+            clip: true
+
+            ColumnLayout {
+                anchors.fill: parent
+                spacing: 0
+
+                Rectangle {
+                    Layout.fillWidth: true
+                    height: 42
+                    color: Theme.surfaceVariant
+
+                    RowLayout {
+                        anchors.fill: parent
+                        anchors.leftMargin: 16
+                        anchors.rightMargin: 16
+
+                        Label {
+                            Layout.preferredWidth: 100
+                            text: qsTr("Receipt")
+                            font.bold: true
+                            color: Theme.text
+                            font.pixelSize: Theme.fontNormal
+                        }
+
+                        Label {
+                            Layout.preferredWidth: 110
+                            text: qsTr("Type")
+                            font.bold: true
+                            color: Theme.text
+                            font.pixelSize: Theme.fontNormal
+                        }
+
+                        Label {
+                            Layout.fillWidth: true
+                            text: qsTr("Table")
+                            font.bold: true
+                            color: Theme.text
+                            font.pixelSize: Theme.fontNormal
+                        }
+
+                        Label {
+                            Layout.preferredWidth: 120
+                            text: qsTr("Subtotal")
+                            font.bold: true
+                            color: Theme.text
+                            font.pixelSize: Theme.fontNormal
+                        }
+
+                        Label {
+                            Layout.preferredWidth: 100
+                            text: qsTr("Tax")
+                            font.bold: true
+                            color: Theme.text
+                            font.pixelSize: Theme.fontNormal
+                        }
+
+                        Label {
+                            Layout.preferredWidth: 120
+                            text: qsTr("Total")
+                            font.bold: true
+                            color: Theme.text
+                            font.pixelSize: Theme.fontNormal
+                        }
+
+                        Label {
+                            Layout.preferredWidth: 160
+                            text: qsTr("Closed At")
+                            font.bold: true
+                            color: Theme.text
+                            font.pixelSize: Theme.fontNormal
+                        }
+                    }
+                }
+
+                ListView {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    clip: true
+                    model: root.sessions
+
+                    delegate: Rectangle {
+                        width: ListView.view.width
+                        height: 42
+                        color: index % 2 === 0
+                               ? Theme.surface
+                               : Theme.background
+
+                        RowLayout {
+                            anchors.fill: parent
+                            anchors.leftMargin: 16
+                            anchors.rightMargin: 16
+
+                            Label {
+                                Layout.preferredWidth: 100
+                                text: modelData.receiptNumber || "-"
+                                color: Theme.text
+                                font.pixelSize: Theme.fontNormal
+                            }
+
+                            Label {
+                                Layout.preferredWidth: 110
+                                text: modelData.orderType || "-"
+                                color: Theme.text
+                                font.pixelSize: Theme.fontNormal
+                            }
+
+                            Label {
+                                Layout.fillWidth: true
+                                text: modelData.tableName || "-"
+                                color: Theme.text
+                                font.pixelSize: Theme.fontNormal
+                            }
+
+                            Label {
+                                Layout.preferredWidth: 120
+                                text: currencySymbol + formatMoneyString(modelData.subtotal)
+                                color: Theme.text
+                                font.pixelSize: Theme.fontNormal
+                            }
+
+                            Label {
+                                Layout.preferredWidth: 100
+                                text: currencySymbol + formatMoneyString(modelData.tax)
+                                color: Theme.text
+                                font.pixelSize: Theme.fontNormal
+                            }
+
+                            Label {
+                                Layout.preferredWidth: 120
+                                text: currencySymbol + formatMoneyString(modelData.total)
+                                color: Theme.text
+                                font.pixelSize: Theme.fontNormal
+                            }
+
+                            Label {
+                                Layout.preferredWidth: 160
+                                text: modelData.closedAt
+                                      ? Qt.formatDateTime(
+                                            new Date(modelData.closedAt),
+                                            "yyyy-MM-dd HH:mm")
+                                      : "-"
+                                color: Theme.text
+                                font.pixelSize: Theme.fontNormal
+                            }
+                        }
+                    }
+
+                    Label {
+                        anchors.centerIn: parent
+                        visible: root.sessions.length === 0
+                        text: qsTr("No transactions for this period")
+                        color: Theme.secondaryText
+                        font.pixelSize: Theme.fontNormal
                     }
                 }
             }

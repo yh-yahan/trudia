@@ -43,8 +43,10 @@ qt_add_qml_module(apptrudia
         qml/components/OrderEditor.qml
         qml/components/TimePicker.qml
         qml/components/DatePicker.qml
+        qml/setup/SetupDBChoice.qml
+        qml/setup/SetupDBCreation.qml
+        qml/setup/SetupDBOpen.qml
         qml/setup/SetupAdmin.qml
-        qml/setup/SetupDBLocation.qml
         qml/setup/SetupBetaWelcome.qml
         qml/common/OrderTaking.qml
         qml/common/OrderTakingSimple.qml

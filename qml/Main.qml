@@ -26,7 +26,7 @@ Window {
 
         switch (state) {
         case AppService.NeedsSetup:
-            stackView.push("setup/SetupDBLocation.qml")
+            stackView.push("setup/SetupDBChoice.qml")
             break
         case AppService.NeedsAdminSetup:
             stackView.push("setup/SetupAdmin.qml")

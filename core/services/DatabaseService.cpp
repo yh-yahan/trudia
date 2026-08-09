@@ -200,6 +200,34 @@ bool DatabaseService::moveDatabase(const QString &destinationFolder)
     return true;
 }
 
+// requires app to restart
+bool DatabaseService::openDatabase(const QString &dbFilePath)
+{
+    QFileInfo dbInfo(dbFilePath);
+
+    if (!dbInfo.exists() || !dbInfo.isFile())
+    {
+        qCWarning(logDatabase)
+            << "Database file does not exist:"
+            << dbFilePath;
+        return false;
+    }
+
+    if (!DatabaseManager::canOpen(dbFilePath))
+    {
+        qCWarning(logDatabase)
+            << "Database cannot be opened:"
+            << dbFilePath;
+        return false;
+    }
+
+    m_appService.setDatabasePath(dbFilePath);
+
+    qCInfo(logDatabase) << "Database selected successfully.";
+
+    return true;
+}
+
 bool DatabaseService::directoryContainsFilesRecursively(const QString &path)
 {
     QDir dir(path);

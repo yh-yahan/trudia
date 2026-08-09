@@ -26,6 +26,36 @@ Item {
         root.selectedPath = path + "/TrudiaPOS/data";
     }
 
+        Button {
+        id: backButton
+
+        anchors {
+            top: parent.top
+            left: parent.left
+            topMargin: 16
+            leftMargin: 16
+        }
+
+        text: qsTr("Back")
+        enabled: !root.running
+
+        background: Rectangle {
+            color: "transparent"
+        }
+
+        contentItem: Text {
+            text: qsTr("Back")
+            color: Theme.secondaryText
+            font.pixelSize: Theme.fontNormal
+            verticalAlignment: Text.AlignVCenter
+        }
+
+        hoverEnabled: false
+        focusPolicy: Qt.NoFocus
+
+        onClicked: stackView.pop()
+    }
+
     ColumnLayout {
         anchors.centerIn: parent
         width: 450

@@ -138,7 +138,7 @@ Item {
                         text: status
                         color: status === "active"
                             ? Theme.green
-                            : Theme.error
+                            : Theme.error()
 
                         font.pixelSize: Theme.fontNormal
                         Layout.preferredWidth: 120

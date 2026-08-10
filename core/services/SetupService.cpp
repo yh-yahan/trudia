@@ -12,28 +12,25 @@ SetupService::SetupService(AppService &appService,
       m_appService(appService),
       m_databaseManager(databaseManager) {}
 
-bool SetupService::initializeSystem(const QString &dbPath)
+SetupService::SetupResult SetupService::initializeSystem(const QString &dbPath)
 {
     qCInfo(logApplication) << "Starting system initialization...";
 
     if (dbPath.isEmpty()) {
-        qCWarning(logSetup) << "Invalid setup input.";
-        return false;
+        qCInfo(logSetup) << "Invalid setup input.";
+        return InvalidPath;
     }
 
     if (QFile::exists(dbPath)) {
-        qCWarning(logSetup) << "Existing database found. Removing...";
-        if (!QFile::remove(dbPath)) {
-            qCritical() << "Failed to remove existing database file.";
-            return false;
-        }
+        qCInfo(logSetup) << "Existing database found.";
+        return DatabaseExists;
     }
 
     if (!m_databaseManager.initialize(dbPath)) {
         qCCritical(logDatabase) << "Database initialization failed.";
 
         QFile::remove(dbPath);
-        return false;
+        return InitializationFailed;
     }
 
     m_appService.setDatabasePath(dbPath);
@@ -44,7 +41,7 @@ bool SetupService::initializeSystem(const QString &dbPath)
     service.ensureInitialized(repo);
 
     qCInfo(logApplication) << "System initialization completed successfully.";
-    return true;
+    return Success;
 }
 
 void SetupService::restartApp()

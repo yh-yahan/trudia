@@ -154,17 +154,29 @@ Item {
 
                     let fullPath = root.selectedPath + "/Trudia.db";
 
-                    let success = SetupService.initializeSystem(fullPath);
+                    let SetupResult = SetupService.initializeSystem(fullPath);
 
-                    if (!success) {
-                        running = false;
+                    switch (SetupResult) {
+                    case SetupService.Success:
+                        running = false
+                        Qt.callLater(function () {
+                            SetupService.restartApp();
+                        });
+                        break;
+                    case SetupService.DatabaseExists:
+                        running = false
+                        stackView.push("./SetupDBChoice.qml", {
+                            "mode": "exists",
+                            "currentPath": fullPath
+                        })
+                        break;
+                    case SetupService.InvalidPath:
+                        errorText = qsTr("Invalid path");
+                        break;
+                    case SetupService.InitializationFailed:
                         errorText = qsTr("Setup failed. Please try again.");
-                        return;
+                        break;
                     }
-
-                    Qt.callLater(function () {
-                        SetupService.restartApp();
-                    });
                 }
             }
         }

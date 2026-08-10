@@ -7,7 +7,7 @@ import trudia.Theme 1.0
 Window {
     id: appWindow
     width: 850
-    height: 480
+    height: 520
     visible: true
     title: "Trudia"
 

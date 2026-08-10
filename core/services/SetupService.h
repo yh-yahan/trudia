@@ -15,7 +15,15 @@ public:
                           DatabaseManager &databaseManager,
                           QObject *parent = nullptr);
 
-    Q_INVOKABLE bool initializeSystem(const QString &dbPath);
+    enum SetupResult {
+        Success,
+        DatabaseExists,
+        InvalidPath,
+        InitializationFailed
+    };
+    Q_ENUM(SetupResult)
+
+    Q_INVOKABLE SetupResult initializeSystem(const QString &dbPath);
 
     Q_INVOKABLE void restartApp();
 

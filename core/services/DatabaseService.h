@@ -18,6 +18,7 @@ public:
     Q_INVOKABLE bool restoreDatabase(const QString &dbFilePath);
     Q_INVOKABLE bool openDatabase(const QString &dbFilePath);
     Q_INVOKABLE bool moveDatabase(const QString &destinationFolder);
+    Q_INVOKABLE bool replaceDatabase(const QString &dbPath);
 
 private:
     AppService &m_appService;

@@ -8,6 +8,8 @@ public:
     static bool initialize(const QString& dbPath);
     static bool runMigrations();
 
+    bool openExisting(const QString &dbPath);
+
     static bool canOpen(const QString& dbPath);
 
     static bool isOpen();

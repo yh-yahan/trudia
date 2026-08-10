@@ -208,6 +208,45 @@ bool DatabaseManager::runMigrations()
     return true;
 }
 
+bool DatabaseManager::openExisting(const QString &dbPath)
+{
+    if (dbPath.isEmpty()) {
+        qCWarning(logDatabase) << "openExisting: empty path";
+        return false;
+    }
+
+    if (!QFile::exists(dbPath)) {
+        qCWarning(logDatabase) << "openExisting: file does not exist:" << dbPath;
+        return false;
+    }
+
+    if (QSqlDatabase::contains(MAIN_CONN)) {
+        {
+            QSqlDatabase db = QSqlDatabase::database(MAIN_CONN);
+            if (db.isOpen())
+                db.close();
+        }
+        QSqlDatabase::removeDatabase(MAIN_CONN);
+    }
+
+    QSqlDatabase db = QSqlDatabase::addDatabase(QStringLiteral("QSQLITE"), MAIN_CONN);
+    db.setDatabaseName(dbPath);
+
+    if (!db.open()) {
+        qCCritical(logDatabase) << "openExisting failed:" << db.lastError().text();
+        QSqlDatabase::removeDatabase(MAIN_CONN);
+        return false;
+    }
+
+    QSqlQuery query(db);
+
+    query.exec("PRAGMA foreign_keys = ON");
+    query.exec("PRAGMA journal_mode = WAL");
+
+    qCInfo(logDatabase) << "Opened existing database:" << dbPath;
+    return true;
+}
+
 bool DatabaseManager::canOpen(const QString &dbPath)
 {
     const QString connName = "test_connection";

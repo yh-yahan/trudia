@@ -3,6 +3,8 @@
 #include <QFileInfo>
 #include <QDir>
 #include <QSettings>
+#include "../data/RegionalSettingsRepository.h"
+#include "./RegionalSettingsService.h"
 #include "../logging/LoggingCategories.h"
 
 DatabaseService::DatabaseService(
@@ -224,6 +226,123 @@ bool DatabaseService::openDatabase(const QString &dbFilePath)
     m_appService.setDatabasePath(dbFilePath);
 
     qCInfo(logDatabase) << "Database selected successfully.";
+
+    return true;
+}
+
+// requires app to restart
+bool DatabaseService::replaceDatabase(const QString &dbPath)
+{
+    qCInfo(logApplication) << "Starting database replacement...";
+
+    if (dbPath.isEmpty()) {
+        qCWarning(logSetup) << "Invalid database path.";
+
+        return false;
+    }
+
+    QFileInfo dbInfo(dbPath);
+
+    if (!dbInfo.exists()) {
+        qCWarning(logSetup) << "Database does not exist.";
+
+        return false;
+    }
+
+    const QString backupPath = dbPath + ".backup";
+
+    if (QFile::exists(backupPath)) {
+        qCWarning(logSetup) << "Removing previous database backup";
+
+        if (!QFile::remove(backupPath)) {
+            qCCritical(logDatabase)
+                << "Failed to remove previous database backup:"
+                << backupPath;
+
+            return false;
+        }
+    }
+
+    qCInfo(logDatabase) << "Closing current database.";
+
+    m_databaseManager.close();
+
+    if (m_appService.databasePath() != dbPath || !m_databaseManager.db().isOpen()) {
+        if (!m_databaseManager.openExisting(dbPath)) {
+            qCCritical(logDatabase) << "Failed to open database for checkpoint:" << dbPath;
+            return false;
+        }
+    }
+
+    if (!DatabaseManager::checkpoint()) {
+        qCWarning(logDatabase) << "Checkpoint failed before replace";
+        m_databaseManager.close();
+        return false;
+    }
+
+    m_databaseManager.close();
+
+    QFile::remove(dbPath + "-wal");
+    QFile::remove(dbPath + "-shm");
+
+    qCInfo(logSetup) << "Creating database backup.";
+
+    if (!QFile::rename(dbPath, backupPath)) {
+        qCCritical(logDatabase) << "Failed to backup existing database.";
+
+        return false;
+    }
+
+    qCInfo(logDatabase) << "Creating replacement database";
+
+    if (!m_databaseManager.initialize(dbPath)) {
+        qCCritical(logDatabase) << "Failed to initialize replacement database.";
+
+        m_databaseManager.close();
+
+        if (QFile::exists(dbPath)) {
+            if (!QFile::remove(dbPath)) {
+                qCCritical(logDatabase) << "Failed to remove partially-created replacement database";
+            }
+        }
+
+        qCWarning(logSetup) << "Restoring original database from backup.";
+
+        if (!QFile::rename(backupPath, dbPath)) {
+            qCCritical(logDatabase)
+                << "Failed to restore original database!"
+                << "Backup remains at:"
+                << backupPath;
+
+            return false;
+        }
+
+        qCInfo(logSetup) << "Database replacement rolled back successfully.";
+
+        return false;
+    }
+
+    RegionalSettingsRepository repo(
+        m_databaseManager.db()
+    );
+
+    RegionalSettingsService service;
+
+    service.ensureInitialized(repo);
+
+    m_appService.setDatabasePath(dbPath);
+
+    qCInfo(logApplication)
+        << "Replacement database initialized successfully.";
+
+    if (!QFile::remove(backupPath)) {
+        qCWarning(logSetup)
+            << "Failed to remove database backup:"
+            << backupPath
+            << "The backup has been retained.";
+    }
+
+    qCInfo(logApplication) << "Database replacement completed successfully.";
 
     return true;
 }

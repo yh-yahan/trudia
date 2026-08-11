@@ -309,10 +309,7 @@ bool DatabaseService::replaceDatabase(const QString &dbPath)
         qCWarning(logSetup) << "Restoring original database from backup.";
 
         if (!QFile::rename(backupPath, dbPath)) {
-            qCCritical(logDatabase)
-                << "Failed to restore original database!"
-                << "Backup remains at:"
-                << backupPath;
+            qCCritical(logDatabase) << "Failed to restore original database";
 
             return false;
         }
@@ -336,10 +333,7 @@ bool DatabaseService::replaceDatabase(const QString &dbPath)
         << "Replacement database initialized successfully.";
 
     if (!QFile::remove(backupPath)) {
-        qCWarning(logSetup)
-            << "Failed to remove database backup:"
-            << backupPath
-            << "The backup has been retained.";
+        qCWarning(logSetup) << "Failed to remove database backup. The backup has been retained.";
     }
 
     qCInfo(logApplication) << "Database replacement completed successfully.";

@@ -24,10 +24,10 @@ public:
     Q_INVOKABLE void setDatabasePath(const QString &path);
     Q_INVOKABLE bool hasDatabasePath() const;
 
-    bool hasAnyUser() const;
-
 private:
     QString m_dbPathKey = "database/path";
+
+    bool hasAdminUser() const;
 };
 
 #endif // APPSERVICE_H

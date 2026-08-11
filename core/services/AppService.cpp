@@ -45,15 +45,15 @@ AppService::AppState AppService::determineState() const
         return NeedsSetup;
     }
 
-    if (!hasAnyUser()) {
-        qCInfo(logApplication) << "No users found";
+    if (!hasAdminUser()) {
+        qCInfo(logApplication) << "No admin user found";
         return NeedsAdminSetup;
     }
 
     return Ready;
 }
 
-bool AppService::hasAnyUser() const
+bool AppService::hasAdminUser() const
 {
     const QString connName = "check_users";
 
@@ -61,7 +61,7 @@ bool AppService::hasAnyUser() const
         QSqlDatabase::removeDatabase(connName);
     }
 
-    bool hasUser = false;
+    bool hasAdmin = false;
 
     {
         QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", connName);
@@ -74,8 +74,8 @@ bool AppService::hasAnyUser() const
         {
             QSqlQuery q(db);
 
-            if (q.exec("SELECT 1 FROM users LIMIT 1"))
-                hasUser = q.next();
+            if (q.exec("SELECT 1 FROM users WHERE role = 'admin' AND deactivated_at IS NULL LIMIT 1")) 
+                hasAdmin = q.next();
         }
 
         db.close();
@@ -83,5 +83,5 @@ bool AppService::hasAnyUser() const
 
     QSqlDatabase::removeDatabase(connName);
 
-    return hasUser;
+    return hasAdmin;
 }

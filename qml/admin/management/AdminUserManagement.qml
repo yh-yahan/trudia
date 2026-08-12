@@ -147,7 +147,7 @@ Item {
 
                     Text {
                         text: active ? qsTr("Yes") : qsTr("No")
-                        color: active ? "#7ed957" : "#ff6b6b"
+                        color: active ? Theme.green : Theme.error()
                         Layout.preferredWidth: 100
                         font.pixelSize: Theme.fontNormal
                     }
@@ -350,7 +350,16 @@ Item {
 
             ComboBox {
                 id: newRole
-                model: ["admin", "service_staff", "kitchen_staff"]
+
+                model: [
+                    { value: "admin", text: qsTr("Admin") },
+                    { value: "service_staff", text: qsTr("Service Staff") },
+                    { value: "kitchen_staff", text: qsTr("Kitchen Staff") }
+                ]
+
+                textRole: "text"
+                valueRole: "value"
+                implicitHeight: 42
                 leftPadding: 10
                 rightPadding: 10
                 topPadding: 10
@@ -392,6 +401,11 @@ Item {
                                                newPassword.text,
                                                newPasswordConfirm.text,
                                                newRole.currentText)
+
+                        newUsername.text = "";
+                        newPassword.text = "";
+                        newPasswordConfirm.text = "";
+                        newRole.currentText = "";
                     }
                 }
 
@@ -414,7 +428,14 @@ Item {
                     }
                     hoverEnabled: false
                     focusPolicy: Qt.NoFocus
-                    onClicked: createDialog.close()
+                    onClicked: {
+                        createDialog.close()
+
+                        newUsername.text = "";
+                        newPassword.text = "";
+                        newPasswordConfirm.text = "";
+                        newRole.currentText = "";
+                    }
                 }
             }
         }

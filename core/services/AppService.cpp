@@ -37,12 +37,12 @@ AppService::AppState AppService::determineState() const
 
     if (!QFile::exists(path)) {
         qCWarning(logApplication) << "DB file not found";
-        return NeedsSetup;
+        return FileNotFoundNeedsSetup;
     }
 
     if (!DatabaseManager::canOpen(path)) {
         qCWarning(logApplication) << "DB cannot be opened";
-        return NeedsSetup;
+        return UnableToOpenNeedsSetup;
     }
 
     if (!hasAdminUser()) {

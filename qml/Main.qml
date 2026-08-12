@@ -28,6 +28,16 @@ Window {
         case AppService.NeedsSetup:
             stackView.push("setup/SetupDBChoice.qml")
             break
+        case AppService.FileNotFoundNeedsSetup:
+            stackView.push("setup/SetupDBChoice.qml", {
+                            "mode": "missing"
+                        })
+            break
+        case AppService.UnableToOpenNeedsSetup:
+            stackView.push("setup/SetupDBChoice.qml", {
+                            "mode": "unusable"
+                        })
+            break
         case AppService.NeedsAdminSetup:
             stackView.push("setup/SetupAdmin.qml")
             break

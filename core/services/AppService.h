@@ -13,6 +13,8 @@ public:
 
     enum AppState {
         NeedsSetup,
+        FileNotFoundNeedsSetup,
+        UnableToOpenNeedsSetup,
         NeedsAdminSetup,
         Ready
     };

@@ -69,13 +69,15 @@ int main(int argc, char *argv[])
     DatabaseRestoreService::processPendingRestore();
 
     AppService appService;
-
-    QString dbPath = appService.databasePath();
-
     DatabaseManager dbManager;
 
-    if (!dbPath.isEmpty()) {
-        dbManager.initialize(dbPath);
+    const auto state = appService.determineState();
+    if (state == AppService::NeedsSetup || 
+        state == AppService::FileNotFoundNeedsSetup || 
+        state == AppService::UnableToOpenNeedsSetup) {
+        // don't init db
+    } else {
+        dbManager.initialize(appService.databasePath());
     }
 
     SystemTheme systemTheme;

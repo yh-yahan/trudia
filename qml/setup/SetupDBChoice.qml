@@ -7,10 +7,19 @@ import trudia.Theme 1.0
 Item {
     id: root
 
-    property string mode: "none"
+    property string mode: "none" // none/exists/missing/unusable
     property string currentPath: ""
 
     property bool databaseExists: mode === "exists"
+    property bool databaseMissing: mode === "missing"
+    property bool databaseUnusable: mode === "unusable"
+    property bool hasDatabaseProblem: databaseMissing || databaseUnusable
+
+    Component.onCompleted: {
+        if (databaseMissing || databaseUnusable) {
+            root.currentPath = AppService.databasePath();
+        }
+    }
 
     ColumnLayout {
         anchors.centerIn: parent
@@ -18,10 +27,15 @@ Item {
         spacing: 16
 
         Text {
-            text: root.databaseExists
-                  ? qsTr("Database Already Exists")
-                  : qsTr("Set up Trudia")
-
+            text: {
+                if (root.databaseExists)
+                    return qsTr("Database Already Exists")
+                if (root.databaseMissing)
+                    return qsTr("Database Not Found")
+                if (root.databaseUnusable)
+                    return qsTr("Database Cannot Be Opened")
+                return qsTr("Set up Trudia")
+            }
             font.pixelSize: Theme.fontLarge
             font.bold: true
             color: Theme.text
@@ -30,14 +44,31 @@ Item {
         }
 
         Text {
-            text: root.databaseExists
-                  ? qsTr(
+            text: {
+                if (root.databaseExists) {
+                    return qsTr(
                         "A Trudia database already exists at this location."
                     )
-                  : qsTr(
-                        "Choose how you would like to set up your database."
-                    )
+                }
 
+                if (root.databaseMissing) {
+                    return qsTr(
+                        "Trudia couldn't find the database at the "
+                        + "location saved on this computer."
+                    )
+                }
+
+                if (root.databaseUnusable) {
+                    return qsTr(
+                        "A database was found at the location saved on "
+                        + "this computer, but Trudia could not use it."
+                    )
+                }
+
+                return qsTr(
+                    "Choose how you would like to set up your database."
+                )
+            }
             color: Theme.secondaryText
             font.pixelSize: Theme.fontNormal
             wrapMode: Text.WordWrap
@@ -46,8 +77,9 @@ Item {
 
         Text {
             visible: root.databaseExists
+                    || root.databaseMissing
+                    || root.databaseUnusable
             text: root.currentPath
-
             color: Theme.secondaryText
             font.pixelSize: Theme.fontSmall
             wrapMode: Text.Wrap
@@ -61,7 +93,7 @@ Item {
 
         // normal setup
         Button {
-            visible: !root.databaseExists
+            visible: root.mode === "none"
 
             Layout.fillWidth: true
             Layout.preferredHeight: 90
@@ -108,7 +140,8 @@ Item {
         }
 
         Button {
-            visible: !root.databaseExists
+            visible: root.mode === "none"
+                || root.databaseMissing
 
             Layout.fillWidth: true
             Layout.preferredHeight: 90
@@ -153,6 +186,127 @@ Item {
 
             onClicked: stackView.push("./SetupDBOpen.qml")
         }
+
+        // missing database
+        
+        // open another (existing) db button is reusing the button from normal setup
+
+        Button {
+            visible: root.databaseMissing
+            Layout.fillWidth: true
+            Layout.preferredHeight: 90
+
+            background: Rectangle {
+                color: parent.down
+                    ? Theme.primary()
+                    : Theme.surface
+                radius: 6
+                border.color: Theme.primary()
+                border.width: 1
+            }
+
+            contentItem: ColumnLayout {
+                spacing: 4
+
+                Text {
+                    text: qsTr("Create New Database Here")
+                    color: parent.parent.down
+                        ? "white"
+                        : Theme.text
+                    font.pixelSize: Theme.fontNormal
+                    font.bold: true
+                    horizontalAlignment: Text.AlignHCenter
+                    Layout.fillWidth: true
+                }
+
+                Text {
+                    text: qsTr(
+                        "Create a new database at the saved location."
+                    )
+                    color: parent.parent.down
+                        ? "white"
+                        : Theme.secondaryText
+                    font.pixelSize: Theme.fontSmall
+                    horizontalAlignment: Text.AlignHCenter
+                    wrapMode: Text.WordWrap
+                    Layout.fillWidth: true
+                }
+            }
+
+            onClicked: {
+                let SetupResult = SetupService.initializeSystem(currentPath);
+
+                switch (SetupResult) {
+                case SetupService.Success:
+                    Qt.callLater(function () {
+                        SetupService.restartApp();
+                    });
+                    break;
+                case SetupService.DatabaseExists:
+                    stackView.push("./SetupDBChoice.qml", {
+                        "mode": "exists",
+                        "currentPath": currentPath
+                    })
+                    break;
+                case SetupService.InvalidPath:
+                    errorText = qsTr("Invalid path");
+                    break;
+                case SetupService.InitializationFailed:
+                    errorText = qsTr("Setup failed. Please try again.");
+                    break;
+                }
+            }
+        }
+
+        // unusable database
+        Button {
+            visible: root.databaseUnusable
+            Layout.fillWidth: true
+            Layout.preferredHeight: 90
+
+            background: Rectangle {
+                color: parent.down
+                    ? Theme.primary()
+                    : Theme.surface
+                radius: 6
+                border.color: Theme.primary()
+                border.width: 1
+            }
+
+            contentItem: ColumnLayout {
+                spacing: 4
+
+                Text {
+                    text: qsTr("Choose Another Database")
+                    color: parent.parent.down
+                        ? "white"
+                        : Theme.text
+                    font.pixelSize: Theme.fontNormal
+                    font.bold: true
+                    horizontalAlignment: Text.AlignHCenter
+                    Layout.fillWidth: true
+                }
+
+                Text {
+                    text: qsTr(
+                        "Open a different Trudia database."
+                    )
+                    color: parent.parent.down
+                        ? "white"
+                        : Theme.secondaryText
+                    font.pixelSize: Theme.fontSmall
+                    horizontalAlignment: Text.AlignHCenter
+                    wrapMode: Text.WordWrap
+                    Layout.fillWidth: true
+                }
+            }
+
+            onClicked: {
+                stackView.push("./SetupDBOpen.qml")
+            }
+        }
+
+        // replace db button is reusing the button from existing database setup
 
         // existing database
         Button {
@@ -254,7 +408,7 @@ Item {
         }
 
         Button {
-            visible: root.databaseExists
+            visible: root.databaseExists || root.databaseUnusable
 
             Layout.fillWidth: true
             Layout.preferredHeight: 70

@@ -2,6 +2,7 @@
 
 #include <QFile>
 #include "../data/RegionalSettingsRepository.h"
+#include "../database/DatabaseSeeder.h"
 #include "./RegionalSettingsService.h"
 #include "../logging/LoggingCategories.h"
 
@@ -12,9 +13,9 @@ SetupService::SetupService(AppService &appService,
       m_appService(appService),
       m_databaseManager(databaseManager) {}
 
-SetupService::SetupResult SetupService::initializeSystem(const QString &dbPath)
+SetupService::SetupResult SetupService::initializeApp(const QString &dbPath)
 {
-    qCInfo(logApplication) << "Starting system initialization...";
+    qCInfo(logApplication) << "Starting app initialization...";
 
     if (dbPath.isEmpty()) {
         qCInfo(logSetup) << "Invalid setup input.";
@@ -33,6 +34,14 @@ SetupService::SetupResult SetupService::initializeSystem(const QString &dbPath)
         return InitializationFailed;
     }
 
+    DatabaseSeeder seeder(m_databaseManager.db());
+
+    if (!seeder.seed()) {
+        qCCritical(logDatabase) << "Database seeding failed.";
+
+        return InitializationFailed;
+    }
+
     m_appService.setDatabasePath(dbPath);
 
     RegionalSettingsRepository repo(m_databaseManager.db());
@@ -40,7 +49,7 @@ SetupService::SetupResult SetupService::initializeSystem(const QString &dbPath)
 
     service.ensureInitialized(repo);
 
-    qCInfo(logApplication) << "System initialization completed successfully.";
+    qCInfo(logApplication) << "App initialization completed successfully.";
     return Success;
 }
 

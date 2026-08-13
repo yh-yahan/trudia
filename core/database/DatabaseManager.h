@@ -1,5 +1,6 @@
 #ifndef DATABASEMANAGER_H
 #define DATABASEMANAGER_H
+
 #include <QtSql>
 
 class DatabaseManager

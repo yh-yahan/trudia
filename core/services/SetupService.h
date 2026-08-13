@@ -23,7 +23,7 @@ public:
     };
     Q_ENUM(SetupResult)
 
-    Q_INVOKABLE SetupResult initializeSystem(const QString &dbPath);
+    Q_INVOKABLE SetupResult initializeApp(const QString &dbPath);
 
     Q_INVOKABLE void restartApp();
 

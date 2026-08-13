@@ -234,7 +234,7 @@ Item {
             }
 
             onClicked: {
-                let SetupResult = SetupService.initializeSystem(currentPath);
+                let SetupResult = SetupService.initializeApp(currentPath);
 
                 switch (SetupResult) {
                 case SetupService.Success:

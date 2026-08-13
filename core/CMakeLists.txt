@@ -2,6 +2,8 @@ add_library(trudia_core STATIC)
 
 target_sources(trudia_core PRIVATE
     database/DatabaseManager.cpp
+    database/DatabaseSeeder.cpp
+    
     data/UserRepository.cpp
     data/CategoryRepository.cpp
     data/MenuRepository.cpp

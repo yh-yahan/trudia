@@ -154,7 +154,7 @@ Item {
 
                     let fullPath = root.selectedPath + "/Trudia.db";
 
-                    let SetupResult = SetupService.initializeSystem(fullPath);
+                    let SetupResult = SetupService.initializeApp(fullPath);
 
                     switch (SetupResult) {
                     case SetupService.Success:

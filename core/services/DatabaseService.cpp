@@ -209,17 +209,19 @@ bool DatabaseService::openDatabase(const QString &dbFilePath)
 
     if (!dbInfo.exists() || !dbInfo.isFile())
     {
-        qCWarning(logDatabase)
-            << "Database file does not exist:"
-            << dbFilePath;
+        qCWarning(logDatabase) << "Database file does not exist.";
         return false;
     }
 
     if (!DatabaseManager::canOpen(dbFilePath))
     {
-        qCWarning(logDatabase)
-            << "Database cannot be opened:"
-            << dbFilePath;
+        qCWarning(logDatabase) << "Database cannot be opened.";
+        return false;
+    }
+
+    if (!DatabaseManager::isTrudiaDB(dbFilePath))
+    {
+        qCWarning(logDatabase) << "Database is not a Trudia database.";
         return false;
     }
 

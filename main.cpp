@@ -74,7 +74,8 @@ int main(int argc, char *argv[])
     const auto state = appService.determineState();
     if (state == AppService::NeedsSetup || 
         state == AppService::FileNotFoundNeedsSetup || 
-        state == AppService::UnableToOpenNeedsSetup) {
+        state == AppService::UnableToOpenNeedsSetup ||
+        state == AppService::NotTrudiaDBNeedsSetup) {
         // don't init db
     } else {
         dbManager.initialize(appService.databasePath());

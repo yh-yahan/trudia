@@ -45,6 +45,11 @@ AppService::AppState AppService::determineState() const
         return UnableToOpenNeedsSetup;
     }
 
+    if (!DatabaseManager::isTrudiaDB(path)) {
+        qCWarning(logApplication) << "DB is not a Trudia DB";
+        return NotTrudiaDBNeedsSetup;
+    }
+
     if (!hasAdminUser()) {
         qCInfo(logApplication) << "No admin user found";
         return NeedsAdminSetup;

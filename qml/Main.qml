@@ -7,7 +7,7 @@ import trudia.Theme 1.0
 Window {
     id: appWindow
     width: 850
-    height: 520
+    height: 560
     visible: true
     title: "Trudia"
 
@@ -34,6 +34,7 @@ Window {
                         })
             break
         case AppService.UnableToOpenNeedsSetup:
+        case AppService.NotTrudiaDBNeedsSetup:
             stackView.push("setup/SetupDBChoice.qml", {
                             "mode": "unusable"
                         })

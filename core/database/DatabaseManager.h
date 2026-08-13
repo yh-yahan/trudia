@@ -11,7 +11,8 @@ public:
 
     bool openExisting(const QString &dbPath);
 
-    static bool canOpen(const QString& dbPath);
+    static bool canOpen(const QString &dbPath);
+    static bool isTrudiaDB(const QString &dbPath);
 
     static bool isOpen();
     static bool checkpoint();

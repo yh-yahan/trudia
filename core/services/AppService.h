@@ -15,6 +15,7 @@ public:
         NeedsSetup,
         FileNotFoundNeedsSetup,
         UnableToOpenNeedsSetup,
+        NotTrudiaDBNeedsSetup,
         NeedsAdminSetup,
         Ready
     };

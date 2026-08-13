@@ -278,6 +278,67 @@ bool DatabaseManager::canOpen(const QString &dbPath)
     return ok;
 }
 
+bool DatabaseManager::isTrudiaDB(const QString &dbPath)
+{
+    if (dbPath.isEmpty() || !QFile::exists(dbPath)) {
+        return false;
+    }
+
+    const QString connectionName = "trudia_db_validation";
+
+    if (QSqlDatabase::contains(connectionName)) {
+        QSqlDatabase::removeDatabase(connectionName);
+    }
+
+    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", connectionName);
+    db.setDatabaseName(dbPath);
+
+    if (!db.open()) {
+        qCWarning(logDatabase)
+            << "Failed to open database for Trudia validation:"
+            << db.lastError();
+
+        db = QSqlDatabase();
+        QSqlDatabase::removeDatabase(connectionName);
+        return false;
+    }
+
+    QSqlQuery query(db);
+
+    query.prepare(R"(
+        SELECT value
+        FROM app_state
+        WHERE key = 'app.id'
+        LIMIT 1
+    )");
+
+    if (!query.exec()) {
+        qCWarning(logDatabase)
+            << "Failed to check database identity:"
+            << query.lastError();
+
+        db.close();
+        db = QSqlDatabase();
+        QSqlDatabase::removeDatabase(connectionName);
+        return false;
+    }
+
+    if (!query.next()) {
+        db.close();
+        db = QSqlDatabase();
+        QSqlDatabase::removeDatabase(connectionName);
+        return false;
+    }
+
+    const bool isTrudia = query.value(0).toString() == "com.trudia.pos";
+
+    db.close();
+    db = QSqlDatabase();
+    QSqlDatabase::removeDatabase(connectionName);
+
+    return isTrudia;
+}
+
 bool DatabaseManager::isOpen()
 {
     return QSqlDatabase::contains(MAIN_CONN) && QSqlDatabase::database(MAIN_CONN).isOpen();

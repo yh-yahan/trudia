@@ -33,7 +33,7 @@ Item {
                 if (root.databaseMissing)
                     return qsTr("Database Not Found")
                 if (root.databaseUnusable)
-                    return qsTr("Database Cannot Be Opened")
+                    return qsTr("Database Cannot Be Opened or Is Not a Valid Trudia Database")
                 return qsTr("Set up Trudia")
             }
             font.pixelSize: Theme.fontLarge
@@ -60,8 +60,7 @@ Item {
 
                 if (root.databaseUnusable) {
                     return qsTr(
-                        "A database was found at the location saved on "
-                        + "this computer, but Trudia could not use it."
+                        "A database was found at the location saved on this computer, but Trudia could not use it."
                     )
                 }
 
@@ -93,7 +92,7 @@ Item {
 
         // normal setup
         Button {
-            visible: root.mode === "none"
+            visible: root.mode === "none" || root.mode === "unusable" || root.mode === "exists"
 
             Layout.fillWidth: true
             Layout.preferredHeight: 90
@@ -259,6 +258,9 @@ Item {
         }
 
         // unusable database
+
+        // create database button is from normal setup
+        
         Button {
             visible: root.databaseUnusable
             Layout.fillWidth: true
@@ -359,6 +361,8 @@ Item {
                 })
             }
         }
+
+        // create new db is from normal setup
 
         Button {
             visible: root.databaseExists
@@ -469,8 +473,7 @@ Item {
 
                 Text {
                     text: qsTr(
-                        "This will permanently delete the existing Trudia "
-                        + "database and create a new one."
+                        "This will permanently delete the existing database and create a new one."
                     )
 
                     color: Theme.text
@@ -481,8 +484,7 @@ Item {
 
                 Text {
                     text: qsTr(
-                        "All data stored in this database will be lost. "
-                        + "This action cannot be undone."
+                        "All data stored in this database will be lost. This action cannot be undone."
                     )
 
                     color: Theme.error()
@@ -613,8 +615,7 @@ Item {
                         focusPolicy: Qt.NoFocus
 
                         onClicked: {
-                            let success =
-                                DatabaseService.replaceDatabase(root.currentPath)
+                            let success = DatabaseService.replaceDatabase(root.currentPath)
 
                             if (success) {
                                 replaceDialog.close()

@@ -92,7 +92,7 @@ Item {
 
         // normal setup
         Button {
-            visible: root.mode === "none" || root.mode === "unusable" || root.mode === "exists"
+            visible: root.mode === "none" || root.mode === "unusable"
 
             Layout.fillWidth: true
             Layout.preferredHeight: 90
@@ -361,8 +361,6 @@ Item {
                 })
             }
         }
-
-        // create new db is from normal setup
 
         Button {
             visible: root.databaseExists

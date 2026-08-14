@@ -80,6 +80,18 @@ bool DatabaseService::restoreDatabase(const QString &dbFilePath) {
         return false;
     }
 
+    if (!m_databaseManager.canOpen(dbFilePath))
+    {
+        qCWarning(logDatabase) << "Unable to open database file";
+        return false;
+    }
+
+    if (!m_databaseManager.isTrudiaDB(dbFilePath))
+    {
+        qCWarning(logDatabase) << "Database is not a Trudia Database";
+        return false;
+    }
+
     QSettings settings;
     settings.setValue("database/pendingRestore", dbFilePath);
 

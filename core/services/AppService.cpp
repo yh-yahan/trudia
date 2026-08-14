@@ -28,29 +28,34 @@ bool AppService::hasDatabasePath() const
 
 AppService::AppState AppService::determineState() const
 {
-    if (!hasDatabasePath()) {
+    if (!hasDatabasePath())
+    {
         qCInfo(logApplication) << "No DB path configured";
         return NeedsSetup;
     }
 
     QString path = databasePath();
 
-    if (!QFile::exists(path)) {
+    if (!QFile::exists(path))
+    {
         qCWarning(logApplication) << "DB file not found";
         return FileNotFoundNeedsSetup;
     }
 
-    if (!DatabaseManager::canOpen(path)) {
+    if (!DatabaseManager::canOpen(path))
+    {
         qCWarning(logApplication) << "DB cannot be opened";
         return UnableToOpenNeedsSetup;
     }
 
-    if (!DatabaseManager::isTrudiaDB(path)) {
+    if (!DatabaseManager::isTrudiaDB(path))
+    {
         qCWarning(logApplication) << "DB is not a Trudia DB";
         return NotTrudiaDBNeedsSetup;
     }
 
-    if (!hasAdminUser()) {
+    if (!hasAdminUser())
+    {
         qCInfo(logApplication) << "No admin user found";
         return NeedsAdminSetup;
     }
@@ -62,7 +67,8 @@ bool AppService::hasAdminUser() const
 {
     const QString connName = "check_users";
 
-    if (QSqlDatabase::contains(connName)) {
+    if (QSqlDatabase::contains(connName))
+    {
         QSqlDatabase::removeDatabase(connName);
     }
 

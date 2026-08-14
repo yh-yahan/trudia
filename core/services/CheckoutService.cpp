@@ -245,14 +245,14 @@ bool CheckoutService::completeCheckout(const int &orderSessionId, const QString 
 
     auto rollback = [&]()
     {
-        qCWarning(logCheckout) << "[Checkout] Rolling back transaction";
+        qCWarning(logCheckout) << "Rolling back transaction";
         m_databaseManager.rollback();
         return false;
     };
 
     if (!recalculateSessionTotals(orderSessionId))
     {
-        qCWarning(logCheckout) << "[Checkout] Failed to recalculate totals";
+        qCWarning(logCheckout) << "Failed to recalculate totals";
         return rollback();
     }
 

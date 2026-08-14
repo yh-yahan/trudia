@@ -17,13 +17,27 @@ bool DatabaseRestoreService::processPendingRestore()
     QString dbPath = settings.value("database/path").toString();
 
     // check if live db location is present
-    if (dbPath.isEmpty())
-        return false;
+    if (dbPath.isEmpty()) return false;
 
     // validate restore file exists
     QFileInfo restoreInfo(restorePath);
     if (!restoreInfo.exists())
     {
+        qCWarning(logDatabase) << "Database restore file does not exist";
+        settings.remove("database/pendingRestore");
+        return false;
+    }
+
+    if (!DatabaseManager::canOpen(dbFilePath))
+    {
+        qCWarning(logDatabase) << "Unable to open database file";
+        settings.remove("database/pendingRestore");
+        return false;
+    }
+
+    if (!DatabaseManager::isTrudiaDB(dbFilePath))
+    {
+        qCWarning(logDatabase) << "Database is not a Trudia Database";
         settings.remove("database/pendingRestore");
         return false;
     }

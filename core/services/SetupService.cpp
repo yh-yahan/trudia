@@ -17,17 +17,20 @@ SetupService::SetupResult SetupService::initializeApp(const QString &dbPath)
 {
     qCInfo(logApplication) << "Starting app initialization...";
 
-    if (dbPath.isEmpty()) {
+    if (dbPath.isEmpty())
+    {
         qCInfo(logSetup) << "Invalid setup input.";
         return InvalidPath;
     }
 
-    if (QFile::exists(dbPath)) {
+    if (QFile::exists(dbPath))
+    {
         qCInfo(logSetup) << "Existing database found.";
         return DatabaseExists;
     }
 
-    if (!m_databaseManager.initialize(dbPath)) {
+    if (!m_databaseManager.initialize(dbPath))
+    {
         qCCritical(logDatabase) << "Database initialization failed.";
 
         QFile::remove(dbPath);
@@ -36,7 +39,8 @@ SetupService::SetupResult SetupService::initializeApp(const QString &dbPath)
 
     DatabaseSeeder seeder(m_databaseManager.db());
 
-    if (!seeder.seed()) {
+    if (!seeder.seed())
+    {
         qCCritical(logDatabase) << "Database seeding failed.";
 
         return InitializationFailed;

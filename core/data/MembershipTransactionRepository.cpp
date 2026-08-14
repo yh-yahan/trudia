@@ -52,6 +52,7 @@ std::vector<TransactionRow> MembershipTransactionRepository::getTransactionRowsB
         row.transaction.points = query.value("points").toInt();
 
         row.created_at = query.value("created_at").toDateTime();
+        row.created_at.setTimeSpec(Qt::UTC);
         row.orderDisplayNumber = query.value("display_number").toInt();
 
         rows.push_back(std::move(row));

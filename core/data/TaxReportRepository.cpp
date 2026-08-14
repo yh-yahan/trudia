@@ -164,6 +164,7 @@ QVector<TaxReportSessionRow> TaxReportRepository::getSessions(const QDate &from,
         row.discount = q.value("discount").toDouble();
         row.total = q.value("total").toDouble();
         row.closedAt = QDateTime::fromString(q.value("closed_at").toString(), Qt::ISODate);
+        row.closedAt.setTimeSpec(Qt::UTC);
         rows.append(row);
     }
 

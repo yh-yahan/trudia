@@ -1,5 +1,7 @@
 #include "MemberTransactionModel.h"
 
+#include <QDateTime>
+
 MemberTransactionModel::MemberTransactionModel(QObject *parent)
     : QAbstractListModel(parent) {}
 
@@ -44,7 +46,7 @@ QVariant MemberTransactionModel::data(const QModelIndex &index, int role) const
         return row.orderDisplayNumber;
 
     case CreatedAtRole:
-        return row.created_at;
+        return row.created_at.toLocalTime().toString("yyyy-MM-dd HH:mm:ss");
 
     default:
         return {};

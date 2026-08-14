@@ -106,6 +106,6 @@ QVariantMap TaxReportService::sessionRowToVariant(const TaxReportSessionRow &row
         { "tax", row.tax },
         { "discount", row.discount },
         { "total", row.total },
-        { "closedAt", row.closedAt.toString(Qt::ISODate) }
+        { "closedAt", row.closedAt.toLocalTime().toString(Qt::ISODate) }
     };
 }

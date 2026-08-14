@@ -4,6 +4,8 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QDir>
+#include "../database/DatabaseManager.h"
+#include "../logging/LoggingCategories.h"
 
 bool DatabaseRestoreService::processPendingRestore()
 {
@@ -28,14 +30,14 @@ bool DatabaseRestoreService::processPendingRestore()
         return false;
     }
 
-    if (!DatabaseManager::canOpen(dbFilePath))
+    if (!DatabaseManager::canOpen(restorePath))
     {
         qCWarning(logDatabase) << "Unable to open database file";
         settings.remove("database/pendingRestore");
         return false;
     }
 
-    if (!DatabaseManager::isTrudiaDB(dbFilePath))
+    if (!DatabaseManager::isTrudiaDB(restorePath))
     {
         qCWarning(logDatabase) << "Database is not a Trudia Database";
         settings.remove("database/pendingRestore");

@@ -7,7 +7,7 @@ class MembershipTransaction {
 public:
     int id = -1;
     int membership_id;
-    int order_session_id;
+    std::optional<int> order_session_id;
     QString type; // earn/redeem
     int points;
 };

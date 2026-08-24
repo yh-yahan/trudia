@@ -34,7 +34,8 @@ QVariant MemberTransactionModel::data(const QModelIndex &index, int role) const
         return transaction.membership_id;
 
     case OrderSessionIdRole:
-        return transaction.order_session_id;
+        if (transaction.order_session_id.has_value()) return transaction.order_session_id.value();
+        return QVariant();
 
     case TypeRole:
         return transaction.type;

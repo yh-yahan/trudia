@@ -1,4 +1,4 @@
-CREATE TABLE membership_transactions  (
+CREATE TABLE membership_transactions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     membership_id INTEGER NOT NULL,
     order_session_id INTEGER NOT NULL,

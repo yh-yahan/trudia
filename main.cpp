@@ -204,11 +204,8 @@ int main(int argc, char *argv[])
         reservationService,
         checkoutService
     );
-    MemberService memberService(membershipRepo, membershipTransactionRepo);
-    DatabaseService databaseService(
-        appService,
-        dbManager
-    );
+    MemberService memberService(dbManager, membershipRepo, membershipTransactionRepo);
+    DatabaseService databaseService(appService, dbManager);
     TaxReportService taxReportService(taxReportRepo);
 
     QObject::connect(&orderService, &OrderService::orderCreated,

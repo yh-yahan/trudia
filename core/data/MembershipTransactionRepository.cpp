@@ -47,7 +47,14 @@ std::vector<TransactionRow> MembershipTransactionRepository::getTransactionRowsB
 
         row.transaction.id = query.value("id").toInt();
         row.transaction.membership_id = query.value("membership_id").toInt();
-        row.transaction.order_session_id = query.value("order_session_id").toInt();
+
+        QVariant orderSessionId = query.value("order_session_id");
+        if (orderSessionId.isNull()) {
+            row.transaction.order_session_id = std::nullopt;
+        } else {
+            row.transaction.order_session_id = orderSessionId.toInt();
+        }
+
         row.transaction.type = query.value("type").toString();
         row.transaction.points = query.value("points").toInt();
 
@@ -87,7 +94,12 @@ bool MembershipTransactionRepository::create(const MembershipTransaction &transa
     )");
 
     query.bindValue(":membership_id", transaction.membership_id);
-    query.bindValue(":order_session_id", transaction.order_session_id);
+    if (transaction.order_session_id.has_value()) {
+        query.bindValue(":order_session_id", transaction.order_session_id.value());
+    } else {
+        query.bindValue(":order_session_id", QVariant(QVariant::Int));
+    }
+
     query.bindValue(":type", transaction.type);
     query.bindValue(":points", transaction.points);
 
@@ -127,7 +139,14 @@ MembershipTransaction MembershipTransactionRepository::getById(int id)
     if (query.next()) {
         transaction.id = query.value("id").toInt();
         transaction.membership_id = query.value("membership_id").toInt();
-        transaction.order_session_id = query.value("order_session_id").toInt();
+
+        QVariant orderSessionId = query.value("order_session_id");
+        if (orderSessionId.isNull()) {
+            transaction.order_session_id = std::nullopt;
+        } else {
+            transaction.order_session_id = orderSessionId.toInt();
+        }
+
         transaction.type = query.value("type").toString();
         transaction.points = query.value("points").toInt();
     } else {
@@ -166,7 +185,14 @@ std::vector<MembershipTransaction> MembershipTransactionRepository::getByMembers
         MembershipTransaction transaction;
         transaction.id = query.value("id").toInt();
         transaction.membership_id = query.value("membership_id").toInt();
-        transaction.order_session_id = query.value("order_session_id").toInt();
+
+        QVariant orderSessionId = query.value("order_session_id");
+        if (orderSessionId.isNull()) {
+            transaction.order_session_id = std::nullopt;
+        } else {
+            transaction.order_session_id = orderSessionId.toInt();
+        }
+
         transaction.type = query.value("type").toString();
         transaction.points = query.value("points").toInt();
 
@@ -244,7 +270,14 @@ std::vector<MembershipTransaction> MembershipTransactionRepository::getByType(co
         MembershipTransaction transaction;
         transaction.id = query.value("id").toInt();
         transaction.membership_id = query.value("membership_id").toInt();
-        transaction.order_session_id = query.value("order_session_id").toInt();
+
+        QVariant orderSessionId = query.value("order_session_id");
+        if (orderSessionId.isNull()) {
+            transaction.order_session_id = std::nullopt;
+        } else {
+            transaction.order_session_id = orderSessionId.toInt();
+        }
+
         transaction.type = query.value("type").toString();
         transaction.points = query.value("points").toInt();
 

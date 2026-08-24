@@ -21,5 +21,6 @@
         <file>core/database/migrations/019_create_reservations.sql</file>
         <file>core/database/migrations/020_create_app_state.sql</file>
         <file>core/database/migrations/021_create_receipt_snapshot.sql</file>
+        <file>core/database/migrations/022_alter_membership_transactions.sql</file>
     </qresource>
 </RCC>

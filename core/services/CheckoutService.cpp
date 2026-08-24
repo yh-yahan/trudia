@@ -140,10 +140,7 @@ QVariantList CheckoutService::loadActiveCheckoutSessions()
         sessionMap["id"] = session.id;
         sessionMap["display_number"] = session.display_number;
 
-        sessionMap["table_name"] =
-            session.table_id.has_value()
-                ? tableMap.value(session.table_id.value())
-                : QVariant();
+        sessionMap["table_name"] = session.table_id.has_value() ? tableMap.value(session.table_id.value()) : QVariant();
 
         sessionMap["order_type"] = session.order_type;
         sessionMap["status"] = session.status;
@@ -153,11 +150,8 @@ QVariantList CheckoutService::loadActiveCheckoutSessions()
         sessionMap["discount"] = static_cast<double>(session.discount) / CURRENCY_SCALE;
         sessionMap["total"] = static_cast<double>(session.total) / CURRENCY_SCALE;
 
-        sessionMap["opened_at"] =
-            session.opened_at.has_value() ? session.opened_at.value() : QVariant();
-
-        sessionMap["closed_at"] =
-            session.closed_at.has_value() ? session.closed_at.value() : QVariant();
+        sessionMap["opened_at"] = session.opened_at.has_value() ? session.opened_at.value() : QVariant();
+        sessionMap["closed_at"] = session.closed_at.has_value() ? session.closed_at.value() : QVariant();
 
         result.append(sessionMap);
     }

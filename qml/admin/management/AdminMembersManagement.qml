@@ -161,6 +161,9 @@ Item {
                         Button {
                             text: qsTr("Add Points")
 
+                            enabled: status === "active"
+                            opacity: enabled ? 1.0 : 0.45
+
                             leftPadding: 10
                             rightPadding: 10
                             topPadding: 5
@@ -187,6 +190,9 @@ Item {
                         }
                         Button {
                             text: qsTr("Redeem")
+
+                            enabled: status === "active"
+                            opacity: enabled ? 1.0 : 0.45
 
                             leftPadding: 10
                             rightPadding: 10
@@ -215,6 +221,9 @@ Item {
                         Button {
                             text: qsTr("Edit")
 
+                            enabled: status === "active"
+                            opacity: enabled ? 1.0 : 0.45
+
                             leftPadding: 10
                             rightPadding: 10
                             topPadding: 5
@@ -239,6 +248,9 @@ Item {
                         }
                         Button {
                             text: qsTr("Revoke")
+
+                            enabled: status === "active"
+                            opacity: enabled ? 1.0 : 0.45
 
                             leftPadding: 10
                             rightPadding: 10

@@ -28,6 +28,7 @@ CheckoutService::CheckoutService(OrderSessionRepository &orderSessionRepo,
                                  TableService &tableService,
                                  ReservationService &reservationService,
                                  AuthService &authService,
+                                 PaymentService &paymentService, 
                                  DatabaseManager &databaseManager)
     : m_orderSessionRepo(orderSessionRepo),
       m_orderRepo(orderRepo),
@@ -49,6 +50,7 @@ CheckoutService::CheckoutService(OrderSessionRepository &orderSessionRepo,
       m_tableService(tableService),
       m_reservationService(reservationService),
       m_authService(authService),
+      m_paymentService(paymentService),
       m_databaseManager(databaseManager) {}
 
 bool CheckoutService::recalculateSessionTotals(int orderSessionId)
@@ -229,7 +231,7 @@ QVariantList CheckoutService::loadCheckoutDetails(const int &orderSessionId)
     return result;
 }
 
-bool CheckoutService::completeCheckout(const int &orderSessionId, const QString &memberPhone, int pointsToRedeem)
+bool CheckoutService::completeCheckout(const int &orderSessionId, const QString &memberPhone, int pointsToRedeem, const QString &paymentMethod, int paymentAmount)
 {
     if (!m_databaseManager.beginTransaction())
     {
@@ -270,6 +272,12 @@ bool CheckoutService::completeCheckout(const int &orderSessionId, const QString 
     if (!applyMembershipToSession(session, memberPhone, pointsToRedeem))
     {
         qCWarning(logCheckout) << "Failed applying membership";
+        return rollback();
+    }
+
+    if (!m_paymentService.recordPayment(orderSessionId, paymentMethod, paymentAmount))
+    {
+        qCWarning(logCheckout) << "Failed recording payment";
         return rollback();
     }
 

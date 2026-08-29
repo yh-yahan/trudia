@@ -28,6 +28,7 @@
 #include "core/data/AppStateRepository.h"
 #include "core/data/ReceiptSnapshotRepository.h"
 #include "core/data/TaxReportRepository.h"
+#include "core/data/PaymentRepository.h"
 #include "core/services/CurrencyService.h"
 #include "core/services/OrderService.h"
 #include "core/services/TableService.h"
@@ -49,6 +50,7 @@
 #include "core/services/BetaService.h"
 #include "core/services/MemberService.h"
 #include "core/services/TaxReportService.h"
+#include "core/services/PaymentService.h"
 #include "core/database/DatabaseManager.h"
 #include "core/printing/ReceiptBuilder.h"
 #include "core/printing/WindowsPrinterService.h"
@@ -130,6 +132,7 @@ int main(int argc, char *argv[])
     AppStateRepository appStateRepo(DatabaseManager::db());
     ReceiptSnapshotRepository receiptSnapshotRepo(DatabaseManager::db());
     TaxReportRepository taxReportRepo(DatabaseManager::db());
+    PaymentRepository paymentRepo(DatabaseManager::db());
 
     WindowsPrinterService windowsPrinterService;
     CurrencyService currencyService;
@@ -153,6 +156,7 @@ int main(int argc, char *argv[])
     KitchenTicketBuilder kitchenTicketBuilder(regionalSettingsRepo);
     ReceiptBuilder receiptBuilder(regionalSettingsRepo);
     ReservationService reservationService(reservationRepo, tableService);
+    PaymentService paymentService(paymentRepo);
     KitchenOrderService kitchenOrderService(
         orderSessionRepo, 
         orderRepo, 
@@ -179,6 +183,7 @@ int main(int argc, char *argv[])
         tableService,
         reservationService,
         authService,
+        paymentService,
         dbManager
     );
     AnalyticsService analyticsService(analyticsRepo);

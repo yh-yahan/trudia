@@ -29,6 +29,7 @@ CheckoutServiceTestHelper::CheckoutServiceTestHelper()
     m_kitchenSettingsRepo = std::make_unique<KitchenSettingsRepository>(m_dbManager.db());
     m_tableSettingsRepo = std::make_unique<TableSettingsRepository>(m_dbManager.db());
     m_reservationRepo = std::make_unique<ReservationRepository>(m_dbManager.db());
+    m_paymentRepo = std::make_unique<PaymentRepository>(m_dbManager.db());
 
     // create services
     m_currencyService = std::make_unique<CurrencyService>();
@@ -47,6 +48,8 @@ CheckoutServiceTestHelper::CheckoutServiceTestHelper()
 
     m_reservationService = std::make_unique<ReservationService>(
         *m_reservationRepo, *m_tableService);
+
+    m_paymentService = std::make_unique<PaymentService>(*m_paymentRepo);
 
     m_receiptBuilder = std::make_unique<ReceiptBuilder>(*m_regionalSettingsRepo);
     m_windowsPrinterService = std::make_unique<WindowsPrinterService>();
@@ -73,6 +76,7 @@ CheckoutServiceTestHelper::CheckoutServiceTestHelper()
         *m_tableService,
         *m_reservationService,
         *m_authService,
+        *m_paymentService,
         m_dbManager
     );
 }
@@ -110,7 +114,7 @@ int CheckoutServiceTestHelper::createMenuItem(const QString &name,
     return menuItems.back().id;
 }
 
-int CheckoutServiceTestHelper::createTestSession(int displayNumber, 
+int CheckoutServiceTestHelper::createTestSession(int displayNumber,
                                                  const QString& orderType,
                                                  qint64 discount)
 {

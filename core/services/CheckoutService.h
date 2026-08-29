@@ -26,6 +26,7 @@
 #include "./TableService.h"
 #include "./ReservationService.h"
 #include "./AuthService.h"
+#include "./PaymentService.h"
 #include "../database/DatabaseManager.h"
 
 struct TaxComputationResult {
@@ -59,10 +60,11 @@ public:
                              TableService &tableService,
                              ReservationService &reservationService,
                              AuthService &authService,
+                             PaymentService &paymentService,
                              DatabaseManager &databaseManager);
 
     Q_INVOKABLE QVariantList loadActiveCheckoutSessions();
-    Q_INVOKABLE bool completeCheckout(const int &orderSessionId, const QString &memberPhone, int pointsToRedeem);
+    Q_INVOKABLE bool completeCheckout(const int &orderSessionId, const QString &memberPhone, int pointsToRedeem, const QString &paymentMethod, int paymentAmount);
     bool recalculateSessionTotals(int orderSessionId);
     Q_INVOKABLE QVariantList loadCheckoutDetails(const int &orderSessionId);
     Q_INVOKABLE bool printReceipt(int orderSessionId, const bool &isReprint);
@@ -90,6 +92,7 @@ private:
     TableService &m_tableService;
     ReservationService &m_reservationService;
     AuthService &m_authService;
+    PaymentService &m_paymentService;
     DatabaseManager &m_databaseManager;
 
     bool assignReceiptNumber(OrderSession &session);

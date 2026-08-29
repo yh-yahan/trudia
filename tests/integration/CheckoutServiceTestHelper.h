@@ -24,6 +24,7 @@
 #include "../../core/data/KitchenSettingsRepository.h"
 #include "../../core/data/TableSettingsRepository.h"
 #include "../../core/data/ReservationRepository.h"
+#include "../../core/data/PaymentRepository.h"
 #include "../../core/services/MembershipService.h"
 #include "../../core/services/SettingService.h"
 #include "../../core/services/TableService.h"
@@ -31,6 +32,7 @@
 #include "../../core/services/TaxCalculationService.h"
 #include "../../core/services/AuthService.h"
 #include "../../core/services/CurrencyService.h"
+#include "../../core/services/PaymentService.h"
 #include "../../core/printing/ReceiptBuilder.h"
 #include "../../core/printing/WindowsPrinterService.h"
 
@@ -48,8 +50,8 @@ public:
     OrderItemRepository &orderItemRepo() { return *m_orderItemRepo; }
     TableRepository &tableRepo() { return *m_tableRepo; }
     TaxSettingsRepository &taxSettingsRepo() { return *m_taxSettingsRepo; }
-    ReceiptSnapshotRepository &receiptSnapshotRepo() { return *m_receiptSnapshotRepo; };
-    AppStateRepository &appStateRepo() { return *m_appStateRepo; };
+    ReceiptSnapshotRepository &receiptSnapshotRepo() { return *m_receiptSnapshotRepo; }
+    AppStateRepository &appStateRepo() { return *m_appStateRepo; }
 
     DatabaseManager &dbManager() { return m_dbManager; }
 
@@ -126,6 +128,7 @@ private:
     std::unique_ptr<KitchenSettingsRepository> m_kitchenSettingsRepo;
     std::unique_ptr<TableSettingsRepository> m_tableSettingsRepo;
     std::unique_ptr<ReservationRepository> m_reservationRepo;
+    std::unique_ptr<PaymentRepository> m_paymentRepo;
 
     // services
     std::unique_ptr<MembershipService> m_membershipService;
@@ -135,6 +138,7 @@ private:
     std::unique_ptr<TaxCalculationService> m_taxCalculationService;
     std::unique_ptr<AuthService> m_authService;
     std::unique_ptr<CurrencyService> m_currencyService;
+    std::unique_ptr<PaymentService> m_paymentService;
 
     std::unique_ptr<ReceiptBuilder> m_receiptBuilder;
     std::unique_ptr<WindowsPrinterService> m_windowsPrinterService;

@@ -18,6 +18,8 @@ Item {
     property double redeemDiscountPreview: 0
     property double finalTotalPreview: 0
 
+    property string paymentMethod: ""
+
     property var activeSessions: []
     property var recentOrders: []
 
@@ -45,6 +47,8 @@ Item {
         memberId = 0
         currentPoints = 0
         earnedPointsPreview = 0
+
+        paymentMethod = ""
     }
 
     function normalizeStatus(status) {
@@ -532,6 +536,75 @@ Item {
                     }
 
                     Column {
+                        visible: selectedSession !== null
+                        spacing: 6
+
+                        Text {
+                            text: qsTr("Payment Method")
+                            color: Theme.secondaryText
+                            font.pixelSize: Theme.fontNormal
+                        }
+
+                        Row {
+                            spacing: 8
+
+                            Button {
+                                text: qsTr("Cash")
+
+                                background: Rectangle {
+                                    radius: 4
+                                    color: paymentMethod === "cash"
+                                        ? Theme.primary()
+                                        : Theme.surface
+                                }
+
+                                contentItem: Text {
+                                    text: qsTr("Cash")
+                                    color: paymentMethod === "cash"
+                                        ? "white"
+                                        : Theme.text
+                                    font.bold: true
+                                    font.pixelSize: Theme.fontNormal
+                                    horizontalAlignment: Text.AlignHCenter
+                                    verticalAlignment: Text.AlignVCenter
+                                }
+
+                                hoverEnabled: false
+                                focusPolicy: Qt.NoFocus
+
+                                onClicked: paymentMethod = "cash"
+                            }
+
+                            Button {
+                                text: qsTr("Card")
+
+                                background: Rectangle {
+                                    radius: 4
+                                    color: paymentMethod === "card"
+                                        ? Theme.primary()
+                                        : Theme.surface
+                                }
+
+                                contentItem: Text {
+                                    text: qsTr("Card")
+                                    color: paymentMethod === "card"
+                                        ? "white"
+                                        : Theme.text
+                                    font.bold: true
+                                    font.pixelSize: Theme.fontNormal
+                                    horizontalAlignment: Text.AlignHCenter
+                                    verticalAlignment: Text.AlignVCenter
+                                }
+
+                                hoverEnabled: false
+                                focusPolicy: Qt.NoFocus
+
+                                onClicked: paymentMethod = "card"
+                            }
+                        }
+                    }
+
+                    Column {
                         spacing: 6
 
                         Text {
@@ -601,8 +674,11 @@ Item {
                             if (!selectedSession)
                                 return
                             if (CheckoutService.completeCheckout(
-                                        selectedSession.id, memberPhone,
-                                        redeemPointsRequested)) {
+                                    selectedSession.id,
+                                    memberPhone,
+                                    redeemPointsRequested,
+                                    paymentMethod,
+                                    Math.round(finalTotalPreview * 100))) {
                                 var printed = CheckoutService.printReceipt(
                                             selectedSession.id, false)
 

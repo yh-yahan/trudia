@@ -27,6 +27,7 @@ target_sources(trudia_core PRIVATE
     data/AppStateRepository.cpp
     data/ReceiptSnapshotRepository.cpp
     data/TaxReportRepository.cpp
+    data/PaymentRepository.cpp
 
     services/AuthService.cpp
     services/MenuService.cpp
@@ -50,6 +51,7 @@ target_sources(trudia_core PRIVATE
     services/BetaService.cpp
     services/MemberService.cpp
     services/TaxReportService.cpp
+    services/PaymentService.cpp
 
     printing/EscPosBuilder.cpp
     printing/PrintLayoutHelper.cpp

@@ -113,7 +113,6 @@ void tst_CheckoutService::testRecalculateSessionTotals_taxOnlyAppliesToTaxableIt
     helper.setTaxSettings(true, 1000); // 10%
 
     int taxableId = helper.createMenuItem("Taxable", 100, true);
-
     int nonTaxableId = helper.createMenuItem("Non-taxable", 900, false);
 
     int sessionId = helper.createTestSession(1004, "dine_in", 0);
@@ -209,7 +208,15 @@ void tst_CheckoutService::testCompleteCheckout_success()
         }
     );
 
-    QVERIFY(helper.checkoutService().completeCheckout(sessionId, "", 0));
+    QVERIFY(
+        helper.checkoutService().completeCheckout(
+            sessionId,
+            "",
+            0,
+            "cash",
+            1200
+        )
+    );
 
     auto sessionOpt = helper.orderSessionRepo().getById(sessionId);
 
@@ -224,7 +231,10 @@ void tst_CheckoutService::testCompleteCheckout_success()
 
     QVERIFY(session.receipt_number.has_value());
 
-    QCOMPARE(session.receipt_number.value(), QString("2026-000001"));
+    QCOMPARE(
+        session.receipt_number.value(),
+        QString("2026-000001")
+    );
 
     auto orders = helper.orderRepo().getOrdersBySessionId(sessionId);
 
@@ -265,7 +275,15 @@ void tst_CheckoutService::testCompleteCheckout_sessionNotFound()
 {
     CheckoutServiceTestHelper helper;
 
-    QVERIFY(!helper.checkoutService().completeCheckout(999999, "", 0));
+    QVERIFY(
+        !helper.checkoutService().completeCheckout(
+            999999,
+            "",
+            0,
+            "cash",
+            0
+        )
+    );
 }
 
 void tst_CheckoutService::testCompleteCheckout_alreadyPaid()
@@ -277,25 +295,43 @@ void tst_CheckoutService::testCompleteCheckout_alreadyPaid()
     helper.setReceiptCounter(2026, 1);
 
     int sessionId = helper.createSessionWithItems(
-            1001,
-            0,
+        1001,
+        0,
+        {
             {
-                {
-                    {"name", "Coffee"},
-                    {"price", 500},
-                    {"quantity", 1},
-                    {"taxable", false}
-                }
+                {"name", "Coffee"},
+                {"price", 500},
+                {"quantity", 1},
+                {"taxable", false}
             }
-        );
+        }
+    );
 
-    QVERIFY(helper.checkoutService().completeCheckout(sessionId, "", 0));
+    QVERIFY(
+        helper.checkoutService().completeCheckout(
+            sessionId,
+            "",
+            0,
+            "cash",
+            500
+        )
+    );
 
-    auto before = helper.appStateRepo().get("receipt.counter");
+    auto before =
+        helper.appStateRepo().get("receipt.counter");
 
-    QVERIFY(helper.checkoutService().completeCheckout(sessionId, "", 0));
+    QVERIFY(
+        helper.checkoutService().completeCheckout(
+            sessionId,
+            "",
+            0,
+            "cash",
+            500
+        )
+    );
 
-    auto after = helper.appStateRepo().get("receipt.counter");
+    auto after =
+        helper.appStateRepo().get("receipt.counter");
 
     QCOMPARE(before, after);
 }
@@ -311,15 +347,34 @@ void tst_CheckoutService::testCompleteCheckout_receiptNumberIncrement()
 
     int session1 = helper.createSessionWithItems();
 
-    QVERIFY(helper.checkoutService().completeCheckout(session1, "", 0));
+    QVERIFY(
+        helper.checkoutService().completeCheckout(
+            session1,
+            "",
+            0,
+            "cash",
+            0
+        )
+    );
 
     auto first = helper.orderSessionRepo().getById(session1);
 
-    QCOMPARE(first->receipt_number.value(), QString("2026-000005"));
+    QCOMPARE(
+        first->receipt_number.value(),
+        QString("2026-000005")
+    );
 
-    int session2 =helper.createSessionWithItems(1002);
+    int session2 = helper.createSessionWithItems(1002);
 
-    QVERIFY(helper.checkoutService().completeCheckout(session2, "", 0));
+    QVERIFY(
+        helper.checkoutService().completeCheckout(
+            session2,
+            "",
+            0,
+            "cash",
+            0
+        )
+    );
 
     auto second = helper.orderSessionRepo().getById(session2);
 
@@ -336,19 +391,36 @@ void tst_CheckoutService::testCompleteCheckout_freesTable()
     helper.createRestaurant();
     helper.setupTestCashier();
 
-    int tableId = helper.createTable("A1", TableStatus::Occupied);
+    int tableId = helper.createTable(
+            "A1",
+            TableStatus::Occupied
+        );
 
     int sessionId = helper.createSessionWithItems();
 
-    helper.assignTableToSession(sessionId, tableId);
+    helper.assignTableToSession(
+        sessionId,
+        tableId
+    );
 
-    QVERIFY(helper.checkoutService().completeCheckout(sessionId, "", 0));
+    QVERIFY(
+        helper.checkoutService().completeCheckout(
+            sessionId,
+            "",
+            0,
+            "cash",
+            0
+        )
+    );
 
     auto table = helper.tableRepo().getTableById(tableId);
 
     QVERIFY(table.has_value());
 
-    QCOMPARE(table->status, TableStatus::Available);
+    QCOMPARE(
+        table->status,
+        TableStatus::Available
+    );
 }
 
 void tst_CheckoutService::testCompleteCheckout_membership()
@@ -358,35 +430,50 @@ void tst_CheckoutService::testCompleteCheckout_membership()
     helper.createRestaurant();
     helper.setupTestCashier();
 
-    helper.enableMembership(true, 1, 100, "total", 100, 100);
+    helper.enableMembership(
+        true,
+        1,
+        100,
+        "total",
+        100,
+        100
+    );
 
-    helper.createMember("0123456789", 500);
+    helper.createMember(
+        "0123456789",
+        500
+    );
 
     int sessionId = helper.createSessionWithItems(
-            1001,
-            0,
+        1001,
+        0,
+        {
             {
-                {
-                    {"name", "Coffee"},
-                    {"price", 1000},
-                    {"quantity", 1},
-                    {"taxable", false}
-                }
+                {"name", "Coffee"},
+                {"price", 1000},
+                {"quantity", 1},
+                {"taxable", false}
             }
-        );
+        }
+    );
 
-    QVERIFY(helper.checkoutService()
-        .completeCheckout(
+    QVERIFY(
+        helper.checkoutService().completeCheckout(
             sessionId,
             "0123456789",
-            0
-        ));
+            0,
+            "cash",
+            1000
+        )
+    );
 
     auto session = helper.orderSessionRepo().getById(sessionId);
 
     QVERIFY(session.has_value());
 
-    QVERIFY(session->points_earned > 0);
+    QVERIFY(
+        session->points_earned > 0
+    );
 }
 
 void tst_CheckoutService::testCompleteCheckout_snapshotFailureRollback()
@@ -397,13 +484,28 @@ void tst_CheckoutService::testCompleteCheckout_snapshotFailureRollback()
 
     int sessionId = helper.createSessionWithItems();
 
-    QVERIFY(!helper.checkoutService().completeCheckout(sessionId, "", 0));
+    QVERIFY(
+        !helper.checkoutService().completeCheckout(
+            sessionId,
+            "",
+            0,
+            "cash",
+            0
+        )
+    );
 
     auto session = helper.orderSessionRepo().getById(sessionId);
 
     QVERIFY(session.has_value());
-    QCOMPARE(session->status, QString("open"));
-    QVERIFY(!session->receipt_number.has_value());
+
+    QCOMPARE(
+        session->status,
+        QString("open")
+    );
+
+    QVERIFY(
+        !session->receipt_number.has_value()
+    );
 }
 
 QTEST_MAIN(tst_CheckoutService)

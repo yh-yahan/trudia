@@ -231,8 +231,15 @@ QVariantList CheckoutService::loadCheckoutDetails(const int &orderSessionId)
     return result;
 }
 
-bool CheckoutService::completeCheckout(const int &orderSessionId, const QString &memberPhone, int pointsToRedeem, const QString &paymentMethod, int paymentAmount)
+bool CheckoutService::completeCheckout(const QVariantMap &checkoutRequest)
 {
+    return completeCheckout(checkoutRequestFromMap(checkoutRequest));
+}
+
+bool CheckoutService::completeCheckout(const CheckoutRequest &checkoutRequest)
+{
+    const int orderSessionId = checkoutRequest.orderSessionId;
+
     if (!m_databaseManager.beginTransaction())
     {
         qCWarning(logCheckout) << "Failed to begin transaction";
@@ -269,15 +276,15 @@ bool CheckoutService::completeCheckout(const int &orderSessionId, const QString 
         return true;
     }
 
-    if (!applyMembershipToSession(session, memberPhone, pointsToRedeem))
+    if (!applyMembershipToSession(session, checkoutRequest.memberPhone, checkoutRequest.pointsToRedeem))
     {
         qCWarning(logCheckout) << "Failed applying membership";
         return rollback();
     }
 
-    if (!m_paymentService.recordPayment(orderSessionId, paymentMethod, paymentAmount))
+    if (!m_paymentService.recordPayments(orderSessionId, checkoutRequest.payments))
     {
-        qCWarning(logCheckout) << "Failed recording payment";
+        qCWarning(logCheckout) << "Failed recording payments";
         return rollback();
     }
 
@@ -751,4 +758,27 @@ bool CheckoutService::freeTable(const OrderSession &session)
     }
 
     return true;
+}
+
+CheckoutService::CheckoutRequest CheckoutService::checkoutRequestFromMap(const QVariantMap &map)
+{
+    CheckoutService::CheckoutRequest req;
+    req.orderSessionId = map.value(QStringLiteral("orderSessionId")).toInt();
+    req.memberPhone = map.value(QStringLiteral("memberPhone")).toString();
+    req.pointsToRedeem = map.value(QStringLiteral("pointsToRedeem")).toInt();
+
+    const QVariant paymentsVar = map.value(QStringLiteral("payments"));
+    if (paymentsVar.canConvert<QVariantList>()) {
+        const QVariantList lines = paymentsVar.toList();
+        req.payments.reserve(lines.size());
+        for (const QVariant &v : lines) {
+            const QVariantMap line = v.toMap();
+            PaymentRequest payment;
+            payment.method = line.value(QStringLiteral("method")).toString();
+            payment.amount = line.value(QStringLiteral("amount")).toInt();
+            req.payments.push_back(payment);
+        }
+    }
+
+    return req;
 }

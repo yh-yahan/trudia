@@ -44,6 +44,8 @@ public:
 
     CheckoutService &checkoutService() { return *m_checkoutService; }
 
+    PaymentService &paymentService() { return *m_paymentService; }
+
     // repositories
     OrderSessionRepository &orderSessionRepo() { return *m_orderSessionRepo; }
     OrderRepository &orderRepo() { return *m_orderRepo; }
@@ -68,7 +70,7 @@ public:
 
     int createSessionWithItems(int displayNumber = 1001,
                                qint64 discount = 0,
-                               const QList<QVariantMap>& items = {});
+                               const QList<QVariantMap> &items = {});
 
     void createRestaurant(
         const QString &name = "Test Restaurant",

@@ -5,6 +5,7 @@
 #include <QObject>
 #include <QString>
 #include <QVariantMap>
+#include "../domain/PaymentRequest.h"
 #include "../data/OrderSessionRepository.h"
 #include "../data/OrderRepository.h"
 #include "../data/OrderItemRepository.h"
@@ -40,6 +41,14 @@ class CheckoutService : public QObject
     Q_OBJECT
 
 public:
+    struct CheckoutRequest
+    {
+        int orderSessionId;
+        QString memberPhone;
+        int pointsToRedeem = 0;
+        QList<PaymentRequest> payments;
+    };
+
     explicit CheckoutService(OrderSessionRepository &orderSessionRepo,
                              OrderRepository &orderRepo,
                              OrderItemRepository &orderItemRepo,
@@ -64,7 +73,8 @@ public:
                              DatabaseManager &databaseManager);
 
     Q_INVOKABLE QVariantList loadActiveCheckoutSessions();
-    Q_INVOKABLE bool completeCheckout(const int &orderSessionId, const QString &memberPhone, int pointsToRedeem, const QString &paymentMethod, int paymentAmount);
+    Q_INVOKABLE bool completeCheckout(const QVariantMap &checkoutRequest);
+    bool completeCheckout(const CheckoutRequest &checkoutRequest);
     bool recalculateSessionTotals(int orderSessionId);
     Q_INVOKABLE QVariantList loadCheckoutDetails(const int &orderSessionId);
     Q_INVOKABLE bool printReceipt(int orderSessionId, const bool &isReprint);
@@ -100,6 +110,7 @@ private:
     bool markOrdersServed(int orderSessionId);
     bool createReceiptSnapshot(const OrderSession &session);
     bool freeTable(const OrderSession &session);
+    CheckoutRequest checkoutRequestFromMap(const QVariantMap &map);
 };
 
 #endif // CHECKOUTSERVICE_H

@@ -16,6 +16,7 @@ private slots:
     void testRecalculateSessionTotals_multipleOrders();
 
     void testCompleteCheckout_success();
+    void testCompleteCheckout_splitPayment();
     void testCompleteCheckout_sessionNotFound();
     void testCompleteCheckout_alreadyPaid();
     void testCompleteCheckout_receiptNumberIncrement();
@@ -38,9 +39,12 @@ void tst_CheckoutService::testRecalculateSessionTotals_basic()
     helper.addOrderItem(orderId, coffeeId, 2);
     helper.addOrderItem(orderId, waterId, 1);
 
-    QVERIFY(helper.checkoutService().recalculateSessionTotals(sessionId));
+    QVERIFY(
+        helper.checkoutService().recalculateSessionTotals(sessionId)
+    );
 
     auto session = helper.orderSessionRepo().getById(sessionId);
+
     QVERIFY(session.has_value());
 
     QCOMPARE(session->subtotal, 1200LL);
@@ -57,16 +61,23 @@ void tst_CheckoutService::testRecalculateSessionTotals_withDiscountAndTax()
     int coffeeId = helper.createMenuItem("Coffee", 500, true);
     int waterId = helper.createMenuItem("Water", 200, false);
 
-    int sessionId = helper.createTestSession(1002, "dine_in", 300);
+    int sessionId = helper.createTestSession(
+        1002,
+        "dine_in",
+        300
+    );
 
     int orderId = helper.createOrderForSession(sessionId);
 
     helper.addOrderItem(orderId, coffeeId, 2);
     helper.addOrderItem(orderId, waterId, 1);
 
-    QVERIFY(helper.checkoutService().recalculateSessionTotals(sessionId));
+    QVERIFY(
+        helper.checkoutService().recalculateSessionTotals(sessionId)
+    );
 
     auto session = helper.orderSessionRepo().getById(sessionId);
+
     QVERIFY(session.has_value());
 
     // taxable subtotal = 1000
@@ -89,7 +100,9 @@ void tst_CheckoutService::testRecalculateSessionTotals_negativeTotalCapped()
 
     helper.addOrderItem(orderId, coffeeId, 1);
 
-    QVERIFY(helper.checkoutService().recalculateSessionTotals(sessionId));
+    QVERIFY(
+        helper.checkoutService().recalculateSessionTotals(sessionId)
+    );
 
     auto session = helper.orderSessionRepo().getById(sessionId);
     QVERIFY(session.has_value());
@@ -103,7 +116,10 @@ void tst_CheckoutService::testRecalculateSessionTotals_sessionNotFound()
 {
     CheckoutServiceTestHelper helper;
 
-    QVERIFY(!helper.checkoutService().recalculateSessionTotals(999999));
+    QVERIFY(
+        !helper.checkoutService()
+            .recalculateSessionTotals(999999)
+    );
 }
 
 void tst_CheckoutService::testRecalculateSessionTotals_taxOnlyAppliesToTaxableItems()
@@ -113,6 +129,7 @@ void tst_CheckoutService::testRecalculateSessionTotals_taxOnlyAppliesToTaxableIt
     helper.setTaxSettings(true, 1000); // 10%
 
     int taxableId = helper.createMenuItem("Taxable", 100, true);
+
     int nonTaxableId = helper.createMenuItem("Non-taxable", 900, false);
 
     int sessionId = helper.createTestSession(1004, "dine_in", 0);
@@ -122,7 +139,10 @@ void tst_CheckoutService::testRecalculateSessionTotals_taxOnlyAppliesToTaxableIt
     helper.addOrderItem(orderId, taxableId, 1);
     helper.addOrderItem(orderId, nonTaxableId, 1);
 
-    QVERIFY(helper.checkoutService().recalculateSessionTotals(sessionId));
+    QVERIFY(
+        helper.checkoutService()
+            .recalculateSessionTotals(sessionId)
+    );
 
     auto session = helper.orderSessionRepo().getById(sessionId);
     QVERIFY(session.has_value());
@@ -137,12 +157,15 @@ void tst_CheckoutService::testRecalculateSessionTotals_emptySession()
     CheckoutServiceTestHelper helper;
 
     int sessionId = helper.createTestSession(
-        1005,
-        "dine_in",
-        0
-    );
+            1005,
+            "dine_in",
+            0
+        );
 
-    QVERIFY(helper.checkoutService().recalculateSessionTotals(sessionId));
+    QVERIFY(
+        helper.checkoutService()
+            .recalculateSessionTotals(sessionId)
+    );
 
     auto session = helper.orderSessionRepo().getById(sessionId);
     QVERIFY(session.has_value());
@@ -156,11 +179,12 @@ void tst_CheckoutService::testRecalculateSessionTotals_multipleOrders()
 {
     CheckoutServiceTestHelper helper;
 
-    int sessionId = helper.createTestSession(
-        1006,
-        "dine_in",
-        0
-    );
+    int sessionId =
+        helper.createTestSession(
+            1006,
+            "dine_in",
+            0
+        );
 
     int order1 = helper.createOrderForSession(sessionId, 1);
     int order2 = helper.createOrderForSession(sessionId, 2);
@@ -171,7 +195,10 @@ void tst_CheckoutService::testRecalculateSessionTotals_multipleOrders()
     helper.addOrderItem(order1, coffeeId, 2);
     helper.addOrderItem(order2, teaId, 1);
 
-    QVERIFY(helper.checkoutService().recalculateSessionTotals(sessionId));
+    QVERIFY(
+        helper.checkoutService()
+            .recalculateSessionTotals(sessionId)
+    );
 
     auto session = helper.orderSessionRepo().getById(sessionId);
     QVERIFY(session.has_value());
@@ -190,32 +217,36 @@ void tst_CheckoutService::testCompleteCheckout_success()
     helper.setReceiptCounter(2026, 1);
 
     int sessionId = helper.createSessionWithItems(
-        1001,
+            1001,
+            0,
+            {
+                {
+                    {"name", "Coffee"},
+                    {"price", 500},
+                    {"quantity", 2},
+                    {"taxable", true}
+                },
+                {
+                    {"name", "Water"},
+                    {"price", 200},
+                    {"quantity", 1},
+                    {"taxable", false}
+                }
+            }
+        );
+
+    CheckoutService::CheckoutRequest request{
+        sessionId,
+        "",
         0,
         {
-            {
-                {"name", "Coffee"},
-                {"price", 500},
-                {"quantity", 2},
-                {"taxable", true}
-            },
-            {
-                {"name", "Water"},
-                {"price", 200},
-                {"quantity", 1},
-                {"taxable", false}
-            }
+            {"cash", 1200}
         }
-    );
+    };
 
     QVERIFY(
-        helper.checkoutService().completeCheckout(
-            sessionId,
-            "",
-            0,
-            "cash",
-            1200
-        )
+        helper.checkoutService()
+            .completeCheckout(request)
     );
 
     auto sessionOpt = helper.orderSessionRepo().getById(sessionId);
@@ -271,18 +302,95 @@ void tst_CheckoutService::testCompleteCheckout_success()
     );
 }
 
+void tst_CheckoutService::testCompleteCheckout_splitPayment()
+{
+    CheckoutServiceTestHelper helper;
+
+    helper.createRestaurant();
+    helper.setupTestCashier();
+
+    int sessionId = helper.createSessionWithItems(
+            1001,
+            0,
+            {
+                {
+                    {"name", "Coffee"},
+                    {"price", 500},
+                    {"quantity", 2},
+                    {"taxable", true}
+                },
+                {
+                    {"name", "Water"},
+                    {"price", 200},
+                    {"quantity", 1},
+                    {"taxable", false}
+                }
+            }
+        );
+
+    CheckoutService::CheckoutRequest request{
+        sessionId,
+        "",
+        0,
+        {
+            {"cash", 700},
+            {"card", 500}
+        }
+    };
+
+    QVERIFY(
+        helper.checkoutService()
+            .completeCheckout(request)
+    );
+
+    auto session = helper.orderSessionRepo().getById(sessionId);
+
+    QVERIFY(session.has_value());
+
+    QCOMPARE(session->status, QString("paid"));
+    QCOMPARE(session->total, 1200LL);
+
+    auto payments = helper.paymentService().getPaymentsForOrderSession(sessionId);
+
+    QCOMPARE(payments.size(), 2);
+
+    QCOMPARE(
+        payments[0].method,
+        QString("cash")
+    );
+
+    QCOMPARE(
+        payments[0].amount,
+        700
+    );
+
+    QCOMPARE(
+        payments[1].method,
+        QString("card")
+    );
+
+    QCOMPARE(
+        payments[1].amount,
+        500
+    );
+}
+
 void tst_CheckoutService::testCompleteCheckout_sessionNotFound()
 {
     CheckoutServiceTestHelper helper;
 
+    CheckoutService::CheckoutRequest request{
+        999999,
+        "",
+        0,
+        {
+            {"cash", 0}
+        }
+    };
+
     QVERIFY(
-        !helper.checkoutService().completeCheckout(
-            999999,
-            "",
-            0,
-            "cash",
-            0
-        )
+        !helper.checkoutService()
+            .completeCheckout(request)
     );
 }
 
@@ -295,43 +403,34 @@ void tst_CheckoutService::testCompleteCheckout_alreadyPaid()
     helper.setReceiptCounter(2026, 1);
 
     int sessionId = helper.createSessionWithItems(
-        1001,
+            1001,
+            0,
+            {
+                {
+                    {"name", "Coffee"},
+                    {"price", 500},
+                    {"quantity", 1},
+                    {"taxable", false}
+                }
+            }
+        );
+
+    CheckoutService::CheckoutRequest request{
+        sessionId,
+        "",
         0,
         {
-            {
-                {"name", "Coffee"},
-                {"price", 500},
-                {"quantity", 1},
-                {"taxable", false}
-            }
+            {"cash", 500}
         }
-    );
+    };
 
-    QVERIFY(
-        helper.checkoutService().completeCheckout(
-            sessionId,
-            "",
-            0,
-            "cash",
-            500
-        )
-    );
+    QVERIFY(helper.checkoutService().completeCheckout(request));
 
-    auto before =
-        helper.appStateRepo().get("receipt.counter");
+    auto before = helper.appStateRepo().get("receipt.counter");
 
-    QVERIFY(
-        helper.checkoutService().completeCheckout(
-            sessionId,
-            "",
-            0,
-            "cash",
-            500
-        )
-    );
+    QVERIFY(helper.checkoutService().completeCheckout(request));
 
-    auto after =
-        helper.appStateRepo().get("receipt.counter");
+    auto after = helper.appStateRepo().get("receipt.counter");
 
     QCOMPARE(before, after);
 }
@@ -347,17 +446,23 @@ void tst_CheckoutService::testCompleteCheckout_receiptNumberIncrement()
 
     int session1 = helper.createSessionWithItems();
 
+    CheckoutService::CheckoutRequest request1{
+        session1,
+        "",
+        0,
+        {
+            {"cash", 0}
+        }
+    };
+
     QVERIFY(
-        helper.checkoutService().completeCheckout(
-            session1,
-            "",
-            0,
-            "cash",
-            0
-        )
+        helper.checkoutService()
+            .completeCheckout(request1)
     );
 
     auto first = helper.orderSessionRepo().getById(session1);
+
+    QVERIFY(first.has_value());
 
     QCOMPARE(
         first->receipt_number.value(),
@@ -366,17 +471,23 @@ void tst_CheckoutService::testCompleteCheckout_receiptNumberIncrement()
 
     int session2 = helper.createSessionWithItems(1002);
 
+    CheckoutService::CheckoutRequest request2{
+        session2,
+        "",
+        0,
+        {
+            {"cash", 0}
+        }
+    };
+
     QVERIFY(
-        helper.checkoutService().completeCheckout(
-            session2,
-            "",
-            0,
-            "cash",
-            0
-        )
+        helper.checkoutService()
+            .completeCheckout(request2)
     );
 
     auto second = helper.orderSessionRepo().getById(session2);
+
+    QVERIFY(second.has_value());
 
     QCOMPARE(
         second->receipt_number.value(),
@@ -403,15 +514,16 @@ void tst_CheckoutService::testCompleteCheckout_freesTable()
         tableId
     );
 
-    QVERIFY(
-        helper.checkoutService().completeCheckout(
-            sessionId,
-            "",
-            0,
-            "cash",
-            0
-        )
-    );
+    CheckoutService::CheckoutRequest request{
+        sessionId,
+        "",
+        0,
+        {
+            {"cash", 0}
+        }
+    };
+
+    QVERIFY(helper.checkoutService().completeCheckout(request));
 
     auto table = helper.tableRepo().getTableById(tableId);
 
@@ -445,26 +557,30 @@ void tst_CheckoutService::testCompleteCheckout_membership()
     );
 
     int sessionId = helper.createSessionWithItems(
-        1001,
+            1001,
+            0,
+            {
+                {
+                    {"name", "Coffee"},
+                    {"price", 1000},
+                    {"quantity", 1},
+                    {"taxable", false}
+                }
+            }
+        );
+
+    CheckoutService::CheckoutRequest request{
+        sessionId,
+        "0123456789",
         0,
         {
-            {
-                {"name", "Coffee"},
-                {"price", 1000},
-                {"quantity", 1},
-                {"taxable", false}
-            }
+            {"cash", 1000}
         }
-    );
+    };
 
     QVERIFY(
-        helper.checkoutService().completeCheckout(
-            sessionId,
-            "0123456789",
-            0,
-            "cash",
-            1000
-        )
+        helper.checkoutService()
+            .completeCheckout(request)
     );
 
     auto session = helper.orderSessionRepo().getById(sessionId);
@@ -484,14 +600,18 @@ void tst_CheckoutService::testCompleteCheckout_snapshotFailureRollback()
 
     int sessionId = helper.createSessionWithItems();
 
+    CheckoutService::CheckoutRequest request{
+        sessionId,
+        "",
+        0,
+        {
+            {"cash", 0}
+        }
+    };
+
     QVERIFY(
-        !helper.checkoutService().completeCheckout(
-            sessionId,
-            "",
-            0,
-            "cash",
-            0
-        )
+        !helper.checkoutService()
+            .completeCheckout(request)
     );
 
     auto session = helper.orderSessionRepo().getById(sessionId);

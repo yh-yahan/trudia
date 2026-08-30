@@ -5,14 +5,15 @@
 #include <QString>
 #include "data/PaymentRepository.h"
 
-#include "domain/Payment.h"
+#include "../domain/Payment.h"
+#include "../domain/PaymentRequest.h"
 
 class PaymentService
 {
 public:
     explicit PaymentService(PaymentRepository &paymentRepository);
 
-    bool recordPayment(int orderSessionId, const QString& method, int amount);
+    bool recordPayments(int orderSessionId, const QList<PaymentRequest> &payments);
     std::optional<Payment> getPayment(int paymentId) const;
     QList<Payment> getPaymentsForOrderSession(int orderSessionId) const;
 

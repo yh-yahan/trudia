@@ -673,12 +673,17 @@ Item {
                         onClicked: {
                             if (!selectedSession)
                                 return
-                            if (CheckoutService.completeCheckout(
-                                    selectedSession.id,
-                                    memberPhone,
-                                    redeemPointsRequested,
-                                    paymentMethod,
-                                    Math.round(finalTotalPreview * 100))) {
+                            if (CheckoutService.completeCheckout({
+                                    orderSessionId: selectedSession.id,
+                                    memberPhone: memberPhone,
+                                    pointsToRedeem: redeemPointsRequested,
+                                    payments: [
+                                        {
+                                            method: paymentMethod,
+                                            amount: Math.round(finalTotalPreview * 100)
+                                        }
+                                    ]
+                                })) {
                                 var printed = CheckoutService.printReceipt(
                                             selectedSession.id, false)
 

@@ -20,6 +20,11 @@ Item {
 
     property string paymentMethod: ""
 
+    property bool splitPayment: false
+    property string splitCashAmount: ""
+    property string splitCardAmount: ""
+    property bool updatingSplitPayment: false
+
     property var activeSessions: []
     property var recentOrders: []
 
@@ -49,6 +54,10 @@ Item {
         earnedPointsPreview = 0
 
         paymentMethod = ""
+        splitPayment = false
+        splitCashAmount = ""
+        splitCardAmount = ""
+        updatingSplitPayment = false
     }
 
     function normalizeStatus(status) {
@@ -98,6 +107,15 @@ Item {
                              || selectedSession.total * 100) / 100.0
     }
 
+    function normalizeMoney(value) {
+        var amount = Number(value)
+
+        if (!isFinite(amount))
+            return ""
+
+        return (Math.round(amount * 100) / 100).toFixed(2)
+    }
+
     Component.onCompleted: {
         reloadData()
 
@@ -129,6 +147,11 @@ Item {
 
     onSelectedSessionChanged: {
         finalTotalPreview = selectedSession.total
+        paymentMethod = ""
+        splitPayment = false
+        splitCashAmount = ""
+        splitCardAmount = ""
+        updatingSplitPayment = false
         updateMembershipPreview()
     }
 
@@ -572,7 +595,12 @@ Item {
                                 hoverEnabled: false
                                 focusPolicy: Qt.NoFocus
 
-                                onClicked: paymentMethod = "cash"
+                                onClicked: {
+                                    paymentMethod = "cash"
+                                    splitPayment = false
+                                    splitCashAmount = ""
+                                    splitCardAmount = ""
+                                }
                             }
 
                             Button {
@@ -599,7 +627,155 @@ Item {
                                 hoverEnabled: false
                                 focusPolicy: Qt.NoFocus
 
-                                onClicked: paymentMethod = "card"
+                                onClicked: {
+                                    paymentMethod = "card"
+                                    splitPayment = false
+                                    splitCashAmount = ""
+                                    splitCardAmount = ""
+                                }
+                            }
+
+                            Button {
+                                text: qsTr("Split")
+
+                                background: Rectangle {
+                                    radius: 4
+                                    color: splitPayment
+                                        ? Theme.primary()
+                                        : Theme.surface
+                                }
+
+                                contentItem: Text {
+                                    text: qsTr("Split")
+                                    color: splitPayment
+                                        ? "white"
+                                        : Theme.text
+                                    font.bold: true
+                                    font.pixelSize: Theme.fontNormal
+                                    horizontalAlignment: Text.AlignHCenter
+                                    verticalAlignment: Text.AlignVCenter
+                                }
+
+                                hoverEnabled: false
+                                focusPolicy: Qt.NoFocus
+
+                                onClicked: {
+                                    paymentMethod = ""
+                                    splitPayment = true
+
+                                    if (selectedSession) {
+                                        splitCashAmount = (
+                                            finalTotalPreview / 2
+                                        ).toFixed(2)
+
+                                        splitCardAmount = (
+                                            finalTotalPreview -
+                                            Number(splitCashAmount)
+                                        ).toFixed(2)
+                                    }
+                                }
+                            }
+                        }
+
+                        Column {
+                            visible: splitPayment
+                            spacing: 6
+                            width: parent.width
+
+                            Text {
+                                text: qsTr("Cash Amount")
+                                color: Theme.secondaryText
+                                font.pixelSize: Theme.fontNormal
+                            }
+
+                            TextField {
+                                id: splitCashField
+
+                                width: parent.width
+                                text: splitCashAmount
+                                placeholderText: currencySymbol + "0.00"
+                                inputMethodHints: Qt.ImhFormattedNumbersOnly
+
+                                onTextChanged: {
+                                    if (!activeFocus || updatingSplitPayment)
+                                        return
+
+                                    var cash = Number(text)
+
+                                    if (!isFinite(cash))
+                                        return
+
+                                    if (cash < 0)
+                                        cash = 0
+
+                                    if (cash > finalTotalPreview)
+                                        cash = finalTotalPreview
+
+                                    splitCashAmount = text
+
+                                    updatingSplitPayment = true
+
+                                    var cashCents = Math.round(cash * 100)
+                                    var totalCents = Math.round(finalTotalPreview * 100)
+                                    var cardCents = Math.max(0, totalCents - cashCents)
+
+                                    splitCardAmount = (cardCents / 100).toFixed(2)
+
+                                    updatingSplitPayment = false
+                                }
+
+                                onEditingFinished: {
+                                    if (splitCashAmount !== "")
+                                        splitCashAmount = normalizeMoney(splitCashAmount)
+                                }
+                            }
+
+                            Text {
+                                text: qsTr("Card Amount")
+                                color: Theme.secondaryText
+                                font.pixelSize: Theme.fontNormal
+                            }
+
+                            TextField {
+                                id: splitCardField
+
+                                width: parent.width
+                                text: splitCardAmount
+                                placeholderText: currencySymbol + "0.00"
+                                inputMethodHints: Qt.ImhFormattedNumbersOnly
+
+                                onTextChanged: {
+                                    if (!activeFocus || updatingSplitPayment)
+                                        return
+
+                                    var card = Number(text)
+
+                                    if (!isFinite(card))
+                                        return
+
+                                    if (card < 0)
+                                        card = 0
+
+                                    if (card > finalTotalPreview)
+                                        card = finalTotalPreview
+
+                                    splitCardAmount = text
+
+                                    updatingSplitPayment = true
+
+                                    var cardCents = Math.round(card * 100)
+                                    var totalCents = Math.round(finalTotalPreview * 100)
+                                    var cashCents = Math.max(0, totalCents - cardCents)
+
+                                    splitCashAmount = (cashCents / 100).toFixed(2)
+
+                                    updatingSplitPayment = false
+                                }
+
+                                onEditingFinished: {
+                                    if (splitCardAmount !== "")
+                                        splitCardAmount = normalizeMoney(splitCardAmount)
+                                }
                             }
                         }
                     }
@@ -673,19 +849,51 @@ Item {
                         onClicked: {
                             if (!selectedSession)
                                 return
+
+                            var payments = []
+
+                            if (splitPayment) {
+                                var cashAmount = Number(splitCashAmount)
+                                var cardAmount = Number(splitCardAmount)
+
+                                if (!isFinite(cashAmount) || !isFinite(cardAmount))
+                                    return
+
+                                if (cashAmount <= 0 || cardAmount <= 0)
+                                    return
+
+                                var totalPaid = cashAmount + cardAmount
+
+                                if (Math.abs(totalPaid - finalTotalPreview) > 0.005)
+                                    return
+
+                                payments = [
+                                    {
+                                        method: "cash",
+                                        amount: Math.round(cashAmount * 100)
+                                    },
+                                    {
+                                        method: "card",
+                                        amount: Math.round(cardAmount * 100)
+                                    }
+                                ]
+                            } else {
+                                payments = [
+                                    {
+                                        method: paymentMethod,
+                                        amount: Math.round(finalTotalPreview * 100)
+                                    }
+                                ]
+                            }
+
                             if (CheckoutService.completeCheckout({
-                                    orderSessionId: selectedSession.id,
-                                    memberPhone: memberPhone,
-                                    pointsToRedeem: redeemPointsRequested,
-                                    payments: [
-                                        {
-                                            method: paymentMethod,
-                                            amount: Math.round(finalTotalPreview * 100)
-                                        }
-                                    ]
-                                })) {
+                                orderSessionId: selectedSession.id,
+                                memberPhone: memberPhone,
+                                pointsToRedeem: redeemPointsRequested,
+                                payments: payments
+                            })) {
                                 var printed = CheckoutService.printReceipt(
-                                            selectedSession.id, false)
+                                    selectedSession.id, false)
 
                                 reloadData()
                             }

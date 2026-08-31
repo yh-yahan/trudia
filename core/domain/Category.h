@@ -3,9 +3,7 @@
 
 #include <QString>
 
-class Category
-{
-public:
+struct Category {
     int id = -1;
     QString category;
 };

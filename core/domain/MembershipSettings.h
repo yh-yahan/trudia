@@ -3,9 +3,7 @@
 
 #include <QString>
 
-class MembershipSettings
-{
-public:
+struct MembershipSettings {
     int id = -1;
     bool enabled = false;
     int earn_points = 0;

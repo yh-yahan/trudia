@@ -3,9 +3,7 @@
 
 #include <QString>
 
-class ReceiptSnapshot
-{
-public:
+struct ReceiptSnapshot {
     int id = -1;
     int order_session_id;
 

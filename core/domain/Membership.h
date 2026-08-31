@@ -3,8 +3,7 @@
 
 #include <QString>
 
-class Membership {
-public:
+struct Membership {
     int id = -1;
     QString phone_number;
     int total_points;

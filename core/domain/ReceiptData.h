@@ -4,23 +4,16 @@
 #include <QString>
 #include <QList>
 
-class ReceiptItem
-{
-public:
+struct ReceiptItem {
     QString name;
     int quantity = 0;
     QString portion_size;
     double price = 0.0;
 
-    double total() const
-    {
-        return price * quantity;
-    }
+    double total() const { return price * quantity; }
 };
 
-class ReceiptData
-{
-public:
+struct ReceiptData {
     QString cashierName;
 
     QString storeName;

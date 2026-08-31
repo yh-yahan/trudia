@@ -3,9 +3,7 @@
 
 #include <QString>
 
-class Order
-{
-public:
+struct Order {
     int id = -1;
     int order_session_id;
     int display_number;

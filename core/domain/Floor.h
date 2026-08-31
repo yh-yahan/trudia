@@ -3,8 +3,7 @@
 
 #include <QString>
 
-class Floor {
-public:
+struct Floor {
     int id = -1;
     QString name;
     int floor_number;

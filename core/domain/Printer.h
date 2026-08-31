@@ -3,9 +3,7 @@
 
 #include <QString>
 
-class Printer
-{
-public:
+struct Printer {
     int id = -1;
     QString system_name; // windows printer name
     QString role;

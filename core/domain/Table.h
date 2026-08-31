@@ -3,9 +3,7 @@
 
 #include <QString>
 
-class Table
-{
-public:
+struct Table {
     int id = -1;
     QString table_name;
     int capacity;

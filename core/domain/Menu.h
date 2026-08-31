@@ -3,9 +3,7 @@
 
 #include <QString>
 
-class Menu
-{
-public:
+struct Menu {
     int id = -1;
     QString item;
     int category_id;

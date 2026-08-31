@@ -3,9 +3,7 @@
 
 #include <QString>
 
-class OrderSession
-{
-public:
+struct OrderSession {
     int id = -1;
     int display_number;
     std::optional<QString> receipt_number;

@@ -4,9 +4,7 @@
 #include <QString>
 #include <QDateTime>
 
-class Reservation
-{
-public:
+struct Reservation {
     int id = -1;
     QString customerName;
     QString customerPhone;

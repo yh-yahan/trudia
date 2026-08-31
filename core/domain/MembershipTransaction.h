@@ -3,8 +3,7 @@
 
 #include <QString>
 
-class MembershipTransaction {
-public:
+struct MembershipTransaction {
     int id = -1;
     int membership_id;
     std::optional<int> order_session_id;

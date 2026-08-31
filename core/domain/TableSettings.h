@@ -3,9 +3,7 @@
 
 #include <QString>
 
-class TableSettings
-{
-public:
+struct TableSettings {
     int id = -1;
     QString layout_mode;
 };

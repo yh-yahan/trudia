@@ -3,9 +3,7 @@
 
 #include <QString>
 
-class Restaurant
-{
-public:
+struct Restaurant {
     int id = -1;
     QString name;
     QString address;

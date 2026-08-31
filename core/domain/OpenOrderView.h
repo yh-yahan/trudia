@@ -4,9 +4,7 @@
 #include <QString>
 #include <optional>
 
-class OpenOrderView
-{
-public:
+struct OpenOrderView {
     int id;
     int display_number;
     int order_session_id;

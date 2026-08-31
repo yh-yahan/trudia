@@ -3,8 +3,7 @@
 
 #include <QString>
 
-class KitchenSettings {
-public:
+struct KitchenSettings {
     int id = -1;
     QString mode;
     QString ticket_print_timing;

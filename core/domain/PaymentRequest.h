@@ -3,9 +3,7 @@
 
 #include <QString>
 
-class PaymentRequest
-{
-public:
+struct PaymentRequest {
     QString method;
     int amount;
 };

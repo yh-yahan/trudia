@@ -3,9 +3,7 @@
 
 #include <QString>
 
-class AppState
-{
-public:
+struct AppState {
     QString key;
     QString value;
 };

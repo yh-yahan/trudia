@@ -3,14 +3,12 @@
 
 #include <QString>
 
-class RedeemResult {
-public:
+struct RedeemResult {
     int pointsRedeemed = 0;
     int discountCents = 0;
 };
 
-class MembershipResult {
-public:
+struct MembershipResult {
     bool success = false;
     QString error = "";
     int redeemedPoints = 0;

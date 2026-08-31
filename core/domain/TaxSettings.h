@@ -3,9 +3,7 @@
 
 #include <QString>
 
-class TaxSettings
-{
-public:
+struct TaxSettings {
     int id = -1;
     bool enabled;
     int rate;

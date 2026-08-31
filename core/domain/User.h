@@ -3,9 +3,7 @@
 
 #include <QString>
 
-class User
-{
-public:
+struct User {
     int id = -1;
     QString username;
     QString password;

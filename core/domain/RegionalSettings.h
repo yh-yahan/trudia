@@ -3,12 +3,10 @@
 
 #include <QString>
 
-class RegionalSettings
-{
-public:
+struct RegionalSettings {
     int id = -1;
     QString locale;
-    QString currency_code;
+    QString currency_code; 
 };
 
 #endif // REGIONALSETTINGS_H

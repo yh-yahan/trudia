@@ -4,8 +4,7 @@
 #include <QString>
 #include <optional>
 
-class CanvasItem {
-public:
+struct CanvasItem {
     int id = -1;
     int floor_id;
     std::optional<int> table_id;

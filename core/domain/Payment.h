@@ -3,9 +3,7 @@
 
 #include <QString>
 
-class Payment
-{
-public:
+struct Payment {
     int id = -1;
     int order_session_id = -1;
     QString method;

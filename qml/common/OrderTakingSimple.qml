@@ -499,6 +499,7 @@ Item {
                         // print ticket btn
                         Button {
                             visible: currentOrderId >= 0 && kitchenSettings
+                                     && (kitchenSettings.mode == "tickets" || kitchenSettings.mode == "hybrid")
                                      && kitchenSettings.ticket_print_timing === "manual"
                             text: qsTr("Print Ticket")
                             leftPadding: 12

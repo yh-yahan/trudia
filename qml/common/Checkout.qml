@@ -5,6 +5,7 @@ import Trudia.Services 1.0
 import trudia.Theme 1.0
 
 Item {
+    id: root
     width: 1200
     height: 700
 
@@ -39,6 +40,16 @@ Item {
 
     property string currencySymbol: SettingService.currencySymbol()
 
+    // "open" shows unpaid sessions, "paid" shows recent receipts
+    property string listMode: "open"
+
+    readonly property bool hasOpenSelection: selectedSession !== null
+    readonly property bool hasPaidSelection: selectedRecentDetails !== null
+    readonly property bool paymentReady: splitPayment
+                                         || paymentMethod === "cash"
+                                         || paymentMethod === "card"
+    readonly property bool checkoutReady: hasOpenSelection && canCheckout && paymentReady
+
     function reloadData() {
         activeSessions = CheckoutService.loadActiveCheckoutSessions()
         recentOrders = CheckoutService.getRecentPaidOrders()
@@ -58,6 +69,16 @@ Item {
         splitCashAmount = ""
         splitCardAmount = ""
         updatingSplitPayment = false
+    }
+
+    function clearMembershipState() {
+        memberPhone = ""
+        memberId = 0
+        currentPoints = 0
+        earnedPointsPreview = 0
+        redeemPointsRequested = 0
+        redeemDiscountPreview = 0
+        membershipChecked = false
     }
 
     function normalizeStatus(status) {
@@ -81,6 +102,25 @@ Item {
         }
 
         return true
+    }
+
+    function pendingOrderCount(details) {
+        if (!details || details.length === 0)
+            return 0
+
+        var count = 0
+        for (var i = 0; i < details.length; i++) {
+            if (!isOrderServed(details[i]))
+                count++
+        }
+        return count
+    }
+
+    function formatMoney(value) {
+        var amount = Number(value)
+        if (!isFinite(amount))
+            amount = 0
+        return currencySymbol + amount.toFixed(2)
     }
 
     function updateMembershipPreview() {
@@ -116,6 +156,77 @@ Item {
         return (Math.round(amount * 100) / 100).toFixed(2)
     }
 
+    function selectOpenSession(session) {
+        selectedRecent = null
+        selectedRecentDetails = null
+        selectedSession = session
+        clearMembershipState()
+        checkoutDetails = CheckoutService.loadCheckoutDetails(session.id)
+        updateMembershipPreview()
+    }
+
+    function selectPaidOrder(order) {
+        selectedSession = null
+        selectedRecent = order
+        selectedRecentDetails = CheckoutService.loadPaidOrderDetails(order.id)
+        clearMembershipState()
+        paymentMethod = ""
+        splitPayment = false
+        splitCashAmount = ""
+        splitCardAmount = ""
+    }
+
+    function performCheckout() {
+        if (!selectedSession || !checkoutReady)
+            return
+
+        var payments = []
+
+        if (splitPayment) {
+            var cashAmount = Number(splitCashAmount)
+            var cardAmount = Number(splitCardAmount)
+
+            if (!isFinite(cashAmount) || !isFinite(cardAmount))
+                return
+
+            if (cashAmount <= 0 || cardAmount <= 0)
+                return
+
+            var totalPaid = cashAmount + cardAmount
+
+            if (Math.abs(totalPaid - finalTotalPreview) > 0.005)
+                return
+
+            payments = [
+                {
+                    method: "cash",
+                    amount: Math.round(cashAmount * 100)
+                },
+                {
+                    method: "card",
+                    amount: Math.round(cardAmount * 100)
+                }
+            ]
+        } else {
+            payments = [
+                {
+                    method: paymentMethod,
+                    amount: Math.round(finalTotalPreview * 100)
+                }
+            ]
+        }
+
+        if (CheckoutService.completeCheckout({
+                                                "orderSessionId": selectedSession.id,
+                                                "memberPhone": memberPhone,
+                                                "pointsToRedeem": redeemPointsRequested,
+                                                "payments": payments
+                                            })) {
+            CheckoutService.printReceipt(selectedSession.id, false)
+            reloadData()
+        }
+    }
+
     Component.onCompleted: {
         reloadData()
 
@@ -146,7 +257,7 @@ Item {
     }
 
     onSelectedSessionChanged: {
-        finalTotalPreview = selectedSession.total
+        finalTotalPreview = selectedSession ? selectedSession.total : 0
         paymentMethod = ""
         splitPayment = false
         splitCashAmount = ""
@@ -155,177 +266,347 @@ Item {
         updateMembershipPreview()
     }
 
-    RowLayout {
+    Rectangle {
         anchors.fill: parent
-        spacing: 6
+        color: Theme.background
+    }
 
-        // active orders
-        ListView {
-            Layout.preferredWidth: 360
-            Layout.fillHeight: true
-            model: activeSessions
-            spacing: 10
+    ColumnLayout {
+        anchors.fill: parent
+        anchors.margins: 12
+        spacing: 10
 
-            delegate: Rectangle {
-                width: parent.width
-                height: 72
-                radius: 6
+        // Top bar
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: 12
 
-                color: selectedSession === modelData ? Theme.surface : Theme.background
-                border.color: selectedSession === modelData ? Theme.primary(
-                                                                  ) : "transparent"
-                border.width: 2
+            Column {
+                spacing: 2
+                Layout.fillWidth: true
 
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: {
-                        selectedRecent = null
-                        selectedRecentDetails = null
-                        selectedSession = modelData
-                        memberPhone = ""
-                        memberId = 0
-                        currentPoints = 0
-                        earnedPointsPreview = 0
-                        redeemPointsRequested = 0
-                        redeemDiscountPreview = 0
-                        checkoutDetails = CheckoutService.loadCheckoutDetails(
-                                    modelData.id)
-                        updateMembershipPreview()
-                    }
+                Text {
+                    text: qsTr("Checkout")
+                    color: Theme.text
+                    font.pixelSize: Theme.fontNormal + 4
+                    font.bold: true
                 }
 
-                Column {
-                    anchors.fill: parent
-                    anchors.margins: 12
-                    spacing: 4
-
-                    Text {
-                        text: "#" + modelData.display_number
-                        color: Theme.text
-                        font.bold: true
-                        font.pixelSize: Theme.fontNormal
-                    }
-
-                    Text {
-                        text: modelData.table_name ? qsTr("Table ")
-                                                     + modelData.table_name : modelData.order_type
-                        color: Theme.secondaryText
-                        font.pixelSize: Theme.fontNormal
-                    }
+                Text {
+                    text: listMode === "open"
+                          ? qsTr("%1 open tickets").arg(activeSessions.length)
+                          : qsTr("%1 recent receipts").arg(recentOrders.length)
+                    color: Theme.secondaryText
+                    font.pixelSize: Theme.fontSmall
                 }
+            }
+
+            Button {
+                text: qsTr("Refresh")
+                hoverEnabled: false
+                focusPolicy: Qt.NoFocus
+                leftPadding: 14
+                rightPadding: 14
+                topPadding: 8
+                bottomPadding: 8
+
+                background: Rectangle {
+                    radius: 8
+                    color: Theme.surface
+                    border.color: Theme.border
+                    border.width: 1
+                }
+
+                contentItem: Text {
+                    text: qsTr("Refresh")
+                    color: Theme.text
+                    font.bold: true
+                    font.pixelSize: Theme.fontSmall
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                }
+
+                onClicked: reloadData()
             }
         }
 
-        Rectangle {
+        RowLayout {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            radius: 6
-            color: Theme.background
+            spacing: 10
 
-            ColumnLayout {
-                anchors.fill: parent
-                anchors.margins: 16
-                spacing: 14
+            // Left: tickets
+            Rectangle {
+                Layout.preferredWidth: 300
+                Layout.fillHeight: true
+                radius: 12
+                color: Theme.surface
+                border.color: Theme.border
+                border.width: 1
 
                 ColumnLayout {
-                    visible: selectedSession !== null
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
+                    anchors.fill: parent
+                    anchors.margins: 12
+                    spacing: 10
 
-                    Text {
-                        text: selectedSession ? qsTr(
-                                                    "Order #") + selectedSession.display_number : ""
-                        color: Theme.text
-                        font.pixelSize: Theme.fontNormal
-                        font.bold: true
+                    Rectangle {
+                        Layout.fillWidth: true
+                        height: 40
+                        radius: 10
+                        color: Theme.background
+
+                        RowLayout {
+                            anchors.fill: parent
+                            anchors.margins: 4
+                            spacing: 4
+
+                            Repeater {
+                                model: [
+                                    { key: "open", label: qsTr("Open") },
+                                    { key: "paid", label: qsTr("Paid") }
+                                ]
+
+                                delegate: Rectangle {
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
+                                    radius: 8
+                                    color: listMode === modelData.key ? Theme.primary() : "transparent"
+
+                                    Text {
+                                        anchors.centerIn: parent
+                                        text: modelData.label
+                                        color: listMode === modelData.key ? "white" : Theme.secondaryText
+                                        font.bold: true
+                                        font.pixelSize: Theme.fontSmall
+                                    }
+
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        onClicked: listMode = modelData.key
+                                    }
+                                }
+                            }
+                        }
                     }
 
                     ListView {
+                        id: ticketList
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        model: checkoutDetails
-                        spacing: 16
                         clip: true
+                        spacing: 8
+                        model: listMode === "open" ? activeSessions : recentOrders
 
-                        delegate: Column {
-                            spacing: 8
-                            width: parent.width
+                        delegate: Rectangle {
+                            width: ticketList.width
+                            height: 78
+                            radius: 10
+                            color: {
+                                if (listMode === "open" && selectedSession === modelData)
+                                    return Theme.background
+                                if (listMode === "paid" && selectedRecent === modelData)
+                                    return Theme.background
+                                return "transparent"
+                            }
+                            border.width: 2
+                            border.color: {
+                                if (listMode === "open" && selectedSession === modelData)
+                                    return Theme.primary()
+                                if (listMode === "paid" && selectedRecent === modelData)
+                                    return Theme.green
+                                return "transparent"
+                            }
+
+                            MouseArea {
+                                anchors.fill: parent
+                                onClicked: {
+                                    if (listMode === "open")
+                                        selectOpenSession(modelData)
+                                    else
+                                        selectPaidOrder(modelData)
+                                }
+                            }
 
                             RowLayout {
-                                spacing: 12
-                                width: parent.width
+                                anchors.fill: parent
+                                anchors.margins: 12
+                                spacing: 8
+
+                                Rectangle {
+                                    width: 6
+                                    Layout.fillHeight: true
+                                    radius: 3
+                                    color: listMode === "open" ? Theme.primary() : Theme.green
+                                }
+
+                                Column {
+                                    Layout.fillWidth: true
+                                    spacing: 4
+
+                                    Text {
+                                        text: "#" + modelData.display_number
+                                        color: Theme.text
+                                        font.bold: true
+                                        font.pixelSize: Theme.fontNormal
+                                    }
+
+                                    Text {
+                                        text: listMode === "open"
+                                              ? (modelData.table_name ? qsTr("Table ") + modelData.table_name
+                                                                      : modelData.order_type)
+                                              : formatMoney(modelData.total)
+                                        color: listMode === "paid" ? Theme.green : Theme.secondaryText
+                                        font.pixelSize: Theme.fontSmall
+                                    }
+                                }
 
                                 Text {
-                                    text: qsTr("Order ") + modelData.display_number
-                                    color: '#9f9fff'
+                                    visible: listMode === "open" && modelData.total !== undefined
+                                    text: formatMoney(modelData.total)
+                                    color: Theme.text
                                     font.bold: true
-                                    font.pixelSize: Theme.fontNormal
+                                    font.pixelSize: Theme.fontSmall
+                                }
+                            }
+                        }
+
+                        Label {
+                            anchors.centerIn: parent
+                            visible: ticketList.count === 0
+                            text: listMode === "open" ? qsTr("No open tickets")
+                                                      : qsTr("No recent receipts")
+                            color: Theme.secondaryText
+                            font.pixelSize: Theme.fontNormal
+                        }
+                    }
+                }
+            }
+
+            // Center: bill
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                radius: 12
+                color: Theme.surface
+                border.color: Theme.border
+                border.width: 1
+
+                // Empty state
+                Column {
+                    anchors.centerIn: parent
+                    spacing: 8
+                    visible: !hasOpenSelection && !hasPaidSelection
+                    width: parent.width * 0.7
+
+                    Text {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        text: qsTr("Select a ticket")
+                        color: Theme.text
+                        font.bold: true
+                        font.pixelSize: Theme.fontNormal + 2
+                    }
+
+                    Text {
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                        horizontalAlignment: Text.AlignHCenter
+                        text: qsTr("Choose an open ticket to take payment, or a paid ticket to reprint a receipt.")
+                        color: Theme.secondaryText
+                        font.pixelSize: Theme.fontSmall
+                    }
+                }
+
+                ColumnLayout {
+                    anchors.fill: parent
+                    anchors.margins: 16
+                    spacing: 12
+                    visible: hasOpenSelection || hasPaidSelection
+
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: 10
+
+                        Column {
+                            Layout.fillWidth: true
+                            spacing: 2
+
+                            Text {
+                                text: hasOpenSelection
+                                      ? qsTr("Ticket #%1").arg(selectedSession.display_number)
+                                      : qsTr("Receipt #%1").arg(selectedRecentDetails.display_number)
+                                color: Theme.text
+                                font.bold: true
+                                font.pixelSize: Theme.fontNormal + 2
+                            }
+
+                            Text {
+                                text: hasOpenSelection
+                                      ? (selectedSession.table_name ? qsTr("Table %1").arg(selectedSession.table_name)
+                                                                    : selectedSession.order_type)
+                                      : qsTr("Paid order")
+                                color: Theme.secondaryText
+                                font.pixelSize: Theme.fontSmall
+                            }
+                        }
+
+                        Rectangle {
+                            visible: hasOpenSelection && requireReadyForCheckout && kitchenMode !== "tickets"
+                            radius: 8
+                            implicitHeight: 28
+                            implicitWidth: chipLabel.implicitWidth + 16
+                            color: sessionIsFullyServed(checkoutDetails) ? Theme.green : Theme.orange
+
+                            Text {
+                                id: chipLabel
+                                anchors.centerIn: parent
+                                text: sessionIsFullyServed(checkoutDetails)
+                                      ? qsTr("Ready")
+                                      : qsTr("%1 pending").arg(pendingOrderCount(checkoutDetails))
+                                color: "white"
+                                font.bold: true
+                                font.pixelSize: Theme.fontSmall
+                            }
+                        }
+                    }
+
+                    Rectangle {
+                        Layout.fillWidth: true
+                        height: 1
+                        color: Theme.border
+                    }
+
+                    ListView {
+                        id: billList
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        clip: true
+                        spacing: 14
+                        model: hasOpenSelection
+                               ? checkoutDetails
+                               : (selectedRecentDetails ? selectedRecentDetails.orders : [])
+
+                        delegate: Column {
+                            width: billList.width
+                            spacing: 8
+
+                            RowLayout {
+                                width: parent.width
+                                spacing: 8
+
+                                Text {
+                                    text: qsTr("Order %1").arg(modelData.display_number)
+                                    color: Theme.primary()
+                                    font.bold: true
+                                    font.pixelSize: Theme.fontSmall
                                     Layout.fillWidth: true
                                 }
 
                                 Text {
-                                    visible: requireReadyForCheckout
-                                             && !isOrderServed(modelData)
-                                    text: qsTr("PENDING")
-                                    color: Theme.orange
-                                    font.bold: true
-                                    font.pixelSize: Theme.fontNormal
-                                }
-
-                                Text {
-                                    visible: requireReadyForCheckout
-                                             && isOrderServed(modelData)
-                                    text: qsTr("SERVED")
-                                    color: Theme.green
-                                    font.bold: true
-                                    font.pixelSize: Theme.fontNormal
-                                }
-                            }
-
-                            readonly property int qtyCol: 60
-                            readonly property int unitCol: 80
-                            readonly property int totalCol: 80
-                            readonly property int itemCol: parent.width
-                                                           - (qtyCol + unitCol + totalCol)
-
-                            RowLayout {
-                                width: parent.width
-                                spacing: 0
-
-                                Text {
-                                    text: qsTr("Item")
-                                    color: Theme.text
+                                    visible: hasOpenSelection && requireReadyForCheckout
+                                    text: isOrderServed(modelData) ? qsTr("SERVED") : qsTr("PENDING")
+                                    color: isOrderServed(modelData) ? Theme.green : Theme.orange
                                     font.bold: true
                                     font.pixelSize: Theme.fontSmall
-                                    Layout.preferredWidth: itemCol
-                                    elide: Text.ElideRight
-                                }
-
-                                Text {
-                                    text: qsTr("Qty")
-                                    color: Theme.text
-                                    font.bold: true
-                                    font.pixelSize: Theme.fontSmall
-                                    Layout.preferredWidth: qtyCol
-                                    horizontalAlignment: Text.AlignRight
-                                }
-
-                                Text {
-                                    text: qsTr("Unit")
-                                    color: Theme.text
-                                    font.bold: true
-                                    font.pixelSize: Theme.fontSmall
-                                    Layout.preferredWidth: unitCol
-                                    horizontalAlignment: Text.AlignRight
-                                }
-
-                                Text {
-                                    text: qsTr("Total")
-                                    color: Theme.text
-                                    font.bold: true
-                                    font.pixelSize: Theme.fontSmall
-                                    Layout.preferredWidth: totalCol
-                                    horizontalAlignment: Text.AlignRight
                                 }
                             }
 
@@ -334,33 +615,24 @@ Item {
 
                                 delegate: RowLayout {
                                     width: parent.width
-                                    spacing: 0
-                                    height: 32
+                                    spacing: 8
 
-                                    Row {
-                                        Layout.preferredWidth: itemCol
-                                        spacing: 6
-                                        Layout.alignment: Qt.AlignVCenter
+                                    Column {
+                                        Layout.fillWidth: true
+                                        spacing: 2
 
                                         Text {
+                                            width: parent.width
                                             text: modelData.item_name
+                                                  + (modelData.portion_size ? " (" + modelData.portion_size + ")" : "")
                                             color: Theme.text
                                             font.pixelSize: Theme.fontNormal
                                             elide: Text.ElideRight
                                         }
 
                                         Text {
-                                            visible: modelData.portion_size
-                                            text: "(" + modelData.portion_size + ")"
-                                            color: Theme.text
-                                            font.pixelSize: Theme.fontNormal
-                                            elide: Text.ElideRight
-                                        }
-
-                                        Text {
-                                            visible: modelData.notes
-                                                     && modelData.notes.length > 0
-                                            text: "(" + modelData.notes + ")"
+                                            visible: modelData.notes && modelData.notes.length > 0
+                                            text: modelData.notes
                                             color: Theme.orange
                                             font.pixelSize: Theme.fontSmall
                                             elide: Text.ElideRight
@@ -368,333 +640,316 @@ Item {
                                     }
 
                                     Text {
-                                        Layout.preferredWidth: qtyCol
-                                        text: "x" + modelData.quantity
-                                        color: Theme.text
+                                        text: "×" + modelData.quantity
+                                        color: Theme.secondaryText
                                         font.pixelSize: Theme.fontNormal
+                                        Layout.preferredWidth: 40
                                         horizontalAlignment: Text.AlignRight
-                                        verticalAlignment: Text.AlignVCenter
                                     }
 
                                     Text {
-                                        Layout.preferredWidth: unitCol
-                                        text: Number(
-                                                  modelData.unit_price).toFixed(
-                                                  2)
+                                        text: Number(modelData.total_price).toFixed(2)
                                         color: Theme.text
                                         font.pixelSize: Theme.fontNormal
+                                        Layout.preferredWidth: 72
                                         horizontalAlignment: Text.AlignRight
-                                        verticalAlignment: Text.AlignVCenter
-                                    }
-
-                                    Text {
-                                        Layout.preferredWidth: totalCol
-                                        text: Number(
-                                                  modelData.total_price).toFixed(
-                                                  2)
-                                        color: Theme.text
-                                        font.pixelSize: Theme.fontNormal
-                                        horizontalAlignment: Text.AlignRight
-                                        verticalAlignment: Text.AlignVCenter
                                     }
                                 }
                             }
                         }
                     }
+                }
+            }
+
+            // Right: pay / reprint
+            Rectangle {
+                Layout.preferredWidth: 340
+                Layout.fillHeight: true
+                radius: 12
+                color: Theme.surface
+                border.color: Theme.border
+                border.width: 1
+
+                // Placeholder when nothing is selected
+                Column {
+                    anchors.centerIn: parent
+                    spacing: 6
+                    visible: !hasOpenSelection && !hasPaidSelection
+                    width: parent.width - 32
+
+                    Text {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        text: qsTr("Payment")
+                        color: Theme.text
+                        font.bold: true
+                        font.pixelSize: Theme.fontNormal
+                    }
+
+                    Text {
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                        horizontalAlignment: Text.AlignHCenter
+                        text: qsTr("Totals and payment options will appear here.")
+                        color: Theme.secondaryText
+                        font.pixelSize: Theme.fontSmall
+                    }
+                }
+
+                // Open ticket payment panel
+                Flickable {
+                    id: payFlick
+                    anchors.fill: parent
+                    anchors.margins: 16
+                    visible: hasOpenSelection
+                    contentWidth: width
+                    contentHeight: payColumn.implicitHeight
+                    clip: true
+                    boundsBehavior: Flickable.StopAtBounds
 
                     ColumnLayout {
-                        Layout.fillWidth: true
-                        Layout.alignment: Qt.AlignBottom
-                        spacing: 12
-
-                        Row {
-                            visible: selectedSession !== null
-                            spacing: 8
-
-                            Column {
-                                spacing: 6
-
-                                visible: selectedSession !== null
-                                         && membershipEnabled
-
-                                Text {
-                                    text: qsTr("Member Phone (optional)")
-                                    color: Theme.secondaryText
-                                    font.pixelSize: Theme.fontNormal
-                                }
-
-                                Row {
-                                    spacing: 8
-
-                                    TextField {
-                                        id: memberPhoneField
-                                        width: 200
-                                        text: memberPhone
-
-                                        onTextChanged: {
-                                            memberPhone = text.trim()
-                                            membershipChecked = false
-                                            memberId = 0
-                                            currentPoints = 0
-                                            earnedPointsPreview = 0
-                                        }
-                                        onAccepted: updateMembershipPreview()
-
-                                        background: Rectangle {
-                                            radius: 4
-                                            color: Theme.background
-                                            border.color: Theme.border
-                                        }
-
-                                        color: Theme.text
-                                    }
-
-                                    Button {
-                                        text: qsTr("Check")
-                                        enabled: memberPhone.length > 0
-                                        background: Rectangle {
-                                            color: '#4faba1'
-                                            radius: 4
-                                        }
-                                        contentItem: Text {
-                                            text: qsTr("Check")
-                                            font.bold: true
-                                            anchors.centerIn: parent
-                                            horizontalAlignment: Text.AlignHCenter
-                                            verticalAlignment: Text.AlignVCenter
-                                            color: "white"
-                                            font.pixelSize: Theme.fontNormal
-                                        }
-                                        hoverEnabled: false
-                                        focusPolicy: Qt.NoFocus
-                                        onClicked: updateMembershipPreview()
-                                        height: memberPhoneField.height
-                                        anchors.verticalCenter: memberPhoneField.verticalCenter
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    Column {
-                        visible: selectedSession !== null && membershipChecked
-                        spacing: 4
+                        id: payColumn
+                        width: payFlick.width
+                        spacing: 14
 
                         Text {
-                            text: memberId > 0 ? qsTr("Current Points: ") + currentPoints : qsTr(
-                                                     "New member will be created")
-                            color: memberId > 0 ? Theme.green : Theme.orange
-                            font.pixelSize: Theme.fontNormal
+                            text: qsTr("Payment")
+                            color: Theme.text
                             font.bold: true
+                            font.pixelSize: Theme.fontNormal + 2
                         }
 
-                        Text {
-                            visible: selectedSession !== null
-                            text: qsTr(
-                                      "Points to Earn: +") + earnedPointsPreview
-                            color: Theme.primary()
-                            font.pixelSize: Theme.fontNormal
-                            font.bold: true
-                        }
-                    }
-
-                    Column {
-                        visible: selectedSession !== null && memberId > 0
-                                 && currentPoints > 0
-                        spacing: 6
-
-                        Row {
-                            spacing: 8
-
-                            Button {
-                                text: qsTr("Redeem All")
-
-                                background: Rectangle {
-                                    radius: 4
-                                    color: "#ffaa66"
-                                }
-
-                                contentItem: Text {
-                                    text: qsTr("Redeem All")
-                                    anchors.centerIn: parent
-                                    color: "black"
-                                    font.bold: true
-                                    font.pixelSize: Theme.fontNormal
-                                }
-
-                                hoverEnabled: false
-                                focusPolicy: Qt.NoFocus
-
-                                onClicked: {
-                                    redeemPointsRequested = currentPoints
-                                    updateMembershipPreview()
-                                }
-                            }
-
-                            Button {
-                                text: qsTr("Clear")
-
-                                background: Rectangle {
-                                    radius: 4
-                                    color: "#5F7DDC"
-                                }
-
-                                contentItem: Text {
-                                    text: qsTr("Clear")
-                                    anchors.centerIn: parent
-                                    color: "white"
-                                    font.bold: true
-                                    font.pixelSize: Theme.fontNormal
-                                }
-
-                                hoverEnabled: false
-                                focusPolicy: Qt.NoFocus
-
-                                onClicked: {
-                                    redeemPointsRequested = 0
-                                    updateMembershipPreview()
-                                }
-                            }
-                        }
-                    }
-
-                    Column {
-                        visible: selectedSession !== null
-                        spacing: 6
-
-                        Text {
-                            text: qsTr("Payment Method")
-                            color: Theme.secondaryText
-                            font.pixelSize: Theme.fontNormal
-                        }
-
-                        Row {
-                            spacing: 8
-
-                            Button {
-                                text: qsTr("Cash")
-
-                                background: Rectangle {
-                                    radius: 4
-                                    color: paymentMethod === "cash"
-                                        ? Theme.primary()
-                                        : Theme.surface
-                                }
-
-                                contentItem: Text {
-                                    text: qsTr("Cash")
-                                    color: paymentMethod === "cash"
-                                        ? "white"
-                                        : Theme.text
-                                    font.bold: true
-                                    font.pixelSize: Theme.fontNormal
-                                    horizontalAlignment: Text.AlignHCenter
-                                    verticalAlignment: Text.AlignVCenter
-                                }
-
-                                hoverEnabled: false
-                                focusPolicy: Qt.NoFocus
-
-                                onClicked: {
-                                    paymentMethod = "cash"
-                                    splitPayment = false
-                                    splitCashAmount = ""
-                                    splitCardAmount = ""
-                                }
-                            }
-
-                            Button {
-                                text: qsTr("Card")
-
-                                background: Rectangle {
-                                    radius: 4
-                                    color: paymentMethod === "card"
-                                        ? Theme.primary()
-                                        : Theme.surface
-                                }
-
-                                contentItem: Text {
-                                    text: qsTr("Card")
-                                    color: paymentMethod === "card"
-                                        ? "white"
-                                        : Theme.text
-                                    font.bold: true
-                                    font.pixelSize: Theme.fontNormal
-                                    horizontalAlignment: Text.AlignHCenter
-                                    verticalAlignment: Text.AlignVCenter
-                                }
-
-                                hoverEnabled: false
-                                focusPolicy: Qt.NoFocus
-
-                                onClicked: {
-                                    paymentMethod = "card"
-                                    splitPayment = false
-                                    splitCashAmount = ""
-                                    splitCardAmount = ""
-                                }
-                            }
-
-                            Button {
-                                text: qsTr("Split")
-
-                                background: Rectangle {
-                                    radius: 4
-                                    color: splitPayment
-                                        ? Theme.primary()
-                                        : Theme.surface
-                                }
-
-                                contentItem: Text {
-                                    text: qsTr("Split")
-                                    color: splitPayment
-                                        ? "white"
-                                        : Theme.text
-                                    font.bold: true
-                                    font.pixelSize: Theme.fontNormal
-                                    horizontalAlignment: Text.AlignHCenter
-                                    verticalAlignment: Text.AlignVCenter
-                                }
-
-                                hoverEnabled: false
-                                focusPolicy: Qt.NoFocus
-
-                                onClicked: {
-                                    paymentMethod = ""
-                                    splitPayment = true
-
-                                    if (selectedSession) {
-                                        splitCashAmount = (
-                                            finalTotalPreview / 2
-                                        ).toFixed(2)
-
-                                        splitCardAmount = (
-                                            finalTotalPreview -
-                                            Number(splitCashAmount)
-                                        ).toFixed(2)
-                                    }
-                                }
-                            }
-                        }
-
-                        Column {
-                            visible: splitPayment
+                        ColumnLayout {
+                            visible: membershipEnabled
+                            Layout.fillWidth: true
                             spacing: 6
-                            width: parent.width
 
                             Text {
-                                text: qsTr("Cash Amount")
+                                text: qsTr("Member phone")
                                 color: Theme.secondaryText
-                                font.pixelSize: Theme.fontNormal
+                                font.pixelSize: Theme.fontSmall
+                            }
+
+                            RowLayout {
+                                Layout.fillWidth: true
+                                spacing: 8
+
+                                TextField {
+                                    id: memberPhoneField
+                                    Layout.fillWidth: true
+                                    text: memberPhone
+                                    placeholderText: qsTr("Optional")
+
+                                    onTextChanged: {
+                                        memberPhone = text.trim()
+                                        membershipChecked = false
+                                        memberId = 0
+                                        currentPoints = 0
+                                        earnedPointsPreview = 0
+                                    }
+                                    onAccepted: updateMembershipPreview()
+
+                                    background: Rectangle {
+                                        radius: 8
+                                        color: Theme.background
+                                        border.color: Theme.border
+                                    }
+
+                                    color: Theme.text
+                                }
+
+                                Button {
+                                    text: qsTr("Check")
+                                    enabled: memberPhone.length > 0
+                                    hoverEnabled: false
+                                    focusPolicy: Qt.NoFocus
+                                    Layout.preferredHeight: memberPhoneField.height
+
+                                    background: Rectangle {
+                                        radius: 8
+                                        color: enabled ? Theme.primary() : Theme.background
+                                    }
+
+                                    contentItem: Text {
+                                        text: qsTr("Check")
+                                        color: enabled ? "white" : Theme.secondaryText
+                                        font.bold: true
+                                        font.pixelSize: Theme.fontSmall
+                                        horizontalAlignment: Text.AlignHCenter
+                                        verticalAlignment: Text.AlignVCenter
+                                    }
+
+                                    onClicked: updateMembershipPreview()
+                                }
+                            }
+
+                            Text {
+                                visible: membershipChecked
+                                text: memberId > 0 ? qsTr("Points: %1").arg(currentPoints)
+                                                   : qsTr("New member will be created")
+                                color: memberId > 0 ? Theme.green : Theme.orange
+                                font.pixelSize: Theme.fontSmall
+                                font.bold: true
+                            }
+
+                            Text {
+                                visible: membershipChecked
+                                text: qsTr("Will earn +%1").arg(earnedPointsPreview)
+                                color: Theme.primary()
+                                font.pixelSize: Theme.fontSmall
+                                font.bold: true
+                            }
+
+                            RowLayout {
+                                visible: memberId > 0 && currentPoints > 0
+                                Layout.fillWidth: true
+                                spacing: 8
+
+                                Button {
+                                    text: qsTr("Redeem all")
+                                    Layout.fillWidth: true
+                                    hoverEnabled: false
+                                    focusPolicy: Qt.NoFocus
+
+                                    background: Rectangle {
+                                        radius: 8
+                                        color: Theme.orange
+                                    }
+
+                                    contentItem: Text {
+                                        text: qsTr("Redeem all")
+                                        anchors.centerIn: parent
+                                        color: "black"
+                                        font.bold: true
+                                        font.pixelSize: Theme.fontSmall
+                                    }
+
+                                    onClicked: {
+                                        redeemPointsRequested = currentPoints
+                                        updateMembershipPreview()
+                                    }
+                                }
+
+                                Button {
+                                    text: qsTr("Clear")
+                                    Layout.fillWidth: true
+                                    hoverEnabled: false
+                                    focusPolicy: Qt.NoFocus
+
+                                    background: Rectangle {
+                                        radius: 8
+                                        color: Theme.background
+                                        border.color: Theme.border
+                                        border.width: 1
+                                    }
+
+                                    contentItem: Text {
+                                        text: qsTr("Clear")
+                                        anchors.centerIn: parent
+                                        color: Theme.text
+                                        font.bold: true
+                                        font.pixelSize: Theme.fontSmall
+                                    }
+
+                                    onClicked: {
+                                        redeemPointsRequested = 0
+                                        updateMembershipPreview()
+                                    }
+                                }
+                            }
+                        }
+
+                        ColumnLayout {
+                            Layout.fillWidth: true
+                            spacing: 6
+
+                            Text {
+                                text: qsTr("Method")
+                                color: Theme.secondaryText
+                                font.pixelSize: Theme.fontSmall
+                            }
+
+                            RowLayout {
+                                Layout.fillWidth: true
+                                spacing: 6
+
+                                Repeater {
+                                    model: [
+                                        { key: "cash", label: qsTr("Cash") },
+                                        { key: "card", label: qsTr("Card") },
+                                        { key: "split", label: qsTr("Split") }
+                                    ]
+
+                                    delegate: Button {
+                                        Layout.fillWidth: true
+                                        hoverEnabled: false
+                                        focusPolicy: Qt.NoFocus
+                                        topPadding: 10
+                                        bottomPadding: 10
+
+                                        readonly property bool selected: modelData.key === "split"
+                                                                         ? splitPayment
+                                                                         : paymentMethod === modelData.key
+
+                                        background: Rectangle {
+                                            radius: 8
+                                            color: parent.selected ? Theme.primary() : Theme.background
+                                            border.color: parent.selected ? Theme.primary() : Theme.border
+                                            border.width: 1
+                                        }
+
+                                        contentItem: Text {
+                                            text: modelData.label
+                                            color: parent.selected ? "white" : Theme.text
+                                            font.bold: true
+                                            font.pixelSize: Theme.fontSmall
+                                            horizontalAlignment: Text.AlignHCenter
+                                            verticalAlignment: Text.AlignVCenter
+                                        }
+
+                                        onClicked: {
+                                            if (modelData.key === "split") {
+                                                paymentMethod = ""
+                                                splitPayment = true
+                                                if (selectedSession) {
+                                                    splitCashAmount = (finalTotalPreview / 2).toFixed(2)
+                                                    splitCardAmount = (finalTotalPreview - Number(splitCashAmount)).toFixed(2)
+                                                }
+                                            } else {
+                                                paymentMethod = modelData.key
+                                                splitPayment = false
+                                                splitCashAmount = ""
+                                                splitCardAmount = ""
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        ColumnLayout {
+                            visible: splitPayment
+                            Layout.fillWidth: true
+                            spacing: 6
+
+                            Text {
+                                text: qsTr("Cash amount")
+                                color: Theme.secondaryText
+                                font.pixelSize: Theme.fontSmall
                             }
 
                             TextField {
                                 id: splitCashField
-
-                                width: parent.width
+                                Layout.fillWidth: true
                                 text: splitCashAmount
                                 placeholderText: currencySymbol + "0.00"
                                 inputMethodHints: Qt.ImhFormattedNumbersOnly
+
+                                background: Rectangle {
+                                    radius: 8
+                                    color: Theme.background
+                                    border.color: Theme.border
+                                }
+                                color: Theme.text
 
                                 onTextChanged: {
                                     if (!activeFocus || updatingSplitPayment)
@@ -712,7 +967,6 @@ Item {
                                         cash = finalTotalPreview
 
                                     splitCashAmount = text
-
                                     updatingSplitPayment = true
 
                                     var cashCents = Math.round(cash * 100)
@@ -720,7 +974,6 @@ Item {
                                     var cardCents = Math.max(0, totalCents - cashCents)
 
                                     splitCardAmount = (cardCents / 100).toFixed(2)
-
                                     updatingSplitPayment = false
                                 }
 
@@ -731,18 +984,24 @@ Item {
                             }
 
                             Text {
-                                text: qsTr("Card Amount")
+                                text: qsTr("Card amount")
                                 color: Theme.secondaryText
-                                font.pixelSize: Theme.fontNormal
+                                font.pixelSize: Theme.fontSmall
                             }
 
                             TextField {
                                 id: splitCardField
-
-                                width: parent.width
+                                Layout.fillWidth: true
                                 text: splitCardAmount
                                 placeholderText: currencySymbol + "0.00"
                                 inputMethodHints: Qt.ImhFormattedNumbersOnly
+
+                                background: Rectangle {
+                                    radius: 8
+                                    color: Theme.background
+                                    border.color: Theme.border
+                                }
+                                color: Theme.text
 
                                 onTextChanged: {
                                     if (!activeFocus || updatingSplitPayment)
@@ -760,7 +1019,6 @@ Item {
                                         card = finalTotalPreview
 
                                     splitCardAmount = text
-
                                     updatingSplitPayment = true
 
                                     var cardCents = Math.round(card * 100)
@@ -768,7 +1026,6 @@ Item {
                                     var cashCents = Math.max(0, totalCents - cardCents)
 
                                     splitCashAmount = (cashCents / 100).toFixed(2)
-
                                     updatingSplitPayment = false
                                 }
 
@@ -778,350 +1035,227 @@ Item {
                                 }
                             }
                         }
-                    }
 
-                    Column {
-                        spacing: 6
-
-                        Text {
-                            text: selectedSession ? qsTr("Subtotal: ") + currencySymbol
-                                                    + selectedSession.subtotal.toFixed(
-                                                        2) : ""
-                            color: Theme.text
-                            font.pixelSize: Theme.fontNormal
+                        Rectangle {
+                            Layout.fillWidth: true
+                            height: 1
+                            color: Theme.border
                         }
 
-                        Text {
-                            text: selectedSession ? qsTr("Tax: ") + currencySymbol
-                                                    + selectedSession.tax.toFixed(
-                                                        2) : ""
-                            color: Theme.text
-                            font.pixelSize: Theme.fontNormal
-                        }
-
-                        Text {
-                            visible: redeemDiscountPreview > 0
-                            text: selectedSession ? qsTr("Discount: -") + currencySymbol
-                                                    + redeemDiscountPreview.toFixed(
-                                                        2) : ""
-                            color: Theme.orange
-                            font.bold: true
-                            font.pixelSize: Theme.fontNormal
-                        }
-
-                        Text {
-                            text: selectedSession ? qsTr("Total: ") + currencySymbol
-                                                    + finalTotalPreview.toFixed(
-                                                        2) : ""
-                            color: Theme.text
-                            font.bold: true
-                            font.pixelSize: Theme.fontNormal
-                        }
-                    }
-
-                    Button {
-                        text: qsTr("Checkout")
-                        enabled: canCheckout
-
-                        leftPadding: 10
-                        rightPadding: 10
-                        topPadding: 10
-                        bottomPadding: 10
-                        Layout.topMargin: 15
-
-                        background: Rectangle {
-                            radius: 6
-                            color: enabled ? Theme.primary() : Theme.surface
-                        }
-
-                        contentItem: Text {
-                            text: qsTr("Checkout")
-                            color: enabled ? "white" : Theme.secondaryText
-                            font.bold: true
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                            font.pixelSize: Theme.fontNormal
-                        }
-
-                        hoverEnabled: false
-                        focusPolicy: Qt.NoFocus
-
-                        onClicked: {
-                            if (!selectedSession)
-                                return
-
-                            var payments = []
-
-                            if (splitPayment) {
-                                var cashAmount = Number(splitCashAmount)
-                                var cardAmount = Number(splitCardAmount)
-
-                                if (!isFinite(cashAmount) || !isFinite(cardAmount))
-                                    return
-
-                                if (cashAmount <= 0 || cardAmount <= 0)
-                                    return
-
-                                var totalPaid = cashAmount + cardAmount
-
-                                if (Math.abs(totalPaid - finalTotalPreview) > 0.005)
-                                    return
-
-                                payments = [
-                                    {
-                                        method: "cash",
-                                        amount: Math.round(cashAmount * 100)
-                                    },
-                                    {
-                                        method: "card",
-                                        amount: Math.round(cardAmount * 100)
-                                    }
-                                ]
-                            } else {
-                                payments = [
-                                    {
-                                        method: paymentMethod,
-                                        amount: Math.round(finalTotalPreview * 100)
-                                    }
-                                ]
-                            }
-
-                            if (CheckoutService.completeCheckout({
-                                orderSessionId: selectedSession.id,
-                                memberPhone: memberPhone,
-                                pointsToRedeem: redeemPointsRequested,
-                                payments: payments
-                            })) {
-                                var printed = CheckoutService.printReceipt(
-                                    selectedSession.id, false)
-
-                                reloadData()
-                            }
-                        }
-                    }
-                }
-
-                // recent orders detail
-                ColumnLayout {
-                    visible: selectedRecentDetails !== null
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-
-                    Text {
-                        text: selectedRecentDetails
-                              !== null ? qsTr("Order #") + selectedRecentDetails.display_number : ""
-                        color: Theme.text
-                        font.pixelSize: Theme.fontNormal
-                        font.bold: true
-                    }
-
-                    ListView {
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        spacing: 16
-                        clip: true
-
-                        model: selectedRecentDetails ? selectedRecentDetails.orders : []
-
-                        delegate: Column {
-                            width: parent.width
-                            spacing: 8
+                        ColumnLayout {
+                            Layout.fillWidth: true
+                            spacing: 6
 
                             RowLayout {
-                                width: parent.width
-                                spacing: 12
-
+                                Layout.fillWidth: true
                                 Text {
-                                    text: qsTr("Order ") + modelData.display_number
-                                    color: '#9f9fff'
-                                    font.bold: true
-                                    font.pixelSize: Theme.fontNormal
+                                    text: qsTr("Subtotal")
+                                    color: Theme.secondaryText
+                                    font.pixelSize: Theme.fontSmall
                                     Layout.fillWidth: true
                                 }
+                                Text {
+                                    text: selectedSession ? formatMoney(selectedSession.subtotal) : ""
+                                    color: Theme.text
+                                    font.pixelSize: Theme.fontSmall
+                                }
                             }
 
-                            readonly property int qtyCol: 60
-                            readonly property int unitCol: 80
-                            readonly property int totalCol: 80
-                            readonly property int itemCol: parent.width
-                                                           - (qtyCol + unitCol + totalCol)
+                            RowLayout {
+                                Layout.fillWidth: true
+                                Text {
+                                    text: qsTr("Tax")
+                                    color: Theme.secondaryText
+                                    font.pixelSize: Theme.fontSmall
+                                    Layout.fillWidth: true
+                                }
+                                Text {
+                                    text: selectedSession ? formatMoney(selectedSession.tax) : ""
+                                    color: Theme.text
+                                    font.pixelSize: Theme.fontSmall
+                                }
+                            }
 
                             RowLayout {
-                                width: parent.width
-                                spacing: 0
-
+                                visible: redeemDiscountPreview > 0
+                                Layout.fillWidth: true
                                 Text {
-                                    text: qsTr("Item")
-                                    color: Theme.text
-                                    font.bold: true
+                                    text: qsTr("Discount")
+                                    color: Theme.orange
                                     font.pixelSize: Theme.fontSmall
-                                    Layout.preferredWidth: itemCol
-                                    elide: Text.ElideRight
+                                    font.bold: true
+                                    Layout.fillWidth: true
                                 }
-
                                 Text {
-                                    text: qsTr("Qty")
-                                    color: Theme.text
-                                    font.bold: true
+                                    text: selectedSession ? "-" + formatMoney(redeemDiscountPreview) : ""
+                                    color: Theme.orange
                                     font.pixelSize: Theme.fontSmall
-                                    Layout.preferredWidth: qtyCol
-                                    horizontalAlignment: Text.AlignRight
-                                }
-
-                                Text {
-                                    text: qsTr("Unit")
-                                    color: Theme.text
                                     font.bold: true
-                                    font.pixelSize: Theme.fontSmall
-                                    Layout.preferredWidth: unitCol
-                                    horizontalAlignment: Text.AlignRight
                                 }
+                            }
 
+                            RowLayout {
+                                Layout.fillWidth: true
                                 Text {
                                     text: qsTr("Total")
                                     color: Theme.text
                                     font.bold: true
-                                    font.pixelSize: Theme.fontSmall
-                                    Layout.preferredWidth: totalCol
-                                    horizontalAlignment: Text.AlignRight
+                                    font.pixelSize: Theme.fontNormal
+                                    Layout.fillWidth: true
                                 }
-                            }
-
-                            Repeater {
-                                model: modelData.items
-
-                                delegate: RowLayout {
-                                    width: parent.width
-                                    spacing: 0
-                                    height: 32
-
-                                    Row {
-                                        Layout.preferredWidth: itemCol
-                                        spacing: 6
-
-                                        Text {
-                                            text: modelData.item_name
-                                            color: Theme.text
-                                            font.pixelSize: Theme.fontNormal
-                                            elide: Text.ElideRight
-                                        }
-
-                                        Text {
-                                            visible: modelData.portion_size
-                                            text: "(" + modelData.portion_size + ")"
-                                            color: Theme.text
-                                            font.pixelSize: Theme.fontNormal
-                                            elide: Text.ElideRight
-                                        }
-
-                                        Text {
-                                            visible: modelData.notes
-                                                     && modelData.notes.length > 0
-                                            text: "(" + modelData.notes + ")"
-                                            color: Theme.orange
-                                            font.pixelSize: Theme.fontSmall
-                                            elide: Text.ElideRight
-                                        }
-                                    }
-
-                                    Text {
-                                        Layout.preferredWidth: qtyCol
-                                        text: "x" + modelData.quantity
-                                        color: Theme.text
-                                        font.pixelSize: Theme.fontNormal
-                                        horizontalAlignment: Text.AlignRight
-                                    }
-
-                                    Text {
-                                        Layout.preferredWidth: unitCol
-                                        text: Number(
-                                                  modelData.unit_price).toFixed(
-                                                  2)
-                                        color: Theme.text
-                                        font.pixelSize: Theme.fontNormal
-                                        horizontalAlignment: Text.AlignRight
-                                    }
-
-                                    Text {
-                                        Layout.preferredWidth: totalCol
-                                        text: Number(
-                                                  modelData.total_price).toFixed(
-                                                  2)
-                                        color: Theme.text
-                                        font.pixelSize: Theme.fontNormal
-                                        horizontalAlignment: Text.AlignRight
-                                    }
+                                Text {
+                                    text: selectedSession ? formatMoney(finalTotalPreview) : ""
+                                    color: Theme.text
+                                    font.bold: true
+                                    font.pixelSize: Theme.fontNormal + 2
                                 }
                             }
                         }
-                    }
 
-                    Rectangle {
-                        Layout.fillWidth: true
-                        height: 1
-                        color: Theme.border
+                        Text {
+                            visible: hasOpenSelection && !canCheckout
+                            text: qsTr("Kitchen items are still pending.")
+                            color: Theme.orange
+                            font.pixelSize: Theme.fontSmall
+                            wrapMode: Text.WordWrap
+                            Layout.fillWidth: true
+                        }
+
+                        Text {
+                            visible: hasOpenSelection && canCheckout && !paymentReady
+                            text: qsTr("Choose a payment method to continue.")
+                            color: Theme.secondaryText
+                            font.pixelSize: Theme.fontSmall
+                            wrapMode: Text.WordWrap
+                            Layout.fillWidth: true
+                        }
+
+                        Button {
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: 48
+                            text: qsTr("Checkout")
+                            enabled: checkoutReady
+                            hoverEnabled: false
+                            focusPolicy: Qt.NoFocus
+
+                            background: Rectangle {
+                                radius: 10
+                                color: parent.enabled ? Theme.primary() : Theme.background
+                            }
+
+                            contentItem: Text {
+                                text: qsTr("Checkout")
+                                color: parent.enabled ? "white" : Theme.secondaryText
+                                font.bold: true
+                                font.pixelSize: Theme.fontNormal
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
+                            }
+
+                            onClicked: performCheckout()
+                        }
+                    }
+                }
+
+                // Paid ticket reprint panel
+                ColumnLayout {
+                    anchors.fill: parent
+                    anchors.margins: 16
+                    spacing: 14
+                    visible: hasPaidSelection
+
+                    Text {
+                        text: qsTr("Receipt")
+                        color: Theme.text
+                        font.bold: true
+                        font.pixelSize: Theme.fontNormal + 2
                     }
 
                     ColumnLayout {
                         Layout.fillWidth: true
                         spacing: 6
 
-                        Text {
-                            text: selectedRecentDetails ? qsTr("Subtotal: ") + currencySymbol
-                                                    + selectedRecentDetails.subtotal.toFixed(
-                                                        2) : ""
-                            color: Theme.text
-                            font.pixelSize: Theme.fontNormal
+                        RowLayout {
+                            Layout.fillWidth: true
+                            Text {
+                                text: qsTr("Subtotal")
+                                color: Theme.secondaryText
+                                font.pixelSize: Theme.fontSmall
+                                Layout.fillWidth: true
+                            }
+                            Text {
+                                text: selectedRecentDetails ? formatMoney(selectedRecentDetails.subtotal) : ""
+                                color: Theme.text
+                                font.pixelSize: Theme.fontSmall
+                            }
                         }
 
-                        Text {
-                            text: selectedRecentDetails ? qsTr("Tax: ") + currencySymbol
-                                                    + selectedRecentDetails.tax.toFixed(
-                                                        2) : ""
-                            color: Theme.text
-                            font.pixelSize: Theme.fontNormal
+                        RowLayout {
+                            Layout.fillWidth: true
+                            Text {
+                                text: qsTr("Tax")
+                                color: Theme.secondaryText
+                                font.pixelSize: Theme.fontSmall
+                                Layout.fillWidth: true
+                            }
+                            Text {
+                                text: selectedRecentDetails ? formatMoney(selectedRecentDetails.tax) : ""
+                                color: Theme.text
+                                font.pixelSize: Theme.fontSmall
+                            }
                         }
 
-                        Text {
-                            visible: selectedRecentDetails
-                                     && selectedRecentDetails.discount > 0
-                            text: selectedRecentDetails
-                                  && selectedRecentDetails.discount
-                                  > 0 ? qsTr("Discount: -") + currencySymbol
-                                        + selectedRecentDetails.discount.toFixed(
-                                            2) : ""
-                            color: Theme.orange
-                            font.pixelSize: Theme.fontNormal
-                            font.bold: true
+                        RowLayout {
+                            visible: selectedRecentDetails && selectedRecentDetails.discount > 0
+                            Layout.fillWidth: true
+                            Text {
+                                text: qsTr("Discount")
+                                color: Theme.orange
+                                font.pixelSize: Theme.fontSmall
+                                font.bold: true
+                                Layout.fillWidth: true
+                            }
+                            Text {
+                                text: selectedRecentDetails ? "-" + formatMoney(selectedRecentDetails.discount) : ""
+                                color: Theme.orange
+                                font.pixelSize: Theme.fontSmall
+                                font.bold: true
+                            }
                         }
 
-                        Text {
-                            text: selectedRecentDetails ? qsTr("Total: ") + currencySymbol
-                                                    + selectedRecentDetails.total.toFixed(
-                                                        2) : ""
-                            color: Theme.green
-                            font.bold: true
-                            font.pixelSize: Theme.fontNormal
+                        RowLayout {
+                            Layout.fillWidth: true
+                            Text {
+                                text: qsTr("Total")
+                                color: Theme.text
+                                font.bold: true
+                                font.pixelSize: Theme.fontNormal
+                                Layout.fillWidth: true
+                            }
+                            Text {
+                                text: selectedRecentDetails ? formatMoney(selectedRecentDetails.total) : ""
+                                color: Theme.green
+                                font.bold: true
+                                font.pixelSize: Theme.fontNormal + 2
+                            }
                         }
                     }
 
+                    Item { Layout.fillHeight: true }
+
                     Button {
-                        Layout.topMargin: 15
-
-                        leftPadding: 10
-                        rightPadding: 10
-                        topPadding: 10
-                        bottomPadding: 10
-
-                        text: qsTr("Reprint Receipt")
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 48
+                        hoverEnabled: false
+                        focusPolicy: Qt.NoFocus
 
                         background: Rectangle {
-                            radius: 6
+                            radius: 10
                             color: Theme.primary()
                         }
 
                         contentItem: Text {
-                            text: qsTr("Reprint Receipt")
+                            text: qsTr("Reprint receipt")
                             color: "white"
                             font.bold: true
                             font.pixelSize: Theme.fontNormal
@@ -1129,73 +1263,9 @@ Item {
                             verticalAlignment: Text.AlignVCenter
                         }
 
-                        hoverEnabled: false
-                        focusPolicy: Qt.NoFocus
-
                         onClicked: {
-                            var printed = CheckoutService.printReceipt(
-                                        selectedRecentDetails.id, true)
+                            CheckoutService.printReceipt(selectedRecentDetails.id, true)
                         }
-                    }
-                }
-            }
-        }
-
-        // recent orders
-        ListView {
-            Layout.preferredWidth: 300
-            Layout.fillHeight: true
-            model: recentOrders
-            spacing: 10
-
-            header: Column {
-                spacing: 10
-
-                Label {
-                    text: qsTr("Recent Paid Orders")
-                    font.pixelSize: Theme.fontNormal
-                    font.bold: true
-                    color: Theme.text
-                }
-            }
-
-            delegate: Rectangle {
-                width: parent.width
-                height: 72
-                radius: 6
-
-                color: selectedRecent === modelData ? Theme.surface : Theme.background
-                border.color: selectedRecent === modelData ? "#66ddaa" : "transparent"
-                border.width: 2
-
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: {
-                        selectedSession = null
-
-                        selectedRecent = modelData
-
-                        selectedRecentDetails = CheckoutService.loadPaidOrderDetails(
-                                    modelData.id)
-                    }
-                }
-
-                Column {
-                    anchors.fill: parent
-                    anchors.margins: 12
-                    spacing: 4
-
-                    Text {
-                        text: "#" + modelData.display_number
-                        color: Theme.text
-                        font.bold: true
-                        font.pixelSize: Theme.fontNormal
-                    }
-
-                    Text {
-                        text: currencySymbol + modelData.total.toFixed(2)
-                        color: Theme.green
-                        font.pixelSize: Theme.fontNormal
                     }
                 }
             }

@@ -8,6 +8,7 @@
 #include "../data/OrderItemRepository.h"
 #include "../data/TableRepository.h"
 #include "../data/MenuRepository.h"
+#include "../data/OrderItemModifierRepository.h"
 #include "../data/PrinterRepository.h"
 #include "./TaxCalculationService.h"
 #include "./SettingService.h"
@@ -32,6 +33,7 @@ public:
                           TableRepository &tableRepo,
                           MenuRepository &menuRepo,
                           PrinterRepository &printerRepo,
+                          OrderItemModifierRepository &orderItemModifierRepo,
                           TaxCalculationService &taxService,
                           KitchenTicketBuilder &kitchenTicketBuilder,
                           SettingService &settingService,
@@ -64,6 +66,7 @@ private:
     TableRepository &m_tableRepo;
     MenuRepository &m_menuRepo;
     PrinterRepository &m_printerRepo;
+    OrderItemModifierRepository &m_orderItemModifierRepo;
     TaxCalculationService &m_taxService;
     KitchenTicketBuilder &m_kitchenTicketBuilder;
     SettingService &m_settingService;

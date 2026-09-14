@@ -118,6 +118,8 @@ bool DatabaseManager::runMigrations()
         "core/database/migrations/021_create_receipt_snapshot.sql",
         "core/database/migrations/022_alter_membership_transactions.sql",
         "core/database/migrations/023_create_payments.sql",
+        "core/database/migrations/024_create_modifiers.sql",
+        "core/database/migrations/025_create_order_item_modifiers.sql",
     };
 
     for (const QString &fileName : migrationFiles)

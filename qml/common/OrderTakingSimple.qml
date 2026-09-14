@@ -6,6 +6,8 @@ import trudia.Theme 1.0
 import "../components"
 
 Item {
+    id: root
+
     width: 800
     height: 600
 
@@ -23,27 +25,78 @@ Item {
 
     property var kitchenSettings: ({})
     property bool allowEditAfterSend: false
-
     property string currencySymbol: SettingService.currencySymbol()
 
     function changeOrderType(newType) {
         currentOrderType = newType
     }
 
+    function parseModifiers(line) {
+        try {
+            return JSON.parse(line.modifiersJson || "[]")
+        } catch (e) {
+            return []
+        }
+    }
+
+    function modifierKeyFromList(modifiers) {
+        const ids = []
+        for (let i = 0; i < modifiers.length; ++i)
+            ids.push(modifiers[i].id)
+        ids.sort(function (a, b) { return a - b })
+        return ids.join(",")
+    }
+
+    function addPayloadToOrder(payload) {
+        const key = payload.modifierKey || ""
+        for (var i = 0; i < orderModel.count; i++) {
+            const line = orderModel.get(i)
+            if (line.menuItemId === payload.menuItemId
+                    && line.modifierKey === key
+                    && (line.notes || "") === "") {
+                orderModel.setProperty(i, "qty", line.qty + 1)
+                return
+            }
+        }
+
+        orderModel.append({
+                              "orderItemId": -1,
+                              "menuItemId": payload.menuItemId,
+                              "name": payload.name,
+                              "qty": 1,
+                              "price": payload.price,
+                              "basePrice": payload.basePrice,
+                              "notes": "",
+                              "modifierKey": key,
+                              "modifierLabel": payload.modifierLabel || "",
+                              "modifiersJson": JSON.stringify(payload.modifiers || [])
+                          })
+    }
+
     function reloadOrder() {
         if (currentOrderId < 0)
             return
+
         orderModel.clear()
         var items = OrderService.getOrderItems(currentOrderId)
 
         for (var i = 0; i < items.length; i++) {
+            const mods = items[i].modifiers || []
+            const names = []
+            for (var j = 0; j < mods.length; j++)
+                names.push(mods[j].name)
+
             orderModel.append({
                                   "orderItemId": items[i].id,
                                   "menuItemId": items[i].item_id,
                                   "name": items[i].item_name,
                                   "qty": items[i].quantity,
                                   "price": items[i].price,
-                                  "notes": items[i].notes || ""
+                                  "basePrice": items[i].base_price !== undefined ? items[i].base_price : items[i].price,
+                                  "notes": items[i].notes || "",
+                                  "modifierKey": root.modifierKeyFromList(mods),
+                                  "modifierLabel": names.join(", "),
+                                  "modifiersJson": JSON.stringify(mods)
                               })
         }
     }
@@ -51,13 +104,11 @@ Item {
     function recomputeMeta() {
         var s = 0
         var items = 0
-
         for (var i = 0; i < orderModel.count; i++) {
-            var item = orderModel.get(i)
-            s += item.qty * item.price
-            items += item.qty
+            var line = orderModel.get(i)
+            s += line.qty * line.price
+            items += line.qty
         }
-
         subtotal = s
         discount = 0
         total = subtotal - discount
@@ -67,17 +118,25 @@ Item {
     Component.onCompleted: {
         recomputeMeta()
         kitchenSettings = SettingService.getKitchenSettings()
-        if (kitchenSettings && kitchenSettings.hasOwnProperty(
-                    "allow_edit_after_send")) {
+        if (kitchenSettings && kitchenSettings.hasOwnProperty("allow_edit_after_send"))
             allowEditAfterSend = kitchenSettings["allow_edit_after_send"]
+    }
+
+    ModifierPickerDialog {
+        id: modifierPicker
+        onConfirmed: function (payload) {
+            root.addPayloadToOrder(payload)
         }
+    }
+
+    ListModel {
+        id: orderModel
     }
 
     ColumnLayout {
         anchors.fill: parent
         spacing: 8
 
-        // Order mode selection
         RowLayout {
             Layout.fillWidth: true
             spacing: 0
@@ -89,7 +148,6 @@ Item {
 
             Button {
                 id: dineInBtn
-                text: qsTr("Dine In")
                 checkable: true
                 ButtonGroup.group: modeGroup
                 Layout.fillWidth: true
@@ -98,12 +156,12 @@ Item {
                 topPadding: 15
                 bottomPadding: 15
                 checked: currentOrderType === "dine_in"
-
+                hoverEnabled: false
+                focusPolicy: Qt.NoFocus
                 background: Rectangle {
                     radius: 6
                     color: dineInBtn.checked ? Theme.primary() : Theme.surface
                 }
-
                 contentItem: Label {
                     text: qsTr("Dine In")
                     color: dineInBtn.checked ? "white" : Theme.text
@@ -112,18 +170,11 @@ Item {
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                 }
-
-                onClicked: {
-                    changeOrderType("dine_in")
-                }
-
-                hoverEnabled: false
-                focusPolicy: Qt.NoFocus
+                onClicked: changeOrderType("dine_in")
             }
 
             Button {
                 id: takeawayBtn
-                text: qsTr("Takeaway")
                 checkable: true
                 ButtonGroup.group: modeGroup
                 Layout.fillWidth: true
@@ -132,12 +183,12 @@ Item {
                 topPadding: 15
                 bottomPadding: 15
                 checked: currentOrderType === "takeaway"
-
+                hoverEnabled: false
+                focusPolicy: Qt.NoFocus
                 background: Rectangle {
                     radius: 6
                     color: takeawayBtn.checked ? Theme.primary() : Theme.surface
                 }
-
                 contentItem: Label {
                     text: qsTr("Takeaway")
                     color: takeawayBtn.checked ? "white" : Theme.text
@@ -146,18 +197,11 @@ Item {
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                 }
-
-                onClicked: {
-                    changeOrderType("takeaway")
-                }
-
-                hoverEnabled: false
-                focusPolicy: Qt.NoFocus
+                onClicked: changeOrderType("takeaway")
             }
 
             Button {
                 id: deliveryBtn
-                text: qsTr("Delivery")
                 checkable: true
                 ButtonGroup.group: modeGroup
                 Layout.fillWidth: true
@@ -166,12 +210,12 @@ Item {
                 topPadding: 15
                 bottomPadding: 15
                 checked: currentOrderType === "delivery"
-
+                hoverEnabled: false
+                focusPolicy: Qt.NoFocus
                 background: Rectangle {
                     radius: 6
                     color: deliveryBtn.checked ? Theme.primary() : Theme.surface
                 }
-
                 contentItem: Label {
                     text: qsTr("Delivery")
                     color: deliveryBtn.checked ? "white" : Theme.text
@@ -180,13 +224,7 @@ Item {
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                 }
-
-                onClicked: {
-                    changeOrderType("delivery")
-                }
-
-                hoverEnabled: false
-                focusPolicy: Qt.NoFocus
+                onClicked: changeOrderType("delivery")
             }
         }
 
@@ -195,7 +233,6 @@ Item {
             Layout.fillHeight: true
             spacing: 8
 
-            // Categories
             Rectangle {
                 width: 220
                 color: Theme.background
@@ -214,23 +251,21 @@ Item {
                     }
 
                     ListView {
-                        id: categoryListView
                         Layout.fillWidth: true
                         Layout.fillHeight: true
                         model: MenuService.categoryModel
                         clip: true
 
                         delegate: Rectangle {
-                            id: cateogryRect
+                            required property int id
+                            required property string name
 
-                            width: parent.width
+                            width: ListView.view.width
                             height: 44
                             radius: 4
-                            color: MenuService.currentCategoryId === id ? Theme.primary(
-                                                                              ) : Theme.background
+                            color: MenuService.currentCategoryId === id ? Theme.primary() : Theme.background
 
                             Text {
-                                visible: true
                                 text: name
                                 anchors.verticalCenter: parent.verticalCenter
                                 anchors.left: parent.left
@@ -241,16 +276,13 @@ Item {
 
                             MouseArea {
                                 anchors.fill: parent
-                                onClicked: {
-                                    MenuService.currentCategoryId = id
-                                }
+                                onClicked: MenuService.currentCategoryId = id
                             }
                         }
                     }
                 }
             }
 
-            // Menu items
             Rectangle {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
@@ -262,50 +294,10 @@ Item {
                     spacing: 12
 
                     Text {
-                        text: MenuService.currentCategoryId
-                              !== -1 ? qsTr("Menu Items") : qsTr(
-                                           "Select a category")
+                        text: MenuService.currentCategoryId !== -1 ? qsTr("Menu Items") : qsTr("Select a category")
                         font.bold: true
                         font.pixelSize: Theme.fontNormal
                         color: Theme.text
-                    }
-
-                    Rectangle {
-                        visible: MenuService.currentCategoryId !== -1
-                        Layout.fillWidth: true
-                        height: 36
-                        color: Theme.background
-                        radius: 4
-
-                        RowLayout {
-                            anchors.fill: parent
-                            anchors.margins: 8
-
-                            Text {
-                                text: qsTr("Item")
-                                Layout.fillWidth: true
-                                color: Theme.secondaryText
-                                font.pixelSize: Theme.fontSmall
-                                font.bold: true
-                            }
-                            Text {
-                                text: qsTr("Price")
-                                width: 70
-                                color: Theme.secondaryText
-                                font.pixelSize: Theme.fontSmall
-                                font.bold: true
-                            }
-                            Text {
-                                text: qsTr("Portion")
-                                width: 100
-                                color: Theme.secondaryText
-                                font.pixelSize: Theme.fontSmall
-                                font.bold: true
-                            }
-                            Item {
-                                width: 60
-                            }
-                        }
                     }
 
                     ListView {
@@ -317,17 +309,18 @@ Item {
                         spacing: 4
 
                         delegate: Rectangle {
-                            id: itemRect
-                            height: 44
-                            width: ListView.view.width
-                            radius: 4
-                            color: Theme.background
+                            required property int id
+                            required property string item
+                            required property double price
+                            required property string portion
+                            required property bool available
 
-                            property bool isEditing: false
-                            property string editedName: item
-                            property string editedPrice: price.toFixed(2)
-                            property string editedPortion: portion || ""
-                            property bool editedAvailable: available
+                            width: ListView.view.width
+                            height: 54
+                            radius: 6
+                            color: Theme.surface
+                            border.color: Theme.border
+                            border.width: 1
 
                             RowLayout {
                                 anchors.fill: parent
@@ -336,80 +329,40 @@ Item {
 
                                 Column {
                                     Layout.fillWidth: true
-
                                     Text {
                                         text: item
                                         color: available ? Theme.text : Theme.secondaryText
                                         font.pixelSize: Theme.fontNormal
                                     }
-
                                     Text {
-                                        visible: !available
-                                        text: qsTr("Unavailable")
-                                        color: "red"
+                                        text: available
+                                              ? ((portion || "") + (portion ? " · " : "") + currencySymbol + price.toFixed(2))
+                                              : qsTr("Unavailable")
+                                        color: available ? Theme.secondaryText : "#c62828"
                                         font.pixelSize: Theme.fontSmall
                                     }
                                 }
 
-                                Text {
-                                    visible: true
-                                    text: currencySymbol + price.toFixed(2)
-                                    width: 70
-                                    color: available ? Theme.text : Theme.secondaryText
-                                    font.pixelSize: Theme.fontNormal
-                                }
-
-                                Text {
-                                    visible: true
-                                    text: portion || "-"
-                                    width: 100
-                                    color: available ? Theme.text : Theme.secondaryText
-                                    font.pixelSize: Theme.fontNormal
-                                }
-
                                 Button {
-                                    text: qsTr("Add")
                                     enabled: available
-                                    background: Rectangle {
-                                        color: available ? Theme.primary(
-                                                               ) : Theme.secondaryText
-                                        radius: 4
-                                    }
+                                    hoverEnabled: false
+                                    focusPolicy: Qt.NoFocus
                                     leftPadding: 15
                                     rightPadding: 15
                                     topPadding: 5
                                     bottomPadding: 5
+                                    background: Rectangle {
+                                        color: available ? Theme.primary() : Theme.secondaryText
+                                        radius: 4
+                                    }
                                     contentItem: Text {
                                         text: qsTr("Add")
                                         color: "white"
                                         font.pixelSize: Theme.fontNormal
-                                        anchors.centerIn: parent
+                                        horizontalAlignment: Text.AlignHCenter
+                                        verticalAlignment: Text.AlignVCenter
                                     }
-                                    onClicked: {
-                                        var obj = modelData
-
-                                        for (var i = 0; i < orderModel.count; i++) {
-                                            if (orderModel.get(
-                                                        i).menuItemId === id) {
-                                                orderModel.setProperty(
-                                                            i, "qty",
-                                                            orderModel.get(
-                                                                i).qty + 1)
-                                                return
-                                            }
-                                        }
-
-                                        orderModel.append({
-                                                              "menuItemId": id,
-                                                              "name": item,
-                                                              "qty": 1,
-                                                              "price": price,
-                                                              "notes": ""
-                                                          })
-                                    }
-
-                                    hoverEnabled: false
-                                    focusPolicy: Qt.NoFocus
+                                    onClicked: modifierPicker.openFor(id, item, price, portion || "")
                                 }
                             }
                         }
@@ -417,7 +370,6 @@ Item {
                 }
             }
 
-            // Current order
             Rectangle {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
@@ -426,36 +378,28 @@ Item {
 
                 ColumnLayout {
                     anchors.fill: parent
-                    spacing: 2
+                    spacing: 6
 
                     RowLayout {
                         Layout.fillWidth: true
                         spacing: 8
 
-                        // new order btn
                         Button {
-                            text: qsTr("New Order")
+                            hoverEnabled: false
+                            focusPolicy: Qt.NoFocus
                             leftPadding: 12
                             rightPadding: 12
                             topPadding: 10
                             bottomPadding: 10
-
-                            background: Rectangle {
-                                color: "#4faba1"
-                                radius: 4
-                            }
-
+                            background: Rectangle { color: "#4faba1"; radius: 4 }
                             contentItem: Text {
                                 text: qsTr("New Order")
-                                anchors.centerIn: parent
                                 color: "white"
                                 font.pixelSize: Theme.fontNormal
                                 font.bold: true
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
                             }
-
-                            hoverEnabled: false
-                            focusPolicy: Qt.NoFocus
-
                             onClicked: {
                                 orderModel.clear()
                                 currentOrderId = -1
@@ -465,69 +409,51 @@ Item {
                             }
                         }
 
-                        // edit order btn
                         Button {
                             visible: allowEditAfterSend
-                            text: qsTr("Edit Order")
+                            hoverEnabled: false
+                            focusPolicy: Qt.NoFocus
                             leftPadding: 12
                             rightPadding: 12
                             topPadding: 10
                             bottomPadding: 10
-
-                            background: Rectangle {
-                                color: "#5F7DDC"
-                                radius: 4
-                            }
-
+                            background: Rectangle { color: "#5F7DDC"; radius: 4 }
                             contentItem: Text {
                                 text: qsTr("Edit Order")
-                                anchors.centerIn: parent
                                 color: "white"
                                 font.pixelSize: Theme.fontNormal
                                 font.bold: true
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
                             }
-
-                            hoverEnabled: false
-                            focusPolicy: Qt.NoFocus
-
                             onClicked: {
                                 editOrdersList = OrderService.getOpenOrders()
                                 showEditOrdersList = true
                             }
                         }
 
-                        // print ticket btn
                         Button {
                             visible: currentOrderId >= 0 && kitchenSettings
                                      && (kitchenSettings.mode == "tickets" || kitchenSettings.mode == "hybrid")
                                      && kitchenSettings.ticket_print_timing === "manual"
-                            text: qsTr("Print Ticket")
+                            hoverEnabled: false
+                            focusPolicy: Qt.NoFocus
                             leftPadding: 12
                             rightPadding: 12
                             topPadding: 10
                             bottomPadding: 10
-
-                            background: Rectangle {
-                                color: Theme.primary()
-                                radius: 4
-                            }
-
+                            background: Rectangle { color: Theme.primary(); radius: 4 }
                             contentItem: Text {
                                 text: qsTr("Print Ticket")
-                                anchors.centerIn: parent
                                 color: "white"
                                 font.pixelSize: Theme.fontNormal
                                 font.bold: true
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
                             }
-
-                            hoverEnabled: false
-                            focusPolicy: Qt.NoFocus
-
                             onClicked: {
-                                if (currentOrderId < 0)
-                                    return
-
-                                OrderService.printKitchenTicket(currentOrderId)
+                                if (currentOrderId >= 0)
+                                    OrderService.printKitchenTicket(currentOrderId)
                             }
                         }
                     }
@@ -539,10 +465,8 @@ Item {
                         color: Theme.text
                     }
 
-                    // Table selection
                     ColumnLayout {
-                        visible: currentOrderType === "dine_in"
-                                 && !showEditOrdersList
+                        visible: currentOrderType === "dine_in" && !showEditOrdersList
                         spacing: 8
 
                         Label {
@@ -556,22 +480,21 @@ Item {
                             Layout.fillWidth: true
                             Layout.preferredHeight: 98
                             clip: true
-
                             model: TableService.tableModel
-
                             cellWidth: 80
                             cellHeight: 48
 
                             delegate: Rectangle {
+                                required property int id
+                                required property string name
+                                required property string status
+
                                 width: 72
                                 height: 40
                                 radius: 4
-
                                 color: status == "occupied" ? "#ff4d4d" : "#4caf50"
-
                                 border.width: 3
-                                border.color: selectedTableId === id ? Theme.primary(
-                                                                           ) : Theme.background
+                                border.color: selectedTableId === id ? Theme.primary() : Theme.background
 
                                 Label {
                                     anchors.centerIn: parent
@@ -584,10 +507,7 @@ Item {
                                 MouseArea {
                                     anchors.fill: parent
                                     enabled: currentOrderType === "dine_in"
-
-                                    onClicked: {
-                                        selectedTableId = id
-                                    }
+                                    onClicked: selectedTableId = id
                                 }
                             }
 
@@ -598,46 +518,56 @@ Item {
                         }
                     }
 
-                    ListModel {
-                        id: orderModel
-                    }
-
                     ListView {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
                         spacing: 6
                         model: orderModel
                         visible: !showEditOrdersList
+                        clip: true
 
                         delegate: Rectangle {
+                            required property int index
+                            required property string name
+                            required property int qty
+                            required property real price
+                            required property string notes
+                            required property string modifierLabel
+
                             width: ListView.view.width
-                            height: 56
+                            implicitHeight: lineCol.implicitHeight + 12
                             radius: 4
                             color: Theme.surface
 
-                            property string notes: ""
+                            ColumnLayout {
+                                id: lineCol
+                                anchors.left: parent.left
+                                anchors.right: parent.right
+                                anchors.top: parent.top
+                                anchors.margins: 6
+                                spacing: 4
 
-                            RowLayout {
-                                anchors.fill: parent
-                                anchors.margins: 4
-                                spacing: 8
-
-                                ColumnLayout {
-                                    spacing: 2
-
+                                RowLayout {
                                     Label {
                                         text: name
                                         color: Theme.text
                                         font.pixelSize: Theme.fontNormal
+                                        Layout.fillWidth: true
+                                        wrapMode: Text.WordWrap
                                     }
                                     Label {
-                                        text: currencySymbol + price.toFixed(2)
-                                        font.pixelSize: Theme.fontNormal
+                                        text: currencySymbol + (qty * price).toFixed(2)
                                         color: Theme.secondaryText
+                                        font.pixelSize: Theme.fontNormal
                                     }
                                 }
 
-                                Item {
+                                Label {
+                                    visible: modifierLabel.length > 0
+                                    text: modifierLabel
+                                    color: Theme.secondaryText
+                                    font.pixelSize: Theme.fontSmall
+                                    wrapMode: Text.WordWrap
                                     Layout.fillWidth: true
                                 }
 
@@ -649,14 +579,8 @@ Item {
                                         Layout.preferredWidth: 28
                                         Layout.preferredHeight: 28
                                         padding: 0
-
                                         enabled: qty > 1
-
-                                        onClicked: {
-                                            orderModel.setProperty(index,
-                                                                   "qty",
-                                                                   qty - 1)
-                                        }
+                                        onClicked: orderModel.setProperty(index, "qty", qty - 1)
                                     }
                                     Label {
                                         text: qty
@@ -670,59 +594,41 @@ Item {
                                         Layout.preferredWidth: 28
                                         Layout.preferredHeight: 28
                                         padding: 0
-
-                                        onClicked: {
-                                            orderModel.setProperty(index,
-                                                                   "qty",
-                                                                   qty + 1)
-                                        }
+                                        onClicked: orderModel.setProperty(index, "qty", qty + 1)
                                     }
 
                                     TextField {
-                                        Layout.preferredWidth: 100
+                                        Layout.fillWidth: true
                                         placeholderText: qsTr("Add a remark")
                                         text: notes
-                                        onTextChanged: notes = text
                                         leftPadding: 5
                                         rightPadding: 5
                                         topPadding: 5
                                         bottomPadding: 5
                                         placeholderTextColor: Theme.secondaryText
+                                        color: Theme.text
+                                        font.pixelSize: Theme.fontNormal
                                         background: Rectangle {
                                             color: Theme.background
                                             radius: 4
                                             border.color: Theme.border
                                             border.width: 1
                                         }
-                                        color: Theme.text
-                                        font.pixelSize: Theme.fontNormal
-
-                                        onTextEdited: {
-                                            orderModel.setProperty(index,
-                                                                   "notes",
-                                                                   text)
-                                        }
+                                        onTextEdited: orderModel.setProperty(index, "notes", text)
                                     }
 
                                     Button {
-                                        text: qsTr("Remove")
-                                        background: Rectangle {
-                                            color: "#ff4d4d"
-                                            radius: 4
-                                        }
+                                        hoverEnabled: false
+                                        focusPolicy: Qt.NoFocus
+                                        background: Rectangle { color: "#ff4d4d"; radius: 4 }
                                         contentItem: Text {
                                             text: qsTr("Remove")
                                             color: "white"
-                                            anchors.centerIn: parent
                                             font.pixelSize: Theme.fontNormal
+                                            horizontalAlignment: Text.AlignHCenter
+                                            verticalAlignment: Text.AlignVCenter
                                         }
-
-                                        onClicked: {
-                                            orderModel.remove(index)
-                                        }
-
-                                        hoverEnabled: false
-                                        focusPolicy: Qt.NoFocus
+                                        onClicked: orderModel.remove(index)
                                     }
                                 }
                             }
@@ -737,6 +643,7 @@ Item {
                         spacing: 6
 
                         delegate: Rectangle {
+                            required property var modelData
                             width: ListView.view.width
                             height: 75
                             radius: 4
@@ -746,26 +653,20 @@ Item {
                                 anchors.fill: parent
                                 anchors.margins: 6
                                 spacing: 2
-
                                 Text {
-                                    text: "Order #" + modelData.display_number
-                                          + " (" + modelData.type + ")"
+                                    text: qsTr("Order #%1 (%2)").arg(modelData.display_number).arg(modelData.type)
                                     color: Theme.text
                                     font.bold: true
                                     font.pixelSize: Theme.fontNormal
                                 }
-
                                 Text {
-                                    text: "Status: " + modelData.status
+                                    text: qsTr("Status: %1").arg(modelData.status)
                                     color: Theme.secondaryText
                                     font.pixelSize: Theme.fontNormal
                                 }
-
                                 Text {
-                                    text: modelData.table_name ? "Table: "
-                                                                 + modelData.table_name : ""
-                                    visible: modelData.table_name !== undefined
-                                             && modelData.table_name !== null
+                                    text: modelData.table_name ? qsTr("Table: %1").arg(modelData.table_name) : ""
+                                    visible: modelData.table_name !== undefined && modelData.table_name !== null
                                     color: Theme.secondaryText
                                     font.pixelSize: Theme.fontNormal
                                 }
@@ -775,13 +676,10 @@ Item {
                                 anchors.fill: parent
                                 onClicked: {
                                     showEditOrdersList = false
-
                                     currentOrderId = modelData.id
                                     currentOrderType = modelData.type
-
                                     selectedTableId = modelData.table_id !== undefined
                                             && modelData.table_id !== null ? modelData.table_id : -1
-
                                     reloadOrder()
                                 }
                             }
@@ -794,119 +692,60 @@ Item {
                         Layout.leftMargin: 8
                         visible: !showEditOrdersList
 
-                        function calculateMeta() {
-                            var subtotal = 0
-                            var totalItems = 0
-                            for (var i = 0; i < orderModel.count; i++) {
-                                var item = orderModel.get(i)
-                                subtotal += item.qty * item.price
-                                totalItems += item.qty
-                            }
-                            return {
-                                "subtotal": subtotal,
-                                "total": subtotal,
-                                "totalItems": totalItems,
-                                "discount": 0
-                            }
-                        }
-
                         RowLayout {
-                            spacing: 8
-                            Label {
-                                text: qsTr("Total Items:")
-                                color: Theme.text
-                                font.bold: true
-                                font.pixelSize: Theme.fontNormal
-                            }
-                            Label {
-                                text: totalItems
-                                color: Theme.text
-                                font.pixelSize: Theme.fontNormal
-                            }
+                            Label { text: qsTr("Total Items:"); color: Theme.text; font.bold: true; font.pixelSize: Theme.fontNormal }
+                            Label { text: totalItems; color: Theme.text; font.pixelSize: Theme.fontNormal }
                         }
-
                         RowLayout {
-                            spacing: 8
-                            Label {
-                                text: qsTr("Subtotal:")
-                                color: Theme.text
-                                font.bold: true
-                                font.pixelSize: Theme.fontNormal
-                            }
-                            Label {
-                                text: currencySymbol + subtotal.toFixed(2)
-                                color: Theme.text
-                                font.pixelSize: Theme.fontNormal
-                            }
+                            Label { text: qsTr("Subtotal:"); color: Theme.text; font.bold: true; font.pixelSize: Theme.fontNormal }
+                            Label { text: currencySymbol + subtotal.toFixed(2); color: Theme.text; font.pixelSize: Theme.fontNormal }
                         }
-
                         RowLayout {
-                            spacing: 8
-                            Label {
-                                text: qsTr("Total:")
-                                color: Theme.text
-                                font.bold: true
-                                font.pixelSize: Theme.fontNormal
-                            }
-                            Label {
-                                text: currencySymbol + total.toFixed(2)
-                                color: Theme.text
-                                font.pixelSize: Theme.fontNormal
-                            }
+                            Label { text: qsTr("Total:"); color: Theme.text; font.bold: true; font.pixelSize: Theme.fontNormal }
+                            Label { text: currencySymbol + total.toFixed(2); color: Theme.text; font.pixelSize: Theme.fontNormal }
                         }
 
                         Connections {
                             target: orderModel
-                            function onCountChanged() {
-                                recomputeMeta()
-                            }
-
-                            function onDataChanged() {
-                                recomputeMeta()
-                            }
+                            function onCountChanged() { root.recomputeMeta() }
+                            function onDataChanged() { root.recomputeMeta() }
                         }
                     }
 
                     Button {
-                        text: currentOrderId >= 0 ? qsTr("Edit Order") : qsTr(
-                                                        "Place Order")
                         Layout.fillWidth: true
                         visible: !showEditOrdersList
-
                         enabled: orderModel.count > 0
-                                 && (currentOrderType !== "dine_in"
-                                     || selectedTableId >= 0)
-
+                                 && (currentOrderType !== "dine_in" || selectedTableId >= 0)
+                        hoverEnabled: false
+                        focusPolicy: Qt.NoFocus
                         leftPadding: 15
                         rightPadding: 15
                         topPadding: 15
                         bottomPadding: 15
                         Layout.topMargin: 15
-                        background: Rectangle {
-                            color: Theme.primary()
-                            radius: 4
-                        }
+                        background: Rectangle { color: Theme.primary(); radius: 4 }
                         contentItem: Text {
-                            text: currentOrderId >= 0 ? qsTr("Edit Order") : qsTr(
-                                                            "Place Order")
+                            text: currentOrderId >= 0 ? qsTr("Edit Order") : qsTr("Place Order")
                             font.bold: true
-                            anchors.centerIn: parent
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
                             color: "white"
                             font.pixelSize: Theme.fontNormal
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
                         }
-
                         onClicked: {
                             if (orderModel.count === 0)
                                 return
+
                             var items = []
                             for (var i = 0; i < orderModel.count; i++) {
                                 var e = orderModel.get(i)
                                 items.push({
                                                "menuItemId": e.menuItemId,
                                                "qty": e.qty,
-                                               "notes": e.notes
+                                               "notes": e.notes,
+                                               "price": e.price,
+                                               "modifiers": root.parseModifiers(e)
                                            })
                             }
 
@@ -916,12 +755,9 @@ Item {
                             }
 
                             if (currentOrderId >= 0) {
-                                OrderService.updateOrder(currentOrderId,
-                                                         currentOrderType,
-                                                         items, options)
+                                OrderService.updateOrder(currentOrderId, currentOrderType, items, options)
                             } else {
-                                currentOrderId = OrderService.createOrder(
-                                            currentOrderType, items, options)
+                                currentOrderId = OrderService.createOrder(currentOrderType, items, options)
                             }
 
                             orderModel.clear()
@@ -929,9 +765,6 @@ Item {
                             selectedTableId = -1
                             currentOrderId = -1
                         }
-
-                        hoverEnabled: false
-                        focusPolicy: Qt.NoFocus
                     }
                 }
             }

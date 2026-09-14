@@ -141,21 +141,53 @@ Item {
                     }
 
                     ColumnLayout {
-                        spacing: 4
+                        spacing: 6
+                        Layout.fillWidth: true
 
                         Repeater {
                             model: modelData.items
 
                             ColumnLayout {
                                 spacing: 2
+                                Layout.fillWidth: true
 
                                 Text {
                                     text: {
                                         var portion = modelData.portion_size
-                                        return modelData.item_name + (portion && portion.length > 0 ? " (" + portion + ")" : "") + " x" + modelData.quantity
+                                        return modelData.item_name
+                                                + (portion && portion.length > 0
+                                                   ? " (" + portion + ")"
+                                                   : "")
+                                                + " x" + modelData.quantity
                                     }
                                     color: Theme.text
                                     font.pixelSize: Theme.fontNormal
+                                }
+
+                                ColumnLayout {
+                                    visible: modelData.modifiers
+                                             && modelData.modifiers.length > 0
+                                    spacing: 1
+                                    Layout.leftMargin: 12
+
+                                    Repeater {
+                                        model: modelData.modifiers
+
+                                        Text {
+                                            text: {
+                                                var priceDelta = modelData.price_delta
+
+                                                if (priceDelta > 0) {
+                                                    return "+ " + modelData.name
+                                                }
+
+                                                return "+ " + modelData.name
+                                            }
+
+                                            color: Theme.text
+                                            font.pixelSize: Theme.fontNormal - 1
+                                        }
+                                    }
                                 }
 
                                 Text {
@@ -200,8 +232,10 @@ Item {
                         focusPolicy: Qt.NoFocus
 
                         onClicked: {
-                            KitchenOrderService.markState(modelData.id,
-                                                          nextState)
+                            KitchenOrderService.markState(
+                                modelData.id,
+                                nextState
+                            )
                         }
                     }
                 }

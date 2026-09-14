@@ -23,5 +23,7 @@
         <file>core/database/migrations/021_create_receipt_snapshot.sql</file>
         <file>core/database/migrations/022_alter_membership_transactions.sql</file>
         <file>core/database/migrations/023_create_payments.sql</file>
+        <file>core/database/migrations/024_create_modifiers.sql</file>
+        <file>core/database/migrations/025_create_order_item_modifiers.sql</file>
     </qresource>
 </RCC>

@@ -8,6 +8,7 @@
 #include "../data/OrderSessionRepository.h"
 #include "../data/OrderRepository.h"
 #include "../data/OrderItemRepository.h"
+#include "../data/OrderItemModifierRepository.h"
 #include "../data/TableRepository.h"
 
 class KitchenOrderService : public QObject
@@ -21,6 +22,7 @@ public:
     explicit KitchenOrderService(OrderSessionRepository &orderSessionRepo,
                                  OrderRepository &orderRepo,
                                  OrderItemRepository &orderItemRepo,
+                                 OrderItemModifierRepository &orderItemModifierRepo,
                                  TableRepository &tableRepo);
 
     Q_INVOKABLE QVariantList getOrdersByStatus(const QString &status) const;
@@ -30,6 +32,7 @@ private:
     OrderSessionRepository &m_orderSessionRepo;
     OrderRepository &m_orderRepo;
     OrderItemRepository &m_orderItemRepo;
+    OrderItemModifierRepository &m_orderItemModifierRepo;
     TableRepository &m_tableRepo;
 };
 

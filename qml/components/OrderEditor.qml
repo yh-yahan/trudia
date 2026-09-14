@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import Trudia.Services 1.0
 import trudia.Theme 1.0
+import "../components"
 
 Item {
     id: root
@@ -12,9 +13,7 @@ Item {
 
     property int tableId: -1
     property string tableLabel: ""
-
     property int currentOrderId: -1
-
     property string orderType: "dine_in"
 
     property real subtotal: 0
@@ -25,26 +24,70 @@ Item {
     property var kitchenSettings: ({})
     property string currencySymbol: SettingService.currencySymbol()
 
+    function popPage() {
+        if (StackView.view) {
+            StackView.view.pop()
+            return
+        }
+        var parentStack = root.parent
+        while (parentStack) {
+            if (parentStack instanceof StackView) {
+                parentStack.pop()
+                return
+            }
+            parentStack = parentStack.parent
+        }
+    }
+
     function recomputeMeta() {
         var s = 0
         var items = 0
-
         for (var i = 0; i < orderModel.count; i++) {
-            var item = orderModel.get(i)
-
-            s += item.qty * item.price
-            items += item.qty
+            var line = orderModel.get(i)
+            s += line.qty * line.price
+            items += line.qty
         }
-
         subtotal = s
         discount = 0
         total = subtotal - discount
         totalItems = items
     }
 
+    function parseModifiers(line) {
+        try {
+            return JSON.parse(line.modifiersJson || "[]")
+        } catch (e) {
+            return []
+        }
+    }
+
+    function addPayloadToOrder(payload) {
+        const key = payload.modifierKey || ""
+        for (var i = 0; i < orderModel.count; i++) {
+            const line = orderModel.get(i)
+            if (line.menuItemId === payload.menuItemId
+                    && line.modifierKey === key
+                    && (line.notes || "") === "") {
+                orderModel.setProperty(i, "qty", line.qty + 1)
+                return
+            }
+        }
+
+        orderModel.append({
+                              "menuItemId": payload.menuItemId,
+                              "name": payload.name,
+                              "qty": 1,
+                              "price": payload.price,
+                              "basePrice": payload.basePrice,
+                              "notes": "",
+                              "modifierKey": key,
+                              "modifierLabel": payload.modifierLabel || "",
+                              "modifiersJson": JSON.stringify(payload.modifiers || [])
+                          })
+    }
+
     Component.onCompleted: {
         recomputeMeta()
-
         kitchenSettings = SettingService.getKitchenSettings()
     }
 
@@ -57,6 +100,13 @@ Item {
         id: orderModel
     }
 
+    ModifierPickerDialog {
+        id: modifierPicker
+        onConfirmed: function (payload) {
+            root.addPayloadToOrder(payload)
+        }
+    }
+
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: 8
@@ -65,10 +115,8 @@ Item {
         Rectangle {
             Layout.fillWidth: true
             height: 64
-
             radius: 6
             color: Theme.surface
-
             border.width: 1
             border.color: Theme.border
 
@@ -78,89 +126,56 @@ Item {
                 spacing: 12
 
                 Button {
-                    text: qsTr("Back")
-
+                    hoverEnabled: false
+                    focusPolicy: Qt.NoFocus
                     leftPadding: 12
                     rightPadding: 12
                     topPadding: 8
                     bottomPadding: 8
-
                     background: Rectangle {
                         radius: 6
                         color: Theme.background
                         border.width: 1
                         border.color: Theme.border
                     }
-
                     contentItem: Label {
                         text: qsTr("Back")
                         color: Theme.text
                         font.pixelSize: Theme.fontNormal
-
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                     }
-
-                    hoverEnabled: false
-                    focusPolicy: Qt.NoFocus
-
-                    onClicked: {
-                        if (StackView.view) {
-                            StackView.view.pop()
-                        } else {
-                            var parentStack = root.parent
-                            while (parentStack) {
-                                if (parentStack instanceof StackView) {
-                                    parentStack.pop()
-                                    return
-                                }
-                                parentStack = parentStack.parent
-                            }
-                        }
-                    }
+                    onClicked: root.popPage()
                 }
 
                 ColumnLayout {
                     spacing: 2
-
                     Label {
                         text: {
                             switch (orderType) {
-                            case "takeaway":
-                                return qsTr("Takeaway Order")
-                            case "delivery":
-                                return qsTr("Delivery Order")
-                            default:
-                                return tableLabel
+                            case "takeaway": return qsTr("Takeaway Order")
+                            case "delivery": return qsTr("Delivery Order")
+                            default: return tableLabel
                             }
                         }
-
                         font.bold: true
                         font.pixelSize: Theme.fontLarge
-
                         color: Theme.text
                     }
-
                     Label {
                         text: {
                             switch (orderType) {
-                            case "takeaway":
-                                return qsTr("Takeaway")
-                            case "delivery":
-                                return qsTr("Delivery")
-                            default:
-                                return qsTr("Dine In")
+                            case "takeaway": return qsTr("Takeaway")
+                            case "delivery": return qsTr("Delivery")
+                            default: return qsTr("Dine In")
                             }
                         }
-
                         color: Theme.secondaryText
                         font.pixelSize: Theme.fontNormal
                     }
                 }
 
-                Item {
-                    Layout.fillWidth: true
-                }
+                Item { Layout.fillWidth: true }
             }
         }
 
@@ -169,12 +184,9 @@ Item {
             Layout.fillHeight: true
             spacing: 8
 
-            // category
             Rectangle {
                 width: 220
-
                 Layout.fillHeight: true
-
                 radius: 6
                 color: Theme.background
 
@@ -185,51 +197,40 @@ Item {
 
                     Text {
                         text: qsTr("Categories")
-
                         font.bold: true
                         font.pixelSize: Theme.fontNormal
-
                         color: Theme.text
                     }
 
                     ListView {
                         id: categoryListView
-
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-
                         model: MenuService.categoryModel
-
                         clip: true
                         spacing: 4
 
                         delegate: Rectangle {
+                            required property int id
+                            required property string name
+                            required property int index
+
                             width: ListView.view.width
                             height: 44
-
                             radius: 4
-
-                            color: MenuService.currentCategoryId === id
-                                   ? Theme.primary()
-                                   : Theme.background
+                            color: MenuService.currentCategoryId === id ? Theme.primary() : Theme.background
 
                             Text {
                                 text: name
-
                                 anchors.verticalCenter: parent.verticalCenter
                                 anchors.left: parent.left
                                 anchors.leftMargin: 12
-
                                 font.pixelSize: Theme.fontNormal
-
-                                color: MenuService.currentCategoryId === id
-                                       ? "white"
-                                       : Theme.text
+                                color: MenuService.currentCategoryId === id ? "white" : Theme.text
                             }
 
                             MouseArea {
                                 anchors.fill: parent
-
                                 onClicked: {
                                     categoryListView.currentIndex = index
                                     MenuService.currentCategoryId = id
@@ -240,11 +241,9 @@ Item {
                 }
             }
 
-            // menu items
             Rectangle {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-
                 radius: 6
                 color: Theme.background
 
@@ -254,80 +253,33 @@ Item {
                     spacing: 12
 
                     Text {
-                        text: MenuService.currentCategoryId !== -1
-                              ? qsTr("Menu Items")
-                              : qsTr("Select a category")
-
+                        text: MenuService.currentCategoryId !== -1 ? qsTr("Menu Items") : qsTr("Select a category")
                         font.bold: true
                         font.pixelSize: Theme.fontNormal
-
                         color: Theme.text
-                    }
-
-                    Rectangle {
-                        visible: MenuService.currentCategoryId !== -1
-
-                        Layout.fillWidth: true
-                        height: 36
-
-                        radius: 4
-                        color: Theme.background
-
-                        RowLayout {
-                            anchors.fill: parent
-                            anchors.margins: 8
-
-                            Text {
-                                text: qsTr("Item")
-
-                                Layout.fillWidth: true
-
-                                color: Theme.secondaryText
-                                font.pixelSize: Theme.fontSmall
-                                font.bold: true
-                            }
-
-                            Text {
-                                text: qsTr("Price")
-
-                                width: 70
-
-                                color: Theme.secondaryText
-                                font.pixelSize: Theme.fontSmall
-                                font.bold: true
-                            }
-
-                            Text {
-                                text: qsTr("Portion")
-                                width: 100
-                                color: Theme.secondaryText
-                                font.pixelSize: Theme.fontSmall
-                                font.bold: true
-                            }
-
-                            Item {
-                                width: 60
-                            }
-                        }
                     }
 
                     ListView {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-
                         visible: MenuService.currentCategoryId !== -1
-
                         model: MenuService.menuItemModel
-
                         clip: true
                         spacing: 4
 
                         delegate: Rectangle {
-                            width: ListView.view.width
-                            height: 50
+                            required property int id
+                            required property string item
+                            required property double price
+                            required property string portion
+                            required property bool available
 
-                            radius: 4
-                            color: Theme.background
+                            width: ListView.view.width
+                            height: 54
+                            radius: 6
+                            color: Theme.surface
+                            border.color: Theme.border
+                            border.width: 1
 
                             RowLayout {
                                 anchors.fill: parent
@@ -336,86 +288,44 @@ Item {
 
                                 Column {
                                     Layout.fillWidth: true
-
                                     Text {
                                         text: item
                                         color: available ? Theme.text : Theme.secondaryText
                                         font.pixelSize: Theme.fontNormal
+                                        elide: Text.ElideRight
+                                        width: parent.width
                                     }
-
                                     Text {
-                                        visible: !available
-                                        text: qsTr("Unavailable")
-                                        color: "red"
+                                        text: available
+                                              ? ((portion || "") + (portion ? " · " : "") + currencySymbol + price.toFixed(2))
+                                              : qsTr("Unavailable")
+                                        color: available ? Theme.secondaryText : "#c62828"
                                         font.pixelSize: Theme.fontSmall
                                     }
                                 }
 
-                                Text {
-                                    text: currencySymbol + price.toFixed(2)
-
-                                    width: 70
-
-                                    color: available ? Theme.text : Theme.secondaryText
-                                    font.pixelSize: Theme.fontNormal
-                                }
-
-                                Text {
-                                    visible: true
-                                    text: portion || "-"
-                                    width: 100
-                                    color: available ? Theme.text : Theme.secondaryText
-                                    font.pixelSize: Theme.fontNormal
-                                }
-
                                 Button {
                                     text: qsTr("Add")
-
                                     enabled: available
-
-                                    background: Rectangle {
-                                        radius: 4
-                                        color: available ? Theme.primary() : Theme.secondaryText
-                                    }
-
+                                    hoverEnabled: false
+                                    focusPolicy: Qt.NoFocus
                                     leftPadding: 14
                                     rightPadding: 14
                                     topPadding: 6
                                     bottomPadding: 6
-
+                                    background: Rectangle {
+                                        radius: 4
+                                        color: available ? Theme.primary() : Theme.secondaryText
+                                    }
                                     contentItem: Text {
                                         text: qsTr("Add")
-
                                         color: "white"
                                         font.bold: true
                                         font.pixelSize: Theme.fontNormal
-
-                                        anchors.centerIn: parent
+                                        horizontalAlignment: Text.AlignHCenter
+                                        verticalAlignment: Text.AlignVCenter
                                     }
-
-                                    hoverEnabled: false
-                                    focusPolicy: Qt.NoFocus
-
-                                    onClicked: {
-                                        for (var i = 0; i < orderModel.count; i++) {
-                                            if (orderModel.get(i).menuItemId === id) {
-                                                orderModel.setProperty(
-                                                            i,
-                                                            "qty",
-                                                            orderModel.get(i).qty + 1)
-
-                                                return
-                                            }
-                                        }
-
-                                        orderModel.append({
-                                                              "menuItemId": id,
-                                                              "name": item,
-                                                              "qty": 1,
-                                                              "price": price,
-                                                              "notes": ""
-                                                          })
-                                    }
+                                    onClicked: modifierPicker.openFor(id, item, price, portion || "")
                                 }
                             }
                         }
@@ -423,11 +333,9 @@ Item {
                 }
             }
 
-            // order
             Rectangle {
                 Layout.preferredWidth: 420
                 Layout.fillHeight: true
-
                 radius: 6
                 color: Theme.background
 
@@ -438,53 +346,64 @@ Item {
 
                     Label {
                         text: qsTr("Current Order")
-
                         font.bold: true
                         font.pixelSize: Theme.fontLarge
-
                         color: Theme.text
                     }
 
                     ListView {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-
                         spacing: 6
                         model: orderModel
-
                         clip: true
 
                         delegate: Rectangle {
+                            required property int index
+                            required property int menuItemId
+                            required property string name
+                            required property int qty
+                            required property real price
+                            required property string notes
+                            required property string modifierLabel
+                            required property string modifiersJson
+
                             width: ListView.view.width
-                            height: 64
+                            implicitHeight: lineCol.implicitHeight + 16
+                            radius: 6
+                            color: Theme.surface
+                            border.color: Theme.border
+                            border.width: 1
 
-                            radius: 4
-                            color: Theme.background
-
-                            RowLayout {
-                                anchors.fill: parent
+                            ColumnLayout {
+                                id: lineCol
+                                anchors.left: parent.left
+                                anchors.right: parent.right
+                                anchors.top: parent.top
                                 anchors.margins: 8
-                                spacing: 8
+                                spacing: 6
 
-                                ColumnLayout {
-                                    spacing: 2
-
+                                RowLayout {
                                     Label {
                                         text: name
-
                                         color: Theme.text
                                         font.pixelSize: Theme.fontNormal
+                                        Layout.fillWidth: true
+                                        wrapMode: Text.WordWrap
                                     }
-
                                     Label {
-                                        text: currencySymbol + price.toFixed(2)
-
-                                        color: Theme.secondaryText
+                                        text: currencySymbol + (qty * price).toFixed(2)
+                                        color: Theme.text
                                         font.pixelSize: Theme.fontNormal
                                     }
                                 }
 
-                                Item {
+                                Label {
+                                    visible: modifierLabel.length > 0
+                                    text: modifierLabel
+                                    color: Theme.secondaryText
+                                    font.pixelSize: Theme.fontSmall
+                                    wrapMode: Text.WordWrap
                                     Layout.fillWidth: true
                                 }
 
@@ -493,68 +412,39 @@ Item {
 
                                     Button {
                                         text: "-"
-
                                         enabled: qty > 1
-
                                         Layout.preferredWidth: 28
                                         Layout.preferredHeight: 28
-
-                                        onClicked: {
-                                            orderModel.setProperty(
-                                                        index,
-                                                        "qty",
-                                                        qty - 1)
-                                        }
+                                        onClicked: orderModel.setProperty(index, "qty", qty - 1)
                                     }
-
                                     Label {
                                         text: qty
-
                                         Layout.preferredWidth: 24
-
                                         horizontalAlignment: Text.AlignHCenter
-
                                         color: Theme.text
                                         font.pixelSize: Theme.fontNormal
                                     }
-
                                     Button {
                                         text: "+"
-
                                         Layout.preferredWidth: 28
                                         Layout.preferredHeight: 28
-
-                                        onClicked: {
-                                            orderModel.setProperty(
-                                                        index,
-                                                        "qty",
-                                                        qty + 1)
-                                        }
+                                        onClicked: orderModel.setProperty(index, "qty", qty + 1)
                                     }
 
+                                    Item { Layout.fillWidth: true }
+
                                     Button {
-                                        text: qsTr("Remove")
-
-                                        background: Rectangle {
-                                            radius: 4
-                                            color: "#ff4d4d"
-                                        }
-
-                                        contentItem: Text {
-                                            text: qsTr("Remove")
-
-                                            color: "white"
-                                            font.pixelSize: Theme.fontNormal
-
-                                            anchors.centerIn: parent
-                                        }
-
                                         hoverEnabled: false
                                         focusPolicy: Qt.NoFocus
-
-                                        onClicked: {
-                                            orderModel.remove(index)
+                                        background: Rectangle { radius: 4; color: "#ff4d4d" }
+                                        contentItem: Text {
+                                            text: qsTr("Remove")
+                                            color: "white"
+                                            font.pixelSize: Theme.fontNormal
+                                            horizontalAlignment: Text.AlignHCenter
+                                            verticalAlignment: Text.AlignVCenter
                                         }
+                                        onClicked: orderModel.remove(index)
                                     }
                                 }
                             }
@@ -572,173 +462,75 @@ Item {
                         spacing: 4
 
                         RowLayout {
-                            Label {
-                                text: qsTr("Items:")
-
-                                font.bold: true
-                                font.pixelSize: Theme.fontNormal
-
-                                color: Theme.text
-                            }
-
-                            Item {
-                                Layout.fillWidth: true
-                            }
-
-                            Label {
-                                text: totalItems
-
-                                color: Theme.text
-                                font.pixelSize: Theme.fontNormal
-                            }
+                            Label { text: qsTr("Items:"); font.bold: true; font.pixelSize: Theme.fontNormal; color: Theme.text }
+                            Item { Layout.fillWidth: true }
+                            Label { text: totalItems; color: Theme.text; font.pixelSize: Theme.fontNormal }
                         }
-
                         RowLayout {
-                            Label {
-                                text: qsTr("Subtotal:")
-
-                                font.bold: true
-                                font.pixelSize: Theme.fontNormal
-
-                                color: Theme.text
-                            }
-
-                            Item {
-                                Layout.fillWidth: true
-                            }
-
-                            Label {
-                                text: currencySymbol + subtotal.toFixed(2)
-
-                                color: Theme.text
-                                font.pixelSize: Theme.fontNormal
-                            }
+                            Label { text: qsTr("Subtotal:"); font.bold: true; font.pixelSize: Theme.fontNormal; color: Theme.text }
+                            Item { Layout.fillWidth: true }
+                            Label { text: currencySymbol + subtotal.toFixed(2); color: Theme.text; font.pixelSize: Theme.fontNormal }
                         }
-
                         RowLayout {
-                            Label {
-                                text: qsTr("Total:")
-
-                                font.bold: true
-                                font.pixelSize: Theme.fontNormal
-
-                                color: Theme.text
-                            }
-
-                            Item {
-                                Layout.fillWidth: true
-                            }
-
-                            Label {
-                                text: currencySymbol + total.toFixed(2)
-
-                                font.bold: true
-                                font.pixelSize: Theme.fontNormal
-
-                                color: Theme.text
-                            }
+                            Label { text: qsTr("Total:"); font.bold: true; font.pixelSize: Theme.fontNormal; color: Theme.text }
+                            Item { Layout.fillWidth: true }
+                            Label { text: currencySymbol + total.toFixed(2); font.bold: true; color: Theme.text; font.pixelSize: Theme.fontNormal }
                         }
                     }
 
                     Button {
-                        text: currentOrderId >= 0
-                              ? qsTr("Update Order")
-                              : qsTr("Place Order")
-
                         Layout.fillWidth: true
-
                         enabled: orderModel.count > 0
-
+                        hoverEnabled: false
+                        focusPolicy: Qt.NoFocus
                         leftPadding: 15
                         rightPadding: 15
                         topPadding: 15
                         bottomPadding: 15
-
-                        background: Rectangle {
-                            radius: 6
-                            color: Theme.primary()
-                        }
-
+                        background: Rectangle { radius: 6; color: Theme.primary() }
                         contentItem: Text {
-                            text: currentOrderId >= 0
-                                  ? qsTr("Update Order")
-                                  : qsTr("Place Order")
-
+                            text: currentOrderId >= 0 ? qsTr("Update Order") : qsTr("Place Order")
                             color: "white"
-
                             font.bold: true
                             font.pixelSize: Theme.fontNormal
-
-                            anchors.centerIn: parent
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
                         }
-
-                        hoverEnabled: false
-                        focusPolicy: Qt.NoFocus
-
                         onClicked: {
                             if (orderModel.count === 0)
                                 return
 
                             var items = []
-
                             for (var i = 0; i < orderModel.count; i++) {
                                 var e = orderModel.get(i)
-
                                 items.push({
                                                "menuItemId": e.menuItemId,
                                                "qty": e.qty,
-                                               "notes": e.notes
+                                               "notes": e.notes,
+                                               "price": e.price,
+                                               "modifiers": root.parseModifiers(e)
                                            })
                             }
 
-                            var options = {
-                                "notes": ""
-                            }
-
-                            if (orderType === "dine_in") {
+                            var options = { "notes": "" }
+                            if (orderType === "dine_in")
                                 options.tableId = tableId
-                            }
 
                             if (currentOrderId >= 0) {
-                                OrderService.updateOrder(
-                                            currentOrderId,
-                                            orderType,
-                                            items,
-                                            options)
+                                OrderService.updateOrder(currentOrderId, orderType, items, options)
                             } else {
-                                currentOrderId = OrderService.createOrder(
-                                            orderType,
-                                            items,
-                                            options)
+                                currentOrderId = OrderService.createOrder(orderType, items, options)
                             }
 
                             orderModel.clear()
-
-                            if (StackView.view) {
-                                StackView.view.pop()
-                            } else {
-                                var parentStack = root.parent
-                                while (parentStack) {
-                                    if (parentStack instanceof StackView) {
-                                        parentStack.pop()
-                                        return
-                                    }
-                                    parentStack = parentStack.parent
-                                }
-                            }
+                            root.popPage()
                         }
                     }
 
                     Connections {
                         target: orderModel
-
-                        function onCountChanged() {
-                            recomputeMeta()
-                        }
-
-                        function onDataChanged() {
-                            recomputeMeta()
-                        }
+                        function onCountChanged() { root.recomputeMeta() }
+                        function onDataChanged() { root.recomputeMeta() }
                     }
                 }
             }

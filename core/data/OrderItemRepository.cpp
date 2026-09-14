@@ -176,7 +176,7 @@ bool OrderItemRepository::markItemsByOrderId(int orderId, const QString &status)
     return true;
 }
 
-void OrderItemRepository::create(OrderItem &orderItem)
+int OrderItemRepository::create(OrderItem &orderItem)
 {
     QSqlQuery query(m_db);
     query.prepare(R"(
@@ -196,9 +196,12 @@ void OrderItemRepository::create(OrderItem &orderItem)
 
     if (!query.exec()) {
         qCWarning(logDatabase) << "[OrderItemRepository] create failed:" << query.lastError();
+        return -1;
     }
 
     orderItem.id = query.lastInsertId().toInt();
+
+    return query.lastInsertId().toInt();
 }
 
 void OrderItemRepository::update(const OrderItem &orderItem){

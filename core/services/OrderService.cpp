@@ -2,9 +2,105 @@
 
 #include <QDate>
 #include <QRandomGenerator>
+#include <QSqlDatabase>
 #include "../constants/TableStatus.h"
 #include "../constants/ReservationStatus.h"
 #include "../logging/LoggingCategories.h"
+
+namespace {
+int modifierExtra(const QVariantList &modifiers)
+{
+    int extra = 0;
+    for (const QVariant &value : modifiers) {
+        const QVariantMap map = value.toMap();
+        if (map.contains(QStringLiteral("priceDelta")))
+            extra += map.value(QStringLiteral("priceDelta")).toInt();
+        else
+            extra += map.value(QStringLiteral("price_delta")).toInt();
+    }
+    return extra;
+}
+
+QString modifierGroupName(const QVariantMap &map)
+{
+    if (map.contains(QStringLiteral("groupName")))
+        return map.value(QStringLiteral("groupName")).toString();
+    return map.value(QStringLiteral("group_name")).toString();
+}
+
+std::optional<int> optionalId(const QVariantMap &map, const QStringList &keys)
+{
+    for (const QString &key : keys) {
+        if (!map.contains(key))
+            continue;
+        const QVariant value = map.value(key);
+        if (!value.isValid() || value.isNull())
+            continue;
+        const int id = value.toInt();
+        if (id > 0)
+            return id;
+    }
+    return std::nullopt;
+}
+
+void saveOrderItemModifiers(OrderItemModifierRepository &repo, int orderItemId, const QVariantList &modifiers)
+{
+    for (const QVariant &value : modifiers) {
+        const QVariantMap map = value.toMap();
+        const QString name = map.value(QStringLiteral("name")).toString().trimmed();
+        if (name.isEmpty()) {
+            qCWarning(logOrder) << "Skipping modifier with empty name for order item" << orderItemId;
+            continue;
+        }
+
+        OrderItemModifier row;
+        row.order_item_id = orderItemId;
+        row.modifier_id = optionalId(map, {QStringLiteral("modifierId"),
+                                           QStringLiteral("modifier_id"),
+                                           QStringLiteral("id")});
+        row.group_id = optionalId(map, {QStringLiteral("groupId"),
+                                        QStringLiteral("group_id")});
+        row.group_name = modifierGroupName(map);
+        row.name = name;
+        row.price_delta = map.contains(QStringLiteral("priceDelta"))
+                              ? map.value(QStringLiteral("priceDelta")).toInt()
+                              : map.value(QStringLiteral("price_delta")).toInt();
+
+        repo.create(row);
+    }
+}
+
+QVariantMap modifierToMap(const OrderItemModifier &modifier)
+{
+    QVariantMap map;
+    const QVariant modifierId = modifier.modifier_id.has_value()
+                                    ? QVariant(*modifier.modifier_id)
+                                    : QVariant();
+    const QVariant groupId = modifier.group_id.has_value()
+                                 ? QVariant(*modifier.group_id)
+                                 : QVariant();
+
+    map.insert(QStringLiteral("id"), modifierId);
+    map.insert(QStringLiteral("modifier_id"), modifierId);
+    map.insert(QStringLiteral("group_id"), groupId);
+    map.insert(QStringLiteral("groupId"), groupId);
+    map.insert(QStringLiteral("group_name"), modifier.group_name);
+    map.insert(QStringLiteral("groupName"), modifier.group_name);
+    map.insert(QStringLiteral("name"), modifier.name);
+    map.insert(QStringLiteral("price_delta"), modifier.price_delta);
+    map.insert(QStringLiteral("priceDelta"), modifier.price_delta);
+    return map;
+}
+
+QVariantList modifiersForItem(OrderItemModifierRepository &repo, int orderItemId)
+{
+    QVariantList list;
+    for (const auto &row : repo.getByOrderItemId(orderItemId))
+        list.append(modifierToMap(row));
+    return list;
+}
+
+} // namespace
 
 OrderService::OrderService(OrderSessionRepository &orderSessionRepo,
                            OrderRepository &orderRepo,
@@ -12,6 +108,7 @@ OrderService::OrderService(OrderSessionRepository &orderSessionRepo,
                            TableRepository &tableRepo,
                            MenuRepository &menuRepo,
                            PrinterRepository &printerRepo,
+                           OrderItemModifierRepository &orderItemModifierRepo,
                            TaxCalculationService &taxService,
                            KitchenTicketBuilder &kitchenTicketBuilder,
                            SettingService &settingService,
@@ -25,6 +122,7 @@ OrderService::OrderService(OrderSessionRepository &orderSessionRepo,
       m_tableRepo(tableRepo),
       m_menuRepo(menuRepo),
       m_printerRepo(printerRepo),
+      m_orderItemModifierRepo(orderItemModifierRepo),
       m_taxService(taxService),
       m_kitchenTicketBuilder(kitchenTicketBuilder),
       m_settingService(settingService),
@@ -49,7 +147,6 @@ int OrderService::createOrder(
 
     if (orderType == "dine_in")
     {
-        // findOpenSessionByTableId returns 0 if not found, if found, returns order session id
         int existingSessionId = m_orderSessionRepo.findOpenSessionByTableId(options.value("tableId").toInt());
         if (existingSessionId > 0)
         {
@@ -58,7 +155,6 @@ int OrderService::createOrder(
         }
         else
         {
-            // create a new session
             orderSession.table_id = options.value("tableId").toInt();
             orderSession.display_number = generateOrderSessionDisplayNumber();
             orderSession.order_type = orderType;
@@ -86,7 +182,6 @@ int OrderService::createOrder(
         if (!reservation.isEmpty() && reservation["status"].toString() == ReservationStatus::Booked)
         {
             reservation["status"] = ReservationStatus::Seated;
-
             m_reservationService.updateReservation(reservation);
         }
     }
@@ -110,7 +205,6 @@ int OrderService::createOrder(
         orderSession.id = orderSessionId;
     }
 
-    // create order
     const QString kitchenMode = m_settingService.kitchenMode();
     const bool usesKds = kitchenMode == "kds" || kitchenMode == "hybrid";
     const QString initialStatus = usesKds ? "pending" : "served";
@@ -122,9 +216,12 @@ int OrderService::createOrder(
     order.notes = options.value("notes").toString();
 
     int orderId = m_orderRepo.create(order);
+    if (orderId <= 0)
+    {
+        qCWarning(logOrder) << "createOrder failed: could not create order";
+        return -1;
+    }
 
-    // create order items
-    double subtotal = 0.0;
     for (const QVariant &v : items)
     {
         QVariantMap m = v.toMap();
@@ -146,27 +243,34 @@ int OrderService::createOrder(
             continue;
         }
 
+        const QVariantList modifiers = m.value(QStringLiteral("modifiers")).toList();
+
         OrderItem item;
         item.order_id = orderId;
         item.item_id = menu.id;
         item.item_name = menu.item;
         item.quantity = m["qty"].toInt();
         item.portion_size = menu.portion_size.value_or("");
-        item.price = menu.price;
+        item.price = menu.price + modifierExtra(modifiers);
         item.is_taxable = menu.is_taxable;
         item.notes = m["notes"].toString();
         item.item_status = initialStatus;
 
-        subtotal += item.quantity * item.price;
+        const int orderItemId = m_orderItemRepo.create(item);
+        if (orderItemId <= 0)
+        {
+            qCWarning(logOrder) << "Failed to create order item for menu" << menuId;
+            continue;
+        }
 
-        m_orderItemRepo.create(item);
+        saveOrderItemModifiers(m_orderItemModifierRepo, orderItemId, modifiers);
     }
 
     m_checkoutService.recalculateSessionTotals(orderSessionId);
 
     auto settings = m_settingService.getKitchenSettings();
 
-    if ((settings["mode"].toString() == "tickets" || 
+    if ((settings["mode"].toString() == "tickets" ||
         settings["mode"].toString() == "hybrid") &&
         settings["ticket_print_timing"].toString() == "order_created")
     {
@@ -176,8 +280,7 @@ int OrderService::createOrder(
             auto sessionOpt = m_orderSessionRepo.getById(orderSessionId);
             if (sessionOpt.has_value())
             {
-                auto items = m_orderItemRepo.getOrderItemsByOrderId(orderId);
-
+                auto printedItems = m_orderItemRepo.getOrderItemsByOrderId(orderId);
                 auto printers = m_printerRepo.getAll();
 
                 for (const auto &printer : printers)
@@ -187,14 +290,12 @@ int OrderService::createOrder(
                         QByteArray data = m_kitchenTicketBuilder.build(
                             orderOpt.value(),
                             sessionOpt.value(),
-                            items,
+                            printedItems,
                             printer
                         );
 
                         if (!m_windowsPrinterService.print(printer.system_name, data))
-                        {
                             qCWarning(logPrinter) << "Kitchen print failed.";
-                        }
                     }
                 }
             }
@@ -215,9 +316,8 @@ QVariantList OrderService::getOpenOrders()
     auto tables = m_tableRepo.getAllTables();
     QMap<int, QString> tableMap;
 
-    for (const auto &table : tables) {
+    for (const auto &table : tables)
         tableMap[table.id] = table.table_name;
-    }
 
     for (const auto &order : orders)
     {
@@ -260,6 +360,8 @@ QVariantList OrderService::getOrderItems(int orderId)
         map["price"] = item.price / 100;
         map["status"] = item.item_status;
         map["notes"] = item.notes;
+        map["portion_size"] = item.portion_size;
+        map["modifiers"] = modifiersForItem(m_orderItemModifierRepo, item.id);
 
         result.append(map);
     }
@@ -282,7 +384,6 @@ int OrderService::updateOrder(
     QSqlDatabase db = QSqlDatabase::database();
     db.transaction();
 
-    // load order
     auto orderOpt = m_orderRepo.getOrderById(orderId);
     if (!orderOpt.has_value())
     {
@@ -294,7 +395,6 @@ int OrderService::updateOrder(
     Order order = orderOpt.value();
     int orderSessionId = order.order_session_id;
 
-    // load order session
     auto sessionOpt = m_orderSessionRepo.getById(orderSessionId);
     if (!sessionOpt.has_value())
     {
@@ -305,32 +405,25 @@ int OrderService::updateOrder(
 
     OrderSession session = sessionOpt.value();
 
-    // table change
     std::optional<int> newTableId;
     if (options.contains("tableId") && !options["tableId"].isNull())
         newTableId = options["tableId"].toInt();
 
     if (session.table_id != newTableId)
     {
-        if (session.table_id.has_value()) {
+        if (session.table_id.has_value())
             m_tableService.setTableStatus(session.table_id.value(), TableStatus::Available);
-        }
 
-        if (newTableId.has_value()) {
+        if (newTableId.has_value())
             m_tableService.setTableStatus(newTableId.value(), TableStatus::Occupied);
-        }
 
         session.table_id = newTableId;
     }
 
-    // order type
     session.order_type = orderType;
-
-    // order metadata
     order.notes = options.value("notes").toString();
     m_orderRepo.update(order);
 
-    // replace items
     m_orderItemRepo.removeByOrderId(orderId);
 
     for (const QVariant &v : items)
@@ -354,18 +447,27 @@ int OrderService::updateOrder(
             continue;
         }
 
+        const QVariantList modifiers = m.value(QStringLiteral("modifiers")).toList();
+
         OrderItem item;
         item.order_id = orderId;
         item.item_id = menu.id;
         item.item_name = menu.item;
         item.quantity = m["qty"].toInt();
         item.portion_size = menu.portion_size.value_or("");
-        item.price = menu.price;
+        item.price = menu.price + modifierExtra(modifiers);
         item.is_taxable = menu.is_taxable;
         item.notes = m["notes"].toString();
         item.item_status = "pending";
 
-        m_orderItemRepo.create(item);
+        const int orderItemId = m_orderItemRepo.create(item);
+        if (orderItemId <= 0)
+        {
+            qCWarning(logOrder) << "Failed to create order item for menu" << menuId;
+            continue;
+        }
+
+        saveOrderItemModifiers(m_orderItemModifierRepo, orderItemId, modifiers);
     }
 
     m_orderSessionRepo.update(session);
@@ -380,18 +482,17 @@ int OrderService::updateOrder(
 
     auto settings = m_settingService.getKitchenSettings();
 
-    if ((settings["mode"].toString() == "tickets" || 
+    if ((settings["mode"].toString() == "tickets" ||
         settings["mode"].toString() == "hybrid") &&
         settings["ticket_print_timing"].toString() == "order_created")
     {
-        auto orderOpt = m_orderRepo.getOrderById(orderId);
-        if (orderOpt.has_value())
+        auto printedOrder = m_orderRepo.getOrderById(orderId);
+        if (printedOrder.has_value())
         {
-            auto sessionOpt = m_orderSessionRepo.getById(orderSessionId);
-            if (sessionOpt.has_value())
+            auto printedSession = m_orderSessionRepo.getById(orderSessionId);
+            if (printedSession.has_value())
             {
-                auto items = m_orderItemRepo.getOrderItemsByOrderId(orderId);
-
+                auto printedItems = m_orderItemRepo.getOrderItemsByOrderId(orderId);
                 auto printers = m_printerRepo.getAll();
 
                 for (const auto &printer : printers)
@@ -399,16 +500,14 @@ int OrderService::updateOrder(
                     if (printer.role == "kitchen" || printer.role == "both")
                     {
                         QByteArray data = m_kitchenTicketBuilder.build(
-                            orderOpt.value(),
-                            sessionOpt.value(),
-                            items,
+                            printedOrder.value(),
+                            printedSession.value(),
+                            printedItems,
                             printer
                         );
 
                         if (!m_windowsPrinterService.print(printer.system_name, data))
-                        {
                             qCWarning(logPrinter) << "Kitchen print failed";
-                        }
                     }
                 }
             }
@@ -426,16 +525,12 @@ int OrderService::generateOrderSessionDisplayNumber()
 
     int maxDisplay = m_orderSessionRepo.getMaxDisplayNumberForDate(today);
     if (maxDisplay == 0)
-    {
         return QRandomGenerator::global()->bounded(4000, 8000);
-    }
-    else
-    {
-        int nextNumber = maxDisplay + 1;
-        if (nextNumber > 9999)
-            nextNumber = 4000;
-        return nextNumber;
-    }
+
+    int nextNumber = maxDisplay + 1;
+    if (nextNumber > 9999)
+        nextNumber = 4000;
+    return nextNumber;
 }
 
 int OrderService::generateOrderDisplayNumber()
@@ -444,16 +539,12 @@ int OrderService::generateOrderDisplayNumber()
 
     int maxDisplay = m_orderRepo.getMaxDisplayNumberForDate(today);
     if (maxDisplay == 0)
-    {
         return QRandomGenerator::global()->bounded(4000, 8000);
-    }
-    else
-    {
-        int nextNumber = maxDisplay + 1;
-        if (nextNumber > 9999)
-            nextNumber = 4000;
-        return nextNumber;
-    }
+
+    int nextNumber = maxDisplay + 1;
+    if (nextNumber > 9999)
+        nextNumber = 4000;
+    return nextNumber;
 }
 
 bool OrderService::printKitchenTicket(int orderId)
@@ -490,6 +581,7 @@ bool OrderService::printKitchenTicket(int orderId)
     {
         if (printer.role == "kitchen" || printer.role == "both")
         {
+            printed = true;
             QByteArray data = m_kitchenTicketBuilder.build(
                 orderOpt.value(),
                 sessionOpt.value(),

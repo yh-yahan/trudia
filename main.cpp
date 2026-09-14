@@ -29,6 +29,8 @@
 #include "core/data/ReceiptSnapshotRepository.h"
 #include "core/data/TaxReportRepository.h"
 #include "core/data/PaymentRepository.h"
+#include "core/data/ModifiersRepository.h"
+#include "core/data/OrderItemModifierRepository.h"
 #include "core/services/CurrencyService.h"
 #include "core/services/OrderService.h"
 #include "core/services/TableService.h"
@@ -51,6 +53,7 @@
 #include "core/services/MemberService.h"
 #include "core/services/TaxReportService.h"
 #include "core/services/PaymentService.h"
+#include "core/services/ModifiersService.h"
 #include "core/database/DatabaseManager.h"
 #include "core/printing/ReceiptBuilder.h"
 #include "core/printing/WindowsPrinterService.h"
@@ -133,6 +136,8 @@ int main(int argc, char *argv[])
     ReceiptSnapshotRepository receiptSnapshotRepo(DatabaseManager::db());
     TaxReportRepository taxReportRepo(DatabaseManager::db());
     PaymentRepository paymentRepo(DatabaseManager::db());
+    ModifiersRepository modifiersRepo(DatabaseManager::db());
+    OrderItemModifierRepository orderItemModifierRepo(DatabaseManager::db());
 
     WindowsPrinterService windowsPrinterService;
     CurrencyService currencyService;
@@ -161,6 +166,7 @@ int main(int argc, char *argv[])
         orderSessionRepo, 
         orderRepo, 
         orderItemRepo, 
+        orderItemModifierRepo,
         tableRepo);
     CheckoutService checkoutService(
         orderSessionRepo,
@@ -201,6 +207,7 @@ int main(int argc, char *argv[])
         tableRepo,
         menuRepo,
         printerRepo,
+        orderItemModifierRepo,
         taxCalculationService,
         kitchenTicketBuilder,
         settingService,
@@ -212,6 +219,7 @@ int main(int argc, char *argv[])
     MemberService memberService(dbManager, membershipRepo, membershipTransactionRepo);
     DatabaseService databaseService(appService, dbManager);
     TaxReportService taxReportService(taxReportRepo);
+    ModifiersService modifiersService(modifiersRepo);
 
     QObject::connect(&orderService, &OrderService::orderCreated,
                  &kitchenOrderService, &KitchenOrderService::ordersChanged);
@@ -251,6 +259,7 @@ int main(int argc, char *argv[])
     qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "BetaService", &betaService);
     qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "MemberService", &memberService);
     qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "TaxReportService", &taxReportService);
+    qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "ModifiersService", &modifiersService);
 
     QQmlApplicationEngine engine;
     engine.loadFromModule("trudia", "Main");

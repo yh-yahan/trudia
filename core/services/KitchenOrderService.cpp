@@ -6,10 +6,12 @@
 KitchenOrderService::KitchenOrderService(OrderSessionRepository &orderSessionRepo,
                                          OrderRepository &orderRepo,
                                          OrderItemRepository &orderItemRepo,
+                                         OrderItemModifierRepository &orderItemModifierRepo,
                                          TableRepository &tableRepo)
-    : m_orderSessionRepo(orderSessionRepo), 
-      m_orderRepo(orderRepo), 
+    : m_orderSessionRepo(orderSessionRepo),
+      m_orderRepo(orderRepo),
       m_orderItemRepo(orderItemRepo),
+      m_orderItemModifierRepo(orderItemModifierRepo),
       m_tableRepo(tableRepo) {}
 
 QVariantList KitchenOrderService::getOrdersByStatus(const QString &status) const
@@ -24,9 +26,11 @@ QVariantList KitchenOrderService::getOrdersByStatus(const QString &status) const
         orderIds.append(order.id);
     }
 
-    std::vector<OrderItem> allItems = m_orderItemRepo.getOrderItemsByOrderIds(orderIds);
+    std::vector<OrderItem> allItems =
+        m_orderItemRepo.getOrderItemsByOrderIds(orderIds);
 
     QMap<int, QVariantList> itemsByOrder;
+
     for (const auto &item : allItems) {
         QVariantMap itemMap;
         itemMap["id"] = item.id;
@@ -35,6 +39,22 @@ QVariantList KitchenOrderService::getOrdersByStatus(const QString &status) const
         itemMap["portion_size"] = item.portion_size;
         itemMap["item_status"] = item.item_status;
         itemMap["notes"] = item.notes;
+
+        QVariantList modifiers;
+
+        const auto itemModifiers = m_orderItemModifierRepo.getByOrderItemId(item.id);
+
+        for (const auto &modifier : itemModifiers) {
+            QVariantMap modifierMap;
+            modifierMap["id"] = modifier.id;
+            modifierMap["group_name"] = modifier.group_name;
+            modifierMap["name"] = modifier.name;
+            modifierMap["price_delta"] = modifier.price_delta;
+
+            modifiers.append(modifierMap);
+        }
+
+        itemMap["modifiers"] = modifiers;
 
         itemsByOrder[item.order_id].append(itemMap);
     }
@@ -55,7 +75,9 @@ QVariantList KitchenOrderService::getOrdersByStatus(const QString &status) const
 
         orderMap["items"] = itemsByOrder.value(order.id);
 
-        auto sessionOpt = m_orderSessionRepo.getById(order.order_session_id);
+        auto sessionOpt =
+            m_orderSessionRepo.getById(order.order_session_id);
+
         if (sessionOpt.has_value()) {
             const auto &session = sessionOpt.value();
 

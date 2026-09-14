@@ -28,6 +28,8 @@ target_sources(trudia_core PRIVATE
     data/ReceiptSnapshotRepository.cpp
     data/TaxReportRepository.cpp
     data/PaymentRepository.cpp
+    data/ModifiersRepository.cpp
+    data/OrderItemModifierRepository.cpp
 
     services/AuthService.cpp
     services/MenuService.cpp
@@ -52,6 +54,7 @@ target_sources(trudia_core PRIVATE
     services/MemberService.cpp
     services/TaxReportService.cpp
     services/PaymentService.cpp
+    services/ModifiersService.cpp
 
     printing/EscPosBuilder.cpp
     printing/PrintLayoutHelper.cpp
@@ -67,6 +70,7 @@ target_sources(trudia_core PRIVATE
     models/CanvasItemModel.cpp
     models/MemberListModel.cpp
     models/MemberTransactionModel.cpp
+    models/ModifiersModel.cpp
 
     utilities/PasswordHasher.cpp
     utilities/SystemTheme.cpp

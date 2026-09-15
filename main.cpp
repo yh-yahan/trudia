@@ -208,6 +208,7 @@ int main(int argc, char *argv[])
         menuRepo,
         printerRepo,
         orderItemModifierRepo,
+        modifiersRepo,
         taxCalculationService,
         kitchenTicketBuilder,
         settingService,

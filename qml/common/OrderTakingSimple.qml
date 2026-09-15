@@ -741,12 +741,14 @@ Item {
                             for (var i = 0; i < orderModel.count; i++) {
                                 var e = orderModel.get(i)
                                 items.push({
-                                               "menuItemId": e.menuItemId,
-                                               "qty": e.qty,
-                                               "notes": e.notes,
-                                               "price": e.price,
-                                               "modifiers": root.parseModifiers(e)
-                                           })
+                                            "menuItemId": e.menuItemId,
+                                            "qty": e.qty,
+                                            "notes": e.notes,
+                                            "price": e.price,
+                                            "modifiersJson": e.modifiersJson && e.modifiersJson.length
+                                                                ? e.modifiersJson
+                                                                : "[]"
+                                        })
                             }
 
                             var options = {

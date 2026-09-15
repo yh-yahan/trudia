@@ -3,6 +3,8 @@
 #include <QDate>
 #include <QRandomGenerator>
 #include <QSqlDatabase>
+#include <QJsonDocument>
+#include <QJsonArray>
 #include "../constants/TableStatus.h"
 #include "../constants/ReservationStatus.h"
 #include "../logging/LoggingCategories.h"
@@ -43,33 +45,6 @@ std::optional<int> optionalId(const QVariantMap &map, const QStringList &keys)
     return std::nullopt;
 }
 
-void saveOrderItemModifiers(OrderItemModifierRepository &repo, int orderItemId, const QVariantList &modifiers)
-{
-    for (const QVariant &value : modifiers) {
-        const QVariantMap map = value.toMap();
-        const QString name = map.value(QStringLiteral("name")).toString().trimmed();
-        if (name.isEmpty()) {
-            qCWarning(logOrder) << "Skipping modifier with empty name for order item" << orderItemId;
-            continue;
-        }
-
-        OrderItemModifier row;
-        row.order_item_id = orderItemId;
-        row.modifier_id = optionalId(map, {QStringLiteral("modifierId"),
-                                           QStringLiteral("modifier_id"),
-                                           QStringLiteral("id")});
-        row.group_id = optionalId(map, {QStringLiteral("groupId"),
-                                        QStringLiteral("group_id")});
-        row.group_name = modifierGroupName(map);
-        row.name = name;
-        row.price_delta = map.contains(QStringLiteral("priceDelta"))
-                              ? map.value(QStringLiteral("priceDelta")).toInt()
-                              : map.value(QStringLiteral("price_delta")).toInt();
-
-        repo.create(row);
-    }
-}
-
 QVariantMap modifierToMap(const OrderItemModifier &modifier)
 {
     QVariantMap map;
@@ -100,6 +75,68 @@ QVariantList modifiersForItem(OrderItemModifierRepository &repo, int orderItemId
     return list;
 }
 
+QVariantList modifiersFromItem(const QVariantMap &item)
+{
+    const QString json = item.value(QStringLiteral("modifiersJson")).toString();
+    if (!json.isEmpty()) {
+        const QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
+        if (doc.isArray()) return doc.array().toVariantList();
+    }
+
+    const QVariant raw = item.value(QStringLiteral("modifiers"));
+    if (raw.userType() == QMetaType::QVariantList) return raw.toList();
+    if (raw.canConvert<QJsonArray>()) return raw.toJsonArray().toVariantList();
+
+    return {};
+}
+
+QString resolvedGroupName(ModifiersRepository &modifiersRepo, const QVariantMap &map)
+{
+    QString name = modifierGroupName(map).trimmed();
+    if (!name.isEmpty())
+        return name;
+
+    const auto groupId = optionalId(map, {QStringLiteral("groupId"),
+                                          QStringLiteral("group_id")});
+    if (!groupId.has_value())
+        return QStringLiteral("Modifier");
+
+    const auto group = modifiersRepo.getGroup(*groupId);
+    if (group.has_value() && !group->name.trimmed().isEmpty())
+        return group->name;
+
+    return QStringLiteral("Modifier");
+}
+
+void saveOrderItemModifiers(OrderItemModifierRepository &repo,
+                            ModifiersRepository &modifiersRepo,
+                            int orderItemId,
+                            const QVariantList &modifiers)
+{
+    for (const QVariant &value : modifiers) {
+        const QVariantMap map = value.toMap();
+        const QString name = map.value(QStringLiteral("name")).toString().trimmed();
+        if (name.isEmpty()) {
+            qCWarning(logOrder) << "Skipping modifier with empty name for order item" << orderItemId;
+            continue;
+        }
+
+        OrderItemModifier row;
+        row.order_item_id = orderItemId;
+        row.modifier_id = optionalId(map, {QStringLiteral("modifierId"),
+                                           QStringLiteral("modifier_id"),
+                                           QStringLiteral("id")});
+        row.group_id = optionalId(map, {QStringLiteral("groupId"),
+                                        QStringLiteral("group_id")});
+        row.group_name = resolvedGroupName(modifiersRepo, map);
+        row.name = name;
+        row.price_delta = map.contains(QStringLiteral("priceDelta"))
+                              ? map.value(QStringLiteral("priceDelta")).toInt()
+                              : map.value(QStringLiteral("price_delta")).toInt();
+
+        repo.create(row);
+    }
+}
 } // namespace
 
 OrderService::OrderService(OrderSessionRepository &orderSessionRepo,
@@ -109,6 +146,7 @@ OrderService::OrderService(OrderSessionRepository &orderSessionRepo,
                            MenuRepository &menuRepo,
                            PrinterRepository &printerRepo,
                            OrderItemModifierRepository &orderItemModifierRepo,
+                           ModifiersRepository &modifiersRepo,
                            TaxCalculationService &taxService,
                            KitchenTicketBuilder &kitchenTicketBuilder,
                            SettingService &settingService,
@@ -123,6 +161,7 @@ OrderService::OrderService(OrderSessionRepository &orderSessionRepo,
       m_menuRepo(menuRepo),
       m_printerRepo(printerRepo),
       m_orderItemModifierRepo(orderItemModifierRepo),
+      m_modifiersRepo(modifiersRepo),
       m_taxService(taxService),
       m_kitchenTicketBuilder(kitchenTicketBuilder),
       m_settingService(settingService),
@@ -243,7 +282,7 @@ int OrderService::createOrder(
             continue;
         }
 
-        const QVariantList modifiers = m.value(QStringLiteral("modifiers")).toList();
+        const QVariantList modifiers = modifiersFromItem(m);
 
         OrderItem item;
         item.order_id = orderId;
@@ -263,7 +302,7 @@ int OrderService::createOrder(
             continue;
         }
 
-        saveOrderItemModifiers(m_orderItemModifierRepo, orderItemId, modifiers);
+        saveOrderItemModifiers(m_orderItemModifierRepo, m_modifiersRepo, orderItemId, modifiers);
     }
 
     m_checkoutService.recalculateSessionTotals(orderSessionId);
@@ -447,7 +486,7 @@ int OrderService::updateOrder(
             continue;
         }
 
-        const QVariantList modifiers = m.value(QStringLiteral("modifiers")).toList();
+        const QVariantList modifiers = modifiersFromItem(m);
 
         OrderItem item;
         item.order_id = orderId;
@@ -467,7 +506,7 @@ int OrderService::updateOrder(
             continue;
         }
 
-        saveOrderItemModifiers(m_orderItemModifierRepo, orderItemId, modifiers);
+        saveOrderItemModifiers(m_orderItemModifierRepo, m_modifiersRepo, orderItemId, modifiers);
     }
 
     m_orderSessionRepo.update(session);

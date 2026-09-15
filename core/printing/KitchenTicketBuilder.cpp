@@ -46,6 +46,7 @@ QLocale KitchenTicketBuilder::getLocale() const
 QByteArray KitchenTicketBuilder::build(const Order &order,
                                        const OrderSession &orderSession,
                                        const std::vector<OrderItem> &items,
+                                       const QMap<int, std::vector<OrderItemModifier>> &modifiersByItem,
                                        const Printer &printer)
 {
     QString paperWidth = printer.paper_width > 0
@@ -125,23 +126,30 @@ QByteArray KitchenTicketBuilder::build(const Order &order,
     for (const auto &item : items)
     {
         QString itemName = item.item_name;
+        if (!item.portion_size.isEmpty()) itemName += " (" + item.portion_size + ")";
 
-        if (!item.portion_size.isEmpty()) {
-            itemName += " (" + item.portion_size + ")";
-        }
-
-        QString qty = QString::number(item.quantity) + "x";
-        QString name = " " + itemName;
-
-        QString line = padLeftRight(name, qty, width);
-
+        const QString qty = QString::number(item.quantity) + "x";
         b.setAlignLeft();
-        b.addText(line);
+        b.addText(padLeftRight(" " + itemName, qty, width));
         b.newLine();
 
-        if (!item.notes.isEmpty())
-        {
+        if (!item.notes.isEmpty()) {
             b.addText("  - " + item.notes);
+            b.newLine();
+        }
+
+        const auto modifiers = modifiersByItem.value(item.id);
+        for (const auto &mod : modifiers) {
+            if (mod.name.trimmed().isEmpty()) continue;
+
+            QString line = QStringLiteral("  + ");
+            if (!mod.group_name.trimmed().isEmpty()
+                && mod.group_name != QStringLiteral("Modifier")) {
+                line += mod.group_name + ": ";
+            }
+            line += mod.name;
+
+            b.addText(line);
             b.newLine();
         }
 

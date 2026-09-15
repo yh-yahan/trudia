@@ -137,6 +137,16 @@ void saveOrderItemModifiers(OrderItemModifierRepository &repo,
         repo.create(row);
     }
 }
+
+QMap<int, std::vector<OrderItemModifier>> modifiersByOrderItems(
+    OrderItemModifierRepository &repo,
+    const std::vector<OrderItem> &items)
+{
+    QMap<int, std::vector<OrderItemModifier>> map;
+    for (const auto &item : items)
+        map.insert(item.id, repo.getByOrderItemId(item.id));
+    return map;
+}
 } // namespace
 
 OrderService::OrderService(OrderSessionRepository &orderSessionRepo,
@@ -319,17 +329,20 @@ int OrderService::createOrder(
             auto sessionOpt = m_orderSessionRepo.getById(orderSessionId);
             if (sessionOpt.has_value())
             {
-                auto printedItems = m_orderItemRepo.getOrderItemsByOrderId(orderId);
                 auto printers = m_printerRepo.getAll();
 
                 for (const auto &printer : printers)
                 {
                     if (printer.role == "kitchen" || printer.role == "both")
                     {
+                        auto printedItems = m_orderItemRepo.getOrderItemsByOrderId(orderId);
+                        auto modifiers = modifiersByOrderItems(m_orderItemModifierRepo, printedItems);
+
                         QByteArray data = m_kitchenTicketBuilder.build(
                             orderOpt.value(),
                             sessionOpt.value(),
                             printedItems,
+                            modifiers,
                             printer
                         );
 
@@ -531,17 +544,20 @@ int OrderService::updateOrder(
             auto printedSession = m_orderSessionRepo.getById(orderSessionId);
             if (printedSession.has_value())
             {
-                auto printedItems = m_orderItemRepo.getOrderItemsByOrderId(orderId);
                 auto printers = m_printerRepo.getAll();
 
                 for (const auto &printer : printers)
                 {
                     if (printer.role == "kitchen" || printer.role == "both")
                     {
+                        auto printedItems = m_orderItemRepo.getOrderItemsByOrderId(orderId);
+                        auto modifiers = modifiersByOrderItems(m_orderItemModifierRepo, printedItems);
+
                         QByteArray data = m_kitchenTicketBuilder.build(
-                            printedOrder.value(),
-                            printedSession.value(),
+                            orderOpt.value(),
+                            sessionOpt.value(),
                             printedItems,
+                            modifiers,
                             printer
                         );
 
@@ -621,10 +637,14 @@ bool OrderService::printKitchenTicket(int orderId)
         if (printer.role == "kitchen" || printer.role == "both")
         {
             printed = true;
+
+            auto modifiers = modifiersByOrderItems(m_orderItemModifierRepo, items);
+
             QByteArray data = m_kitchenTicketBuilder.build(
                 orderOpt.value(),
                 sessionOpt.value(),
                 items,
+                modifiers,
                 printer
             );
 

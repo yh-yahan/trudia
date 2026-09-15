@@ -8,6 +8,7 @@
 #include "../domain/Order.h"
 #include "../domain/OrderItem.h"
 #include "../domain/OrderSession.h"
+#include "../domain/OrderItemModifier.h"
 #include "../domain/Printer.h"
 
 class KitchenTicketBuilder
@@ -18,6 +19,7 @@ public:
     QByteArray build(const Order &order,
                      const OrderSession &orderSession,
                      const std::vector<OrderItem> &items,
+                     const QMap<int, std::vector<OrderItemModifier>> &modifiersByItem,
                      const Printer &printer);
 
 private:

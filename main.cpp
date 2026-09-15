@@ -181,6 +181,7 @@ int main(int argc, char *argv[])
         appStateRepo,
         receiptSnapshotRepo,
         regionalSettingsRepo,
+        orderItemModifierRepo,
         receiptBuilder,
         windowsPrinterService,
         taxCalculationService,

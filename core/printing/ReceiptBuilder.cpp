@@ -164,24 +164,38 @@ QByteArray ReceiptBuilder::build(const ReceiptData &data, const Printer &printer
     for (const auto &item : data.items)
     {
         QString itemName = item.name;
-
-        if (!item.portion_size.isEmpty()) {
+        if (!item.portion_size.isEmpty())
             itemName += " (" + item.portion_size + ")";
-        }
-
-        QString left = QString("%1 x %2")
-                        .arg(item.quantity)
-                        .arg(itemName);
-
-        QString right = formatAmount(item.total());
 
         b.setBold(true);
-        b.addText(padLeftRight(left, right, width));
+        b.addText(padLeftRight(
+            QString("%1 x %2").arg(item.quantity).arg(itemName),
+            formatAmount(item.total()),
+            width));
         b.newLine();
         b.setBold(false);
 
         b.addText(QString("   @ %1").arg(formatAmount(item.price)));
         b.newLine();
+
+        for (const auto &mod : item.modifiers)
+        {
+            if (mod.name.trimmed().isEmpty())
+                continue;
+
+            const QString left = QStringLiteral("   + ") + mod.name;
+            if (std::abs(mod.priceDelta) > 0.0001)
+                b.addText(padLeftRight(left, formatAmount(mod.priceDelta), width));
+            else
+                b.addText(left);
+            b.newLine();
+        }
+
+        if (!item.notes.trimmed().isEmpty())
+        {
+            b.addText(QStringLiteral("   - ") + item.notes.trimmed());
+            b.newLine();
+        }
     }
 
     b.addText(QString(width, '-'));

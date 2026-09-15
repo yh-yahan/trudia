@@ -4,11 +4,19 @@
 #include <QString>
 #include <QList>
 
+struct ReceiptItemModifier {
+    QString name;
+    QString groupName;
+    double priceDelta = 0.0;
+};
+
 struct ReceiptItem {
     QString name;
     int quantity = 0;
     QString portion_size;
     double price = 0.0;
+    QString notes;
+    QList<ReceiptItemModifier> modifiers;
 
     double total() const { return price * quantity; }
 };

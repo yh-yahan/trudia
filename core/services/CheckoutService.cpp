@@ -20,6 +20,7 @@ CheckoutService::CheckoutService(OrderSessionRepository &orderSessionRepo,
                                  AppStateRepository &appStateRepo,
                                  ReceiptSnapshotRepository &receiptSnapshotRepo,
                                  RegionalSettingsRepository &regionalSettingsRepo,
+                                 OrderItemModifierRepository &orderItemModifierRepo,
                                  ReceiptBuilder &receiptBuilder,
                                  WindowsPrinterService &windowsPrinterService,
                                  TaxCalculationService &taxCalculationService,
@@ -41,6 +42,7 @@ CheckoutService::CheckoutService(OrderSessionRepository &orderSessionRepo,
       m_appStateRepo(appStateRepo),
       m_receiptSnapshotRepo(receiptSnapshotRepo),
       m_regionalSettingsRepo(regionalSettingsRepo),
+      m_orderItemModifierRepo(orderItemModifierRepo),
       m_receiptBuilder(receiptBuilder),
       m_windowsPrinterService(windowsPrinterService),
       m_taxCalculationService(taxCalculationService),
@@ -424,45 +426,73 @@ bool CheckoutService::printReceipt(int orderSessionId, const bool &isReprint)
 
     auto items = m_orderItemRepo.getOrderItemsByOrderIds(orderIds);
 
-    struct GroupKey
-    {
+    auto modifierKey = [](const QList<ReceiptItemModifier> &mods) {
+        QStringList parts;
+        for (const auto &mod : mods)
+            parts << QString("%1|%2|%3")
+                        .arg(mod.groupName, mod.name)
+                        .arg(mod.priceDelta);
+        parts.sort();
+        return parts.join(';');
+    };
+
+    struct GroupKey {
         QString name;
         QString portionSize;
         qint64 price;
+        QString notes;
+        QString modifiers;
 
         bool operator<(const GroupKey &other) const
         {
-            if (name != other.name)
-                return name < other.name;
-
-            if (portionSize != other.portionSize)
-                return portionSize < other.portionSize;
-
-            return price < other.price;
+            if (name != other.name) return name < other.name;
+            if (portionSize != other.portionSize) return portionSize < other.portionSize;
+            if (price != other.price) return price < other.price;
+            if (notes != other.notes) return notes < other.notes;
+            return modifiers < other.modifiers;
         }
     };
 
-    QMap<GroupKey, int> grouped;
+    struct GroupedLine {
+        int quantity = 0;
+        QList<ReceiptItemModifier> modifiers;
+    };
+
+    QMap<GroupKey, GroupedLine> grouped;
 
     for (const auto &item : items)
     {
+        QList<ReceiptItemModifier> receiptMods;
+        for (const auto &mod : m_orderItemModifierRepo.getByOrderItemId(item.id))
+        {
+            ReceiptItemModifier row;
+            row.name = mod.name;
+            row.groupName = mod.group_name;
+            row.priceDelta = static_cast<double>(mod.price_delta) / CURRENCY_SCALE;
+            receiptMods.append(row);
+        }
+
         GroupKey key{
             item.item_name,
             item.portion_size,
-            static_cast<qint64>(item.price)
+            static_cast<qint64>(item.price),
+            item.notes.trimmed(),
+            modifierKey(receiptMods)
         };
 
-        grouped[key] += item.quantity;
+        grouped[key].quantity += item.quantity;
+        grouped[key].modifiers = receiptMods;
     }
 
     for (auto it = grouped.begin(); it != grouped.end(); ++it)
     {
         ReceiptItem rItem;
         rItem.name = it.key().name;
-        rItem.quantity = it.value();
+        rItem.quantity = it.value().quantity;
         rItem.portion_size = it.key().portionSize;
         rItem.price = static_cast<double>(it.key().price) / CURRENCY_SCALE;
-
+        rItem.notes = it.key().notes;
+        rItem.modifiers = it.value().modifiers;
         data.items.append(rItem);
     }
 

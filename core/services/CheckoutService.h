@@ -19,6 +19,7 @@
 #include "../data/AppStateRepository.h"
 #include "../data/ReceiptSnapshotRepository.h"
 #include "../data/RegionalSettingsRepository.h"
+#include "../data/OrderItemModifierRepository.h"
 #include "../printing/ReceiptBuilder.h"
 #include "../printing/WindowsPrinterService.h"
 #include "./TaxCalculationService.h"
@@ -61,6 +62,7 @@ public:
                              AppStateRepository &appStateRepo,
                              ReceiptSnapshotRepository &receiptSnapshotRepo,
                              RegionalSettingsRepository &regionalSettingsRepo,
+                             OrderItemModifierRepository &orderItemModifierRepo,
                              ReceiptBuilder &receiptBuilder,
                              WindowsPrinterService &windowsPrinterService,
                              TaxCalculationService &taxCalculationService,
@@ -93,6 +95,7 @@ private:
     AppStateRepository &m_appStateRepo;
     ReceiptSnapshotRepository &m_receiptSnapshotRepo;
     RegionalSettingsRepository &m_regionalSettingsRepo;
+    OrderItemModifierRepository &m_orderItemModifierRepo;
     ReceiptBuilder &m_receiptBuilder;
     WindowsPrinterService &m_windowsPrinterService;
     TaxCalculationService &m_taxCalculationService;

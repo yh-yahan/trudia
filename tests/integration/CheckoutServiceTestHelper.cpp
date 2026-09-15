@@ -15,6 +15,7 @@ CheckoutServiceTestHelper::CheckoutServiceTestHelper()
     m_orderSessionRepo = std::make_unique<OrderSessionRepository>(m_dbManager.db());
     m_orderRepo = std::make_unique<OrderRepository>(m_dbManager.db());
     m_orderItemRepo = std::make_unique<OrderItemRepository>(m_dbManager.db());
+    m_orderItemModifierRepo = std::make_unique<OrderItemModifierRepository>(m_dbManager.db());
     m_tableRepo = std::make_unique<TableRepository>(m_dbManager.db());
     m_taxSettingsRepo = std::make_unique<TaxSettingsRepository>(m_dbManager.db());
     m_membershipRepo = std::make_unique<MembershipRepository>(m_dbManager.db());
@@ -68,6 +69,7 @@ CheckoutServiceTestHelper::CheckoutServiceTestHelper()
         *m_appStateRepo,
         *m_receiptSnapshotRepo,
         *m_regionalSettingsRepo,
+        *m_orderItemModifierRepo,
         *m_receiptBuilder,
         *m_windowsPrinterService,
         *m_taxCalculationService,

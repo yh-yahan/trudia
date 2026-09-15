@@ -10,6 +10,7 @@
 #include "../../core/data/OrderSessionRepository.h"
 #include "../../core/data/OrderRepository.h"
 #include "../../core/data/OrderItemRepository.h"
+#include "../../core/data/OrderItemModifierRepository.h"
 #include "../../core/data/TableRepository.h"
 #include "../../core/data/TaxSettingsRepository.h"
 #include "../../core/data/MembershipRepository.h"
@@ -116,6 +117,7 @@ private:
     std::unique_ptr<OrderSessionRepository> m_orderSessionRepo;
     std::unique_ptr<OrderRepository> m_orderRepo;
     std::unique_ptr<OrderItemRepository> m_orderItemRepo;
+    std::unique_ptr<OrderItemModifierRepository> m_orderItemModifierRepo;
     std::unique_ptr<TableRepository> m_tableRepo;
     std::unique_ptr<TaxSettingsRepository> m_taxSettingsRepo;
     std::unique_ptr<MembershipRepository> m_membershipRepo;

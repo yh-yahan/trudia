@@ -23,6 +23,8 @@ add_subdirectory(tests)
 
 qt_add_executable(apptrudia
     main.cpp
+    AppComposition.cpp
+    AppComposition.h
     app.rc
 )
 

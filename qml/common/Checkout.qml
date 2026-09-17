@@ -311,8 +311,8 @@ Item {
                 bottomPadding: 8
 
                 background: Rectangle {
-                    radius: 8
-                    color: Theme.surface
+                    radius: 4
+                    color: Theme.background
                     border.color: Theme.border
                     border.width: 1
                 }
@@ -321,7 +321,7 @@ Item {
                     text: qsTr("Refresh")
                     color: Theme.text
                     font.bold: true
-                    font.pixelSize: Theme.fontSmall
+                    font.pixelSize: Theme.fontNormal
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                 }
@@ -339,8 +339,8 @@ Item {
             Rectangle {
                 Layout.preferredWidth: 300
                 Layout.fillHeight: true
-                radius: 12
-                color: Theme.surface
+                radius: 8
+                color: Theme.background
                 border.color: Theme.border
                 border.width: 1
 
@@ -369,7 +369,7 @@ Item {
                                 delegate: Rectangle {
                                     Layout.fillWidth: true
                                     Layout.fillHeight: true
-                                    radius: 8
+                                    radius: 4
                                     color: listMode === modelData.key ? Theme.primary() : "transparent"
 
                                     Text {
@@ -377,7 +377,7 @@ Item {
                                         text: modelData.label
                                         color: listMode === modelData.key ? "white" : Theme.secondaryText
                                         font.bold: true
-                                        font.pixelSize: Theme.fontSmall
+                                        font.pixelSize: Theme.fontNormal
                                     }
 
                                     MouseArea {
@@ -486,8 +486,8 @@ Item {
             Rectangle {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                radius: 12
-                color: Theme.surface
+                radius: 8
+                color: Theme.background
                 border.color: Theme.border
                 border.width: 1
 
@@ -665,8 +665,8 @@ Item {
             Rectangle {
                 Layout.preferredWidth: 340
                 Layout.fillHeight: true
-                radius: 12
-                color: Theme.surface
+                radius: 8
+                color: Theme.background
                 border.color: Theme.border
                 border.width: 1
 
@@ -738,6 +738,7 @@ Item {
                                     Layout.fillWidth: true
                                     text: memberPhone
                                     placeholderText: qsTr("Optional")
+                                    font.pixelSize: Theme.fontNormal
 
                                     onTextChanged: {
                                         memberPhone = text.trim()
@@ -749,7 +750,7 @@ Item {
                                     onAccepted: updateMembershipPreview()
 
                                     background: Rectangle {
-                                        radius: 8
+                                        radius: 2
                                         color: Theme.background
                                         border.color: Theme.border
                                     }
@@ -765,7 +766,7 @@ Item {
                                     Layout.preferredHeight: memberPhoneField.height
 
                                     background: Rectangle {
-                                        radius: 8
+                                        radius: 4
                                         color: enabled ? Theme.primary() : Theme.background
                                     }
 
@@ -773,7 +774,7 @@ Item {
                                         text: qsTr("Check")
                                         color: enabled ? "white" : Theme.secondaryText
                                         font.bold: true
-                                        font.pixelSize: Theme.fontSmall
+                                        font.pixelSize: Theme.fontNormal
                                         horizontalAlignment: Text.AlignHCenter
                                         verticalAlignment: Text.AlignVCenter
                                     }
@@ -787,7 +788,7 @@ Item {
                                 text: memberId > 0 ? qsTr("Points: %1").arg(currentPoints)
                                                    : qsTr("New member will be created")
                                 color: memberId > 0 ? Theme.green : Theme.orange
-                                font.pixelSize: Theme.fontSmall
+                                font.pixelSize: Theme.fontNormal
                                 font.bold: true
                             }
 
@@ -795,7 +796,7 @@ Item {
                                 visible: membershipChecked
                                 text: qsTr("Will earn +%1").arg(earnedPointsPreview)
                                 color: Theme.primary()
-                                font.pixelSize: Theme.fontSmall
+                                font.pixelSize: Theme.fontNormal
                                 font.bold: true
                             }
 
@@ -811,16 +812,18 @@ Item {
                                     focusPolicy: Qt.NoFocus
 
                                     background: Rectangle {
-                                        radius: 8
+                                        radius: 4
                                         color: Theme.orange
                                     }
 
                                     contentItem: Text {
                                         text: qsTr("Redeem all")
                                         anchors.centerIn: parent
-                                        color: "black"
+                                        color: "white"
                                         font.bold: true
-                                        font.pixelSize: Theme.fontSmall
+                                        font.pixelSize: Theme.fontNormal
+                                        horizontalAlignment: Text.AlignHCenter
+                                        verticalAlignment: Text.AlignVCenter
                                     }
 
                                     onClicked: {
@@ -847,7 +850,9 @@ Item {
                                         anchors.centerIn: parent
                                         color: Theme.text
                                         font.bold: true
-                                        font.pixelSize: Theme.fontSmall
+                                        font.pixelSize: Theme.fontNormal
+                                        horizontalAlignment: Text.AlignHCenter
+                                        verticalAlignment: Text.AlignVCenter
                                     }
 
                                     onClicked: {
@@ -944,8 +949,10 @@ Item {
                                 placeholderText: currencySymbol + "0.00"
                                 inputMethodHints: Qt.ImhFormattedNumbersOnly
 
+                                font.pixelSize: Theme.fontNormal
+
                                 background: Rectangle {
-                                    radius: 8
+                                    radius: 2
                                     color: Theme.background
                                     border.color: Theme.border
                                 }
@@ -996,8 +1003,10 @@ Item {
                                 placeholderText: currencySymbol + "0.00"
                                 inputMethodHints: Qt.ImhFormattedNumbersOnly
 
+                                font.pixelSize: Theme.fontNormal
+
                                 background: Rectangle {
-                                    radius: 8
+                                    radius: 2
                                     color: Theme.background
                                     border.color: Theme.border
                                 }

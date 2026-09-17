@@ -16,9 +16,9 @@ int modifierExtra(const QVariantList &modifiers)
     for (const QVariant &value : modifiers) {
         const QVariantMap map = value.toMap();
         if (map.contains(QStringLiteral("priceDelta")))
-            extra += map.value(QStringLiteral("priceDelta")).toInt();
+            extra += (map.value(QStringLiteral("priceDelta")).toInt() * 100);
         else
-            extra += map.value(QStringLiteral("price_delta")).toInt();
+            extra += (map.value(QStringLiteral("price_delta")).toInt() * 100);
     }
     return extra;
 }
@@ -62,8 +62,8 @@ QVariantMap modifierToMap(const OrderItemModifier &modifier)
     map.insert(QStringLiteral("group_name"), modifier.group_name);
     map.insert(QStringLiteral("groupName"), modifier.group_name);
     map.insert(QStringLiteral("name"), modifier.name);
-    map.insert(QStringLiteral("price_delta"), modifier.price_delta);
-    map.insert(QStringLiteral("priceDelta"), modifier.price_delta);
+    map.insert(QStringLiteral("price_delta"), modifier.price_delta / 100);
+    map.insert(QStringLiteral("priceDelta"), modifier.price_delta / 100);
     return map;
 }
 
@@ -131,8 +131,8 @@ void saveOrderItemModifiers(OrderItemModifierRepository &repo,
         row.group_name = resolvedGroupName(modifiersRepo, map);
         row.name = name;
         row.price_delta = map.contains(QStringLiteral("priceDelta"))
-                              ? map.value(QStringLiteral("priceDelta")).toInt()
-                              : map.value(QStringLiteral("price_delta")).toInt();
+                              ? map.value(QStringLiteral("priceDelta")).toInt() * 100
+                              : map.value(QStringLiteral("price_delta")).toInt() * 100;
 
         repo.create(row);
     }

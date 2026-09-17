@@ -153,7 +153,7 @@ QVariantMap ModifiersModel::modifierToMap(const Modifier &modifier) const
     map.insert(QStringLiteral("id"), modifier.id);
     map.insert(QStringLiteral("groupId"), modifier.groupId);
     map.insert(QStringLiteral("name"), modifier.name);
-    map.insert(QStringLiteral("priceDelta"), modifier.priceDelta);
+    map.insert(QStringLiteral("priceDelta"), modifier.priceDelta / 100);
     map.insert(QStringLiteral("isDefault"), modifier.isDefault);
     map.insert(QStringLiteral("isAvailable"), modifier.isAvailable);
     map.insert(QStringLiteral("sortOrder"), modifier.sortOrder);

@@ -164,19 +164,22 @@ QByteArray ReceiptBuilder::build(const ReceiptData &data, const Printer &printer
     for (const auto &item : data.items)
     {
         QString itemName = item.name;
-        if (!item.portion_size.isEmpty())
-            itemName += " (" + item.portion_size + ")";
+        if (!item.portion_size.isEmpty()) itemName += " (" + item.portion_size + ")";
 
         b.setBold(true);
         b.addText(padLeftRight(
             QString("%1 x %2").arg(item.quantity).arg(itemName),
-            formatAmount(item.total()),
+            formatAmount(item.lineTotal()),
             width));
         b.newLine();
         b.setBold(false);
 
-        b.addText(QString("   @ %1").arg(formatAmount(item.price)));
-        b.newLine();
+        const bool showUnitPrice = item.quantity > 1 || !item.modifiers.isEmpty();
+        if (showUnitPrice)
+        {
+            b.addText(QString("   @ %1").arg(formatAmount(item.price)));
+            b.newLine();
+        }
 
         for (const auto &mod : item.modifiers)
         {

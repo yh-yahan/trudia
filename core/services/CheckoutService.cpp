@@ -76,7 +76,11 @@ bool CheckoutService::recalculateSessionTotals(int orderSessionId)
 
     for (const auto &item : items)
     {
-        const qint64 lineTotal = item.price * item.quantity;
+        qint64 extra = 0;
+        for (const auto &mod : m_orderItemModifierRepo.getByOrderItemId(item.id))
+            extra += mod.price_delta;
+
+        const qint64 lineTotal = (item.price + extra) * item.quantity;
 
         subtotal += lineTotal;
 
@@ -455,6 +459,7 @@ bool CheckoutService::printReceipt(int orderSessionId, const bool &isReprint)
 
     struct GroupedLine {
         int quantity = 0;
+        qint64 modifierExtraCents = 0;
         QList<ReceiptItemModifier> modifiers;
     };
 
@@ -463,6 +468,8 @@ bool CheckoutService::printReceipt(int orderSessionId, const bool &isReprint)
     for (const auto &item : items)
     {
         QList<ReceiptItemModifier> receiptMods;
+        qint64 extraCents = 0;
+
         for (const auto &mod : m_orderItemModifierRepo.getByOrderItemId(item.id))
         {
             ReceiptItemModifier row;
@@ -470,6 +477,7 @@ bool CheckoutService::printReceipt(int orderSessionId, const bool &isReprint)
             row.groupName = mod.group_name;
             row.priceDelta = static_cast<double>(mod.price_delta) / CURRENCY_SCALE;
             receiptMods.append(row);
+            extraCents += mod.price_delta;
         }
 
         GroupKey key{
@@ -482,6 +490,7 @@ bool CheckoutService::printReceipt(int orderSessionId, const bool &isReprint)
 
         grouped[key].quantity += item.quantity;
         grouped[key].modifiers = receiptMods;
+        grouped[key].modifierExtraCents = extraCents;
     }
 
     for (auto it = grouped.begin(); it != grouped.end(); ++it)
@@ -491,6 +500,7 @@ bool CheckoutService::printReceipt(int orderSessionId, const bool &isReprint)
         rItem.quantity = it.value().quantity;
         rItem.portion_size = it.key().portionSize;
         rItem.price = static_cast<double>(it.key().price) / CURRENCY_SCALE;
+        rItem.modifier_extra = static_cast<double>(it.value().modifierExtraCents) / CURRENCY_SCALE;
         rItem.notes = it.key().notes;
         rItem.modifiers = it.value().modifiers;
         data.items.append(rItem);

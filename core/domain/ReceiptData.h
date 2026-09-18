@@ -15,10 +15,12 @@ struct ReceiptItem {
     int quantity = 0;
     QString portion_size;
     double price = 0.0;
+    double modifier_extra = 0.0;
     QString notes;
     QList<ReceiptItemModifier> modifiers;
 
-    double total() const { return price * quantity; }
+    double unitPrice() const { return price + modifier_extra; }
+    double lineTotal() const { return unitPrice() * quantity; }
 };
 
 struct ReceiptData {

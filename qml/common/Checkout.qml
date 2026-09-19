@@ -123,6 +123,52 @@ Item {
         return currencySymbol + amount.toFixed(2)
     }
 
+    function itemExtras(item) {
+        if (!item)
+            return []
+
+        if (item.modifiers && item.modifiers.length > 0)
+            return item.modifiers
+
+        if (item.extras && item.extras.length > 0)
+            return item.extras
+
+        return []
+    }
+
+    function extraDisplayName(extra) {
+        if (!extra)
+            return ""
+
+        var name = extra.name || extra.modifier_name || extra.extra_name || ""
+        var group = extra.group_name || ""
+
+        if (group && name)
+            return group + ": " + name
+
+        return name || group
+    }
+
+    function extraPriceDelta(extra) {
+        if (!extra)
+            return 0
+
+        var amount = Number(extra.price_delta)
+        if (!isFinite(amount))
+            amount = Number(extra.price)
+
+        return isFinite(amount) ? amount : 0
+    }
+
+    function formatPriceDelta(value) {
+        var amount = Number(value)
+        if (!isFinite(amount) || amount === 0)
+            return ""
+
+        var sign = amount > 0 ? "+" : "-"
+        return sign + currencySymbol + Math.abs(amount).toFixed(2)
+    }
+
     function updateMembershipPreview() {
         membershipChecked = false
 
@@ -613,46 +659,75 @@ Item {
                             Repeater {
                                 model: modelData.items
 
-                                delegate: RowLayout {
+                                delegate: Column {
                                     width: parent.width
-                                    spacing: 8
+                                    spacing: 4
 
-                                    Column {
-                                        Layout.fillWidth: true
-                                        spacing: 2
+                                    RowLayout {
+                                        width: parent.width
+                                        spacing: 8
+
+                                        Column {
+                                            Layout.fillWidth: true
+                                            spacing: 2
+
+                                            Text {
+                                                width: parent.width
+                                                text: modelData.item_name
+                                                      + (modelData.portion_size ? " (" + modelData.portion_size + ")" : "")
+                                                color: Theme.text
+                                                font.pixelSize: Theme.fontNormal
+                                                elide: Text.ElideRight
+                                            }
+
+                                            Repeater {
+                                                model: itemExtras(modelData)
+
+                                                delegate: RowLayout {
+                                                    width: parent.width
+                                                    spacing: 6
+
+                                                    Text {
+                                                        Layout.fillWidth: true
+                                                        text: extraDisplayName(modelData)
+                                                        color: Theme.secondaryText
+                                                        font.pixelSize: Theme.fontSmall
+                                                        elide: Text.ElideRight
+                                                    }
+
+                                                    Text {
+                                                        visible: extraPriceDelta(modelData) !== 0
+                                                        text: formatPriceDelta(extraPriceDelta(modelData))
+                                                        color: extraPriceDelta(modelData) > 0 ? Theme.orange : Theme.green
+                                                        font.pixelSize: Theme.fontSmall
+                                                    }
+                                                }
+                                            }
+
+                                            Text {
+                                                visible: modelData.notes && modelData.notes.length > 0
+                                                text: modelData.notes
+                                                color: Theme.orange
+                                                font.pixelSize: Theme.fontSmall
+                                                elide: Text.ElideRight
+                                            }
+                                        }
 
                                         Text {
-                                            width: parent.width
-                                            text: modelData.item_name
-                                                  + (modelData.portion_size ? " (" + modelData.portion_size + ")" : "")
+                                            text: "×" + modelData.quantity
+                                            color: Theme.secondaryText
+                                            font.pixelSize: Theme.fontNormal
+                                            Layout.preferredWidth: 40
+                                            horizontalAlignment: Text.AlignRight
+                                        }
+
+                                        Text {
+                                            text: Number(modelData.total_price).toFixed(2)
                                             color: Theme.text
                                             font.pixelSize: Theme.fontNormal
-                                            elide: Text.ElideRight
+                                            Layout.preferredWidth: 72
+                                            horizontalAlignment: Text.AlignRight
                                         }
-
-                                        Text {
-                                            visible: modelData.notes && modelData.notes.length > 0
-                                            text: modelData.notes
-                                            color: Theme.orange
-                                            font.pixelSize: Theme.fontSmall
-                                            elide: Text.ElideRight
-                                        }
-                                    }
-
-                                    Text {
-                                        text: "×" + modelData.quantity
-                                        color: Theme.secondaryText
-                                        font.pixelSize: Theme.fontNormal
-                                        Layout.preferredWidth: 40
-                                        horizontalAlignment: Text.AlignRight
-                                    }
-
-                                    Text {
-                                        text: Number(modelData.total_price).toFixed(2)
-                                        color: Theme.text
-                                        font.pixelSize: Theme.fontNormal
-                                        Layout.preferredWidth: 72
-                                        horizontalAlignment: Text.AlignRight
                                     }
                                 }
                             }

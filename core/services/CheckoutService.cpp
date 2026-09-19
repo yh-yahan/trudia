@@ -594,10 +594,11 @@ bool CheckoutService::assignReceiptNumber(OrderSession &session)
     return true;
 }
 
-QVariantMap CheckoutService::loadPaidOrderDetails(const int &orderSessionId) {
+QVariantMap CheckoutService::loadPaidOrderDetails(const int &orderSessionId)
+{
     QVariantMap result;
 
-    auto sessionOpt = m_orderSessionRepo.getById(orderSessionId);
+    const auto sessionOpt = m_orderSessionRepo.getById(orderSessionId);
 
     if (!sessionOpt.has_value())
         return result;
@@ -634,6 +635,38 @@ QVariantMap CheckoutService::loadPaidOrderDetails(const int &orderSessionId) {
         itemMap["item_status"] = item.item_status;
         itemMap["notes"] = item.notes;
 
+        // Modifiers
+        QVariantList modifierList;
+
+        const auto modifiers = m_orderItemModifierRepo.getByOrderItemId(item.id);
+
+        for (const auto &modifier : modifiers)
+        {
+            QVariantMap modifierMap;
+
+            modifierMap["id"] = modifier.id;
+
+            if (modifier.modifier_id.has_value())
+                modifierMap["modifier_id"] = modifier.modifier_id.value();
+            else
+                modifierMap["modifier_id"] = QVariant();
+
+            if (modifier.group_id.has_value())
+                modifierMap["group_id"] = modifier.group_id.value();
+            else
+                modifierMap["group_id"] = QVariant();
+
+            modifierMap["group_name"] = modifier.group_name;
+            modifierMap["name"] = modifier.name;
+
+            modifierMap["price_delta"] =
+                static_cast<double>(modifier.price_delta) / CURRENCY_SCALE;
+
+            modifierList.append(modifierMap);
+        }
+
+        itemMap["modifiers"] = modifierList;
+
         itemsByOrder[item.order_id].append(itemMap);
     }
 
@@ -647,9 +680,6 @@ QVariantMap CheckoutService::loadPaidOrderDetails(const int &orderSessionId) {
     sessionMap["discount"] = static_cast<double>(session.discount) / CURRENCY_SCALE;
     sessionMap["total"] = static_cast<double>(session.total) / CURRENCY_SCALE;
 
-    // sessionMap["created_at"] = session.created_at;
-    // sessionMap["closed_at"] = session.closed_at;
-
     QVariantList orderList;
 
     for (const auto &order : orders)
@@ -661,7 +691,9 @@ QVariantMap CheckoutService::loadPaidOrderDetails(const int &orderSessionId) {
         orderMap["status"] = order.status;
         orderMap["notes"] = order.notes;
 
-        orderMap["closed_at"] = order.closed_at.isEmpty() ? QVariant() : order.closed_at;
+        orderMap["closed_at"] = order.closed_at.isEmpty()
+                ? QVariant()
+                : QVariant(order.closed_at);
 
         orderMap["items"] = itemsByOrder.value(order.id);
 

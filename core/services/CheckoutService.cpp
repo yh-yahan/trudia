@@ -195,6 +195,7 @@ QVariantList CheckoutService::loadCheckoutDetails(const int &orderSessionId)
     for (const auto &item : items)
     {
         QVariantMap itemMap;
+
         itemMap["id"] = item.id;
         itemMap["item_id"] = item.item_id;
         itemMap["item_name"] = item.item_name;
@@ -203,8 +204,46 @@ QVariantList CheckoutService::loadCheckoutDetails(const int &orderSessionId)
 
         const double unitPrice = static_cast<double>(item.price) / CURRENCY_SCALE;
 
+        // Modifiers
+        QVariantList modifierList;
+        double modifierTotal = 0.0;
+
+        const auto modifiers = m_orderItemModifierRepo.getByOrderItemId(item.id);
+
+        for (const auto &modifier : modifiers)
+        {
+            QVariantMap modifierMap;
+
+            modifierMap["id"] = modifier.id;
+
+            if (modifier.modifier_id.has_value())
+                modifierMap["modifier_id"] = modifier.modifier_id.value();
+            else
+                modifierMap["modifier_id"] = QVariant();
+
+            if (modifier.group_id.has_value())
+                modifierMap["group_id"] = modifier.group_id.value();
+            else
+                modifierMap["group_id"] = QVariant();
+
+            modifierMap["group_name"] = modifier.group_name;
+            modifierMap["name"] = modifier.name;
+
+            const double priceDelta = static_cast<double>(modifier.price_delta) / CURRENCY_SCALE;
+
+            modifierMap["price_delta"] = priceDelta;
+
+            modifierTotal += priceDelta;
+
+            modifierList.append(modifierMap);
+        }
+
+        const double lineTotal = (unitPrice + modifierTotal) * item.quantity;
+
         itemMap["unit_price"] = unitPrice;
-        itemMap["total_price"] = unitPrice * item.quantity;
+        itemMap["line_total"] = lineTotal;
+        itemMap["modifiers"] = modifierList;
+
         itemMap["item_status"] = item.item_status;
         itemMap["notes"] = item.notes;
 
@@ -219,11 +258,16 @@ QVariantList CheckoutService::loadCheckoutDetails(const int &orderSessionId)
     for (const auto &order : orders)
     {
         QVariantMap orderMap;
+
         orderMap["id"] = order.id;
         orderMap["display_number"] = order.display_number;
         orderMap["status"] = order.status;
         orderMap["notes"] = order.notes;
-        orderMap["closed_at"] = order.closed_at.isEmpty() ? QVariant() : order.closed_at;
+
+        orderMap["closed_at"] = order.closed_at.isEmpty()
+                ? QVariant()
+                : order.closed_at;
+
         orderMap["items"] = itemsByOrder.value(order.id);
 
         orderMap["subtotal"] = subtotal;
@@ -629,16 +673,12 @@ QVariantMap CheckoutService::loadPaidOrderDetails(const int &orderSessionId)
 
         const double unitPrice = static_cast<double>(item.price) / CURRENCY_SCALE;
 
-        itemMap["unit_price"] = unitPrice;
-        itemMap["total_price"] = unitPrice * item.quantity;
-
-        itemMap["item_status"] = item.item_status;
-        itemMap["notes"] = item.notes;
-
         // Modifiers
         QVariantList modifierList;
+        double modifierTotal = 0.0;
 
-        const auto modifiers = m_orderItemModifierRepo.getByOrderItemId(item.id);
+        const auto modifiers =
+            m_orderItemModifierRepo.getByOrderItemId(item.id);
 
         for (const auto &modifier : modifiers)
         {
@@ -659,13 +699,23 @@ QVariantMap CheckoutService::loadPaidOrderDetails(const int &orderSessionId)
             modifierMap["group_name"] = modifier.group_name;
             modifierMap["name"] = modifier.name;
 
-            modifierMap["price_delta"] =
-                static_cast<double>(modifier.price_delta) / CURRENCY_SCALE;
+            const double priceDelta = static_cast<double>(modifier.price_delta) / CURRENCY_SCALE;
+
+            modifierMap["price_delta"] = priceDelta;
+
+            modifierTotal += priceDelta;
 
             modifierList.append(modifierMap);
         }
 
+        const double lineTotal = (unitPrice + modifierTotal) * item.quantity;
+
+        itemMap["unit_price"] = unitPrice;
+        itemMap["line_total"] = lineTotal;
         itemMap["modifiers"] = modifierList;
+
+        itemMap["item_status"] = item.item_status;
+        itemMap["notes"] = item.notes;
 
         itemsByOrder[item.order_id].append(itemMap);
     }

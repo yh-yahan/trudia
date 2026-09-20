@@ -578,8 +578,8 @@ Item {
 
                             Text {
                                 text: hasOpenSelection
-                                      ? qsTr("Ticket #%1").arg(selectedSession.display_number)
-                                      : qsTr("Receipt #%1").arg(selectedRecentDetails.display_number)
+                                    ? qsTr("Ticket #%1").arg(selectedSession.display_number)
+                                    : qsTr("Receipt #%1").arg(selectedRecentDetails.display_number)
                                 color: Theme.text
                                 font.bold: true
                                 font.pixelSize: Theme.fontNormal + 2
@@ -587,27 +587,34 @@ Item {
 
                             Text {
                                 text: hasOpenSelection
-                                      ? (selectedSession.table_name ? qsTr("Table %1").arg(selectedSession.table_name)
-                                                                    : selectedSession.order_type)
-                                      : qsTr("Paid order")
+                                    ? (selectedSession.table_name
+                                        ? qsTr("Table %1").arg(selectedSession.table_name)
+                                        : selectedSession.order_type)
+                                    : qsTr("Paid order")
                                 color: Theme.secondaryText
                                 font.pixelSize: Theme.fontSmall
                             }
                         }
 
                         Rectangle {
-                            visible: hasOpenSelection && requireReadyForCheckout && kitchenMode !== "tickets"
+                            visible: hasOpenSelection
+                                    && requireReadyForCheckout
+                                    && kitchenMode !== "tickets"
                             radius: 8
                             implicitHeight: 28
                             implicitWidth: chipLabel.implicitWidth + 16
-                            color: sessionIsFullyServed(checkoutDetails) ? Theme.green : Theme.orange
+                            color: sessionIsFullyServed(checkoutDetails)
+                                ? Theme.green
+                                : Theme.orange
 
                             Text {
                                 id: chipLabel
                                 anchors.centerIn: parent
                                 text: sessionIsFullyServed(checkoutDetails)
-                                      ? qsTr("Ready")
-                                      : qsTr("%1 pending").arg(pendingOrderCount(checkoutDetails))
+                                    ? qsTr("Ready")
+                                    : qsTr("%1 pending").arg(
+                                            pendingOrderCount(checkoutDetails)
+                                        )
                                 color: "white"
                                 font.bold: true
                                 font.pixelSize: Theme.fontSmall
@@ -627,9 +634,12 @@ Item {
                         Layout.fillHeight: true
                         clip: true
                         spacing: 14
+
                         model: hasOpenSelection
-                               ? checkoutDetails
-                               : (selectedRecentDetails ? selectedRecentDetails.orders : [])
+                            ? checkoutDetails
+                            : (selectedRecentDetails
+                                ? selectedRecentDetails.orders
+                                : [])
 
                         delegate: Column {
                             width: billList.width
@@ -649,8 +659,12 @@ Item {
 
                                 Text {
                                     visible: hasOpenSelection && requireReadyForCheckout
-                                    text: isOrderServed(modelData) ? qsTr("SERVED") : qsTr("PENDING")
-                                    color: isOrderServed(modelData) ? Theme.green : Theme.orange
+                                    text: isOrderServed(modelData)
+                                        ? qsTr("SERVED")
+                                        : qsTr("PENDING")
+                                    color: isOrderServed(modelData)
+                                        ? Theme.green
+                                        : Theme.orange
                                     font.bold: true
                                     font.pixelSize: Theme.fontSmall
                                 }
@@ -661,73 +675,72 @@ Item {
 
                                 delegate: Column {
                                     width: parent.width
-                                    spacing: 4
+                                    spacing: 2
 
                                     RowLayout {
                                         width: parent.width
                                         spacing: 8
 
-                                        Column {
+                                        Text {
                                             Layout.fillWidth: true
-                                            spacing: 2
-
-                                            Text {
-                                                width: parent.width
-                                                text: modelData.item_name
-                                                      + (modelData.portion_size ? " (" + modelData.portion_size + ")" : "")
-                                                color: Theme.text
-                                                font.pixelSize: Theme.fontNormal
-                                                elide: Text.ElideRight
-                                            }
-
-                                            Repeater {
-                                                model: itemExtras(modelData)
-
-                                                delegate: RowLayout {
-                                                    width: parent.width
-                                                    spacing: 6
-
-                                                    Text {
-                                                        Layout.fillWidth: true
-                                                        text: extraDisplayName(modelData)
-                                                        color: Theme.secondaryText
-                                                        font.pixelSize: Theme.fontSmall
-                                                        elide: Text.ElideRight
-                                                    }
-
-                                                    Text {
-                                                        visible: extraPriceDelta(modelData) !== 0
-                                                        text: formatPriceDelta(extraPriceDelta(modelData))
-                                                        color: extraPriceDelta(modelData) > 0 ? Theme.orange : Theme.green
-                                                        font.pixelSize: Theme.fontSmall
-                                                    }
-                                                }
-                                            }
-
-                                            Text {
-                                                visible: modelData.notes && modelData.notes.length > 0
-                                                text: modelData.notes
-                                                color: Theme.orange
-                                                font.pixelSize: Theme.fontSmall
-                                                elide: Text.ElideRight
-                                            }
-                                        }
-
-                                        Text {
-                                            text: "×" + modelData.quantity
-                                            color: Theme.secondaryText
+                                            text: qsTr("%1  %2%3")
+                                                .arg(modelData.quantity)
+                                                .arg(modelData.item_name)
+                                                .arg(
+                                                    modelData.portion_size
+                                                    ? " (" + modelData.portion_size + ")"
+                                                    : ""
+                                                )
+                                            color: Theme.text
                                             font.pixelSize: Theme.fontNormal
-                                            Layout.preferredWidth: 40
-                                            horizontalAlignment: Text.AlignRight
+                                            elide: Text.ElideRight
                                         }
 
                                         Text {
-                                            text: Number(modelData.total_price).toFixed(2)
+                                            text: Number(modelData.line_total).toFixed(2)
                                             color: Theme.text
                                             font.pixelSize: Theme.fontNormal
                                             Layout.preferredWidth: 72
                                             horizontalAlignment: Text.AlignRight
                                         }
+                                    }
+
+                                    Text {
+                                        text: qsTr("%1 each").arg(
+                                            Number(modelData.unit_price).toFixed(2)
+                                        )
+                                        color: Theme.secondaryText
+                                        font.pixelSize: Theme.fontSmall
+                                    }
+
+                                    Column {
+                                        width: parent.width
+                                        spacing: 8
+
+                                        Repeater {
+                                            model: modelData.modifiers
+
+                                            delegate: Text {
+                                                text: qsTr("+ %1 (%2)")
+                                                    .arg(modelData.name)
+                                                    .arg(
+                                                        Number(modelData.price_delta).toFixed(2)
+                                                    )
+                                                color: modelData.price_delta > 0
+                                                    ? Theme.orange
+                                                    : Theme.green
+                                                font.pixelSize: Theme.fontSmall
+                                                elide: Text.ElideRight
+                                            }
+                                        }
+                                    }
+
+                                    Text {
+                                        visible: modelData.notes && modelData.notes.length > 0
+                                        text: modelData.notes
+                                        color: Theme.orange
+                                        font.pixelSize: Theme.fontSmall
+                                        elide: Text.ElideRight
                                     }
                                 }
                             }

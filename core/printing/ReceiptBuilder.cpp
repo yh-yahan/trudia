@@ -186,11 +186,11 @@ QByteArray ReceiptBuilder::build(const ReceiptData &data, const Printer &printer
             if (mod.name.trimmed().isEmpty())
                 continue;
 
-            const QString left = QStringLiteral("   + ") + mod.name;
+            const QString modifierText = QStringLiteral("   + ") + mod.name;
             if (std::abs(mod.priceDelta) > 0.0001)
-                b.addText(padLeftRight(left, formatAmount(mod.priceDelta), width));
+                b.addText(modifierText + " (" + QString::number(mod.priceDelta, 'f', 2) + ")");
             else
-                b.addText(left);
+                b.addText(modifierText);
             b.newLine();
         }
 
@@ -237,11 +237,6 @@ QByteArray ReceiptBuilder::build(const ReceiptData &data, const Printer &printer
     if (data.discount > 0.0)
     {
         b.addText(QObject::tr("Discount: -%1").arg(formatAmount(data.discount)));
-        b.newLine();
-    }
-    else
-    {
-        b.addText(QObject::tr("Discount: %1").arg("0"));
         b.newLine();
     }
 

@@ -120,6 +120,7 @@ bool DatabaseManager::runMigrations()
         "core/database/migrations/023_create_payments.sql",
         "core/database/migrations/024_create_modifiers.sql",
         "core/database/migrations/025_create_order_item_modifiers.sql",
+        "core/database/migrations/026_create_inventory.sql",
     };
 
     for (const QString &fileName : migrationFiles)

@@ -25,5 +25,6 @@
         <file>core/database/migrations/023_create_payments.sql</file>
         <file>core/database/migrations/024_create_modifiers.sql</file>
         <file>core/database/migrations/025_create_order_item_modifiers.sql</file>
+        <file>core/database/migrations/026_create_inventory.sql</file>
     </qresource>
 </RCC>

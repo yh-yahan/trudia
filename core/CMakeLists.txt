@@ -57,6 +57,7 @@ target_sources(trudia_core PRIVATE
     services/TaxReportService.cpp
     services/PaymentService.cpp
     services/ModifiersService.cpp
+    services/InventoryService.cpp
 
     printing/EscPosBuilder.cpp
     printing/PrintLayoutHelper.cpp

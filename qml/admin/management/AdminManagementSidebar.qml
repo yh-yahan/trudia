@@ -20,16 +20,13 @@ Rectangle {
 
     function populateModel() {
         buttonModel.clear()
-
         buttonModel.append({"text": qsTr("Menu")})
-
+        buttonModel.append({"text": qsTr("Inventory")})
         buttonModel.append({"text": SettingService.tableLayoutMode
                                        === "floor_plan" ? qsTr("Floor Plan") : qsTr(
                                                               "Table")
                            })
-
         buttonModel.append({"text": qsTr("Members")})
-
         buttonModel.append({"text": qsTr("User")})
     }
 

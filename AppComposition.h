@@ -27,6 +27,8 @@
 #include "core/data/PaymentRepository.h"
 #include "core/data/ModifiersRepository.h"
 #include "core/data/OrderItemModifierRepository.h"
+#include "core/data/InventoryItemRepository.h"
+#include "core/data/StockMovementRepository.h"
 
 #include "core/services/CurrencyService.h"
 #include "core/services/OrderService.h"
@@ -48,6 +50,7 @@
 #include "core/services/TaxReportService.h"
 #include "core/services/PaymentService.h"
 #include "core/services/ModifiersService.h"
+#include "core/services/InventoryService.h"
 
 #include "core/printing/ReceiptBuilder.h"
 #include "core/printing/WindowsPrinterService.h"
@@ -92,6 +95,8 @@ private:
     PaymentRepository paymentRepo;
     ModifiersRepository modifiersRepo;
     OrderItemModifierRepository orderItemModifierRepo;
+    InventoryItemRepository inventoryItemRepo;
+    StockMovementRepository stockMovementRepo;
 
     WindowsPrinterService windowsPrinterService;
     CurrencyService currencyService;
@@ -116,6 +121,7 @@ private:
     DatabaseService databaseService;
     TaxReportService taxReportService;
     ModifiersService modifiersService;
+    InventoryService inventoryService;
 };
 
 #endif // APPCOMPOSITION_H

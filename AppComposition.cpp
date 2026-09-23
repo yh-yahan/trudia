@@ -33,6 +33,8 @@ AppComposition::AppComposition(AppService& appService, DatabaseManager& dbManage
       paymentRepo(DatabaseManager::db()),
       modifiersRepo(DatabaseManager::db()),
       orderItemModifierRepo(DatabaseManager::db()),
+      inventoryItemRepo(DatabaseManager::db()),
+      stockMovementRepo(DatabaseManager::db()),
       membershipService(membershipRepo, membershipSettingsRepo, membershipTransactionRepo),
       authService(userRepo),
       userService(userRepo),
@@ -107,7 +109,8 @@ AppComposition::AppComposition(AppService& appService, DatabaseManager& dbManage
       memberService(dbManager, membershipRepo, membershipTransactionRepo),
       databaseService(appService, dbManager),
       taxReportService(taxReportRepo),
-      modifiersService(modifiersRepo)
+      modifiersService(modifiersRepo),
+      inventoryService(inventoryItemRepo)
 {
     wireSignals();
 }
@@ -148,4 +151,5 @@ void AppComposition::registerQml()
     qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "MemberService", &memberService);
     qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "TaxReportService", &taxReportService);
     qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "ModifiersService", &modifiersService);
+    qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "InventoryService", &inventoryService);
 }

@@ -13,8 +13,8 @@ struct InventoryItem {
     InventoryBaseUnit base_unit;
     int quantity;
     int low_quantity;
-    bool is_active;
-    bool is_sellable;
+    QString deleted_at;
+    QString sale_paused_at;
 };
 
 struct StockMovement {

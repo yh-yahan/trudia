@@ -12,7 +12,7 @@ std::vector<InventoryItem> InventoryItemRepository::getAll() const
     QSqlQuery query(m_db);
     query.prepare(R"(
         SELECT id, name, type, base_unit, quantity, low_quantity,
-            is_active, is_sellable
+            deleted_at, sale_paused_at
         FROM inventory_items
         ORDER BY name
     )");
@@ -27,8 +27,8 @@ std::vector<InventoryItem> InventoryItemRepository::getAll() const
         if (!fromString(query.value("base_unit").toString(), item.base_unit)) continue;
         item.quantity = query.value("quantity").toInt();
         item.low_quantity = query.value("low_quantity").toInt();
-        item.is_active = query.value("is_active").toBool();
-        item.is_sellable = query.value("is_sellable").toBool();
+        item.deleted_at = query.value("deleted_at").toString();
+        item.sale_paused_at = query.value("sale_paused_at").toString();
 
         items.push_back(std::move(item));
     }
@@ -41,7 +41,7 @@ std::optional<InventoryItem> InventoryItemRepository::getById(int id) const
     QSqlQuery query(m_db);
     query.prepare(R"(
         SELECT id, name, type, base_unit, quantity, low_quantity,
-            is_active, is_sellable
+            deleted_at, sale_paused_at
         FROM inventory_items
         WHERE id = :id
     )");
@@ -57,8 +57,8 @@ std::optional<InventoryItem> InventoryItemRepository::getById(int id) const
     if (!fromString(query.value("base_unit").toString(), item.base_unit)) return std::nullopt;
     item.quantity = query.value("quantity").toInt();
     item.low_quantity = query.value("low_quantity").toInt();
-    item.is_active = query.value("is_active").toBool();
-    item.is_sellable = query.value("is_sellable").toBool();
+    item.deleted_at = query.value("deleted_at").toString();
+    item.sale_paused_at = query.value("sale_paused_at").toString();
 
     return item;
 }
@@ -69,11 +69,11 @@ int InventoryItemRepository::create(const InventoryItem &item)
     query.prepare(R"(
         INSERT INTO inventory_items (
             name, type, base_unit, quantity, low_quantity,
-            is_active, is_sellable
+            deleted_at, sale_paused_at
         )
         VALUES (
             :name, :type, :base_unit, :quantity, :low_quantity,
-            :is_active, :is_sellable
+            :deleted_at, :sale_paused_at
         )
     )");
 
@@ -82,8 +82,8 @@ int InventoryItemRepository::create(const InventoryItem &item)
     query.bindValue(":base_unit", toString(item.base_unit));
     query.bindValue(":quantity", item.quantity);
     query.bindValue(":low_quantity", item.low_quantity);
-    query.bindValue(":is_active", item.is_active);
-    query.bindValue(":is_sellable", item.is_sellable);
+    query.bindValue(":deleted_at", item.deleted_at);
+    query.bindValue(":sale_paused_at", item.sale_paused_at);
 
     if (!query.exec()) return -1;
 
@@ -101,8 +101,8 @@ bool InventoryItemRepository::update(const InventoryItem &item)
             base_unit = :base_unit,
             quantity = :quantity,
             low_quantity = :low_quantity,
-            is_active = :is_active,
-            is_sellable = :is_sellable
+            deleted_at = :deleted_at,
+            sale_paused_at = :sale_paused_at
         WHERE id = :id
     )");
 
@@ -112,8 +112,8 @@ bool InventoryItemRepository::update(const InventoryItem &item)
     query.bindValue(":base_unit", toString(item.base_unit));
     query.bindValue(":quantity", item.quantity);
     query.bindValue(":low_quantity", item.low_quantity);
-    query.bindValue(":is_active", item.is_active);
-    query.bindValue(":is_sellable", item.is_sellable);
+    query.bindValue(":deleted_at", item.deleted_at);
+    query.bindValue(":sale_paused_at", item.sale_paused_at);
 
     return query.exec();
 }
@@ -122,7 +122,7 @@ bool InventoryItemRepository::remove(int id)
 {
     QSqlQuery query(m_db);
     query.prepare(R"(
-        DELETE FROM inventory_items
+        UPDATE inventory_items SET deleted_at = CURRENT_TIMESTAMP
         WHERE id = :id
     )");
 

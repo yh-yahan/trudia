@@ -61,8 +61,8 @@ QVariantMap InventoryService::toMap(const InventoryItem &item) const
         { QStringLiteral("baseUnit"), toString(item.base_unit) },
         { QStringLiteral("quantity"), static_cast<double>(item.quantity) / INVENTORY_QUANTITY_SCALE },
         { QStringLiteral("lowQuantity"), static_cast<double>(item.low_quantity) / INVENTORY_QUANTITY_SCALE },
-        { QStringLiteral("isActive"), item.is_active },
-        { QStringLiteral("isSellable"), item.is_sellable }
+        { QStringLiteral("deletedAt"), item.deleted_at },
+        { QStringLiteral("salePausedAt"), item.sale_paused_at }
     };
 }
 
@@ -84,8 +84,8 @@ std::optional<InventoryItem> InventoryService::fromMap(const QVariantMap &data) 
         data.value(QStringLiteral("lowQuantity")).toDouble()
         * INVENTORY_QUANTITY_SCALE
     ));
-    item.is_active = data.value(QStringLiteral("isActive"), true).toBool();
-    item.is_sellable = data.value(QStringLiteral("isSellable"), false).toBool();
+    item.deleted_at = data.value(QStringLiteral("deletedAt"), true).toString();
+    item.sale_paused_at = data.value(QStringLiteral("salePausedAt"), false).toString();
 
     return item;
 }

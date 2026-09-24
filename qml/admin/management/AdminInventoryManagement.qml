@@ -12,7 +12,7 @@ Item {
 
     readonly property var typeCatalog: [
         { key: "ingredient", label: qsTr("Ingredient") },
-        { key: "sellable", label: qsTr("Product/Sellable") },
+        { key: "finishedProduct", label: qsTr("Finished Product") },
         { key: "packaging", label: qsTr("Packaging") },
         { key: "prep", label: qsTr("Prep") }
     ]
@@ -44,17 +44,28 @@ Item {
         { key: "All", label: qsTr("All") }
     ].concat(typeCatalog)
 
-        property int selectedId: -1
+    property int selectedId: -1
     property bool creating: false
     property bool formOpen: creating || selectedId !== -1
     property string searchText: ""
     property string typeFilter: "All"
 
+    // salePausedAt is an ISO timestamp string when sales are paused, otherwise null.
+    // deletedAt is never written by this page; create/update always send null.
+    property var formSalePausedAt: null
+
+    readonly property int liveCount: {
+        var n = 0
+        for (var i = 0; i < itemModel.count; ++i) {
+            if (!itemModel.get(i).deletedAt) ++n
+        }
+        return n
+    }
+
     readonly property int filteredCount: {
         var n = 0
         for (var i = 0; i < itemModel.count; ++i) {
-            if (matchesFilters(itemModel.get(i)))
-                ++n
+            if (matchesFilters(itemModel.get(i))) ++n
         }
         return n
     }
@@ -63,16 +74,14 @@ Item {
         var n = 0
         for (var i = 0; i < itemModel.count; ++i) {
             var it = itemModel.get(i)
-            if (it.isActive && it.quantity <= it.lowQuantity)
-                ++n
+            if (!it.deletedAt && it.quantity <= it.lowQuantity) ++n
         }
         return n
     }
 
     function catalogIndex(catalog, key) {
         for (var i = 0; i < catalog.length; ++i) {
-            if (catalog[i].key === key)
-                return i
+            if (catalog[i].key === key) return i
         }
         return 0
     }
@@ -85,20 +94,20 @@ Item {
 
     function catalogLabel(catalog, key) {
         for (var i = 0; i < catalog.length; ++i) {
-            if (catalog[i].key === key)
-                return catalog[i].label
+            if (catalog[i].key === key) return catalog[i].label
         }
         return key || ""
     }
 
+    function isPaused(item) {
+        return !!(item && item.salePausedAt)
+    }
+
     function matchesFilters(item) {
-        if (!item)
-            return false
-        if (typeFilter !== "All" && item.type !== typeFilter)
-            return false
-        if (searchText.length > 0
-                && item.name.toLowerCase().indexOf(searchText.toLowerCase()) === -1)
-            return false
+        if (!item) return false
+        if (item.deletedAt) return false
+        if (typeFilter !== "All" && item.type !== typeFilter) return false
+        if (searchText.length > 0 && item.name.toLowerCase().indexOf(searchText.toLowerCase()) === -1) return false
         return true
     }
 
@@ -106,15 +115,13 @@ Item {
         const keepId = selectedId
         itemModel.clear()
         const items = InventoryService.getItems()
-        for (var i = 0; i < items.length; ++i)
-            itemModel.append(items[i])
+        for (var i = 0; i < items.length; ++i) itemModel.append(items[i])
 
-        if (creating)
-            return
+        if (creating) return
 
         if (keepId !== -1) {
             const fresh = InventoryService.getItem(keepId)
-            if (fresh && fresh.id !== undefined) {
+            if (fresh && fresh.id !== undefined && !fresh.deletedAt) {
                 selectedId = keepId
                 applyItemToForm(fresh)
                 return
@@ -129,20 +136,18 @@ Item {
         formName.text = item.name || ""
         formType.currentIndex = catalogIndex(typeCatalog, item.type)
         formUnit.currentIndex = catalogIndex(unitCatalog, item.baseUnit)
-        formQuantity.value = item.quantity || 0
-        formLowQuantity.value = item.lowQuantity || 0
-        formIsActive.checked = item.isActive !== false
-        formIsSellable.checked = !!item.isSellable
+        formQuantity.text = String(item.quantity || 0)
+        formLowQuantity.text = String(item.lowQuantity || 0)
+        formSalePausedAt = item.salePausedAt || null
     }
 
     function resetFormDefaults() {
         formName.text = ""
         formType.currentIndex = 0
         formUnit.currentIndex = 0
-        formQuantity.value = 0
-        formLowQuantity.value = 0
-        formIsActive.checked = true
-        formIsSellable.checked = false
+        formQuantity.text = "0"
+        formLowQuantity.text = "0"
+        formSalePausedAt = null
     }
 
     function formPayload() {
@@ -152,9 +157,17 @@ Item {
             "baseUnit": catalogKey(unitCatalog, formUnit.currentIndex),
             "quantity": Number(formQuantity.text),
             "lowQuantity": Number(formLowQuantity.text),
-            "isActive": formIsActive.checked,
-            "isSellable": formIsSellable.checked
+            "deletedAt": null,
+            "salePausedAt": formSalePausedAt || null
         }
+    }
+
+    function pauseSale() {
+        formSalePausedAt = new Date().toISOString()
+    }
+
+    function resumeSale() {
+        formSalePausedAt = null
     }
 
     function startCreate() {
@@ -166,8 +179,7 @@ Item {
 
     function selectItem(itemId) {
         const item = InventoryService.getItem(itemId)
-        if (!item || item.id === undefined)
-            return
+        if (!item || item.id === undefined || item.deletedAt) return
         creating = false
         selectedId = itemId
         applyItemToForm(item)
@@ -246,7 +258,7 @@ Item {
 
                 Text {
                     text: {
-                        var parts = [ qsTr("%1 items").arg(itemModel.count) ]
+                        var parts = [ qsTr("%1 items").arg(liveCount) ]
                         if (lowStockCount > 0)
                             parts.push(qsTr("%1 low stock").arg(lowStockCount))
                         return parts.join("  ·  ")
@@ -348,7 +360,7 @@ Item {
                     spacing: 4
 
                     Text {
-                        visible: filteredCount !== itemModel.count
+                        visible: filteredCount !== liveCount
                         text: qsTr("%1 shown").arg(filteredCount)
                         color: Theme.secondaryText
                         font.pixelSize: Theme.fontNormal
@@ -371,6 +383,7 @@ Item {
 
                             readonly property bool isLow: quantity <= lowQuantity
                             readonly property bool isSelected: !creating && selectedId === id
+                            readonly property bool saleIsPaused: !!salePausedAt
 
                             Rectangle {
                                 anchors.fill: parent
@@ -389,8 +402,7 @@ Item {
                                         width: 8
                                         height: 40
                                         radius: 4
-                                        color: !isActive ? Theme.border
-                                                         : (isLow ? "#c45c5c" : Theme.primary())
+                                        color: saleIsPaused ? Theme.border : (isLow ? "#c45c5c" : Theme.primary())
                                     }
 
                                     ColumnLayout {
@@ -404,12 +416,13 @@ Item {
                                             font.bold: true
                                             elide: Text.ElideRight
                                             Layout.fillWidth: true
-                                            opacity: isActive ? 1 : 0.55
+                                            opacity: saleIsPaused ? 0.55 : 1
                                         }
 
                                         Text {
                                             text: catalogLabel(typeCatalog, type)
                                                   + "  ·  " + catalogLabel(unitCatalog, baseUnit)
+                                                  + (saleIsPaused ? ("  ·  " + qsTr("Sale paused")) : "")
                                             color: Theme.secondaryText
                                             font.pixelSize: Theme.fontNormal
                                             elide: Text.ElideRight
@@ -449,14 +462,14 @@ Item {
                     }
 
                     Item {
-                        visible: itemModel.count === 0 || filteredCount === 0
+                        visible: liveCount === 0 || filteredCount === 0
                         Layout.fillWidth: true
-                        Layout.fillHeight: itemModel.count === 0
-                        implicitHeight: itemModel.count === 0 ? 0 : 48
+                        Layout.fillHeight: liveCount === 0
+                        implicitHeight: liveCount === 0 ? 0 : 48
 
                         Text {
                             anchors.centerIn: parent
-                            text: itemModel.count === 0
+                            text: liveCount === 0
                                   ? qsTr("No items yet")
                                   : qsTr("No matches")
                             color: Theme.secondaryText
@@ -670,37 +683,63 @@ Item {
 
                             RowLayout {
                                 Layout.fillWidth: true
-                                spacing: 16
+                                spacing: 12
 
-                                CheckBox {
-                                    id: formIsActive
-                                    checked: true
-                                    text: qsTr("Active")
-                                    contentItem: Text {
-                                        text: qsTr("Active")
-                                        color: Theme.text
+                                ColumnLayout {
+                                    Layout.fillWidth: true
+                                    spacing: 2
+
+                                    Text {
+                                        text: qsTr("Sale status")
+                                        color: Theme.secondaryText
                                         font.pixelSize: Theme.fontNormal
-                                        leftPadding: formIsActive.indicator.width + 8
-                                        verticalAlignment: Text.AlignVCenter
+                                    }
+
+                                    Text {
+                                        text: formSalePausedAt
+                                              ? qsTr("Sale paused")
+                                              : qsTr("Available for sale")
+                                        color: formSalePausedAt ? "#c45c5c" : Theme.text
+                                        font.pixelSize: Theme.fontNormal
+                                        font.bold: true
+                                    }
+
+                                    Text {
+                                        visible: !!formSalePausedAt
+                                        text: qsTr("Paused at %1").arg(formSalePausedAt)
+                                        color: Theme.secondaryText
+                                        font.pixelSize: Theme.fontNormal
+                                        wrapMode: Text.Wrap
+                                        Layout.fillWidth: true
                                     }
                                 }
 
-                                CheckBox {
-                                    id: formIsSellable
-                                    checked: false
-                                    text: qsTr("Sellable")
-                                    contentItem: Text {
-                                        text: qsTr("Sellable")
-                                        color: Theme.text
-                                        font.pixelSize: Theme.fontNormal
-                                        leftPadding: formIsSellable.indicator.width + 8
-                                        verticalAlignment: Text.AlignVCenter
+                                Button {
+                                    text: formSalePausedAt ? qsTr("Resume sale") : qsTr("Pause sale")
+                                    leftPadding: 14
+                                    rightPadding: 14
+                                    topPadding: 8
+                                    bottomPadding: 8
+                                    background: Rectangle {
+                                        color: formSalePausedAt ? Theme.primary() : Theme.background
+                                        radius: 4
+                                        border.width: formSalePausedAt ? 0 : 1
+                                        border.color: Theme.border
                                     }
+                                    contentItem: Text {
+                                        text: formSalePausedAt ? qsTr("Resume sale") : qsTr("Pause sale")
+                                        color: formSalePausedAt ? "white" : Theme.text
+                                        font.pixelSize: Theme.fontNormal
+                                        horizontalAlignment: Text.AlignHCenter
+                                    }
+                                    hoverEnabled: false
+                                    focusPolicy: Qt.NoFocus
+                                    onClicked: formSalePausedAt ? resumeSale() : pauseSale()
                                 }
                             }
 
                             Text {
-                                visible: formQuantity.value <= formLowQuantity.value
+                                visible: Number(formQuantity.text) <= Number(formLowQuantity.text)
                                 text: qsTr("This item will show as low stock.")
                                 color: "#c45c5c"
                                 font.pixelSize: Theme.fontNormal

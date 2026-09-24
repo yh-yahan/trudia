@@ -5,7 +5,7 @@
 
 #define INVENTORY_TYPES(X) \
     X(Ingredient, "ingredient") \
-    X(Sellable, "sellable") \
+    X(FinishedProduct, "finishedProduct") \
     X(Packaging, "packaging") \
     X(Prep, "prep")
 

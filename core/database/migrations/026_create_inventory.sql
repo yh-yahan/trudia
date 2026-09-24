@@ -5,8 +5,8 @@ CREATE TABLE IF NOT EXISTS inventory_items (
     base_unit TEXT NOT NULL, 
     quantity INTEGER NOT NULL DEFAULT 0,
     low_quantity INTEGER, -- in base_unit
-    is_active INTEGER NOT NULL DEFAULT 1,
-    is_sellable INTEGER NOT NULL DEFAULT 1,
+    deleted_at TEXT DEFAULT NULL,
+    sale_paused_at TEXT DEFAULT NULL,
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

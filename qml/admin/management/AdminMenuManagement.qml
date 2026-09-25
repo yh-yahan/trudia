@@ -154,7 +154,7 @@ Item {
             Layout.fillHeight: true
             spacing: 0
 
-            // ── Categories ──────────────────────────────────────
+            // Categories
             Rectangle {
                 Layout.preferredWidth: 240
                 Layout.fillHeight: true
@@ -359,7 +359,7 @@ Item {
                 color: Theme.border
             }
 
-            // ── Items ───────────────────────────────────────────
+            // Items
             Rectangle {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
@@ -617,7 +617,7 @@ Item {
                 color: Theme.border
             }
 
-            // ── Item detail + modifiers ─────────────────────────
+            // Item detail and modifiers
             Rectangle {
                 Layout.preferredWidth: 360
                 Layout.fillHeight: true

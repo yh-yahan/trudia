@@ -32,6 +32,7 @@ target_sources(trudia_core PRIVATE
     data/OrderItemModifierRepository.cpp
     data/InventoryItemRepository.cpp
     data/StockMovementRepository.cpp
+    data/RecipeComponentRepository.cpp
 
     services/AuthService.cpp
     services/MenuService.cpp

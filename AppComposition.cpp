@@ -35,6 +35,7 @@ AppComposition::AppComposition(AppService& appService, DatabaseManager& dbManage
       orderItemModifierRepo(DatabaseManager::db()),
       inventoryItemRepo(DatabaseManager::db()),
       stockMovementRepo(DatabaseManager::db()),
+      recipeComponentRepo(DatabaseManager::db()),
       membershipService(membershipRepo, membershipSettingsRepo, membershipTransactionRepo),
       authService(userRepo),
       userService(userRepo),
@@ -110,7 +111,7 @@ AppComposition::AppComposition(AppService& appService, DatabaseManager& dbManage
       databaseService(appService, dbManager),
       taxReportService(taxReportRepo),
       modifiersService(modifiersRepo),
-      inventoryService(inventoryItemRepo)
+      inventoryService(inventoryItemRepo, recipeComponentRepo)
 {
     wireSignals();
 }

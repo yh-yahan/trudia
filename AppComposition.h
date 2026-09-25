@@ -29,6 +29,7 @@
 #include "core/data/OrderItemModifierRepository.h"
 #include "core/data/InventoryItemRepository.h"
 #include "core/data/StockMovementRepository.h"
+#include "core/data/RecipeComponentRepository.h"
 
 #include "core/services/CurrencyService.h"
 #include "core/services/OrderService.h"
@@ -97,6 +98,7 @@ private:
     OrderItemModifierRepository orderItemModifierRepo;
     InventoryItemRepository inventoryItemRepo;
     StockMovementRepository stockMovementRepo;
+    RecipeComponentRepository recipeComponentRepo;
 
     WindowsPrinterService windowsPrinterService;
     CurrencyService currencyService;

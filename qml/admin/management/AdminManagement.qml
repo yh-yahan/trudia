@@ -5,14 +5,15 @@ import Trudia.Services 1.0
 Item {
     anchors.fill: parent
 
-    RowLayout {
+    ColumnLayout {
         anchors.fill: parent
         spacing: 0
 
-        AdminManagementSidebar {
+        AdminManagementTabs {
             id: managementSidebar
-            Layout.preferredWidth: 150
-            Layout.fillHeight: true
+            Layout.fillWidth: true
+            Layout.preferredHeight: 56
+            Layout.maximumHeight: 56
         }
 
         Loader {

@@ -69,7 +69,7 @@ qt_add_qml_module(apptrudia
         qml/admin/management/AdminMembersManagement.qml
         qml/admin/management/AdminUserManagement.qml
         qml/admin/management/AdminManagement.qml
-        qml/admin/management/AdminManagementSidebar.qml
+        qml/admin/management/AdminManagementTabs.qml
         qml/admin/settings/AdminDatabaseSettings.qml
         qml/admin/settings/AdminRegionalSettings.qml
         qml/admin/settings/AdminKitchenSettings.qml
@@ -79,7 +79,7 @@ qt_add_qml_module(apptrudia
         qml/admin/settings/AdminMembershipSettings.qml
         qml/admin/settings/AdminTableSettings.qml
         qml/admin/settings/AdminSettings.qml
-        qml/admin/settings/AdminSettingsSidebar.qml
+        qml/admin/settings/AdminSettingsTabs.qml
         qml/serviceStaff/ServiceStaffHome.qml
         qml/serviceStaff/ServiceStaffSidebar.qml
         qml/kitchenStaff/KitchenStaffHome.qml

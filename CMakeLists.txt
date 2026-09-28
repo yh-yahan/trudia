@@ -70,6 +70,7 @@ qt_add_qml_module(apptrudia
         qml/admin/management/AdminUserManagement.qml
         qml/admin/management/AdminManagement.qml
         qml/admin/management/AdminManagementTabs.qml
+        qml/admin/management/StockUse.qml
         qml/admin/settings/AdminDatabaseSettings.qml
         qml/admin/settings/AdminRegionalSettings.qml
         qml/admin/settings/AdminKitchenSettings.qml

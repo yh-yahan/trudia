@@ -85,6 +85,31 @@ Item {
         return false
     }
 
+    property int stockUseItemId: -1
+
+    Loader {
+        id: stockUseLoader
+
+        anchors.fill: parent
+        visible: stockUseItemId !== -1
+        active: stockUseItemId !== -1
+        source: "./StockUse.qml"
+
+        z: 9999
+
+        onLoaded: {
+            item.menuItemId = stockUseItemId
+            item.menuItemName = root.currentItemName
+            item.menuItemPrice = root.parsePrice(editPrice.text)
+            item.menuItemPortion = editPortion.text
+            item.menuItemAvailable = editAvailable.checked
+
+            item.closed.connect(function () {
+                stockUseItemId = -1
+            })
+        }
+    }
+
     ConfirmationDialog {
         id: confirmationDialog
         anchors.centerIn: parent
@@ -779,6 +804,39 @@ Item {
                                     }
                                 }
                                 confirmationDialog.open()
+                            }
+                        }
+                    }
+
+                    Rectangle {
+                        Layout.fillWidth: true
+                        height: 1
+                        color: Theme.border
+                        Layout.topMargin: 4
+                    }
+
+                    RowLayout {
+                        Text {
+                            text: qsTr("Stock use")
+                            font.pixelSize: Theme.fontNormal
+                            color: Theme.text
+                            Layout.fillWidth: true
+                        }
+
+                        Button {
+                            hoverEnabled: false
+                            focusPolicy: Qt.NoFocus
+                            flat: true
+                            contentItem: Text {
+                                text: qsTr("Edit")
+                                color: Theme.primary()
+                                font.pixelSize: Theme.fontNormal
+                                font.bold: true
+                                font.underline: true
+                            }
+                            background: null
+                            onClicked: {
+                                root.stockUseItemId = root.currentItemId
                             }
                         }
                     }

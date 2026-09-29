@@ -15,6 +15,7 @@ Popup {
 
     property string title: qsTr("Confirm")
     property string message: qsTr("Are you sure?")
+    property string type: "delete"
     property var confirmCallback: null
 
     background: Rectangle {
@@ -77,15 +78,13 @@ Popup {
             }
 
             Button {
-                text: qsTr("Delete")
-
                 background: Rectangle {
-                    color: "#e53935"
+                    color: confirmDialog.type === "delete" ? "#e53935" : Theme.primary()
                     radius: 4
                 }
 
                 contentItem: Text {
-                    text: qsTr("Delete")
+                    text: confirmDialog.type === "delete" ? qsTr("Delete") : qsTr("Save")
                     color: "white"
                     anchors.centerIn: parent
                     font.bold: true

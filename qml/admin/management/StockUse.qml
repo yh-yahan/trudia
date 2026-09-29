@@ -398,6 +398,7 @@ Item {
         }
         confirmationDialog.title = qsTr("Unsaved changes")
         confirmationDialog.message = qsTr("Save stock use for “%1” before leaving?").arg(menuItemName)
+        confirmationDialog.type = "saveBeforeLeave"
         confirmationDialog.confirmCallback = function (confirmed) {
             if (confirmed)
                 saveFulfillment()
@@ -697,7 +698,7 @@ Item {
                                 radius: 6
                                 border.color: Theme.border
                             }
-                            onTextChanged: {
+                            onEditingFinished: {
                                 const value = Number(text)
                                 if (!isNaN(value) && value > 0) {
                                     packagedQty = value
@@ -851,7 +852,7 @@ Item {
                                         radius: 6
                                         border.color: Theme.border
                                     }
-                                    onTextChanged: {
+                                    onEditingFinished: {
                                         const value = Number(text)
                                         if (!isNaN(value) && value >= 0) {
                                             recipeLines.setProperty(index, "qty", value)

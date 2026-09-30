@@ -26,7 +26,7 @@ std::vector<StockMovement> StockMovementRepository::getAll() const
         movement.quantity = query.value("quantity").toInt();
         if (!fromString(query.value("reason").toString(), movement.reason)) continue;
         movement.idempotency_key = query.value("idempotency_key").toString();
-        movement.reference_id = query.value("reference_id").toString();
+        movement.reference_id = query.value("reference_id").toInt();
         movement.note = query.value("note").toString();
 
         movements.push_back(std::move(movement));
@@ -59,7 +59,7 @@ std::vector<StockMovement> StockMovementRepository::getByInventoryItemId(int inv
         movement.quantity = query.value("quantity").toInt();
         if (!fromString(query.value("reason").toString(), movement.reason)) continue;
         movement.idempotency_key = query.value("idempotency_key").toString();
-        movement.reference_id = query.value("reference_id").toString();
+        movement.reference_id = query.value("reference_id").toInt();
         movement.note = query.value("note").toString();
 
         movements.push_back(std::move(movement));
@@ -88,10 +88,26 @@ std::optional<StockMovement> StockMovementRepository::getById(int id) const
     movement.quantity = query.value("quantity").toInt();
     if (!fromString(query.value("reason").toString(), movement.reason)) return std::nullopt;
     movement.idempotency_key = query.value("idempotency_key").toString();
-    movement.reference_id = query.value("reference_id").toString();
+    movement.reference_id = query.value("reference_id").toInt();
     movement.note = query.value("note").toString();
 
     return movement;
+}
+
+bool StockMovementRepository::getByKey(const QString &key)
+{
+    QSqlQuery query(m_db);
+        query.prepare(R"(
+        SELECT 1 FROM stock_movements
+        WHERE idempotency_key = :key
+        LIMIT 1
+    )");
+
+    query.bindValue(":key", key);
+
+    if (!query.exec()) return false;
+
+    return query.next();
 }
 
 int StockMovementRepository::create(const StockMovement &movement)

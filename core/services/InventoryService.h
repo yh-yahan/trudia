@@ -5,16 +5,22 @@
 #include <QVariantList>
 #include <QVariantMap>
 
+#include "../database/DatabaseManager.h"
 #include "../data/InventoryItemRepository.h"
 #include "../data/RecipeComponentRepository.h"
+#include "../data/StockMovementRepository.h"
+#include "../data/OrderItemRepository.h"
 
 class InventoryService : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit InventoryService(InventoryItemRepository inventoryItemRepo,
-                              RecipeComponentRepository recipeComponentRepo,
+    explicit InventoryService(InventoryItemRepository &inventoryItemRepo,
+                              RecipeComponentRepository &recipeComponentRepo,
+                              StockMovementRepository &stockMovementRepo,
+                              OrderItemRepository &orderItemRepository,
+                              DatabaseManager &databaseManager,
                               QObject *parent = nullptr);
 
     Q_INVOKABLE QVariantList getItems() const;
@@ -28,10 +34,15 @@ public:
     Q_INVOKABLE int createRecipeComponent(const QVariantMap &data);
     Q_INVOKABLE bool updateRecipeComponent(int id, const QVariantMap &data);
     Q_INVOKABLE bool removeRecipeComponent(int id);
+    
+    bool createSaleStockMovement(int order_item_id);
 
 private:
-    InventoryItemRepository m_inventoryItemRepo;
-    RecipeComponentRepository m_recipeComponentRepo;
+    InventoryItemRepository &m_inventoryItemRepo;
+    RecipeComponentRepository &m_recipeComponentRepo;
+    StockMovementRepository &m_stockMovementRepo;
+    OrderItemRepository &m_orderItemRepository;
+    DatabaseManager &m_databaseManager;
 
     QVariantMap toMap(const InventoryItem &item) const;
     std::optional<InventoryItem> fromMap(const QVariantMap &data) const;

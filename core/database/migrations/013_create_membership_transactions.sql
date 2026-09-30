@@ -7,7 +7,7 @@ CREATE TABLE membership_transactions (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (membership_id) REFERENCES memberships(id)
-        ON DELETE RESTRICT
+        ON DELETE RESTRICT,
     FOREIGN KEY (order_session_id) REFERENCES order_sessions(id)
         ON DELETE RESTRICT
 );

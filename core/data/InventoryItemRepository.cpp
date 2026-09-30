@@ -118,6 +118,22 @@ bool InventoryItemRepository::update(const InventoryItem &item)
     return query.exec();
 }
 
+bool InventoryItemRepository::updateQuantity(int id, int delta)
+{
+    QSqlQuery query(m_db);
+    query.prepare(R"(
+        UPDATE inventory_items
+        SET
+            quantity = quantity + :delta
+        WHERE id = :id
+    )");
+
+    query.bindValue(":id", id);
+    query.bindValue(":delta", delta);
+
+    return query.exec();
+}
+
 bool InventoryItemRepository::remove(int id)
 {
     QSqlQuery query(m_db);

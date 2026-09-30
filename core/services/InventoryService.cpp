@@ -1,13 +1,21 @@
 #include "InventoryService.h"
 
+#include "../logging/LoggingCategories.h"
+
 constexpr int INVENTORY_QUANTITY_SCALE = 1000;
 
-InventoryService::InventoryService(InventoryItemRepository inventoryItemRepo,
-                                   RecipeComponentRepository recipeComponentRepo,
+InventoryService::InventoryService(InventoryItemRepository &inventoryItemRepo,
+                                   RecipeComponentRepository &recipeComponentRepo,
+                                   StockMovementRepository &stockMovementRepo,
+                                   OrderItemRepository &orderItemRepository,
+                                   DatabaseManager &databaseManager,
                                    QObject *parent)
     : QObject(parent),
       m_inventoryItemRepo(inventoryItemRepo),
-      m_recipeComponentRepo(recipeComponentRepo) {}
+      m_recipeComponentRepo(recipeComponentRepo),
+      m_stockMovementRepo(stockMovementRepo),
+      m_orderItemRepository(orderItemRepository),
+      m_databaseManager(databaseManager) {}
 
 QVariantList InventoryService::getItems() const
 {
@@ -183,4 +191,64 @@ std::optional<RecipeComponent> InventoryService::fromRecipeMap(const QVariantMap
     row.sort_order = data.value(QStringLiteral("sortOrder"), 0).toInt();
 
     return row;
+}
+
+bool InventoryService::createSaleStockMovement(int order_item_id)
+{
+    if (!m_databaseManager.beginTransaction())
+    {
+        qCWarning(logInventory) << "Failed to begin transaction";
+        return false;
+    }
+
+    auto rollback = [&]()
+    {
+        qCWarning(logInventory) << "Rolling back transaction";
+        m_databaseManager.rollback();
+        return false;
+    };
+
+    const auto orderItemOpt = m_orderItemRepository.getOrderItemById(order_item_id);
+    if (!orderItemOpt.has_value()) return false;
+    const auto &orderItem = orderItemOpt.value();
+
+    std::vector<RecipeComponent> recipeComponents = m_recipeComponentRepo.listByOwner(RecipeComponentOwnerType::MenuItem, orderItem.item_id);
+
+    for (const auto &recipeComponent : recipeComponents)
+    {
+        if (recipeComponent.modifier_id.has_value() && *recipeComponent.modifier_id != 0) continue;
+        if (recipeComponent.effect != RecipeComponentEffect::Add) continue;
+
+        // key: sale:{order_item_id}:{inventory_item_id}:{modifier_id}:{effect}
+        const QString key = QStringLiteral("sale:%1:%2:0:add")
+                                .arg(order_item_id)
+                                .arg(recipeComponent.inventory_item_id);
+
+        if (m_stockMovementRepo.getByKey(key)) continue;
+
+        StockMovement stockMovement;
+        stockMovement.inventory_item_id = recipeComponent.inventory_item_id;
+        stockMovement.quantity = -(recipeComponent.quantity * orderItem.quantity);
+        stockMovement.reason = StockMovementReason::Sale;
+        stockMovement.idempotency_key = key;
+        stockMovement.reference_id = order_item_id;
+        stockMovement.note = "";
+
+        if (!m_stockMovementRepo.create(stockMovement))
+        {
+            qCWarning(logInventory) << "Failed to record stock movement";
+            return rollback();
+        }
+
+        // decrement inventory item quantity
+        if (!m_inventoryItemRepo.updateQuantity(stockMovement.inventory_item_id, stockMovement.quantity)) return rollback();
+    }
+
+    if (!m_databaseManager.commit())
+    {
+        qCWarning(logInventory) << "Commit failed";
+        return rollback();
+    }
+
+    return true;
 }

@@ -36,7 +36,7 @@ struct StockMovement {
     int quantity;
     StockMovementReason reason;
     QString idempotency_key;
-    QString reference_id;
+    int reference_id;
     QString note;
 };
 

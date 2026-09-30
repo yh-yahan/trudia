@@ -16,6 +16,7 @@ public:
 
     int create(const InventoryItem &item);
     bool update(const InventoryItem &item);
+    bool updateQuantity(int id, int delta);
     bool remove(int id);
 
 private:

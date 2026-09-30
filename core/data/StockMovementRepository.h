@@ -15,6 +15,7 @@ public:
     std::vector<StockMovement> getAll() const;
     std::vector<StockMovement> getByInventoryItemId(int inventoryItemId) const;
     std::optional<StockMovement> getById(int id) const;
+    bool getByKey(const QString &key);
 
     int create(const StockMovement &movement);
 

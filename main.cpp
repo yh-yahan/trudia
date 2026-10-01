@@ -10,6 +10,7 @@
 #include "core/services/AppService.h"
 #include "core/services/SetupService.h"
 #include "core/services/DatabaseRestoreService.h"
+#include "core/services/DatabaseService.h"
 #include "core/database/DatabaseManager.h"
 #include "core/logging/LogManager.h"
 
@@ -34,6 +35,9 @@ int main(int argc, char *argv[])
         state == AppService::NotTrudiaDBNeedsSetup;
 
     if (!needsSetup) dbManager.initialize(appService.databasePath());
+
+    DatabaseService databaseService(appService, dbManager);
+    qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "DatabaseService", &databaseService);
 
     SystemTheme systemTheme;
     Theme theme(&systemTheme);

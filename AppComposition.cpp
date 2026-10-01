@@ -111,7 +111,12 @@ AppComposition::AppComposition(AppService& appService, DatabaseManager& dbManage
       databaseService(appService, dbManager),
       taxReportService(taxReportRepo),
       modifiersService(modifiersRepo),
-      inventoryService(inventoryItemRepo, recipeComponentRepo)
+      inventoryService(
+          inventoryItemRepo,
+          recipeComponentRepo,
+          stockMovementRepo,
+          orderItemRepo,
+          dbManager)
 {
     wireSignals();
 }
@@ -147,7 +152,6 @@ void AppComposition::registerQml()
     qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "WindowsPrinterService", &windowsPrinterService);
     qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "FloorPlanService", &floorPlanService);
     qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "ReservationService", &reservationService);
-    qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "DatabaseService", &databaseService);
     qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "BetaService", &betaService);
     qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "MemberService", &memberService);
     qmlRegisterSingletonInstance("Trudia.Services", 1, 0, "TaxReportService", &taxReportService);

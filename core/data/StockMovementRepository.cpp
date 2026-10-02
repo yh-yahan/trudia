@@ -110,6 +110,25 @@ bool StockMovementRepository::getByKey(const QString &key)
     return query.next();
 }
 
+int StockMovementRepository::sumByReference(int referenceId, int inventoryItemId)
+{
+    QSqlQuery query(m_db);
+
+    query.prepare(R"(
+        SELECT COALESCE(SUM(quantity), 0)
+        FROM stock_movements
+        WHERE reference_id = :reference_id
+        AND inventory_item_id = :inventory_item_id
+    )");
+
+    query.bindValue(":reference_id", referenceId);
+    query.bindValue(":inventory_item_id", inventoryItemId);
+
+    if (!query.exec() || !query.next()) return 0;
+
+    return query.value(0).toInt();
+}
+
 int StockMovementRepository::create(const StockMovement &movement)
 {
     QSqlQuery query(m_db);

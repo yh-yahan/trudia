@@ -35,7 +35,7 @@ public:
     Q_INVOKABLE bool updateRecipeComponent(int id, const QVariantMap &data);
     Q_INVOKABLE bool removeRecipeComponent(int id);
     
-    bool createSaleStockMovement(int order_item_id);
+    bool syncSaleStock(int order_item_id);
 
 private:
     InventoryItemRepository &m_inventoryItemRepo;

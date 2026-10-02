@@ -12,6 +12,8 @@
 namespace
 {
     const QString MAIN_CONN = "main_connection";
+    int g_txDepth = 0;
+    bool g_txFailed = 0;
 }
 
 bool DatabaseManager::initialize(const QString &dbPath)
@@ -411,15 +413,21 @@ bool DatabaseManager::beginTransaction()
         return false;
     }
 
-    if (database.transaction())
+    if (g_txDepth > 0)
     {
+        ++g_txDepth;
         return true;
     }
 
-    qCWarning(logDatabase) << "Failed to begin transaction:"
-               << database.lastError().text();
+    if (!database.transaction())
+    {
+        qCWarning(logDatabase) << "Failed to begin transaction:" << database.lastError().text();
+        return false;
+    }
 
-    return false;
+    g_txDepth = 1;
+    g_txFailed = false;
+    return true;
 }
 
 bool DatabaseManager::commit()
@@ -438,15 +446,28 @@ bool DatabaseManager::commit()
         return false;
     }
 
-    if (database.commit())
+    if (g_txDepth == 0)
     {
-        return true;
+        qCWarning(logDatabase) << "Cannot commit: no transaction is active.";
+        return false;
     }
 
-    qCWarning(logDatabase) << "Failed to commit transaction:"
-               << database.lastError().text();
+    if (g_txDepth > 1)
+    {
+        --g_txDepth;
+        return !g_txFailed;
+    }
 
-    return false;
+    const bool ok = !g_txFailed && database.commit();
+    if (!ok)
+    {
+        database.rollback();
+        qCWarning(logDatabase) << "Failed to commit transaction:" << database.lastError().text();
+    }
+
+    g_txDepth = 0;
+    g_txFailed = false;
+    return ok;
 }
 
 bool DatabaseManager::rollback()
@@ -465,15 +486,19 @@ bool DatabaseManager::rollback()
         return false;
     }
 
-    if (database.rollback())
+    if (g_txDepth > 1)
     {
+        g_txFailed = true;
+        --g_txDepth;
         return true;
     }
 
-    qCWarning(logDatabase) << "Failed to rollback transaction:"
-               << database.lastError().text();
+    const bool ok = database.rollback();
+    if (!ok) qCWarning(logDatabase) << "Failed to rollback transaction:" << database.lastError().text();
 
-    return false;
+    g_txDepth = 0;
+    g_txFailed = false;
+    return ok;
 }
 
 QSqlDatabase DatabaseManager::db()

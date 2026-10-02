@@ -193,7 +193,7 @@ std::optional<RecipeComponent> InventoryService::fromRecipeMap(const QVariantMap
     return row;
 }
 
-bool InventoryService::createSaleStockMovement(int order_item_id)
+bool InventoryService::syncSaleStock(int order_item_id)
 {
     if (!m_databaseManager.beginTransaction())
     {
@@ -209,7 +209,7 @@ bool InventoryService::createSaleStockMovement(int order_item_id)
     };
 
     const auto orderItemOpt = m_orderItemRepository.getOrderItemById(order_item_id);
-    if (!orderItemOpt.has_value()) return false;
+    if (!orderItemOpt.has_value()) return rollback();
     const auto &orderItem = orderItemOpt.value();
 
     std::vector<RecipeComponent> recipeComponents = m_recipeComponentRepo.listByOwner(RecipeComponentOwnerType::MenuItem, orderItem.item_id);
@@ -219,16 +219,25 @@ bool InventoryService::createSaleStockMovement(int order_item_id)
         if (recipeComponent.modifier_id.has_value() && *recipeComponent.modifier_id != 0) continue;
         if (recipeComponent.effect != RecipeComponentEffect::Add) continue;
 
-        // key: sale:{order_item_id}:{inventory_item_id}:{modifier_id}:{effect}
-        const QString key = QStringLiteral("sale:%1:%2:0:add")
+        const int expected = -(recipeComponent.quantity * orderItem.quantity);
+        const int recorded = m_stockMovementRepo.sumByReference(order_item_id, recipeComponent.inventory_item_id);
+
+        const int delta = expected - recorded;
+        if (delta == 0) continue;
+
+        // key: sale:{order_item_id}:{inventory_item_id}:{modifier_id}:{effect}:{recorded}:{expected}
+        const QString key = QStringLiteral("sale:%1:%2:0:%3:%4:%5")
                                 .arg(order_item_id)
-                                .arg(recipeComponent.inventory_item_id);
+                                .arg(recipeComponent.inventory_item_id)
+                                .arg(toString(recipeComponent.effect))
+                                .arg(recorded)
+                                .arg(expected);
 
         if (m_stockMovementRepo.getByKey(key)) continue;
 
         StockMovement stockMovement;
         stockMovement.inventory_item_id = recipeComponent.inventory_item_id;
-        stockMovement.quantity = -(recipeComponent.quantity * orderItem.quantity);
+        stockMovement.quantity = delta;
         stockMovement.reason = StockMovementReason::Sale;
         stockMovement.idempotency_key = key;
         stockMovement.reference_id = order_item_id;
@@ -240,7 +249,6 @@ bool InventoryService::createSaleStockMovement(int order_item_id)
             return rollback();
         }
 
-        // decrement inventory item quantity
         if (!m_inventoryItemRepo.updateQuantity(stockMovement.inventory_item_id, stockMovement.quantity)) return rollback();
     }
 

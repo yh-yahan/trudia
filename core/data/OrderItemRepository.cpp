@@ -204,7 +204,7 @@ int OrderItemRepository::create(OrderItem &orderItem)
     return query.lastInsertId().toInt();
 }
 
-void OrderItemRepository::update(const OrderItem &orderItem){
+bool OrderItemRepository::update(const OrderItem &orderItem){
     QSqlQuery query(m_db);
     query.prepare(R"(
         UPDATE order_items
@@ -231,10 +231,13 @@ void OrderItemRepository::update(const OrderItem &orderItem){
 
     if (!query.exec()) {
         qCWarning(logDatabase) << "update failed:" << query.lastError();
+        return false;
     }
+
+    return true;
 }
 
-void OrderItemRepository::remove(const OrderItem &orderItem)
+bool OrderItemRepository::remove(int orderItemId)
 {
     QSqlQuery query(m_db);
     query.prepare(R"(
@@ -242,11 +245,14 @@ void OrderItemRepository::remove(const OrderItem &orderItem)
         WHERE id = :order_item_id
     )");
 
-    query.bindValue(":order_item_id", orderItem.id);
+    query.bindValue(":order_item_id", orderItemId);
 
     if (!query.exec()) {
         qCWarning(logDatabase) << "remove failed:" << query.lastError();
+        return false;
     }
+
+    return true;
 }
 
 void OrderItemRepository::removeByOrderId(int orderId)

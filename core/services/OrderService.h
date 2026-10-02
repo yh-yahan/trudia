@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QString>
+#include "../database/DatabaseManager.h"
 #include "../data/OrderSessionRepository.h"
 #include "../data/OrderRepository.h"
 #include "../data/OrderItemRepository.h"
@@ -18,6 +19,7 @@
 #include "../printing/WindowsPrinterService.h"
 #include "./TableService.h"
 #include "./ReservationService.h"
+#include "./InventoryService.h"
 
 class OrderService : public QObject
 {
@@ -42,7 +44,9 @@ public:
                           WindowsPrinterService &windowsPrinterService,
                           TableService &tableService,
                           ReservationService &reservationService,
-                          CheckoutService &checkoutService);
+                          CheckoutService &checkoutService,
+                          InventoryService &inventoryService,
+                          DatabaseManager &dbManager);
 
     Q_INVOKABLE int createOrder(
         const QString &orderType,
@@ -77,6 +81,8 @@ private:
     TableService &m_tableService;
     ReservationService &m_reservationService;
     CheckoutService &m_checkoutService;
+    InventoryService &m_inventoryService;
+    DatabaseManager &m_databaseManager;
 
     int generateOrderSessionDisplayNumber();
     int generateOrderDisplayNumber();

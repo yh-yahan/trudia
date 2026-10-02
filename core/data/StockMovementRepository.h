@@ -17,6 +17,8 @@ public:
     std::optional<StockMovement> getById(int id) const;
     bool getByKey(const QString &key);
 
+    int sumByReference(int referenceId, int inventoryItemId);
+
     int create(const StockMovement &movement);
 
 private:

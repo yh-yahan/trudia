@@ -163,7 +163,9 @@ OrderService::OrderService(OrderSessionRepository &orderSessionRepo,
                            WindowsPrinterService &windowsPrinterService,
                            TableService &tableService,
                            ReservationService &reservationService,
-                           CheckoutService &checkoutService)
+                           CheckoutService &checkoutService,
+                           InventoryService &inventoryService,
+                           DatabaseManager &dbManager)
     : m_orderSessionRepo(orderSessionRepo),
       m_orderRepo(orderRepo),
       m_orderItemRepo(orderItemRepo),
@@ -178,7 +180,9 @@ OrderService::OrderService(OrderSessionRepository &orderSessionRepo,
       m_windowsPrinterService(windowsPrinterService),
       m_tableService(tableService),
       m_reservationService(reservationService),
-      m_checkoutService(checkoutService) {}
+      m_checkoutService(checkoutService),
+      m_inventoryService(inventoryService),
+      m_databaseManager(dbManager) {}
 
 int OrderService::createOrder(
     const QString &orderType,
@@ -313,6 +317,8 @@ int OrderService::createOrder(
         }
 
         saveOrderItemModifiers(m_orderItemModifierRepo, m_modifiersRepo, orderItemId, modifiers);
+    
+        m_inventoryService.syncSaleStock(orderItemId);
     }
 
     m_checkoutService.recalculateSessionTotals(orderSessionId);
@@ -433,26 +439,34 @@ int OrderService::updateOrder(
         return -1;
     }
 
-    QSqlDatabase db = QSqlDatabase::database();
-    db.transaction();
+    if (!m_databaseManager.beginTransaction())
+    {
+        qCWarning(logOrder) << "Failed to begin transaction";
+        return -1;
+    }
+
+    auto rollback = [&]()
+    {
+        qCWarning(logOrder) << "Rolling back transaction";
+        m_databaseManager.rollback();
+        return -1;
+    };
 
     auto orderOpt = m_orderRepo.getOrderById(orderId);
     if (!orderOpt.has_value())
     {
         qCWarning(logOrder) << "updateOrder failed: order not found";
-        db.rollback();
-        return -1;
+        return rollback();
     }
 
     Order order = orderOpt.value();
-    int orderSessionId = order.order_session_id;
+    const int orderSessionId = order.order_session_id;
 
     auto sessionOpt = m_orderSessionRepo.getById(orderSessionId);
     if (!sessionOpt.has_value())
     {
         qCWarning(logOrder) << "updateOrder failed: session not found";
-        db.rollback();
-        return -1;
+        return rollback();
     }
 
     OrderSession session = sessionOpt.value();
@@ -474,15 +488,24 @@ int OrderService::updateOrder(
 
     session.order_type = orderType;
     order.notes = options.value("notes").toString();
-    m_orderRepo.update(order);
+    if (!m_orderRepo.update(order)) return rollback();
 
-    m_orderItemRepo.removeByOrderId(orderId);
+    const QString kitchenMode = m_settingService.kitchenMode();
+    const bool usesKds = kitchenMode == "kds" || kitchenMode == "hybrid";
+    const auto settings = m_settingService.getKitchenSettings();
+    const bool printsOnCreate = (settings["mode"].toString() == "tickets" || settings["mode"].toString() == "hybrid")
+        && settings["ticket_print_timing"].toString() == "order_created";
+    const QString initialStatus = usesKds ? "pending" : "served";
+
+    const auto existing = m_orderItemRepo.getOrderItemsByOrderId(orderId);
+    QSet<int> keptIds;
 
     for (const QVariant &v : items)
     {
-        QVariantMap m = v.toMap();
-
-        int menuId = m["menuItemId"].toInt();
+        const QVariantMap m = v.toMap();
+        const int menuId = m["menuItemId"].toInt();
+        const int existingId = m.value("orderItemId").toInt();
+        const QVariantList modifiers = modifiersFromItem(m);
 
         auto menuOpt = m_menuRepo.getMenuItemById(menuId);
         if (!menuOpt.has_value())
@@ -492,14 +515,36 @@ int OrderService::updateOrder(
         }
 
         const Menu &menu = menuOpt.value();
-
         if (!menu.is_available)
         {
             qCWarning(logMenu) << "Menu unavailable:" << menuId;
             continue;
         }
 
-        const QVariantList modifiers = modifiersFromItem(m);
+        if (existingId > 0)
+        {
+            auto itemOpt = m_orderItemRepo.getOrderItemById(existingId);
+            if (!itemOpt.has_value() || itemOpt->order_id != orderId)
+            {
+                qCWarning(logOrder) << "Order item not found on order:" << existingId;
+                return rollback();
+            }
+
+            OrderItem item = itemOpt.value();
+            item.quantity = m["qty"].toInt();
+            item.notes = m["notes"].toString();
+            if (!m_orderItemRepo.update(item))
+                return rollback();
+
+            if (!m_orderItemModifierRepo.removeByOrderItemId(existingId))
+                return rollback();
+            saveOrderItemModifiers(m_orderItemModifierRepo, m_modifiersRepo, existingId, modifiers);
+
+            if (!m_inventoryService.syncSaleStock(existingId)) return rollback();
+
+            keptIds.insert(existingId);
+            continue;
+        }
 
         OrderItem item;
         item.order_id = orderId;
@@ -510,67 +555,69 @@ int OrderService::updateOrder(
         item.price = menu.price;
         item.is_taxable = menu.is_taxable;
         item.notes = m["notes"].toString();
-        item.item_status = "pending";
+        item.item_status = initialStatus;
 
         const int orderItemId = m_orderItemRepo.create(item);
         if (orderItemId <= 0)
         {
             qCWarning(logOrder) << "Failed to create order item for menu" << menuId;
-            continue;
+            return rollback();
         }
 
         saveOrderItemModifiers(m_orderItemModifierRepo, m_modifiersRepo, orderItemId, modifiers);
+
+        if (!m_inventoryService.syncSaleStock(orderItemId)) return rollback();
     }
 
-    m_orderSessionRepo.update(session);
+    for (const auto &oldItem : existing)
+    {
+        if (keptIds.contains(oldItem.id)) continue;
+
+        OrderItem cleared = oldItem;
+        cleared.quantity = 0;
+        if (!m_orderItemRepo.update(cleared)) return rollback();
+        if (!m_inventoryService.syncSaleStock(oldItem.id)) return rollback();
+        if (!m_orderItemRepo.remove(oldItem.id)) return rollback();
+    }
+
+    if (!m_orderSessionRepo.update(session)) return rollback();
+
     m_checkoutService.recalculateSessionTotals(orderSessionId);
 
-    if (!db.commit())
+    if (!m_databaseManager.commit())
     {
-        qCritical() << "updateOrder commit failed";
-        db.rollback();
-        return -1;
+        qCWarning(logOrder) << "Commit failed";
+        return rollback();
     }
 
-    auto settings = m_settingService.getKitchenSettings();
-
-    if ((settings["mode"].toString() == "tickets" ||
-        settings["mode"].toString() == "hybrid") &&
-        settings["ticket_print_timing"].toString() == "order_created")
+    if (printsOnCreate)
     {
         auto printedOrder = m_orderRepo.getOrderById(orderId);
-        if (printedOrder.has_value())
+        auto printedSession = m_orderSessionRepo.getById(orderSessionId);
+        if (printedOrder.has_value() && printedSession.has_value())
         {
-            auto printedSession = m_orderSessionRepo.getById(orderSessionId);
-            if (printedSession.has_value())
+            const auto printers = m_printerRepo.getAll();
+            for (const auto &printer : printers)
             {
-                auto printers = m_printerRepo.getAll();
+                if (printer.role != "kitchen" && printer.role != "both")
+                    continue;
 
-                for (const auto &printer : printers)
-                {
-                    if (printer.role == "kitchen" || printer.role == "both")
-                    {
-                        auto printedItems = m_orderItemRepo.getOrderItemsByOrderId(orderId);
-                        auto modifiers = modifiersByOrderItems(m_orderItemModifierRepo, printedItems);
+                const auto printedItems = m_orderItemRepo.getOrderItemsByOrderId(orderId);
+                const auto modifiers = modifiersByOrderItems(m_orderItemModifierRepo, printedItems);
+                const QByteArray data = m_kitchenTicketBuilder.build(
+                    printedOrder.value(),
+                    printedSession.value(),
+                    printedItems,
+                    modifiers,
+                    printer);
 
-                        QByteArray data = m_kitchenTicketBuilder.build(
-                            orderOpt.value(),
-                            sessionOpt.value(),
-                            printedItems,
-                            modifiers,
-                            printer
-                        );
-
-                        if (!m_windowsPrinterService.print(printer.system_name, data))
-                            qCWarning(logPrinter) << "Kitchen print failed";
-                    }
-                }
+                if (!m_windowsPrinterService.print(printer.system_name, data))
+                    qCWarning(logPrinter) << "Kitchen print failed";
             }
         }
     }
 
     emit orderUpdated(orderId);
-
     return orderId;
 }
 

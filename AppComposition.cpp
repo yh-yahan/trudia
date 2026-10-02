@@ -91,6 +91,12 @@ AppComposition::AppComposition(AppService& appService, DatabaseManager& dbManage
           tableRepo,
           reservationRepo,
           tableService),
+      inventoryService(
+          inventoryItemRepo,
+          recipeComponentRepo,
+          stockMovementRepo,
+          orderItemRepo,
+          dbManager),
       orderService(
           orderSessionRepo,
           orderRepo,
@@ -106,17 +112,13 @@ AppComposition::AppComposition(AppService& appService, DatabaseManager& dbManage
           windowsPrinterService,
           tableService,
           reservationService,
-          checkoutService),
+          checkoutService,
+          inventoryService,
+          dbManager),
       memberService(dbManager, membershipRepo, membershipTransactionRepo),
       databaseService(appService, dbManager),
       taxReportService(taxReportRepo),
-      modifiersService(modifiersRepo),
-      inventoryService(
-          inventoryItemRepo,
-          recipeComponentRepo,
-          stockMovementRepo,
-          orderItemRepo,
-          dbManager)
+      modifiersService(modifiersRepo)
 {
     wireSignals();
 }

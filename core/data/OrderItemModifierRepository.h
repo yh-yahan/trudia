@@ -14,6 +14,8 @@ public:
     std::optional<OrderItemModifier> getById(int id);
     std::vector<OrderItemModifier> getByOrderItemId(int orderItemId);
 
+    bool removeByOrderItemId(int orderItemId);
+
     void create(const OrderItemModifier &modifier);
     void update(const OrderItemModifier &modifier);
     void remove(const OrderItemModifier &modifier);

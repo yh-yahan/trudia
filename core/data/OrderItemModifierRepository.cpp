@@ -104,6 +104,26 @@ std::vector<OrderItemModifier> OrderItemModifierRepository::getByOrderItemId(int
     return modifiers;
 }
 
+bool OrderItemModifierRepository::removeByOrderItemId(int orderItemId)
+{
+    QSqlQuery query(m_db);
+
+    query.prepare(R"(
+        DELETE FROM order_item_modifiers
+        WHERE order_item_id = :order_item_id
+    )");
+
+    query.bindValue(":order_item_id", orderItemId);
+
+    if (!query.exec()) {
+        qCWarning(logDatabase) << "Failed to delete order item modifiers by order item id:"
+                                << query.lastError().text();
+        return false;
+    }
+
+    return query.numRowsAffected() > 0;
+}
+
 void OrderItemModifierRepository::create(const OrderItemModifier &modifier)
 {
     QSqlQuery query(m_db);

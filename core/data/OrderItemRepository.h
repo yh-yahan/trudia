@@ -16,8 +16,8 @@ public:
     std::vector<OrderItem> getOrderItemsByOrderIds(const QList<int> &orderIds);
     bool markItemsByOrderId(int orderId, const QString &status);
     int create(OrderItem &orderItem);
-    void update(const OrderItem &orderItem);
-    void remove(const OrderItem &orderItem);
+    bool update(const OrderItem &orderItem);
+    bool remove(int orderItemId);
     void removeByOrderId(int orderId);
 
 private:

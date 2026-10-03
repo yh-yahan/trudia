@@ -29,7 +29,7 @@ QVariant TableModel::data(const QModelIndex &index, int role) const
     case CapacityRole:
         return table.capacity;
     case StatusRole:
-        return table.status;
+        return toString(table.status);
     default:
         return QVariant();
     }

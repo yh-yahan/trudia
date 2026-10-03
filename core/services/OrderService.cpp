@@ -5,8 +5,8 @@
 #include <QSqlDatabase>
 #include <QJsonDocument>
 #include <QJsonArray>
-#include "../constants/TableStatus.h"
-#include "../constants/ReservationStatus.h"
+#include "../enums/TableStatus.h"
+#include "../enums/ReservationStatus.h"
 #include "../logging/LoggingCategories.h"
 
 namespace {
@@ -232,9 +232,9 @@ int OrderService::createOrder(
 
         QVariantMap reservation = m_reservationService.getActiveReservationByTable(tableId);
 
-        if (!reservation.isEmpty() && reservation["status"].toString() == ReservationStatus::Booked)
+        if (!reservation.isEmpty() && reservation["status"].toString() == toString(ReservationStatus::Booked))
         {
-            reservation["status"] = ReservationStatus::Seated;
+            reservation["status"] = toString(ReservationStatus::Seated);
             m_reservationService.updateReservation(reservation);
         }
     }

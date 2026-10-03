@@ -1,7 +1,7 @@
 #include "ReservationService.h"
 
-#include "../constants/ReservationStatus.h"
-#include "../constants/TableStatus.h"
+#include "../enums/ReservationStatus.h"
+#include "../enums/TableStatus.h"
 #include "../logging/LoggingCategories.h"
 
 ReservationService::ReservationService(
@@ -14,8 +14,7 @@ ReservationService::ReservationService(
 
 QVariantMap ReservationService::getSeatedReservationByTable(int tableId)
 {
-    const QList<Reservation> reservations =
-        m_reservationRepo.getReservationsByTable(tableId);
+    const QList<Reservation> reservations = m_reservationRepo.getReservationsByTable(tableId);
 
     for (const Reservation &reservation : reservations)
     {
@@ -50,8 +49,7 @@ QVariantMap ReservationService::getActiveReservationByTable(int tableId)
     return {};
 }
 
-bool ReservationService::createReservation(
-    const QVariantMap &data)
+bool ReservationService::createReservation(const QVariantMap &data)
 {
     const Reservation reservation = variantMapToReservation(data);
 
@@ -138,15 +136,11 @@ QVariantList ReservationService::getReservationsByDate(
 {
     QVariantList list;
 
-    const QList<Reservation> reservations =
-        m_reservationRepo.getReservationsByDate(
-            date);
+    const QList<Reservation> reservations = m_reservationRepo.getReservationsByDate(date);
 
     for (const Reservation &reservation : reservations)
     {
-        list.append(
-            reservationToVariantMap(
-                reservation));
+        list.append(reservationToVariantMap(reservation));
     }
 
     return list;
@@ -159,10 +153,7 @@ bool ReservationService::isTableAvailable(
 {
     const QDateTime end = start.addSecs(durationMinutes * 60);
 
-    return !hasConflict(
-        tableId,
-        start,
-        end);
+    return !hasConflict(tableId, start, end);
 }
 
 bool ReservationService::hasConflict(
@@ -210,7 +201,7 @@ QVariantMap ReservationService::reservationToVariantMap(const Reservation &reser
     map["tableId"] = reservation.tableId;
     map["reservationDateTime"] = reservation.reservationDateTime;
     map["durationMinutes"] = reservation.durationMinutes;
-    map["status"] = reservation.status;
+    map["status"] = toString(reservation.status);
     map["notes"] = reservation.notes;
 
     return map;
@@ -227,7 +218,7 @@ Reservation ReservationService::variantMapToReservation(const QVariantMap &data)
     reservation.tableId = data.value("tableId").toInt();
     reservation.reservationDateTime = data.value("reservationDateTime").toDateTime();
     reservation.durationMinutes = data.value("durationMinutes").toInt();
-    reservation.status = data.value("status").toString();
+    if (!fromString(data.value("status").toString(), reservation.status)) return {};
     reservation.notes = data.value("notes").toString();
 
     return reservation;

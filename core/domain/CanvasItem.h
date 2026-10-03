@@ -3,6 +3,7 @@
 
 #include <QString>
 #include <optional>
+#include "../enums/TableStatus.h"
 
 struct CanvasItem {
     int id = -1;
@@ -23,7 +24,7 @@ struct CanvasItem {
     std::optional<QString> metadata;
 
     std::optional<int> capacity;
-    std::optional<QString> status;
+    std::optional<TableStatus> status;
 };
 
 #endif // CANVASITEM_H

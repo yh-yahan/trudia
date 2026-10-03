@@ -2,8 +2,8 @@
 
 #include <cmath>
 #include <QTimeZone>
-#include "../constants/TableStatus.h"
-#include "../constants/ReservationStatus.h"
+#include "../enums/TableStatus.h"
+#include "../enums/ReservationStatus.h"
 #include "../logging/LoggingCategories.h"
 
 constexpr qint64 CURRENCY_SCALE = 100; // cents
@@ -873,7 +873,7 @@ bool CheckoutService::freeTable(const OrderSession &session)
 
     if (!reservation.isEmpty())
     {
-        reservation["status"] = ReservationStatus::Completed;
+        reservation["status"] = toString(ReservationStatus::Completed);
 
         if (!m_reservationService.updateReservation(reservation))
             return false;

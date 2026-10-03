@@ -19,7 +19,7 @@ Reservation ReservationRepository::mapQueryToReservation(const QSqlQuery &query)
     reservation.tableId = query.value("table_id").toInt();
     reservation.reservationDateTime = QDateTime::fromString(query.value("reservation_datetime").toString(), "yyyy-MM-dd HH:mm:ss");
     reservation.durationMinutes = query.value("duration_minutes").toInt();
-    reservation.status = query.value("status").toString();
+    if (!fromString(query.value("status").toString(), reservation.status)) return {};
     reservation.notes = query.value("notes").toString();
 
     return reservation;
@@ -58,7 +58,7 @@ bool ReservationRepository::createReservation(const Reservation &reservation)
     query.bindValue(":table_id", reservation.tableId);
     query.bindValue(":reservation_datetime", reservation.reservationDateTime.toString("yyyy-MM-dd HH:mm:ss"));
     query.bindValue(":duration_minutes", reservation.durationMinutes);
-    query.bindValue(":status", reservation.status);
+    query.bindValue(":status", toString(reservation.status));
     query.bindValue(":notes", reservation.notes);
 
     if (!query.exec())
@@ -97,7 +97,7 @@ bool ReservationRepository::updateReservation(const Reservation &reservation)
     query.bindValue(":table_id", reservation.tableId);
     query.bindValue(":reservation_datetime", reservation.reservationDateTime.toString("yyyy-MM-dd HH:mm:ss"));
     query.bindValue(":duration_minutes", reservation.durationMinutes);
-    query.bindValue(":status", reservation.status);
+    query.bindValue(":status", toString(reservation.status));
     query.bindValue(":notes", reservation.notes);
 
     if (!query.exec())
@@ -110,7 +110,7 @@ bool ReservationRepository::updateReservation(const Reservation &reservation)
     return true;
 }
 
-bool ReservationRepository::updateReservationStatus(int reservationId, const QString &status) {
+bool ReservationRepository::updateReservationStatus(int reservationId, const ReservationStatus &status) {
     QSqlQuery query(m_db);
 
     query.prepare(R"(
@@ -122,7 +122,7 @@ bool ReservationRepository::updateReservationStatus(int reservationId, const QSt
     )");
 
     query.bindValue(":id", reservationId);
-    query.bindValue(":status", status);
+    query.bindValue(":status", toString(status));
 
     if (!query.exec())
     {

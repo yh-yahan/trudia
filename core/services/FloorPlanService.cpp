@@ -4,8 +4,8 @@
 #include <QJsonDocument>
 #include "../models/FloorModel.h"
 #include "../models/CanvasItemModel.h"
-#include "../constants/ReservationStatus.h"
-#include "../constants/TableStatus.h"
+#include "../enums/ReservationStatus.h"
+#include "../enums/TableStatus.h"
 #include "../logging/LoggingCategories.h"
 
 FloorPlanService::FloorPlanService(FloorRepository &floorRepo,
@@ -80,20 +80,14 @@ void FloorPlanService::loadCanvas(int floorId)
         item.capacity = table.capacity;
         item.status = table.status;
 
-        const QList<Reservation> reservations =
-            m_reservationRepo.getReservationsByTable(
-                table.id);
+        const QList<Reservation> reservations = m_reservationRepo.getReservationsByTable(table.id);
 
         for (const Reservation &reservation : reservations)
         {
-            if (reservation.status == 
-                    ReservationStatus::Seated || 
-                reservation.status ==
-                    ReservationStatus::Cancelled ||
-                reservation.status ==
-                    ReservationStatus::Completed ||
-                reservation.status ==
-                    ReservationStatus::NoShow)
+            if (reservation.status == ReservationStatus::Seated || 
+                reservation.status == ReservationStatus::Cancelled ||
+                reservation.status == ReservationStatus::Completed ||
+                reservation.status == ReservationStatus::NoShow)
             {
                 continue;
             }
@@ -108,7 +102,7 @@ void FloorPlanService::loadCanvas(int floorId)
             reservationData["pax"] = reservation.pax;
             reservationData["reservation_datetime"] = reservation.reservationDateTime;
             reservationData["duration_minutes"] = reservation.durationMinutes;
-            reservationData["status"] = reservation.status;
+            reservationData["status"] = toString(reservation.status);
             reservationData["notes"] = reservation.notes;
             reservationData["time_label"] = reservation.reservationDateTime
                     .time()
@@ -139,9 +133,7 @@ void FloorPlanService::loadCanvas(int floorId)
 
             metadataObj["reservation"] = QJsonObject::fromVariantMap(reservationData);
 
-            item.metadata = QString::fromUtf8(
-                QJsonDocument(metadataObj)
-                    .toJson(QJsonDocument::Compact));
+            item.metadata = QString::fromUtf8(QJsonDocument(metadataObj).toJson(QJsonDocument::Compact));
 
             break;
         }
@@ -286,7 +278,7 @@ void FloorPlanService::createTableItem(const QVariantMap &itemData)
     item.z_order = itemData.value("z_order", 0).toInt();
 
     item.capacity = capacity;
-    item.status = "available";
+    item.status = TableStatus::Available;
 
     if (itemData.contains("metadata") && !itemData.value("metadata").isNull())
     {

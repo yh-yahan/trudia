@@ -529,10 +529,8 @@ void tst_CheckoutService::testCompleteCheckout_freesTable()
 
     QVERIFY(table.has_value());
 
-    QCOMPARE(
-        table->status,
-        TableStatus::Available
-    );
+    QCOMPARE(static_cast<int>(table->status),
+             static_cast<int>(TableStatus::Available));
 }
 
 void tst_CheckoutService::testCompleteCheckout_membership()

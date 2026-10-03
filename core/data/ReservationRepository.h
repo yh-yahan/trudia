@@ -11,7 +11,7 @@ public:
     bool createReservation(const Reservation &reservation);
     bool updateReservation(const Reservation &reservation);
     bool deleteReservation(int reservationId);
-    bool updateReservationStatus(int reservationId, const QString &status);
+    bool updateReservationStatus(int reservationId, const ReservationStatus &status);
     Reservation getReservationById(int reservationId);
     QList<Reservation> getReservations();
     QList<Reservation> getReservationsByDate(const QDate &date);

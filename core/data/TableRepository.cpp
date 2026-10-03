@@ -29,7 +29,7 @@ std::vector<Table> TableRepository::getAllTables()
         table.id = query.value("id").toInt();
         table.table_name = query.value("table_name").toString();
         table.capacity = query.value("capacity").toInt();
-        table.status = query.value("status").toString();
+        if (!fromString(query.value("status").toString(), table.status)) return {};
         table.created_at = query.value("created_at").toString();
 
         tables.push_back(table);
@@ -64,7 +64,7 @@ std::optional<Table> TableRepository::getTableById(int tableId)
     table.id = query.value("id").toInt();
     table.table_name = query.value("table_name").toString();
     table.capacity = query.value("capacity").toInt();
-    table.status = query.value("status").toString();
+    if (!fromString(query.value("status").toString(), table.status)) return {};
     table.created_at = query.value("created_at").toString();
 
     return table;
@@ -88,7 +88,7 @@ int TableRepository::create(const Table &table)
 
     query.bindValue(":table_name", table.table_name);
     query.bindValue(":capacity", table.capacity);
-    query.bindValue(":status", table.status);
+    query.bindValue(":status", toString(table.status));
 
     if (!query.exec()) {
         qCWarning(logDatabase) << "create failed:" << query.lastError();
@@ -113,14 +113,14 @@ void TableRepository::update(const Table &table)
     query.bindValue(":table_id", table.id);
     query.bindValue(":table_name", table.table_name);
     query.bindValue(":capacity", table.capacity);
-    query.bindValue(":status", table.status);
+    query.bindValue(":status", toString(table.status));
 
     if (!query.exec()) {
         qCWarning(logDatabase) << "update failed:" << query.lastError();
     }
 }
 
-bool TableRepository::setTableState(int tableId, const QString &status)
+bool TableRepository::setTableState(int tableId, const TableStatus &status)
 {
     QSqlQuery query(m_db);
 
@@ -131,7 +131,7 @@ bool TableRepository::setTableState(int tableId, const QString &status)
     )");
 
     query.bindValue(":table_id", tableId);
-    query.bindValue(":status", status);
+    query.bindValue(":status", toString(status));
 
     if (!query.exec()) {
         qCWarning(logDatabase) << "setTableState failed:" << query.lastError();

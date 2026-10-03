@@ -2,12 +2,13 @@
 #define TABLE_H
 
 #include <QString>
+#include "../enums/TableStatus.h"
 
 struct Table {
     int id = -1;
     QString table_name;
     int capacity;
-    QString status;
+    TableStatus status;
     QString created_at;
 };
 

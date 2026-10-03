@@ -13,7 +13,7 @@ public:
     std::vector<Table> getAllTables();
     std::optional<Table> getTableById(int tableId);
     int create(const Table &table);
-    bool setTableState(int tableId, const QString &status);
+    bool setTableState(int tableId, const TableStatus &status);
     void update(const Table &table);
     bool remove(const Table &table);
     bool remove(int tableId);

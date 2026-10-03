@@ -238,7 +238,7 @@ void CheckoutServiceTestHelper::setReceiptCounter(int year, int counter)
     });
 }
 
-int CheckoutServiceTestHelper::createTable(const QString &name, const QString &status)
+int CheckoutServiceTestHelper::createTable(const QString &name, const TableStatus &status)
 {
     Table table;
 
@@ -302,7 +302,7 @@ int CheckoutServiceTestHelper::createMember(const QString &phone, int points)
 int CheckoutServiceTestHelper::createReservation(
     int tableId,
     const QString &customer,
-    const QString &status)
+    const ReservationStatus &status)
 {
     Reservation reservation;
 

@@ -3,8 +3,8 @@
 
 #include "../../core/database/DatabaseManager.h"
 #include "../../core/services/CheckoutService.h"
-#include "../../core/constants/TableStatus.h"
-#include "../../core/constants/ReservationStatus.h"
+#include "../../core/enums/TableStatus.h"
+#include "../../core/enums/ReservationStatus.h"
 #include "../../core/data/MenuRepository.h"
 #include "../../core/data/CategoryRepository.h"
 #include "../../core/data/OrderSessionRepository.h"
@@ -89,7 +89,7 @@ public:
 
     int createTable(
         const QString &name = "A1",
-        const QString &status = TableStatus::Occupied);
+        const TableStatus &status = TableStatus::Occupied);
 
     void assignTableToSession(int sessionId, int tableId);
 
@@ -106,7 +106,7 @@ public:
     int createReservation(
         int tableId,
         const QString &customer = "John",
-        const QString &status = ReservationStatus::Seated);
+        const ReservationStatus &status = ReservationStatus::Seated);
 
 private:
     DatabaseManager m_dbManager;

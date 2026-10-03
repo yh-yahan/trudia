@@ -36,7 +36,7 @@ int TableService::addTable(const QString &tableName,
 
     table.table_name = tableName.trimmed();
     table.capacity = capacity;
-    table.status = "available";
+    table.status = TableStatus::Available;
 
     int id = m_tableRepo.create(table);
 
@@ -90,13 +90,12 @@ bool TableService::removeTable(const int &tableId)
     return true;
 }
 
-bool TableService::setTableStatus(const int &tableId,
-                                  const QString &status)
+bool TableService::setTableStatus(const int &tableId, const TableStatus &status)
 {
     m_tableRepo.setTableState(tableId, status);
     m_tableModel->reload();
     
-    emit tableStatusChanged(tableId, status);
+    emit tableStatusChanged(tableId, toString(status));
     emit tablesChanged();
 
     return true;

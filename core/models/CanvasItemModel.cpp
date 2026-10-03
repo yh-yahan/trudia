@@ -66,7 +66,7 @@ QVariant CanvasItemModel::data(const QModelIndex &index, int role) const
 
     case StatusRole:
         return item.status.has_value()
-            ? QVariant(item.status.value())
+            ? QVariant(toString(item.status.value()))
             : QVariant();
     default:
         return QVariant();
@@ -122,7 +122,7 @@ QVariantMap CanvasItemModel::get(int row) const
         map["capacity"] = item.capacity.value();
 
     if (item.status.has_value())
-        map["status"] = item.status.value();
+        map["status"] = toString(item.status.value());
 
     return map;
 }
@@ -234,7 +234,9 @@ bool CanvasItemModel::setData(const QModelIndex &index, const QVariant &value, i
         break;
 
     case StatusRole:
-        item.status = value.toString();
+        TableStatus status;
+        if (!fromString(value.toString(), status)) return false;
+        item.status = status;
         changed = true;
         break;
 
@@ -281,7 +283,12 @@ void CanvasItemModel::updateTableStatus(int tableId, const QString &newStatus)
             item.table_id.has_value() &&
             item.table_id.value() == tableId)
         {
-            item.status = newStatus;
+            TableStatus status;
+
+            if (fromString(newStatus, status))
+            {
+                item.status = status;
+            }
 
             QModelIndex idx = createIndex(i, 0);
             emit dataChanged(idx, idx, {StatusRole});

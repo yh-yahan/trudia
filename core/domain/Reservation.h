@@ -3,6 +3,7 @@
 
 #include <QString>
 #include <QDateTime>
+#include "../enums/ReservationStatus.h"
 
 struct Reservation {
     int id = -1;
@@ -12,7 +13,7 @@ struct Reservation {
     int tableId = -1;
     QDateTime reservationDateTime;
     int durationMinutes;
-    QString status;
+    ReservationStatus status;
     QString notes;
 };
 

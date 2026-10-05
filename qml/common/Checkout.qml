@@ -1338,6 +1338,162 @@ Item {
                         }
                     }
 
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        spacing: 6
+                        visible: selectedRecentDetails
+                                && selectedRecentDetails.member_phone
+                                && selectedRecentDetails.member_phone.length > 0
+
+                        Text {
+                            text: qsTr("Membership")
+                            color: Theme.text
+                            font.bold: true
+                            font.pixelSize: Theme.fontSmall
+                        }
+
+                        RowLayout {
+                            Layout.fillWidth: true
+                            Text {
+                                text: qsTr("Member")
+                                color: Theme.secondaryText
+                                font.pixelSize: Theme.fontSmall
+                                Layout.fillWidth: true
+                            }
+                            Text {
+                                text: selectedRecentDetails ? selectedRecentDetails.member_phone : ""
+                                color: Theme.text
+                                font.pixelSize: Theme.fontSmall
+                            }
+                        }
+
+                        RowLayout {
+                            Layout.fillWidth: true
+                            Text {
+                                text: qsTr("Balance before")
+                                color: Theme.secondaryText
+                                font.pixelSize: Theme.fontSmall
+                                Layout.fillWidth: true
+                            }
+                            Text {
+                                text: selectedRecentDetails ? selectedRecentDetails.points_balance_before : ""
+                                color: Theme.text
+                                font.pixelSize: Theme.fontSmall
+                            }
+                        }
+
+                        RowLayout {
+                            visible: selectedRecentDetails && selectedRecentDetails.points_redeemed > 0
+                            Layout.fillWidth: true
+                            Text {
+                                text: qsTr("Points redeemed")
+                                color: Theme.orange
+                                font.pixelSize: Theme.fontSmall
+                                Layout.fillWidth: true
+                            }
+                            Text {
+                                text: selectedRecentDetails ? "-" + selectedRecentDetails.points_redeemed : ""
+                                color: Theme.orange
+                                font.pixelSize: Theme.fontSmall
+                            }
+                        }
+
+                        RowLayout {
+                            visible: selectedRecentDetails && selectedRecentDetails.points_earned > 0
+                            Layout.fillWidth: true
+                            Text {
+                                text: qsTr("Points earned")
+                                color: Theme.secondaryText
+                                font.pixelSize: Theme.fontSmall
+                                Layout.fillWidth: true
+                            }
+                            Text {
+                                text: selectedRecentDetails ? "+" + selectedRecentDetails.points_earned : ""
+                                color: Theme.green
+                                font.pixelSize: Theme.fontSmall
+                            }
+                        }
+
+                        RowLayout {
+                            Layout.fillWidth: true
+                            Text {
+                                text: qsTr("Balance after")
+                                color: Theme.text
+                                font.bold: true
+                                font.pixelSize: Theme.fontSmall
+                                Layout.fillWidth: true
+                            }
+                            Text {
+                                text: selectedRecentDetails ? selectedRecentDetails.points_balance_after : ""
+                                color: Theme.text
+                                font.bold: true
+                                font.pixelSize: Theme.fontSmall
+                            }
+                        }
+                    }
+
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        spacing: 6
+                        visible: selectedRecentDetails
+                                && selectedRecentDetails.payments
+                                && selectedRecentDetails.payments.length > 0
+
+                        Text {
+                            text: qsTr("Payments")
+                            color: Theme.text
+                            font.bold: true
+                            font.pixelSize: Theme.fontSmall
+                        }
+
+                        Repeater {
+                            model: selectedRecentDetails && selectedRecentDetails.payments
+                                ? selectedRecentDetails.payments
+                                : []
+
+                            RowLayout {
+                                Layout.fillWidth: true
+                                required property var modelData
+
+                                Text {
+                                    text: modelData.method ? modelData.method : qsTr("Payment")
+                                    color: Theme.secondaryText
+                                    font.pixelSize: Theme.fontSmall
+                                    Layout.fillWidth: true
+                                    elide: Text.ElideRight
+                                }
+                                Text {
+                                    text: formatMoney(modelData.amount)
+                                    color: Theme.text
+                                    font.pixelSize: Theme.fontSmall
+                                }
+                            }
+                        }
+                    }
+
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        spacing: 6
+                        visible: selectedRecentDetails
+
+                        Text {
+                            text: qsTr("Checked Out At")
+                            color: Theme.text
+                            font.bold: true
+                            font.pixelSize: Theme.fontSmall
+                        }
+                        Text {
+                            visible: selectedRecentDetails && selectedRecentDetails.checked_out_at
+                            text: selectedRecentDetails
+                                ? qsTr("Checked out %1").arg(selectedRecentDetails.checked_out_at)
+                                : "N/A"
+                            color: Theme.secondaryText
+                            font.pixelSize: Theme.fontSmall
+                            wrapMode: Text.WordWrap
+                            Layout.fillWidth: true
+                        }
+                    }
+
                     Item { Layout.fillHeight: true }
 
                     Button {

@@ -644,8 +644,7 @@ QVariantMap CheckoutService::loadPaidOrderDetails(const int &orderSessionId)
 
     const auto sessionOpt = m_orderSessionRepo.getById(orderSessionId);
 
-    if (!sessionOpt.has_value())
-        return result;
+    if (!sessionOpt.has_value()) return result;
 
     const OrderSession session = sessionOpt.value();
 
@@ -673,13 +672,10 @@ QVariantMap CheckoutService::loadPaidOrderDetails(const int &orderSessionId)
 
         const double unitPrice = static_cast<double>(item.price) / CURRENCY_SCALE;
 
-        // Modifiers
         QVariantList modifierList;
         double modifierTotal = 0.0;
 
-        const auto modifiers =
-            m_orderItemModifierRepo.getByOrderItemId(item.id);
-
+        const auto modifiers = m_orderItemModifierRepo.getByOrderItemId(item.id);
         for (const auto &modifier : modifiers)
         {
             QVariantMap modifierMap;
@@ -724,33 +720,91 @@ QVariantMap CheckoutService::loadPaidOrderDetails(const int &orderSessionId)
 
     sessionMap["id"] = session.id;
     sessionMap["display_number"] = session.display_number;
+    sessionMap["receipt_number"] = session.receipt_number.has_value()
+            ? QVariant(session.receipt_number.value())
+            : QVariant();
+    sessionMap["order_type"] = session.order_type;
 
     sessionMap["subtotal"] = static_cast<double>(session.subtotal) / CURRENCY_SCALE;
     sessionMap["tax"] = static_cast<double>(session.tax) / CURRENCY_SCALE;
     sessionMap["discount"] = static_cast<double>(session.discount) / CURRENCY_SCALE;
     sessionMap["total"] = static_cast<double>(session.total) / CURRENCY_SCALE;
 
-    QVariantList orderList;
+    const auto snapshotOpt = m_receiptSnapshotRepo.getByOrderSessionId(orderSessionId);
 
+    if (snapshotOpt && snapshotOpt->member_phone.has_value()
+            && !snapshotOpt->member_phone->isEmpty())
+    {
+        sessionMap["member_phone"] = snapshotOpt->member_phone.value();
+        sessionMap["points_balance_before"] = snapshotOpt->points_balance_before.value_or(0);
+        sessionMap["points_earned"] = session.points_earned;
+        sessionMap["points_redeemed"] = session.points_redeemed;
+        sessionMap["points_balance_after"] = snapshotOpt->points_balance_after.value_or(0);
+    }
+    else
+    {
+        sessionMap["member_phone"] = QString();
+        sessionMap["points_balance_before"] = 0;
+        sessionMap["points_earned"] = 0;
+        sessionMap["points_redeemed"] = 0;
+        sessionMap["points_balance_after"] = 0;
+    }
+
+    QVariantList paymentList;
+    const auto payments = m_paymentService.getPaymentsForOrderSession(orderSessionId);
+    paymentList.reserve(payments.size());
+
+    for (const auto &payment : payments)
+    {
+        QVariantMap paymentMap;
+        paymentMap["id"] = payment.id;
+        paymentMap["method"] = payment.method;
+        paymentMap["amount"] = static_cast<double>(payment.amount) / CURRENCY_SCALE;
+        paymentList.append(paymentMap);
+    }
+    sessionMap["payments"] = paymentList;
+
+    QVariantList orderList;
     for (const auto &order : orders)
     {
         QVariantMap orderMap;
-
         orderMap["id"] = order.id;
         orderMap["display_number"] = order.display_number;
         orderMap["status"] = order.status;
         orderMap["notes"] = order.notes;
-
         orderMap["closed_at"] = order.closed_at.isEmpty()
                 ? QVariant()
                 : QVariant(order.closed_at);
-
         orderMap["items"] = itemsByOrder.value(order.id);
-
         orderList.append(orderMap);
     }
 
     sessionMap["orders"] = orderList;
+
+    auto settings = m_regionalSettingsRepo.get();
+
+    QLocale locale = (settings.has_value() && !settings->locale.isEmpty())
+        ? QLocale(settings->locale)
+        : QLocale();
+
+    QString checkedOutAt;
+
+    if (snapshotOpt && snapshotOpt->created_at.has_value() && !snapshotOpt->created_at->isEmpty())
+        checkedOutAt = snapshotOpt->created_at.value();
+    else if (session.closed_at.has_value())
+        checkedOutAt = session.closed_at.value();
+
+    if (!checkedOutAt.isEmpty()) {
+        QDateTime utcDateTime = QDateTime::fromString(checkedOutAt, Qt::ISODate);
+
+        utcDateTime.setTimeSpec(Qt::UTC);
+
+        QDateTime localDateTime = utcDateTime.toLocalTime();
+
+        checkedOutAt = locale.toString(localDateTime.date(), QLocale::ShortFormat) + " " + localDateTime.time().toString("HH:mm:ss");
+    }
+
+    sessionMap["checked_out_at"] = checkedOutAt.isEmpty() ? QString() : QVariant(checkedOutAt);
 
     return sessionMap;
 }

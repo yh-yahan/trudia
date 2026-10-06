@@ -4,6 +4,9 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QDir>
+#include <QDateTime>
+#include <QSqlDatabase>
+#include <QSqlQuery>
 #include "../database/DatabaseManager.h"
 #include "../logging/LoggingCategories.h"
 
@@ -48,7 +51,42 @@ bool DatabaseRestoreService::processPendingRestore()
     QFileInfo dbInfo(dbPath);
     QDir().mkpath(dbInfo.absolutePath());
 
-    // TODO: create backup of current db before deletion
+    // create backup of current db before deletion
+    if (dbInfo.exists())
+    {
+        const QString backupDir = dbInfo.absolutePath() + "/backups";
+        if (!QDir().mkpath(backupDir))
+        {
+            qCWarning(logDatabase) << "Pre-restore backup failed";
+            return false;
+        }
+
+        const QString backupPath = backupDir + "/" + dbInfo.completeBaseName() + ".pre-restore-" +
+            QDateTime::currentDateTime().toString("yyyyMMdd-HHmmss") + ".db";
+
+        bool backedUp = false;
+        {
+            QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", "pre-restore-backup");
+            db.setDatabaseName(dbPath);
+            if (db.open())
+            {
+                QString escaped = backupPath;
+                escaped.replace("'", "''");
+
+                QSqlQuery query(db);
+                backedUp = query.exec(QString("VACUUM INTO '%1'").arg(escaped));
+                query.finish();
+                db.close();
+            }
+        }
+        QSqlDatabase::removeDatabase("pre-restore-backup");
+
+        if (!backedUp)
+        {
+            qCWarning(logDatabase) << "Pre-restore backup failed";
+            return false;
+        }
+    }
 
     // delete current db
     QFile::remove(dbPath);

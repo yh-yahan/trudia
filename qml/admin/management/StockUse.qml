@@ -36,6 +36,11 @@ Item {
         { key: "bottle", label: qsTr("Bottle") }, { key: "can", label: qsTr("Can") },
         { key: "carton", label: qsTr("Carton") }, { key: "case", label: qsTr("Case") }
     ]
+    readonly property var effectCatalog: [
+        { key: "add", label: qsTr("Use extra") },
+        { key: "remove", label: qsTr("Leave out") },
+        { key: "replace", label: qsTr("Replace") }
+    ]
 
     property string fulfillmentMode: "none"
     property int linkedStockId: -1
@@ -44,11 +49,17 @@ Item {
     property string linePickerQuery: ""
     property bool creatingLineStock: false
     property string statusMessage: ""
+    property int ruleTargetModifierId: -1
+    property string ruleEffect: "add"
+    property int replaceFromId: -1
+    property int rulesRevision: 0
+    property int nextRuleKey: 1
 
     ListModel { id: stockModel }
     ListModel { id: packagedStockModel }
     ListModel { id: recipeStockModel }
     ListModel { id: recipeLines }
+    ListModel { id: modifierRules }
 
     function catalogKey(catalog, index) {
         if (index >= 0 && index < catalog.length)
@@ -81,7 +92,7 @@ Item {
     }
 
     function isDefaultComponent(row) {
-        return !row || row.modifierId === undefined || row.modifierId === null || row.modifierId === ""
+        return !row || row.modifierId === undefined || row.modifierId === null || row.modifierId === "" || Number(row.modifierId) <= 0
     }
 
     function defaultComponents(rows) {
@@ -90,6 +101,17 @@ Item {
             return out
         for (var i = 0; i < rows.length; ++i) {
             if (isDefaultComponent(rows[i]))
+                out.push(rows[i])
+        }
+        return out
+    }
+
+    function modifierComponents(rows) {
+        var out = []
+        if (!rows)
+            return out
+        for (var i = 0; i < rows.length; ++i) {
+            if (!isDefaultComponent(rows[i]))
                 out.push(rows[i])
         }
         return out
@@ -128,11 +150,58 @@ Item {
         return it ? Number(it.lowQuantity) : 0
     }
 
+    function ruleLabel(row) {
+        if (!row)
+            return ""
+        if (row.effect === "replace") {
+            return qsTr("Replace %1 %2 %3 with %4 %5 %6")
+                    .arg(formatQty(row.qty))
+                    .arg(catalogLabel(unitCatalog, row.unit))
+                    .arg(row.name || "")
+                    .arg(formatQty(row.replacementQty))
+                    .arg(catalogLabel(unitCatalog, row.replacementUnit))
+                    .arg(row.replacementName || "")
+        }
+        const verb = row.effect === "remove" ? qsTr("Leave out") : qsTr("Use extra")
+        return verb + " " + formatQty(row.qty) + " " + catalogLabel(unitCatalog, row.unit) + " · " + (row.name || "")
+    }
+
+    function appendModifierRuleRow(rule, replacement) {
+        const meta = modifierMeta(rule.modifierId)
+        modifierRules.append({
+            ruleKey: nextRuleKey++,
+            componentId: rule.id || -1,
+            modifierId: Number(rule.modifierId),
+            modifierName: meta.name,
+            groupName: meta.groupName,
+            inventoryItemId: rule.inventoryItemId,
+            name: rule.inventoryItemName || stockName(rule.inventoryItemId),
+            type: rule.type || stockType(rule.inventoryItemId),
+            qty: Number(rule.quantity) || 0,
+            unit: rule.baseUnit || stockUnit(rule.inventoryItemId),
+            effect: replacement ? "replace" : (rule.effect || "add"),
+            replacementInventoryItemId: replacement ? replacement.inventoryItemId : -1,
+            replacementName: replacement ? (replacement.inventoryItemName || stockName(replacement.inventoryItemId)) : "",
+            replacementQty: replacement ? (Number(replacement.quantity) || 0) : 0,
+            replacementUnit: replacement ? (replacement.baseUnit || stockUnit(replacement.inventoryItemId)) : ""
+        })
+    }
+
+    function baseQty(inventoryItemId) {
+        var total = 0
+        for (var i = 0; i < recipeLines.count; ++i) {
+            if (recipeLines.get(i).inventoryItemId === inventoryItemId)
+                total += Number(recipeLines.get(i).qty) || 0
+        }
+        return total
+    }
+
     function inferMode(rows) {
         const defaults = defaultComponents(rows)
-        if (defaults.length === 0)
+        const conditional = modifierComponents(rows)
+        if (defaults.length === 0 && conditional.length === 0)
             return "none"
-        if (defaults.length === 1) {
+        if (conditional.length === 0 && defaults.length === 1) {
             const type = defaults[0].type || stockType(defaults[0].inventoryItemId)
             if (type === "finishedProduct")
                 return "stock"
@@ -144,6 +213,33 @@ Item {
         if (!InventoryService || typeof InventoryService.getRecipeComponents !== "function" || id < 0)
             return []
         return InventoryService.getRecipeComponents(menuOwnerType, id) || []
+    }
+
+    function reloadModifiers() {
+        if (menuItemId < 0 || typeof ModifiersService === "undefined")
+            return
+        if (ModifiersService.reloadForMenu)
+            ModifiersService.reloadForMenu(menuItemId)
+        else if (ModifiersService.menuModifierModel && ModifiersService.menuModifierModel.loadGroupsForMenu)
+            ModifiersService.menuModifierModel.loadGroupsForMenu(menuItemId)
+    }
+
+    function modifierMeta(modifierId) {
+        const model = (typeof ModifiersService !== "undefined") ? ModifiersService.menuModifierModel : null
+        if (!model)
+            return { name: qsTr("Option"), groupName: "" }
+        const nameRole = Qt.UserRole + 2
+        const modifiersRole = Qt.UserRole + 8
+        for (var g = 0; g < model.rowCount(); ++g) {
+            const groupIndex = model.index(g, 0)
+            const groupName = model.data(groupIndex, nameRole) || ""
+            const options = model.data(groupIndex, modifiersRole) || []
+            for (var m = 0; m < options.length; ++m) {
+                if (Number(options[m].id) === Number(modifierId))
+                    return { name: options[m].name || qsTr("Option"), groupName: groupName }
+            }
+        }
+        return { name: qsTr("Option"), groupName: "" }
     }
 
     function reloadStock() {
@@ -180,10 +276,15 @@ Item {
 
     function loadFulfillment() {
         recipeLines.clear()
+        modifierRules.clear()
+        nextRuleKey = 1
         linkedStockId = -1
         packagedQty = 1
         creatingLineStock = false
         linePickerQuery = ""
+        ruleTargetModifierId = -1
+        ruleEffect = "add"
+        replaceFromId = -1
         statusMessage = ""
         if (lineSearchField)
             lineSearchField.text = ""
@@ -209,7 +310,22 @@ Item {
                     unit: line.baseUnit || stockUnit(line.inventoryItemId)
                 })
             }
+            const conditional = modifierComponents(rows)
+            for (var j = 0; j < conditional.length; ++j) {
+                const rule = conditional[j]
+                const next = j + 1 < conditional.length ? conditional[j + 1] : null
+                if ((rule.effect || "") === "replace"
+                        && next
+                        && (next.effect || "") === "replace"
+                        && Number(next.modifierId) === Number(rule.modifierId)) {
+                    appendModifierRuleRow(rule, next)
+                    j++
+                    continue
+                }
+                appendModifierRuleRow(rule, null)
+            }
         }
+        rulesRevision++
         syncPackagedCombo()
         fulfillmentDirty = false
     }
@@ -220,8 +336,19 @@ Item {
         fulfillmentMode = mode
         fulfillmentDirty = true
         statusMessage = ""
-        if (mode !== "recipe")
+        if (mode !== "recipe") {
             creatingLineStock = false
+            ruleTargetModifierId = -1
+        }
+    }
+
+    function setRuleTarget(modifierId) {
+        ruleTargetModifierId = modifierId
+        replaceFromId = -1
+        if (modifierId === -1)
+            ruleEffect = "add"
+        else if (ruleEffect !== "add" && ruleEffect !== "remove" && ruleEffect !== "replace")
+            ruleEffect = "add"
     }
 
     function addRecipeLine(inventoryItemId) {
@@ -255,6 +382,107 @@ Item {
             lineSearchField.text = ""
     }
 
+    function addModifierRule(inventoryItemId) {
+        if (ruleTargetModifierId <= 0 || !inventoryItemId || inventoryItemId === -1)
+            return
+        const typed = Number(newLineQty ? newLineQty.text : 1)
+        const addQty = (!isNaN(typed) && typed > 0) ? typed : 1
+        if (ruleEffect === "replace") {
+            if (replaceFromId <= 0) {
+                if (baseQty(inventoryItemId) <= 0) {
+                    statusMessage = qsTr("Pick a base recipe line to replace.")
+                    return
+                }
+                replaceFromId = inventoryItemId
+                statusMessage = qsTr("Pick the stock item to use instead.")
+                rulesRevision++
+                return
+            }
+            if (Number(inventoryItemId) === Number(replaceFromId)) {
+                statusMessage = qsTr("Pick a different item to use instead.")
+                return
+            }
+            const from = stockById(replaceFromId)
+            const to = stockById(inventoryItemId)
+            if (!from || !to)
+                return
+            const fromQty = Math.min(addQty, baseQty(replaceFromId))
+            const meta = modifierMeta(ruleTargetModifierId)
+            modifierRules.append({
+                ruleKey: nextRuleKey++,
+                componentId: -1,
+                modifierId: ruleTargetModifierId,
+                modifierName: meta.name,
+                groupName: meta.groupName,
+                inventoryItemId: from.id,
+                name: from.name,
+                type: from.type,
+                qty: fromQty,
+                unit: from.baseUnit,
+                effect: "replace",
+                replacementInventoryItemId: to.id,
+                replacementName: to.name,
+                replacementQty: addQty,
+                replacementUnit: to.baseUnit
+            })
+            replaceFromId = -1
+            fulfillmentDirty = true
+            rulesRevision++
+            statusMessage = ""
+            if (newLineQty)
+                newLineQty.text = "1"
+            return
+        }
+        if (ruleEffect === "remove" && baseQty(inventoryItemId) <= 0) {
+            statusMessage = qsTr("Leave out only applies to a base recipe line.")
+            return
+        }
+        for (var i = 0; i < modifierRules.count; ++i) {
+            const existing = modifierRules.get(i)
+            if (existing.modifierId === ruleTargetModifierId
+                    && existing.inventoryItemId === inventoryItemId
+                    && existing.effect === ruleEffect) {
+                modifierRules.setProperty(i, "qty", (Number(existing.qty) || 0) + addQty)
+                fulfillmentDirty = true
+                rulesRevision++
+                return
+            }
+        }
+        const it = stockById(inventoryItemId)
+        if (!it)
+            return
+        const meta = modifierMeta(ruleTargetModifierId)
+        modifierRules.append({
+            ruleKey: nextRuleKey++,
+            componentId: -1,
+            modifierId: ruleTargetModifierId,
+            modifierName: meta.name,
+            groupName: meta.groupName,
+            inventoryItemId: it.id,
+            name: it.name,
+            type: it.type,
+            qty: addQty,
+            unit: it.baseUnit,
+            effect: ruleEffect,
+            replacementInventoryItemId: -1,
+            replacementName: "",
+            replacementQty: 0,
+            replacementUnit: ""
+        })
+        fulfillmentDirty = true
+        rulesRevision++
+        statusMessage = ""
+        if (newLineQty)
+            newLineQty.text = "1"
+    }
+
+    function addFromPicker(inventoryItemId) {
+        if (ruleTargetModifierId <= 0)
+            addRecipeLine(inventoryItemId)
+        else
+            addModifierRule(inventoryItemId)
+    }
+
     function removeRecipeLine(index) {
         if (index < 0 || index >= recipeLines.count)
             return
@@ -262,8 +490,36 @@ Item {
         fulfillmentDirty = true
     }
 
+    function removeModifierRule(ruleKey) {
+        for (var i = 0; i < modifierRules.count; ++i) {
+            if (modifierRules.get(i).ruleKey === ruleKey) {
+                modifierRules.remove(i)
+                fulfillmentDirty = true
+                rulesRevision++
+                return
+            }
+        }
+    }
+
+    function rulesForModifier(modifierId) {
+        rulesRevision
+        var out = []
+        for (var i = 0; i < modifierRules.count; ++i) {
+            const row = modifierRules.get(i)
+            if (Number(row.modifierId) === Number(modifierId))
+                out.push(row)
+        }
+        return out
+    }
+
     function matchesLinePicker(item) {
         if (!item || item.type === "finishedProduct")
+            return false
+        if (ruleTargetModifierId > 0 && ruleEffect === "remove" && baseQty(item.id) <= 0)
+            return false
+        if (ruleTargetModifierId > 0 && ruleEffect === "replace" && replaceFromId <= 0 && baseQty(item.id) <= 0)
+            return false
+        if (ruleTargetModifierId > 0 && ruleEffect === "replace" && replaceFromId > 0 && Number(item.id) === Number(replaceFromId))
             return false
         if (!linePickerQuery.length)
             return true
@@ -291,11 +547,34 @@ Item {
         return true
     }
 
+    function replaceModifierComponents(lines) {
+        const existing = modifierComponents(loadComponents(menuItemId))
+        for (var i = 0; i < existing.length; ++i) {
+            if (!InventoryService.removeRecipeComponent(existing[i].id))
+                return false
+        }
+        for (var j = 0; j < lines.length; ++j) {
+            const newId = InventoryService.createRecipeComponent({
+                ownerType: menuOwnerType,
+                ownerId: menuItemId,
+                inventoryItemId: lines[j].inventoryItemId,
+                quantity: lines[j].quantity,
+                modifierId: lines[j].modifierId,
+                effect: lines[j].effect,
+                sortOrder: j
+            })
+            if (newId === -1 || newId === undefined || newId === false)
+                return false
+        }
+        return true
+    }
+
     function saveFulfillment() {
         if (menuItemId === -1 || !InventoryService || typeof InventoryService.createRecipeComponent !== "function")
             return false
 
         var lines = []
+        var rules = []
         if (fulfillmentMode === "stock") {
             if (linkedStockId === -1 || linkedStockId === undefined) {
                 statusMessage = qsTr("Choose a packaged product.")
@@ -322,10 +601,56 @@ Item {
                 }
                 lines.push({ inventoryItemId: line.inventoryItemId, quantity: qty })
             }
+            for (var r = 0; r < modifierRules.count; ++r) {
+                const rule = modifierRules.get(r)
+                const qty = Number(rule.qty)
+                if (isNaN(qty) || qty <= 0) {
+                    statusMessage = qsTr("Every modifier rule needs a quantity.")
+                    return false
+                }
+                if (rule.effect === "remove" && qty > baseQty(rule.inventoryItemId)) {
+                    statusMessage = qsTr("Leave out cannot exceed the base quantity.")
+                    return false
+                }
+                if (rule.effect === "replace") {
+                    const replacementQty = Number(rule.replacementQty)
+                    if (!rule.replacementInventoryItemId || rule.replacementInventoryItemId === -1 || isNaN(replacementQty) || replacementQty <= 0) {
+                        statusMessage = qsTr("Replace needs the item to use instead.")
+                        return false
+                    }
+                    if (qty > baseQty(rule.inventoryItemId)) {
+                        statusMessage = qsTr("Replace cannot leave out more than the base quantity.")
+                        return false
+                    }
+                    rules.push({
+                        inventoryItemId: rule.inventoryItemId,
+                        quantity: qty,
+                        modifierId: rule.modifierId,
+                        effect: "replace"
+                    })
+                    rules.push({
+                        inventoryItemId: rule.replacementInventoryItemId,
+                        quantity: replacementQty,
+                        modifierId: rule.modifierId,
+                        effect: "replace"
+                    })
+                    continue
+                }
+                rules.push({
+                    inventoryItemId: rule.inventoryItemId,
+                    quantity: qty,
+                    modifierId: rule.modifierId,
+                    effect: rule.effect || "add"
+                })
+            }
         }
 
         if (!replaceDefaultComponents(lines)) {
             statusMessage = qsTr("Could not save stock use.")
+            return false
+        }
+        if (!replaceModifierComponents(rules)) {
+            statusMessage = qsTr("Could not save modifier stock rules.")
             return false
         }
 
@@ -342,6 +667,8 @@ Item {
         linkedStockId = -1
         packagedQty = 1
         recipeLines.clear()
+        modifierRules.clear()
+        rulesRevision++
         fulfillmentDirty = true
         saveFulfillment()
     }
@@ -386,7 +713,7 @@ Item {
         if (newId === -1 || newId === undefined || newId === false)
             return
         reloadStock()
-        addRecipeLine(newId)
+        addFromPicker(newId)
         inlineStockName.text = ""
         creatingLineStock = false
     }
@@ -410,11 +737,20 @@ Item {
 
     function hydrate() {
         reloadStock()
+        reloadModifiers()
         loadFulfillment()
     }
 
     onMenuItemIdChanged: hydrate()
     Component.onCompleted: hydrate()
+
+    Connections {
+        target: (typeof ModifiersService !== "undefined") ? ModifiersService : null
+        function onMenuGroupsChanged(menuId) {
+            if (menuId === root.menuItemId)
+                root.rulesRevision++
+        }
+    }
 
     ConfirmationDialog {
         id: confirmationDialog
@@ -720,10 +1056,8 @@ Item {
                         Layout.fillWidth: true
                         hoverEnabled: false
                         focusPolicy: Qt.NoFocus
-
                         topPadding: 5
                         bottomPadding: 5
-
                         background: Rectangle {
                             color: Theme.surface
                             radius: 4
@@ -770,132 +1104,292 @@ Item {
                 Layout.fillHeight: true
                 color: Theme.background
 
-                ColumnLayout {
+                Flickable {
+                    id: recipeFlick
                     anchors.fill: parent
                     anchors.margins: 16
-                    spacing: 10
+                    contentWidth: width
+                    contentHeight: recipeCol.implicitHeight
+                    clip: true
+                    boundsBehavior: Flickable.StopAtBounds
 
-                    RowLayout {
-                        Text {
-                            text: qsTr("Recipe")
-                            font.bold: true
-                            color: Theme.text
-                            Layout.fillWidth: true
-                            font.pixelSize: Theme.fontMedium
+                    ColumnLayout {
+                        id: recipeCol
+                        width: recipeFlick.width
+                        spacing: 10
+
+                        RowLayout {
+                            Text {
+                                text: qsTr("Recipe")
+                                font.bold: true
+                                color: Theme.text
+                                Layout.fillWidth: true
+                                font.pixelSize: Theme.fontMedium
+                            }
+                            Text {
+                                text: qsTr("%1 lines").arg(recipeLines.count)
+                                color: Theme.secondaryText
+                                font.pixelSize: Theme.fontNormal
+                            }
                         }
-                        Text {
-                            text: qsTr("%1 lines").arg(recipeLines.count)
-                            color: Theme.secondaryText
-                            font.pixelSize: Theme.fontNormal
-                        }
-                    }
 
-                    ListView {
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        clip: true
-                        spacing: 6
-                        model: recipeLines
+                        Repeater {
+                            model: recipeLines
 
-                        delegate: Rectangle {
-                            required property int index
-                            required property int inventoryItemId
-                            required property string name
-                            required property string type
-                            required property var qty
-                            required property string unit
+                            delegate: Rectangle {
+                                required property int index
+                                required property int inventoryItemId
+                                required property string name
+                                required property string type
+                                required property var qty
+                                required property string unit
 
-                            width: ListView.view.width
-                            height: 58
-                            radius: 8
-                            color: Theme.surface
-                            border.width: 1
-                            border.color: Theme.border
+                                Layout.fillWidth: true
+                                implicitHeight: 58
+                                radius: 8
+                                color: Theme.surface
+                                border.width: 1
+                                border.color: Theme.border
 
-                            RowLayout {
-                                anchors.fill: parent
-                                anchors.leftMargin: 12
-                                anchors.rightMargin: 10
-                                spacing: 8
+                                RowLayout {
+                                    anchors.fill: parent
+                                    anchors.leftMargin: 12
+                                    anchors.rightMargin: 10
+                                    spacing: 8
 
-                                ColumnLayout {
-                                    Layout.fillWidth: true
-                                    spacing: 1
-
-                                    Text {
-                                        text: name
-                                        color: Theme.text
-                                        elide: Text.ElideRight
+                                    ColumnLayout {
                                         Layout.fillWidth: true
-                                        font.pixelSize: Theme.fontMedium
-                                    }
-                                    Text {
-                                        text: catalogLabel(typeCatalog, type)
-                                              + qsTr(" · on hand %1").arg(formatQty(stockQuantity(inventoryItemId)))
-                                              + (stockQuantity(inventoryItemId) <= stockLow(inventoryItemId) ? qsTr(" · Low") : "")
-                                        color: stockQuantity(inventoryItemId) <= stockLow(inventoryItemId) ? "#c45c5c" : Theme.secondaryText
-                                        font.pixelSize: Theme.fontNormal
-                                        elide: Text.ElideRight
-                                        Layout.fillWidth: true
-                                    }
-                                }
+                                        spacing: 1
 
-                                TextField {
-                                    Layout.preferredWidth: 80
-                                    implicitHeight: 34
-                                    text: String(qty)
-                                    color: Theme.text
-                                    leftPadding: 8
-                                    inputMethodHints: Qt.ImhFormattedNumbersOnly
-                                    background: Rectangle {
-                                        color: Theme.background
-                                        radius: 6
-                                        border.color: Theme.border
-                                    }
-                                    onEditingFinished: {
-                                        const value = Number(text)
-                                        if (!isNaN(value) && value >= 0) {
-                                            recipeLines.setProperty(index, "qty", value)
-                                            fulfillmentDirty = true
+                                        Text {
+                                            text: name
+                                            color: Theme.text
+                                            elide: Text.ElideRight
+                                            Layout.fillWidth: true
+                                            font.pixelSize: Theme.fontMedium
+                                        }
+                                        Text {
+                                            text: catalogLabel(typeCatalog, type)
+                                                  + qsTr(" · on hand %1").arg(formatQty(stockQuantity(inventoryItemId)))
+                                                  + (stockQuantity(inventoryItemId) <= stockLow(inventoryItemId) ? qsTr(" · Low") : "")
+                                            color: stockQuantity(inventoryItemId) <= stockLow(inventoryItemId) ? "#c45c5c" : Theme.secondaryText
+                                            font.pixelSize: Theme.fontNormal
+                                            elide: Text.ElideRight
+                                            Layout.fillWidth: true
                                         }
                                     }
-                                }
 
-                                Text {
-                                    Layout.preferredWidth: 72
-                                    text: catalogLabel(unitCatalog, unit)
-                                    color: Theme.secondaryText
-                                    font.pixelSize: Theme.fontNormal
-                                    elide: Text.ElideRight
-                                }
-
-                                Button {
-                                    hoverEnabled: false
-                                    focusPolicy: Qt.NoFocus
-                                    leftPadding: 8
-                                    rightPadding: 8
-                                    topPadding: 4
-                                    bottomPadding: 4
-                                    background: Rectangle {
-                                        color: Theme.background
-                                        radius: 4
-                                        border.color: Theme.border
+                                    TextField {
+                                        Layout.preferredWidth: 80
+                                        implicitHeight: 34
+                                        text: String(qty)
+                                        color: Theme.text
+                                        leftPadding: 8
+                                        inputMethodHints: Qt.ImhFormattedNumbersOnly
+                                        background: Rectangle {
+                                            color: Theme.background
+                                            radius: 6
+                                            border.color: Theme.border
+                                        }
+                                        onEditingFinished: {
+                                            const value = Number(text)
+                                            if (!isNaN(value) && value >= 0) {
+                                                recipeLines.setProperty(index, "qty", value)
+                                                fulfillmentDirty = true
+                                            }
+                                        }
                                     }
-                                    contentItem: Text {
-                                        text: qsTr("Remove")
+
+                                    Text {
+                                        Layout.preferredWidth: 72
+                                        text: catalogLabel(unitCatalog, unit)
                                         color: Theme.secondaryText
                                         font.pixelSize: Theme.fontNormal
+                                        elide: Text.ElideRight
                                     }
-                                    onClicked: removeRecipeLine(index)
+
+                                    Button {
+                                        hoverEnabled: false
+                                        focusPolicy: Qt.NoFocus
+                                        leftPadding: 8
+                                        rightPadding: 8
+                                        topPadding: 4
+                                        bottomPadding: 4
+                                        background: Rectangle {
+                                            color: Theme.background
+                                            radius: 4
+                                            border.color: Theme.border
+                                        }
+                                        contentItem: Text {
+                                            text: qsTr("Remove")
+                                            color: Theme.secondaryText
+                                            font.pixelSize: Theme.fontNormal
+                                        }
+                                        onClicked: removeRecipeLine(index)
+                                    }
                                 }
                             }
                         }
-                    }
 
-                    Text {
-                        visible: recipeLines.count === 0
-                        text: qsTr("No lines yet. Pick stock on the right.")
-                        color: Theme.secondaryText
+                        Text {
+                            visible: recipeLines.count === 0
+                            text: qsTr("No lines yet. Pick stock on the right.")
+                            color: Theme.secondaryText
+                        }
+
+                        Rectangle {
+                            Layout.fillWidth: true
+                            Layout.topMargin: 8
+                            height: 1
+                            color: Theme.border
+                        }
+
+                        Text {
+                            text: qsTr("When a modifier is selected")
+                            font.bold: true
+                            color: Theme.text
+                            font.pixelSize: Theme.fontMedium
+                        }
+                        Text {
+                            text: qsTr("Attached options only. An option with no rows changes the price and does not change stock.")
+                            color: Theme.secondaryText
+                            font.pixelSize: Theme.fontNormal
+                            wrapMode: Text.WordWrap
+                            Layout.fillWidth: true
+                        }
+
+                        Repeater {
+                            model: (typeof ModifiersService !== "undefined") ? ModifiersService.menuModifierModel : null
+
+                            delegate: ColumnLayout {
+                                id: groupBlock
+                                required property int id
+                                required property string name
+                                required property var modifiers
+                                Layout.fillWidth: true
+                                spacing: 8
+
+                                Text {
+                                    text: name
+                                    color: Theme.secondaryText
+                                    font.bold: true
+                                    font.pixelSize: Theme.fontNormal
+                                }
+
+                                Repeater {
+                                    model: modifiers
+
+                                    delegate: Rectangle {
+                                        id: optionCard
+                                        required property var modelData
+                                        Layout.fillWidth: true
+                                        implicitHeight: optionCol.implicitHeight + 16
+                                        radius: 8
+                                        color: Theme.surface
+                                        border.width: 1
+                                        border.color: ruleTargetModifierId === Number(modelData.id) ? Theme.primary() : Theme.border
+
+                                        ColumnLayout {
+                                            id: optionCol
+                                            anchors.left: parent.left
+                                            anchors.right: parent.right
+                                            anchors.top: parent.top
+                                            anchors.margins: 8
+                                            spacing: 6
+
+                                            RowLayout {
+                                                Layout.fillWidth: true
+                                                Text {
+                                                    text: modelData.name || ""
+                                                    color: Theme.text
+                                                    font.bold: true
+                                                    font.pixelSize: Theme.fontNormal
+                                                    Layout.fillWidth: true
+                                                    elide: Text.ElideRight
+                                                }
+                                                Text {
+                                                    text: rulesForModifier(modelData.id).length
+                                                          ? qsTr("%1 rules").arg(rulesForModifier(modelData.id).length)
+                                                          : qsTr("Price only")
+                                                    color: Theme.secondaryText
+                                                    font.pixelSize: Theme.fontSmall
+                                                }
+                                            }
+
+                                            Repeater {
+                                                model: rulesForModifier(modelData.id)
+
+                                                delegate: RowLayout {
+                                                    required property var modelData
+                                                    Layout.fillWidth: true
+                                                    spacing: 6
+
+                                                    Text {
+                                                        Layout.fillWidth: true
+                                                        text: ruleLabel(modelData)
+                                                        color: Theme.text
+                                                        font.pixelSize: Theme.fontNormal
+                                                        elide: Text.ElideRight
+                                                    }
+                                                    Button {
+                                                        hoverEnabled: false
+                                                        focusPolicy: Qt.NoFocus
+                                                        leftPadding: 8
+                                                        rightPadding: 8
+                                                        topPadding: 2
+                                                        bottomPadding: 2
+                                                        background: Rectangle {
+                                                            color: Theme.background
+                                                            radius: 4
+                                                            border.color: Theme.border
+                                                        }
+                                                        contentItem: Text {
+                                                            text: qsTr("Remove")
+                                                            color: Theme.secondaryText
+                                                            font.pixelSize: Theme.fontSmall
+                                                        }
+                                                        onClicked: removeModifierRule(modelData.ruleKey)
+                                                    }
+                                                }
+                                            }
+
+                                            Button {
+                                                hoverEnabled: false
+                                                focusPolicy: Qt.NoFocus
+                                                visible: ruleTargetModifierId !== Number(optionCard.modelData.id)
+                                                leftPadding: 8
+                                                rightPadding: 8
+                                                topPadding: 4
+                                                bottomPadding: 4
+                                                background: Rectangle {
+                                                    color: ruleTargetModifierId === Number(optionCard.modelData.id) ? Theme.primary() : Theme.background
+                                                    radius: 4
+                                                    border.color: Theme.border
+                                                    border.width: ruleTargetModifierId === Number(optionCard.modelData.id) ? 0 : 1
+                                                }
+                                                contentItem: Text {
+                                                    text: qsTr("Add stock rule")
+                                                    color: ruleTargetModifierId === Number(optionCard.modelData.id) ? "white" : Theme.text
+                                                    font.pixelSize: Theme.fontSmall
+                                                }
+                                                onClicked: setRuleTarget(Number(optionCard.modelData.id))
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        Text {
+                            visible: typeof ModifiersService === "undefined"
+                                     || !ModifiersService.menuModifierModel
+                                     || ModifiersService.menuModifierModel.rowCount() === 0
+                            text: qsTr("No modifier groups attached to this item.")
+                            color: Theme.secondaryText
+                            font.pixelSize: Theme.fontNormal
+                            wrapMode: Text.WordWrap
+                            Layout.fillWidth: true
+                        }
                     }
                 }
             }
@@ -917,9 +1411,71 @@ Item {
                     spacing: 10
 
                     Text {
-                        text: qsTr("Add to recipe")
+                        text: ruleTargetModifierId <= 0
+                              ? qsTr("Add to recipe")
+                              : qsTr("Add to %1").arg(modifierMeta(ruleTargetModifierId).name)
                         font.bold: true
                         color: Theme.text
+                        Layout.fillWidth: true
+                        elide: Text.ElideRight
+                    }
+
+                    RowLayout {
+                        visible: ruleTargetModifierId > 0
+                        spacing: 6
+
+                        Repeater {
+                            model: effectCatalog
+                            delegate: Rectangle {
+                                required property var modelData
+                                implicitHeight: 28
+                                implicitWidth: effectLabel.implicitWidth + 16
+                                radius: 6
+                                color: ruleEffect === modelData.key ? Theme.primary() : Theme.surface
+                                border.width: ruleEffect === modelData.key ? 0 : 1
+                                border.color: Theme.border
+
+                                Text {
+                                    id: effectLabel
+                                    anchors.centerIn: parent
+                                    text: modelData.label
+                                    color: ruleEffect === modelData.key ? "white" : Theme.text
+                                    font.pixelSize: Theme.fontSmall
+                                }
+                                MouseArea {
+                                    anchors.fill: parent
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: {
+                                        ruleEffect = modelData.key
+                                        replaceFromId = -1
+                                        statusMessage = ""
+                                    }
+                                }
+                            }
+                        }
+
+                        Item { Layout.fillWidth: true }
+
+                        Text {
+                            text: qsTr("Base")
+                            color: Theme.primary()
+                            font.pixelSize: Theme.fontSmall
+                            MouseArea {
+                                anchors.fill: parent
+                                onClicked: setRuleTarget(-1)
+                            }
+                        }
+                    }
+
+                    Text {
+                        visible: ruleTargetModifierId > 0 && ruleEffect === "replace"
+                        text: replaceFromId <= 0
+                              ? qsTr("Pick the base item to replace.")
+                              : qsTr("Replacing %1. Pick the item to use instead.").arg(stockName(replaceFromId))
+                        color: Theme.secondaryText
+                        font.pixelSize: Theme.fontSmall
+                        wrapMode: Text.WordWrap
+                        Layout.fillWidth: true
                     }
 
                     RowLayout {
@@ -967,7 +1523,7 @@ Item {
                             required property string type
                             required property string baseUnit
 
-                            visible: matchesLinePicker({ name: name, type: type })
+                            visible: matchesLinePicker({ id: id, name: name, type: type })
                             width: ListView.view.width
                             height: visible ? 44 : 0
                             radius: 8
@@ -1001,7 +1557,7 @@ Item {
                             MouseArea {
                                 anchors.fill: parent
                                 cursorShape: Qt.PointingHandCursor
-                                onClicked: addRecipeLine(id)
+                                onClicked: addFromPicker(id)
                             }
                         }
                     }

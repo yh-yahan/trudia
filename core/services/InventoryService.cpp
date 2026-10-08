@@ -7,14 +7,16 @@ constexpr int INVENTORY_QUANTITY_SCALE = 1000;
 InventoryService::InventoryService(InventoryItemRepository &inventoryItemRepo,
                                    RecipeComponentRepository &recipeComponentRepo,
                                    StockMovementRepository &stockMovementRepo,
-                                   OrderItemRepository &orderItemRepository,
+                                   OrderItemRepository &orderItemRepo,
+                                   OrderItemModifierRepository &orderItemModifierRepo,
                                    DatabaseManager &databaseManager,
                                    QObject *parent)
     : QObject(parent),
       m_inventoryItemRepo(inventoryItemRepo),
       m_recipeComponentRepo(recipeComponentRepo),
       m_stockMovementRepo(stockMovementRepo),
-      m_orderItemRepository(orderItemRepository),
+      m_orderItemRepo(orderItemRepo),
+      m_orderItemModifierRepo(orderItemModifierRepo),
       m_databaseManager(databaseManager) {}
 
 QVariantList InventoryService::getItems() const
@@ -208,35 +210,38 @@ bool InventoryService::syncSaleStock(int order_item_id)
         return false;
     };
 
-    const auto orderItemOpt = m_orderItemRepository.getOrderItemById(order_item_id);
+    const auto orderItemOpt = m_orderItemRepo.getOrderItemById(order_item_id);
     if (!orderItemOpt.has_value()) return rollback();
     const auto &orderItem = orderItemOpt.value();
 
-    std::vector<RecipeComponent> recipeComponents = m_recipeComponentRepo.listByOwner(RecipeComponentOwnerType::MenuItem, orderItem.item_id);
-
-    for (const auto &recipeComponent : recipeComponents)
+    std::unordered_map<int, int> selectedModifierQty;
+    const auto selectedModifiers = m_orderItemModifierRepo.getByOrderItemId(order_item_id);
+    for (const auto &selected : selectedModifiers)
     {
-        if (recipeComponent.modifier_id.has_value() && *recipeComponent.modifier_id != 0) continue;
-        if (recipeComponent.effect != RecipeComponentEffect::Add) continue;
+        if (!selected.modifier_id.has_value() || *selected.modifier_id <= 0) continue;
+        selectedModifierQty[*selected.modifier_id] += 1;
+    }
 
-        const int expected = -(recipeComponent.quantity * orderItem.quantity);
-        const int recorded = m_stockMovementRepo.sumByReference(order_item_id, recipeComponent.inventory_item_id);
+    const std::vector<RecipeComponent> recipeComponents = m_recipeComponentRepo.listByOwner(RecipeComponentOwnerType::MenuItem, orderItem.item_id);
 
+    auto record = [&](int inventoryItemId, int modifierId, RecipeComponentEffect effect, int expected) -> bool
+    {
+        const int recorded = m_stockMovementRepo.sumBySaleLine(order_item_id, inventoryItemId, modifierId, toString(effect));
         const int delta = expected - recorded;
-        if (delta == 0) continue;
+        if (delta == 0) return true;
 
-        // key: sale:{order_item_id}:{inventory_item_id}:{modifier_id}:{effect}:{recorded}:{expected}
-        const QString key = QStringLiteral("sale:%1:%2:0:%3:%4:%5")
+        // sale:{order_item_id}:{inventory_item_id}:{modifier_id}:{effect}:{recorded}:{expected}
+        const QString key = QStringLiteral("sale:%1:%2:%3:%4:%5:%6")
                                 .arg(order_item_id)
-                                .arg(recipeComponent.inventory_item_id)
-                                .arg(toString(recipeComponent.effect))
+                                .arg(inventoryItemId)
+                                .arg(modifierId)
+                                .arg(toString(effect))
                                 .arg(recorded)
                                 .arg(expected);
-
-        if (m_stockMovementRepo.getByKey(key)) continue;
+        if (m_stockMovementRepo.getByKey(key)) return true;
 
         StockMovement stockMovement;
-        stockMovement.inventory_item_id = recipeComponent.inventory_item_id;
+        stockMovement.inventory_item_id = inventoryItemId;
         stockMovement.quantity = delta;
         stockMovement.reason = StockMovementReason::Sale;
         stockMovement.idempotency_key = key;
@@ -246,10 +251,67 @@ bool InventoryService::syncSaleStock(int order_item_id)
         if (!m_stockMovementRepo.create(stockMovement))
         {
             qCWarning(logInventory) << "Failed to record stock movement";
-            return rollback();
+            return false;
         }
 
-        if (!m_inventoryItemRepo.updateQuantity(stockMovement.inventory_item_id, stockMovement.quantity)) return rollback();
+        return m_inventoryItemRepo.updateQuantity(stockMovement.inventory_item_id, stockMovement.quantity);
+    };
+
+    std::unordered_map<int, std::vector<RecipeComponent>> replaceByModifier;
+
+    for (const auto &recipeComponent : recipeComponents)
+    {
+        const bool isModifierLine = recipeComponent.modifier_id.has_value() && *recipeComponent.modifier_id != 0;
+        if (!isModifierLine)
+        {
+            if (recipeComponent.effect != RecipeComponentEffect::Add) continue;
+            if (!record(recipeComponent.inventory_item_id, 0, RecipeComponentEffect::Add,
+                        -(recipeComponent.quantity * orderItem.quantity))) return rollback();
+            continue;
+        }
+
+        const int modifierId = *recipeComponent.modifier_id;
+        const auto selected = selectedModifierQty.find(modifierId);
+        if (selected == selectedModifierQty.end()) continue;
+        const int scale = orderItem.quantity * selected->second;
+
+        if (recipeComponent.effect == RecipeComponentEffect::Add)
+        {
+            if (!record(recipeComponent.inventory_item_id, modifierId, RecipeComponentEffect::Add,
+                        -(recipeComponent.quantity * scale))) return rollback();
+        }
+        else if (recipeComponent.effect == RecipeComponentEffect::Remove)
+        {
+            if (!record(recipeComponent.inventory_item_id, modifierId, RecipeComponentEffect::Remove,
+                        recipeComponent.quantity * scale)) return rollback();
+        }
+        else if (recipeComponent.effect == RecipeComponentEffect::Replace)
+        {
+            replaceByModifier[modifierId].push_back(recipeComponent);
+        }
+    }
+
+    for (auto &entry : replaceByModifier)
+    {
+        const int modifierId = entry.first;
+        const int scale = orderItem.quantity * selectedModifierQty[modifierId];
+        auto &rows = entry.second;
+        std::sort(rows.begin(), rows.end(), [](const RecipeComponent &a, const RecipeComponent &b)
+        {
+            if (a.sort_order != b.sort_order) return a.sort_order < b.sort_order;
+            return a.id < b.id;
+        });
+
+        if (rows.size() % 2 != 0) qCWarning(logInventory) << "Unpaired replace component for modifier" << modifierId;
+
+        for (size_t i = 0; i + 1 < rows.size(); i += 2)
+        {
+            // rows[i] is the item being replaced, rows[i + 1] is what replaces it.
+            if (!record(rows[i].inventory_item_id, modifierId, RecipeComponentEffect::Replace,
+                        rows[i].quantity * scale)) return rollback();
+            if (!record(rows[i + 1].inventory_item_id, modifierId, RecipeComponentEffect::Replace,
+                        -(rows[i + 1].quantity * scale))) return rollback();
+        }
     }
 
     if (!m_databaseManager.commit())

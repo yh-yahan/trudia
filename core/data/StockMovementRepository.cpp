@@ -129,6 +129,37 @@ int StockMovementRepository::sumByReference(int referenceId, int inventoryItemId
     return query.value(0).toInt();
 }
 
+int StockMovementRepository::sumBySaleLine(int referenceId, int inventoryItemId, int modifierId, const QString &effect)
+{
+    QSqlQuery query(m_db);
+
+    query.prepare(R"(
+        SELECT COALESCE(SUM(quantity), 0)
+        FROM stock_movements
+        WHERE reference_id = :reference_id
+        AND inventory_item_id = :inventory_item_id
+        AND idempotency_key LIKE :prefix ESCAPE '\'
+    )");
+
+    QString prefix = QStringLiteral("sale:%1:%2:%3:%4:")
+                         .arg(referenceId)
+                         .arg(inventoryItemId)
+                         .arg(modifierId)
+                         .arg(effect);
+    prefix.replace(QLatin1Char('\\'), QLatin1String("\\\\"));
+    prefix.replace(QLatin1Char('%'), QLatin1String("\\%"));
+    prefix.replace(QLatin1Char('_'), QLatin1String("\\_"));
+    prefix.append(QLatin1Char('%'));
+
+    query.bindValue(":reference_id", referenceId);
+    query.bindValue(":inventory_item_id", inventoryItemId);
+    query.bindValue(":prefix", prefix);
+
+    if (!query.exec() || !query.next()) return 0;
+
+    return query.value(0).toInt();
+}
+
 int StockMovementRepository::create(const StockMovement &movement)
 {
     QSqlQuery query(m_db);

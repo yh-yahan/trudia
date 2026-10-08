@@ -10,6 +10,7 @@
 #include "../data/RecipeComponentRepository.h"
 #include "../data/StockMovementRepository.h"
 #include "../data/OrderItemRepository.h"
+#include "../data/OrderItemModifierRepository.h"
 
 class InventoryService : public QObject
 {
@@ -20,6 +21,7 @@ public:
                               RecipeComponentRepository &recipeComponentRepo,
                               StockMovementRepository &stockMovementRepo,
                               OrderItemRepository &orderItemRepository,
+                              OrderItemModifierRepository &orderItemModifierRepo,
                               DatabaseManager &databaseManager,
                               QObject *parent = nullptr);
 
@@ -41,7 +43,8 @@ private:
     InventoryItemRepository &m_inventoryItemRepo;
     RecipeComponentRepository &m_recipeComponentRepo;
     StockMovementRepository &m_stockMovementRepo;
-    OrderItemRepository &m_orderItemRepository;
+    OrderItemRepository &m_orderItemRepo;
+    OrderItemModifierRepository &m_orderItemModifierRepo;
     DatabaseManager &m_databaseManager;
 
     QVariantMap toMap(const InventoryItem &item) const;

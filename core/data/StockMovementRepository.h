@@ -18,6 +18,7 @@ public:
     bool getByKey(const QString &key);
 
     int sumByReference(int referenceId, int inventoryItemId);
+    int sumBySaleLine(int referenceId, int inventoryItemId, int modifierId, const QString &effect);
 
     int create(const StockMovement &movement);
 

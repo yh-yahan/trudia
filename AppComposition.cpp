@@ -96,6 +96,7 @@ AppComposition::AppComposition(AppService& appService, DatabaseManager& dbManage
           recipeComponentRepo,
           stockMovementRepo,
           orderItemRepo,
+          orderItemModifierRepo,
           dbManager),
       orderService(
           orderSessionRepo,

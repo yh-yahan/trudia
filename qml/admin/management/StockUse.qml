@@ -1245,17 +1245,10 @@ Item {
                         }
 
                         Text {
-                            text: qsTr("When a modifier is selected")
+                            text: qsTr("Modifiers")
                             font.bold: true
                             color: Theme.text
                             font.pixelSize: Theme.fontMedium
-                        }
-                        Text {
-                            text: qsTr("Attached options only. An option with no rows changes the price and does not change stock.")
-                            color: Theme.secondaryText
-                            font.pixelSize: Theme.fontNormal
-                            wrapMode: Text.WordWrap
-                            Layout.fillWidth: true
                         }
 
                         Repeater {

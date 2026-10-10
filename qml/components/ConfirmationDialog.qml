@@ -7,7 +7,7 @@ Popup {
     id: confirmDialog
 
     width: 360
-    height: 180
+    height: contentLayout.implicitHeight + 40
     modal: true
     focus: true
     closePolicy: Popup.NoAutoClose
@@ -25,8 +25,12 @@ Popup {
     }
 
     ColumnLayout {
-        anchors.fill: parent
-        anchors.margins: 20
+        id: contentLayout
+
+        width: parent.width - 40
+        anchors.top: parent.top
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.topMargin: 20
         spacing: 15
 
         Text {

@@ -1,14 +1,16 @@
 #ifndef MODIFIERSSERVICE_H
 #define MODIFIERSSERVICE_H
 
-#include "../data/ModifiersRepository.h"
-
 #include <QObject>
 #include <QVariant>
 #include <QVariantList>
 #include <QVariantMap>
 #include <optional>
 #include <vector>
+
+#include "../data/ModifiersRepository.h"
+#include "../data/RecipeComponentRepository.h"
+#include "../database/DatabaseManager.h"
 
 class ModifiersModel;
 
@@ -21,7 +23,11 @@ class ModifiersService : public QObject
     Q_PROPERTY(int currentMenuId READ currentMenuId WRITE setCurrentMenuId NOTIFY currentMenuIdChanged)
 
 public:
-    explicit ModifiersService(ModifiersRepository &repository, QObject *parent = nullptr);
+    explicit ModifiersService(
+        ModifiersRepository &repository, 
+        RecipeComponentRepository &recipeComponentRepo,
+        DatabaseManager &databaseManager,
+        QObject *parent = nullptr);
     ~ModifiersService() override;
 
     ModifiersModel *modifierModel() const;
@@ -98,6 +104,9 @@ private:
     int nextMenuGroupSortOrder(int menuId) const;
 
     ModifiersRepository &m_modifiersRepo;
+    RecipeComponentRepository &m_recipeComponentRepo;
+    DatabaseManager &m_databaseManager;
+
     ModifiersModel *m_modifierModel = nullptr;
     ModifiersModel *m_menuModifierModel = nullptr;
     int m_currentMenuId = -1;

@@ -17,6 +17,9 @@ public:
     std::optional<RecipeComponent> getById(int id) const;
     std::vector<RecipeComponent> listByOwner(RecipeComponentOwnerType ownerType, int ownerId) const;
 
+    bool removeByModifier(int modifierId);
+    bool removeByOwnerAndModifier(const QString &ownerType, int ownerId, int modifierId);
+
 private:
     QSqlDatabase m_db;
 };

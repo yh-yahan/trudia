@@ -119,7 +119,7 @@ AppComposition::AppComposition(AppService& appService, DatabaseManager& dbManage
       memberService(dbManager, membershipRepo, membershipTransactionRepo),
       databaseService(appService, dbManager),
       taxReportService(taxReportRepo),
-      modifiersService(modifiersRepo)
+      modifiersService(modifiersRepo, recipeComponentRepo, dbManager)
 {
     wireSignals();
 }

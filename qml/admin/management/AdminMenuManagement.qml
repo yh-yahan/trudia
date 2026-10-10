@@ -115,6 +115,27 @@ Item {
         anchors.centerIn: parent
     }
 
+    ConfirmationDialog {
+        id: modifierConfirmationDialog
+
+        property int menuItemId: -1
+        property int groupId: -1
+
+        title: qsTr("Remove Modifier Group")
+        message: qsTr("Removing this group will also delete its associated modifier rules from inventory recipes. Are you sure you want to continue?")
+        type: "delete"
+
+        confirmCallback: function(confirmed) {
+            if (!confirmed)
+                return
+
+            ModifiersService.detachGroupFromMenu(menuItemId, groupId)
+
+            if (ModifiersService.reloadForMenu)
+                ModifiersService.reloadForMenu(menuItemId)
+        }
+    }
+
     Rectangle {
         anchors.fill: parent
         color: Theme.background
@@ -923,6 +944,7 @@ Item {
                                         Layout.fillWidth: true
                                         wrapMode: Text.WordWrap
                                     }
+                                    
                                     Button {
                                         hoverEnabled: false
                                         focusPolicy: Qt.NoFocus
@@ -941,9 +963,9 @@ Item {
                                             font.pixelSize: Theme.fontSmall
                                         }
                                         onClicked: {
-                                            ModifiersService.detachGroupFromMenu(root.currentItemId, attachedGroup.id)
-                                            if (ModifiersService.reloadForMenu)
-                                                ModifiersService.reloadForMenu(root.currentItemId)
+                                            modifierConfirmationDialog.open()
+                                            confirmationDialog.groupId = attachedGroup.id
+                                            confirmationDialog.open()
                                         }
                                     }
                                 }

@@ -173,3 +173,32 @@ std::vector<RecipeComponent> RecipeComponentRepository::listByOwner(RecipeCompon
 
     return rows;
 }
+
+bool RecipeComponentRepository::removeByModifier(int modifierId)
+{
+    QSqlQuery query(m_db);
+
+    query.prepare(R"(
+        DELETE FROM recipe_components
+        WHERE modifier_id = :modifier_id
+    )");
+
+    query.bindValue(":modifier_id", modifierId);
+    return query.exec();
+}
+
+bool RecipeComponentRepository::removeByOwnerAndModifier(const QString &ownerType, int ownerId, int modifierId)
+{
+    QSqlQuery query(m_db);
+
+    query.prepare(R"(
+        DELETE FROM recipe_components
+        WHERE owner_type = :owner_type AND owner_id = :owner_id
+        AND modifier_id = :modifier_id
+    )");
+        
+    query.bindValue(":owner_type", ownerType);
+    query.bindValue(":owner_id", ownerId);
+    query.bindValue(":modifier_id", modifierId);
+    return query.exec();
+}

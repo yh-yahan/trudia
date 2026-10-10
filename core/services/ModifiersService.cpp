@@ -7,8 +7,15 @@ namespace {
 const QStringList kSelectionTypes{QStringLiteral("single"), QStringLiteral("multiple")};
 }
 
-ModifiersService::ModifiersService(ModifiersRepository &repository, QObject *parent)
-    : QObject(parent), m_modifiersRepo(repository)
+ModifiersService::ModifiersService(
+    ModifiersRepository &modifiersRepo, 
+    RecipeComponentRepository &recipeComponentRepo,
+    DatabaseManager &databaseManager,
+    QObject *parent)
+    : QObject(parent), 
+      m_modifiersRepo(modifiersRepo), 
+      m_recipeComponentRepo(recipeComponentRepo),
+      m_databaseManager(databaseManager)
 {
     m_modifierModel = new ModifiersModel(*this, this);
     m_menuModifierModel = new ModifiersModel(*this, this);
@@ -152,7 +159,29 @@ bool ModifiersService::deleteGroup(int id)
     if (id <= 0)
         return false;
 
+    const auto modifiers = m_modifiersRepo.getModifiers(id);
+
+    if (!m_databaseManager.beginTransaction()) {
+        emit errorOccurred(tr("Could not delete modifier group."));
+        return false;
+    }
+
+    for (const auto &modifier : modifiers) {
+        if (!m_recipeComponentRepo.removeByModifier(modifier.id)) {
+            m_databaseManager.rollback();
+            emit errorOccurred(tr("Could not delete modifier group."));
+            return false;
+        }
+    }
+
     if (!m_modifiersRepo.deleteGroup(id)) {
+        m_databaseManager.rollback();
+        emit errorOccurred(tr("Could not delete modifier group."));
+        return false;
+    }
+
+    if (!m_databaseManager.commit()) {
+        m_databaseManager.rollback();
         emit errorOccurred(tr("Could not delete modifier group."));
         return false;
     }
@@ -238,7 +267,25 @@ bool ModifiersService::deleteModifier(int id)
     if (!existing)
         return false;
 
+    if (!m_databaseManager.beginTransaction()) {
+        emit errorOccurred(tr("Could not delete modifier."));
+        return false;
+    }
+
+    if (!m_recipeComponentRepo.removeByModifier(id)) {
+        m_databaseManager.rollback();
+        emit errorOccurred(tr("Could not delete modifier."));
+        return false;
+    }
+
     if (!m_modifiersRepo.deleteModifier(id)) {
+        m_databaseManager.rollback();
+        emit errorOccurred(tr("Could not delete modifier."));
+        return false;
+    }
+
+    if (!m_databaseManager.commit()) {
+        m_databaseManager.rollback();
         emit errorOccurred(tr("Could not delete modifier."));
         return false;
     }
@@ -286,7 +333,30 @@ bool ModifiersService::detachGroupFromMenu(int menuId, int groupId)
     if (menuId <= 0 || groupId <= 0)
         return false;
 
+    const auto modifiers = m_modifiersRepo.getModifiers(groupId);
+
+    if (!m_databaseManager.beginTransaction()) {
+        emit errorOccurred(tr("Could not detach modifier group."));
+        return false;
+    }
+
+    for (const auto &modifier : modifiers) {
+        if (!m_recipeComponentRepo.removeByOwnerAndModifier(
+                QStringLiteral("menu_item"), menuId, modifier.id)) {
+            m_databaseManager.rollback();
+            emit errorOccurred(tr("Could not detach modifier group."));
+            return false;
+        }
+    }
+
     if (!m_modifiersRepo.detachGroupFromMenu(menuId, groupId)) {
+        m_databaseManager.rollback();
+        emit errorOccurred(tr("Could not detach modifier group."));
+        return false;
+    }
+
+    if (!m_databaseManager.commit()) {
+        m_databaseManager.rollback();
         emit errorOccurred(tr("Could not detach modifier group."));
         return false;
     }

@@ -121,18 +121,16 @@ Item {
         property int menuItemId: -1
         property int groupId: -1
 
-        title: qsTr("Remove Modifier Group")
-        message: qsTr("Removing this group will also delete its associated modifier rules from inventory recipes. Are you sure you want to continue?")
+        title: qsTr("Remove Modifier Group From Menu Item")
+        message: qsTr("This group will no longer be available for this menu item.")
         type: "delete"
 
         confirmCallback: function(confirmed) {
-            if (!confirmed)
-                return
+            if (!confirmed) return
 
             ModifiersService.detachGroupFromMenu(menuItemId, groupId)
 
-            if (ModifiersService.reloadForMenu)
-                ModifiersService.reloadForMenu(menuItemId)
+            if (ModifiersService.reloadForMenu) ModifiersService.reloadForMenu(menuItemId)
         }
     }
 
@@ -963,9 +961,9 @@ Item {
                                             font.pixelSize: Theme.fontSmall
                                         }
                                         onClicked: {
+                                            modifierConfirmationDialog.menuItemId = root.currentItemId
+                                            modifierConfirmationDialog.groupId = attachedGroup.id
                                             modifierConfirmationDialog.open()
-                                            confirmationDialog.groupId = attachedGroup.id
-                                            confirmationDialog.open()
                                         }
                                     }
                                 }
@@ -1182,8 +1180,8 @@ Item {
                                         font.pixelSize: Theme.fontSmall
                                     }
                                     onClicked: {
-                                        confirmationDialog.title = qsTr("Delete option")
-                                        confirmationDialog.message = qsTr('Delete "%1"?').arg(modelData.name)
+                                        confirmationDialog.title = qsTr('Delete "%1"?').arg(modelData.name)
+                                        confirmationDialog.message = qsTr('This option will be removed from associated modifier groups and menu items.')
                                         confirmationDialog.confirmCallback = function (confirmed) {
                                             if (confirmed) {
                                                 ModifiersService.deleteModifier(modelData.id)
@@ -1298,8 +1296,8 @@ Item {
                                 font.pixelSize: Theme.fontSmall
                             }
                             onClicked: {
-                                confirmationDialog.title = qsTr("Delete group")
-                                confirmationDialog.message = qsTr('Delete "%1" and its options?').arg(name)
+                                confirmationDialog.title = qsTr('Delete "%1" and its options?').arg(name)
+                                confirmationDialog.message = qsTr('This modifier group will be removed from associated menu items.')
                                 confirmationDialog.confirmCallback = function (confirmed) {
                                     if (confirmed) {
                                         ModifiersService.deleteGroup(groupCard.id)

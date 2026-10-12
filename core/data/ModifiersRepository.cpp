@@ -15,15 +15,10 @@ std::vector<ModifierGroup> ModifiersRepository::getGroups()
     QSqlQuery query(m_db);
 
     query.prepare(R"(
-        SELECT
-            id,
-            name,
-            selection_type,
-            min_select,
-            max_select,
-            is_required,
-            created_at
+        SELECT id, name, selection_type, min_select,
+            max_select, is_required, created_at
         FROM modifier_groups
+        WHERE deleted_at IS NULL
         ORDER BY id
     )");
 
@@ -61,16 +56,10 @@ std::optional<ModifierGroup> ModifiersRepository::getGroup(int id)
     QSqlQuery query(m_db);
 
     query.prepare(R"(
-        SELECT
-            id,
-            name,
-            selection_type,
-            min_select,
-            max_select,
-            is_required,
-            created_at
+        SELECT id, name, selection_type, min_select,
+            max_select, is_required, created_at
         FROM modifier_groups
-        WHERE id = :id
+        WHERE id = :id AND deleted_at IS NULL
     )");
 
     query.bindValue(":id", id);
@@ -157,7 +146,8 @@ bool ModifiersRepository::updateGroup(const ModifierGroup &group)
             selection_type = :selection_type,
             min_select = :min_select,
             max_select = :max_select,
-            is_required = :is_required
+            is_required = :is_required,
+            updated_at = CURRENT_TIMESTAMP
         WHERE id = :id
     )");
 
@@ -188,7 +178,8 @@ bool ModifiersRepository::deleteGroup(int id)
     QSqlQuery query(m_db);
 
     query.prepare(R"(
-        DELETE FROM modifier_groups
+        UPDATE modifier_groups
+        SET deleted_at = CURRENT_TIMESTAMP
         WHERE id = :id
     )");
 
@@ -210,17 +201,10 @@ std::vector<Modifier> ModifiersRepository::getModifiers(int groupId)
     QSqlQuery query(m_db);
 
     query.prepare(R"(
-        SELECT
-            id,
-            group_id,
-            name,
-            price_delta,
-            is_default,
-            is_available,
-            sort_order,
-            created_at
+        SELECT id, group_id, name, price_delta,
+            is_default, is_available, sort_order, created_at
         FROM modifiers
-        WHERE group_id = :group_id
+        WHERE group_id = :group_id AND deleted_at IS NULL
         ORDER BY sort_order, id
     )");
 
@@ -255,17 +239,10 @@ std::optional<Modifier> ModifiersRepository::getModifier(int id)
     QSqlQuery query(m_db);
 
     query.prepare(R"(
-        SELECT
-            id,
-            group_id,
-            name,
-            price_delta,
-            is_default,
-            is_available,
-            sort_order,
-            created_at
+        SELECT id, group_id, name, price_delta,
+            is_default, is_available, sort_order, created_at
         FROM modifiers
-        WHERE id = :id
+        WHERE id = :id AND deleted_at IS NULL
     )");
 
     query.bindValue(":id", id);
@@ -345,7 +322,8 @@ bool ModifiersRepository::updateModifier(const Modifier &modifier)
             price_delta = :price_delta,
             is_default = :is_default,
             is_available = :is_available,
-            sort_order = :sort_order
+            sort_order = :sort_order,
+            updated_at = CURRENT_TIMESTAMP
         WHERE id = :id
     )");
 
@@ -371,11 +349,33 @@ bool ModifiersRepository::deleteModifier(int id)
     QSqlQuery query(m_db);
 
     query.prepare(R"(
-        DELETE FROM modifiers
+        UPDATE modifiers
+        SET deleted_at = CURRENT_TIMESTAMP
         WHERE id = :id
     )");
 
     query.bindValue(":id", id);
+
+    if (!query.exec()) {
+        qCWarning(logDatabase) << "Failed to delete modifier:"
+                                << query.lastError().text();
+        return false;
+    }
+
+    return query.numRowsAffected() > 0;
+}
+
+bool ModifiersRepository::deleteModifierByGroupId(int groupId)
+{
+    QSqlQuery query(m_db);
+
+    query.prepare(R"(
+        UPDATE modifiers
+        SET deleted_at = CURRENT_TIMESTAMP
+        WHERE group_id = :group_id
+    )");
+
+    query.bindValue(":group_id", groupId);
 
     if (!query.exec()) {
         qCWarning(logDatabase) << "Failed to delete modifier:"
@@ -404,7 +404,7 @@ std::vector<ModifierGroup> ModifiersRepository::getGroupsForMenu(int menuId)
         FROM modifier_groups mg
         INNER JOIN menu_modifier_groups mmg
             ON mmg.group_id = mg.id
-        WHERE mmg.menu_id = :menu_id
+        WHERE mmg.menu_id = :menu_id AND mmg.deleted_at IS NULL AND mg.deleted_at IS NULL
         ORDER BY mmg.sort_order, mg.id
     )");
 
@@ -443,19 +443,32 @@ bool ModifiersRepository::attachGroupToMenu(int menuId, int groupId, int sortOrd
 {
     QSqlQuery query(m_db);
 
+    // try to restore a soft deleted link first
     query.prepare(R"(
-        INSERT INTO menu_modifier_groups (
-            menu_id,
-            group_id,
-            sort_order
-        )
-        VALUES (
-            :menu_id,
-            :group_id,
-            :sort_order
-        )
+        UPDATE menu_modifier_groups
+        SET deleted_at = NULL,
+            sort_order = :sort_order
+        WHERE menu_id = :menu_id
+          AND group_id = :group_id
+          AND deleted_at IS NOT NULL
     )");
+    query.bindValue(":menu_id", menuId);
+    query.bindValue(":group_id", groupId);
+    query.bindValue(":sort_order", sortOrder);
 
+    if (!query.exec()) {
+        qCWarning(logDatabase) << "Failed to restore modifier group link:"
+                                << query.lastError().text();
+        return false;
+    }
+
+    if (query.numRowsAffected() > 0) return true;
+
+    // no soft deleted row, do a normal insert
+    query.prepare(R"(
+        INSERT INTO menu_modifier_groups (menu_id, group_id, sort_order)
+        VALUES (:menu_id, :group_id, :sort_order)
+    )");
     query.bindValue(":menu_id", menuId);
     query.bindValue(":group_id", groupId);
     query.bindValue(":sort_order", sortOrder);
@@ -474,7 +487,8 @@ bool ModifiersRepository::detachGroupFromMenu(int menuId, int groupId)
     QSqlQuery query(m_db);
 
     query.prepare(R"(
-        DELETE FROM menu_modifier_groups
+        UPDATE menu_modifier_groups
+        SET deleted_at = CURRENT_TIMESTAMP
         WHERE menu_id = :menu_id
           AND group_id = :group_id
     )");

@@ -21,6 +21,7 @@ public:
     int createModifier(const Modifier &modifier);
     bool updateModifier(const Modifier &modifier);
     bool deleteModifier(int id);
+    bool deleteModifierByGroupId(int groupId);
 
     std::vector<ModifierGroup> getGroupsForMenu(int menuId);
     bool attachGroupToMenu(int menuId, int groupId, int sortOrder = 0);

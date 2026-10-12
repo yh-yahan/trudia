@@ -14,7 +14,7 @@ public:
     std::optional<Category> getCategoryById(int categoryId);
     void create(const Category &category);
     void update(const Category &category);
-    void remove(const Category &category);
+    bool remove(const Category &category);
 
 private:
     QSqlDatabase m_db;

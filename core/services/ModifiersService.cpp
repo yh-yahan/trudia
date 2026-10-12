@@ -166,15 +166,13 @@ bool ModifiersService::deleteGroup(int id)
         return false;
     }
 
-    for (const auto &modifier : modifiers) {
-        if (!m_recipeComponentRepo.removeByModifier(modifier.id)) {
-            m_databaseManager.rollback();
-            emit errorOccurred(tr("Could not delete modifier group."));
-            return false;
-        }
+    if (!m_modifiersRepo.deleteGroup(id)) {
+        m_databaseManager.rollback();
+        emit errorOccurred(tr("Could not delete modifier group."));
+        return false;
     }
 
-    if (!m_modifiersRepo.deleteGroup(id)) {
+    if (!m_modifiersRepo.deleteModifierByGroupId(id)) {
         m_databaseManager.rollback();
         emit errorOccurred(tr("Could not delete modifier group."));
         return false;
@@ -188,8 +186,7 @@ bool ModifiersService::deleteGroup(int id)
 
     emit groupsChanged();
     m_modifierModel->loadGroups();
-    if (m_currentMenuId > 0)
-        m_menuModifierModel->loadGroupsForMenu(m_currentMenuId);
+    if (m_currentMenuId > 0) m_menuModifierModel->loadGroupsForMenu(m_currentMenuId);
     return true;
 }
 
@@ -272,12 +269,6 @@ bool ModifiersService::deleteModifier(int id)
         return false;
     }
 
-    if (!m_recipeComponentRepo.removeByModifier(id)) {
-        m_databaseManager.rollback();
-        emit errorOccurred(tr("Could not delete modifier."));
-        return false;
-    }
-
     if (!m_modifiersRepo.deleteModifier(id)) {
         m_databaseManager.rollback();
         emit errorOccurred(tr("Could not delete modifier."));
@@ -338,15 +329,6 @@ bool ModifiersService::detachGroupFromMenu(int menuId, int groupId)
     if (!m_databaseManager.beginTransaction()) {
         emit errorOccurred(tr("Could not detach modifier group."));
         return false;
-    }
-
-    for (const auto &modifier : modifiers) {
-        if (!m_recipeComponentRepo.removeByOwnerAndModifier(
-                QStringLiteral("menu_item"), menuId, modifier.id)) {
-            m_databaseManager.rollback();
-            emit errorOccurred(tr("Could not detach modifier group."));
-            return false;
-        }
     }
 
     if (!m_modifiersRepo.detachGroupFromMenu(menuId, groupId)) {

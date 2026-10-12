@@ -12,7 +12,7 @@ std::vector<Category> CategoryRepository::getAllCategories()
     std::vector<Category> categories;
 
     QSqlQuery query(m_db);
-    query.prepare("SELECT id, category FROM categories");
+    query.prepare(R"(SELECT id, category FROM categories WHERE deleted_at IS NULL)");
 
     if (!query.exec()) {
         qCWarning(logDatabase) << "getAllCategories failed:" << query.lastError();
@@ -33,7 +33,8 @@ std::vector<Category> CategoryRepository::getAllCategories()
 std::optional<Category> CategoryRepository::getCategoryById(int categoryId)
 {
     QSqlQuery query(m_db);
-    query.prepare("SELECT id, category FROM categories WHERE id = :id");
+    query.prepare(R"(SELECT id, category FROM categories WHERE id = :id
+                AND deleted_at IS NULL)");
     query.bindValue(":id", categoryId);
 
     if (!query.exec()) {
@@ -72,7 +73,7 @@ void CategoryRepository::update(const Category &category)
     QSqlQuery query(m_db);
     query.prepare(R"(
         UPDATE categories
-        SET category = :category
+        SET category = :category, updated_at = CURRENT_TIMESTAMP
         WHERE id = :category_id
     )");
 
@@ -84,11 +85,12 @@ void CategoryRepository::update(const Category &category)
     }
 }
 
-void CategoryRepository::remove(const Category &category)
+bool CategoryRepository::remove(const Category &category)
 {
     QSqlQuery query(m_db);
     query.prepare(R"(
-        DELETE FROM categories
+        UPDATE categories
+        SET deleted_at = CURRENT_TIMESTAMP
         WHERE id = :category_id
     )");
 
@@ -96,5 +98,8 @@ void CategoryRepository::remove(const Category &category)
 
     if (!query.exec()) {
         qCWarning(logDatabase) << "remove failed:" << query.lastError();
+        return false;
     }
+
+    return true;
 }

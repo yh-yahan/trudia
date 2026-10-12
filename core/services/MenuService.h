@@ -7,6 +7,7 @@
 #include <QVariantMap>
 #include "../data/MenuRepository.h"
 #include "../data/CategoryRepository.h"
+#include "../database/DatabaseManager.h"
 
 class CategoryModel;
 class MenuItemModel;
@@ -17,6 +18,7 @@ class MenuService : public QObject
 public:
     explicit MenuService(MenuRepository &menuRepo, 
                          CategoryRepository &categoryRepo,
+                         DatabaseManager &databaseManager,
                          QObject *parent = nullptr);
 
     Q_PROPERTY(CategoryModel* categoryModel READ categoryModel CONSTANT)
@@ -57,6 +59,7 @@ signals:
 private:
     CategoryRepository &m_categoryRepo;
     MenuRepository &m_menuRepo;
+    DatabaseManager &m_databaseManager;
 
     CategoryModel *m_categoryModel;
     MenuItemModel *m_menuItemModel;

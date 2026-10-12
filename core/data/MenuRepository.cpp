@@ -12,7 +12,9 @@ std::vector<Menu> MenuRepository::getAllMenuItems()
     std::vector<Menu> menuItems;
 
     QSqlQuery query(m_db);
-    query.prepare("SELECT id, item, category_id, price, portion_size, is_available, is_taxable FROM menu");
+    query.prepare(R"(SELECT id, item, category_id, price, 
+        portion_size, is_available, is_taxable 
+        FROM menu WHERE deleted_at IS NULL)");
 
     if (!query.exec()) {
         qCWarning(logDatabase) << "getAllCategories failed:" << query.lastError();
@@ -38,9 +40,10 @@ std::vector<Menu> MenuRepository::getAllMenuItems()
 std::optional<Menu> MenuRepository::getMenuItemById(int menuId)
 {
     QSqlQuery query(m_db);
-    query.prepare(R"(SELECT id, item, category_id, price, portion_size, is_available, is_taxable
+    query.prepare(R"(SELECT id, item, category_id, price, 
+        portion_size, is_available, is_taxable
         FROM menu
-        WHERE id = :id)");
+        WHERE id = :id AND deleted_at IS NULL)");
     query.bindValue(":id", menuId);
 
     if (!query.exec()) {
@@ -72,7 +75,7 @@ std::vector<Menu> MenuRepository::getMenuItemsByCategory(int categoryId)
     query.prepare(R"(
         SELECT id, item, category_id, price, portion_size, is_available, is_taxable 
         FROM menu
-        WHERE category_id = :category_id
+        WHERE category_id = :category_id AND deleted_at IS NULL
     )");
     
     query.bindValue(":category_id", categoryId);
@@ -132,7 +135,8 @@ void MenuRepository::update(const Menu &menu)
         price = :price,
         portion_size = :portion_size,
         is_available = :is_available,
-        is_taxable = :is_taxable 
+        is_taxable = :is_taxable,
+        updated_at = CURRENT_TIMESTAMP
         WHERE id = :menu_item_id
     )");
 
@@ -153,11 +157,12 @@ void MenuRepository::update(const Menu &menu)
     }
 }
 
-void MenuRepository::remove(const Menu &menu)
+bool MenuRepository::remove(const Menu &menu)
 {
     QSqlQuery query(m_db);
     query.prepare(R"(
-        DELETE FROM menu
+        UPDATE menu 
+        SET deleted_at = CURRENT_TIMESTAMP
         WHERE id = :menu_item_id
     )");
 
@@ -165,5 +170,9 @@ void MenuRepository::remove(const Menu &menu)
 
     if (!query.exec()) {
         qCWarning(logDatabase) << "remove failed:" << query.lastError();
+
+        return false;
     }
+
+    return true;
 }

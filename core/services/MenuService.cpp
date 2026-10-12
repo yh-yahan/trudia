@@ -6,10 +6,12 @@
 
 MenuService::MenuService(MenuRepository &menuRepo, 
                          CategoryRepository &categoryRepo,
+                         DatabaseManager &databaseManager,
                          QObject *parent)
     : QObject(parent), 
       m_menuRepo(menuRepo), 
-      m_categoryRepo(categoryRepo)
+      m_categoryRepo(categoryRepo),
+      m_databaseManager(databaseManager)
 {
     m_categoryModel = new CategoryModel(m_categoryRepo, this);
     m_menuItemModel = new MenuItemModel(m_menuRepo, this);
@@ -72,20 +74,44 @@ bool MenuService::renameCategory(const int &categoryId, const QString &newName)
 
 bool MenuService::removeCategory(const int &categoryId)
 {
+    if (!m_databaseManager.beginTransaction())
+    {
+        qCWarning(logInventory) << "Failed to begin transaction";
+        return false;
+    }
+
+    auto rollback = [&]()
+    {
+        qCWarning(logInventory) << "Rolling back transaction";
+        m_databaseManager.rollback();
+        return false;
+    };
+
     auto categoryOpt = m_categoryRepo.getCategoryById(categoryId);
     if (!categoryOpt.has_value()) {
         qCWarning(logMenu) << "Category with ID" << categoryId << "not found";
         return false;
     }
 
-    m_categoryRepo.remove(categoryOpt.value());
+    const auto menuItems = m_menuRepo.getMenuItemsByCategory(categoryId);
+
+    for (const auto &menuItem : menuItems) {
+        if (!m_menuRepo.remove(menuItem)) return rollback();
+    }
+
+    if (!m_categoryRepo.remove(categoryOpt.value())) return rollback();
 
     m_categoryModel->reload();
-
     m_menuItemModel->reload(m_currentCategoryId);
 
     if (m_currentCategoryId == categoryId) {
         setCurrentCategoryId(-1);
+    }
+
+    if (!m_databaseManager.commit())
+    {
+        qCWarning(logInventory) << "Commit failed";
+        return rollback();
     }
 
     return true;

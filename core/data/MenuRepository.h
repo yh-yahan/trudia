@@ -15,7 +15,7 @@ public:
     std::vector<Menu> getMenuItemsByCategory(int categoryId);
     void create(const Menu &menu);
     void update(const Menu &menu);
-    void remove(const Menu &menu);
+    bool remove(const Menu &menu);
 
 private:
     QSqlDatabase m_db;

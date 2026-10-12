@@ -123,6 +123,9 @@ bool DatabaseManager::runMigrations()
         "core/database/migrations/024_create_modifiers.sql",
         "core/database/migrations/025_create_order_item_modifiers.sql",
         "core/database/migrations/026_create_inventory.sql",
+        "core/database/migrations/027_alter_categories_add_deleted_at_updated_at.sql",
+        "core/database/migrations/028_alter_menu_add_deleted_at_updated_at.sql",
+        "core/database/migrations/029_alter_modifiers_add_timestamps_and_deleted_at.sql",
     };
 
     for (const QString &fileName : migrationFiles)

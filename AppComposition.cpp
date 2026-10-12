@@ -39,7 +39,7 @@ AppComposition::AppComposition(AppService& appService, DatabaseManager& dbManage
       membershipService(membershipRepo, membershipSettingsRepo, membershipTransactionRepo),
       authService(userRepo),
       userService(userRepo),
-      menuService(menuRepo, categoryRepo),
+      menuService(menuRepo, categoryRepo, dbManager),
       tableService(tableRepo),
       settingService(
           restaurantRepo,

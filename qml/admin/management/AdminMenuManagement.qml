@@ -39,12 +39,12 @@ Item {
 
     function parseDelta(text) {
         const trimmed = String(text).trim()
-        if (trimmed.length === 0)
-            return 0
+        if (trimmed.length === 0) return 0
+
         const value = parseFloat(trimmed)
-        if (isNaN(value))
-            return 0
-        return value
+        if (isNaN(value)) return 0
+
+        return value * 100
     }
 
     function clearItemSelection() {
@@ -1223,6 +1223,10 @@ Item {
                                 font.pixelSize: Theme.fontNormal
                                 leftPadding: 8
                                 inputMethodHints: Qt.ImhFormattedNumbersOnly
+                                validator: DoubleValidator {
+                                    decimals: 2
+                                    notation: DoubleValidator.StandardNotation
+                                }
                                 placeholderTextColor: Theme.secondaryText
                                 background: Rectangle {
                                     color: Theme.background

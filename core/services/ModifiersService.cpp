@@ -203,7 +203,7 @@ int ModifiersService::createModifier(int groupId,
     Modifier modifier;
     modifier.groupId = groupId;
     modifier.name = name.trimmed();
-    modifier.priceDelta = priceDelta * 100;
+    modifier.priceDelta = priceDelta;
     modifier.isDefault = isDefault;
     modifier.isAvailable = isAvailable;
     modifier.sortOrder = (sortOrder >= 0) ? sortOrder : nextModifierSortOrder(groupId);
@@ -240,7 +240,7 @@ bool ModifiersService::updateModifier(int id,
 
     Modifier modifier = *existing;
     modifier.name = name.trimmed();
-    modifier.priceDelta = priceDelta * 100;
+    modifier.priceDelta = priceDelta;
     modifier.isDefault = isDefault;
     modifier.isAvailable = isAvailable;
     modifier.sortOrder = sortOrder;
@@ -458,7 +458,7 @@ QVariantMap ModifiersService::modifierToMap(const Modifier &modifier) const
     map.insert(QStringLiteral("id"), modifier.id);
     map.insert(QStringLiteral("groupId"), modifier.groupId);
     map.insert(QStringLiteral("name"), modifier.name);
-    map.insert(QStringLiteral("priceDelta"), modifier.priceDelta / 100);
+    map.insert(QStringLiteral("priceDelta"), modifier.priceDelta / 100.0);
     map.insert(QStringLiteral("isDefault"), modifier.isDefault);
     map.insert(QStringLiteral("isAvailable"), modifier.isAvailable);
     map.insert(QStringLiteral("sortOrder"), modifier.sortOrder);

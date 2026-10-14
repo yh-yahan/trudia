@@ -2,7 +2,7 @@
 
 #include "../logging/LoggingCategories.h"
 
-constexpr int INVENTORY_QUANTITY_SCALE = 1000;
+constexpr qint64 INVENTORY_QUANTITY_SCALE = 1000000;
 
 InventoryService::InventoryService(InventoryItemRepository &inventoryItemRepo,
                                    RecipeComponentRepository &recipeComponentRepo,
@@ -89,7 +89,15 @@ QVariantMap InventoryService::getRecipeComponent(int id) const
 
 int InventoryService::createRecipeComponent(const QVariantMap &data)
 {
-    const auto row = fromRecipeMap(data);
+    const int inventoryItemId = data.value(QStringLiteral("inventoryItemId")).toInt();
+
+    if (inventoryItemId <= 0) return -1;
+
+    const auto item = m_inventoryItemRepo.getById(inventoryItemId);
+
+    if (!item) return -1;
+
+    const auto row = fromRecipeMap(data, item->base_unit);
 
     if (!row) return -1;
 
@@ -98,7 +106,15 @@ int InventoryService::createRecipeComponent(const QVariantMap &data)
 
 bool InventoryService::updateRecipeComponent(int id, const QVariantMap &data)
 {
-    auto row = fromRecipeMap(data);
+    const int inventoryItemId = data.value(QStringLiteral("inventoryItemId")).toInt();
+
+    if (inventoryItemId <= 0) return -1;
+
+    const auto item = m_inventoryItemRepo.getById(inventoryItemId);
+
+    if (!item) return -1;
+
+    auto row = fromRecipeMap(data, item->base_unit);
 
     if (!row) return false;
 
@@ -152,6 +168,7 @@ QVariantMap InventoryService::toMap(const RecipeComponent &row) const
         { QStringLiteral("ownerId"), row.owner_id },
         { QStringLiteral("inventoryItemId"), row.inventory_item_id },
         { QStringLiteral("quantity"), static_cast<double>(row.quantity) / INVENTORY_QUANTITY_SCALE },
+        { QStringLiteral("unit"), toString(row.unit) },
         { QStringLiteral("effect"), toString(row.effect) },
         { QStringLiteral("sortOrder"), row.sort_order }
     };
@@ -167,7 +184,7 @@ QVariantMap InventoryService::toMap(const RecipeComponent &row) const
     return map;
 }
 
-std::optional<RecipeComponent> InventoryService::fromRecipeMap(const QVariantMap &data) const
+std::optional<RecipeComponent> InventoryService::fromRecipeMap(const QVariantMap &data, const InventoryBaseUnit &baseUnit) const
 {
     RecipeComponent row;
 
@@ -184,6 +201,17 @@ std::optional<RecipeComponent> InventoryService::fromRecipeMap(const QVariantMap
     if (!fromString(effect, row.effect)) return std::nullopt;
 
     row.quantity = static_cast<int>(std::round(data.value(QStringLiteral("quantity")).toDouble() * INVENTORY_QUANTITY_SCALE));
+
+    const QString unitStr = data.value(QStringLiteral("unit")).toString();
+    if (unitStr.isEmpty()) {
+        // default to the item's base unit if none provided
+        row.unit = baseUnit;
+    } else {
+        if (!fromString(unitStr, row.unit)) return std::nullopt;
+
+        // validate that the unit is compatible with the inventory item's base unit
+        if (info(row.unit).category != info(baseUnit).category) return std::nullopt;
+    }
 
     if (row.quantity <= 0) return std::nullopt;
 
@@ -224,7 +252,7 @@ bool InventoryService::syncSaleStock(int order_item_id)
 
     const std::vector<RecipeComponent> recipeComponents = m_recipeComponentRepo.listByOwner(RecipeComponentOwnerType::MenuItem, orderItem.item_id);
 
-    auto record = [&](int inventoryItemId, int modifierId, RecipeComponentEffect effect, int expected) -> bool
+    auto record = [&](int inventoryItemId, int modifierId, RecipeComponentEffect effect, qint64 expected) -> bool
     {
         const int recorded = m_stockMovementRepo.sumBySaleLine(order_item_id, inventoryItemId, modifierId, toString(effect));
         const int delta = expected - recorded;
@@ -238,6 +266,7 @@ bool InventoryService::syncSaleStock(int order_item_id)
                                 .arg(toString(effect))
                                 .arg(recorded)
                                 .arg(expected);
+
         if (m_stockMovementRepo.getByKey(key)) return true;
 
         StockMovement stockMovement;
@@ -257,6 +286,17 @@ bool InventoryService::syncSaleStock(int order_item_id)
         return m_inventoryItemRepo.updateQuantity(stockMovement.inventory_item_id, stockMovement.quantity);
     };
 
+    auto quantityInBase = [&](const RecipeComponent &component) -> qint64
+    {
+        auto itemOpt = m_inventoryItemRepo.getById(component.inventory_item_id);
+        if (!itemOpt) return 0;
+
+        const double raw = static_cast<double>(component.quantity) / INVENTORY_QUANTITY_SCALE;
+        const double converted = convertToBase(raw, component.unit, itemOpt->base_unit);
+
+        return static_cast<qint64>(std::round(converted * INVENTORY_QUANTITY_SCALE));
+    };
+
     std::unordered_map<int, std::vector<RecipeComponent>> replaceByModifier;
 
     for (const auto &recipeComponent : recipeComponents)
@@ -265,8 +305,10 @@ bool InventoryService::syncSaleStock(int order_item_id)
         if (!isModifierLine)
         {
             if (recipeComponent.effect != RecipeComponentEffect::Add) continue;
+
+            const qint64 baseQty = quantityInBase(recipeComponent);
             if (!record(recipeComponent.inventory_item_id, 0, RecipeComponentEffect::Add,
-                        -(recipeComponent.quantity * orderItem.quantity))) return rollback();
+                        -(baseQty * orderItem.quantity))) return rollback();
             continue;
         }
 
@@ -274,16 +316,17 @@ bool InventoryService::syncSaleStock(int order_item_id)
         const auto selected = selectedModifierQty.find(modifierId);
         if (selected == selectedModifierQty.end()) continue;
         const int scale = orderItem.quantity * selected->second;
+        const qint64 baseQty = quantityInBase(recipeComponent);
 
         if (recipeComponent.effect == RecipeComponentEffect::Add)
         {
             if (!record(recipeComponent.inventory_item_id, modifierId, RecipeComponentEffect::Add,
-                        -(recipeComponent.quantity * scale))) return rollback();
+                        -(baseQty * scale))) return rollback();
         }
         else if (recipeComponent.effect == RecipeComponentEffect::Remove)
         {
             if (!record(recipeComponent.inventory_item_id, modifierId, RecipeComponentEffect::Remove,
-                        recipeComponent.quantity * scale)) return rollback();
+                baseQty * scale)) return rollback();
         }
         else if (recipeComponent.effect == RecipeComponentEffect::Replace)
         {
@@ -306,11 +349,14 @@ bool InventoryService::syncSaleStock(int order_item_id)
 
         for (size_t i = 0; i + 1 < rows.size(); i += 2)
         {
+            const qint64 baseQtyA = quantityInBase(rows[i]);
+            const qint64 baseQtyB = quantityInBase(rows[i + 1]);
+
             // rows[i] is the item being replaced, rows[i + 1] is what replaces it.
             if (!record(rows[i].inventory_item_id, modifierId, RecipeComponentEffect::Replace,
-                        rows[i].quantity * scale)) return rollback();
+                        baseQtyA * scale)) return rollback();
             if (!record(rows[i + 1].inventory_item_id, modifierId, RecipeComponentEffect::Replace,
-                        -(rows[i + 1].quantity * scale))) return rollback();
+                        -(baseQtyB * scale))) return rollback();
         }
     }
 

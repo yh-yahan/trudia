@@ -51,7 +51,7 @@ private:
     std::optional<InventoryItem> fromMap(const QVariantMap &data) const;
 
     QVariantMap toMap(const RecipeComponent &row) const;
-    std::optional<RecipeComponent> fromRecipeMap(const QVariantMap &data) const;
+    std::optional<RecipeComponent> fromRecipeMap(const QVariantMap &data, const InventoryBaseUnit &baseUnit) const;
 };
 
 #endif // INVENTORYSERVICE_H

@@ -25,16 +25,26 @@ Item {
         { key: "prep", label: qsTr("Prep") }
     ]
     readonly property var unitCatalog: [
-        { key: "g", label: qsTr("Gram") }, { key: "kg", label: qsTr("Kilogram") },
-        { key: "oz", label: qsTr("Ounce") }, { key: "lb", label: qsTr("Pound") },
-        { key: "ml", label: qsTr("Milliliter") }, { key: "L", label: qsTr("Liter") },
-        { key: "fl_oz", label: qsTr("Fluid ounce") }, { key: "gal", label: qsTr("Gallon") },
-        { key: "qt", label: qsTr("Quart") }, { key: "pt", label: qsTr("Pint") },
-        { key: "cup", label: qsTr("Cup") }, { key: "unit", label: qsTr("Unit") },
-        { key: "dozen", label: qsTr("Dozen") }, { key: "pack", label: qsTr("Pack") },
-        { key: "box", label: qsTr("Box") }, { key: "bag", label: qsTr("Bag") },
-        { key: "bottle", label: qsTr("Bottle") }, { key: "can", label: qsTr("Can") },
-        { key: "carton", label: qsTr("Carton") }, { key: "case", label: qsTr("Case") }
+        { key: "g", label: qsTr("Gram"), category: "weight" },
+        { key: "kg", label: qsTr("Kilogram"), category: "weight" },
+        { key: "oz", label: qsTr("Ounce"), category: "weight" },
+        { key: "lb", label: qsTr("Pound"), category: "weight" },
+        { key: "ml", label: qsTr("Milliliter"), category: "volume" },
+        { key: "L", label: qsTr("Liter"), category: "volume" },
+        { key: "fl_oz", label: qsTr("Fluid ounce"), category: "volume" },
+        { key: "gal", label: qsTr("Gallon"), category: "volume" },
+        { key: "qt", label: qsTr("Quart"), category: "volume" },
+        { key: "pt", label: qsTr("Pint"), category: "volume" },
+        { key: "cup", label: qsTr("Cup"), category: "volume" },
+        { key: "unit", label: qsTr("Unit"), category: "count" },
+        { key: "dozen", label: qsTr("Dozen"), category: "count" },
+        { key: "pack", label: qsTr("Pack"), category: "count" },
+        { key: "box", label: qsTr("Box"), category: "count" },
+        { key: "bag", label: qsTr("Bag"), category: "count" },
+        { key: "bottle", label: qsTr("Bottle"), category: "count" },
+        { key: "can", label: qsTr("Can"), category: "count" },
+        { key: "carton", label: qsTr("Carton"), category: "count" },
+        { key: "case", label: qsTr("Case"), category: "count" }
     ]
     readonly property var effectCatalog: [
         { key: "add", label: qsTr("Use extra") },
@@ -73,6 +83,23 @@ Item {
                 return catalog[i].label
         }
         return key || ""
+    }
+
+    function unitCategory(key) {
+        for (var i = 0; i < unitCatalog.length; ++i) {
+            if (unitCatalog[i].key === key)
+                return unitCatalog[i].category
+        }
+        return "count"
+    }
+
+    function unitsForCategory(category) {
+        var out = []
+        for (var i = 0; i < unitCatalog.length; ++i) {
+            if (unitCatalog[i].category === category)
+                out.push(unitCatalog[i])
+        }
+        return out
     }
 
     function formatMoney(value) {
@@ -178,12 +205,12 @@ Item {
             name: rule.inventoryItemName || stockName(rule.inventoryItemId),
             type: rule.type || stockType(rule.inventoryItemId),
             qty: Number(rule.quantity) || 0,
-            unit: rule.baseUnit || stockUnit(rule.inventoryItemId),
+            unit: rule.unit || stockUnit(rule.inventoryItemId),
             effect: replacement ? "replace" : (rule.effect || "add"),
             replacementInventoryItemId: replacement ? replacement.inventoryItemId : -1,
             replacementName: replacement ? (replacement.inventoryItemName || stockName(replacement.inventoryItemId)) : "",
             replacementQty: replacement ? (Number(replacement.quantity) || 0) : 0,
-            replacementUnit: replacement ? (replacement.baseUnit || stockUnit(replacement.inventoryItemId)) : ""
+            replacementUnit: replacement ? (replacement.unit || stockUnit(replacement.inventoryItemId)) : ""
         })
     }
 
@@ -307,7 +334,7 @@ Item {
                     name: line.inventoryItemName || stockName(line.inventoryItemId),
                     type: line.type || stockType(line.inventoryItemId),
                     qty: Number(line.quantity) || 0,
-                    unit: line.baseUnit || stockUnit(line.inventoryItemId)
+                    unit: line.unit || stockUnit(line.inventoryItemId)
                 })
             }
             const conditional = modifierComponents(rows)
@@ -538,6 +565,7 @@ Item {
                 ownerId: menuItemId,
                 inventoryItemId: lines[j].inventoryItemId,
                 quantity: lines[j].quantity,
+                unit: lines[j].unit,
                 effect: "add",
                 sortOrder: j
             })
@@ -559,6 +587,7 @@ Item {
                 ownerId: menuItemId,
                 inventoryItemId: lines[j].inventoryItemId,
                 quantity: lines[j].quantity,
+                unit: lines[j].unit,
                 modifierId: lines[j].modifierId,
                 effect: lines[j].effect,
                 sortOrder: j
@@ -585,7 +614,8 @@ Item {
             const qty = Number(packagedQty)
             lines.push({
                 inventoryItemId: linkedStockId,
-                quantity: (!isNaN(qty) && qty > 0) ? qty : 1
+                quantity: (!isNaN(qty) && qty > 0) ? qty : 1,
+                unit: stockUnit(linkedStockId)
             })
         } else if (fulfillmentMode === "recipe") {
             if (recipeLines.count === 0) {
@@ -599,7 +629,11 @@ Item {
                     statusMessage = qsTr("Every recipe line needs a quantity.")
                     return false
                 }
-                lines.push({ inventoryItemId: line.inventoryItemId, quantity: qty })
+                lines.push({
+                    inventoryItemId: line.inventoryItemId,
+                    quantity: qty,
+                    unit: line.unit
+                })
             }
             for (var r = 0; r < modifierRules.count; ++r) {
                 const rule = modifierRules.get(r)
@@ -625,12 +659,14 @@ Item {
                     rules.push({
                         inventoryItemId: rule.inventoryItemId,
                         quantity: qty,
+                        unit: rule.unit,
                         modifierId: rule.modifierId,
                         effect: "replace"
                     })
                     rules.push({
                         inventoryItemId: rule.replacementInventoryItemId,
                         quantity: replacementQty,
+                        unit: rule.replacementUnit,
                         modifierId: rule.modifierId,
                         effect: "replace"
                     })
@@ -639,6 +675,7 @@ Item {
                 rules.push({
                     inventoryItemId: rule.inventoryItemId,
                     quantity: qty,
+                    unit: rule.unit,
                     modifierId: rule.modifierId,
                     effect: rule.effect || "add"
                 })
@@ -1200,12 +1237,24 @@ Item {
                                         }
                                     }
 
-                                    Text {
-                                        Layout.preferredWidth: 72
-                                        text: catalogLabel(unitCatalog, unit)
-                                        color: Theme.secondaryText
-                                        font.pixelSize: Theme.fontNormal
-                                        elide: Text.ElideRight
+                                    ComboBox {
+                                        Layout.preferredWidth: 110
+                                        implicitHeight: 34
+                                        model: unitsForCategory(unitCategory(stockUnit(inventoryItemId)))
+                                        textRole: "label"
+                                        currentIndex: {
+                                            const units = unitsForCategory(unitCategory(stockUnit(inventoryItemId)))
+                                            for (var i = 0; i < units.length; ++i) {
+                                                if (units[i].key === unit)
+                                                    return i
+                                            }
+                                            return 0
+                                        }
+                                        onActivated: function(index) {
+                                            const units = unitsForCategory(unitCategory(stockUnit(inventoryItemId)))
+                                            recipeLines.setProperty(index, "unit", units[index].key)
+                                            fulfillmentDirty = true
+                                        }
                                     }
 
                                     Button {

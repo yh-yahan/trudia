@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS inventory_items (
     type TEXT NOT NULL, 
     base_unit TEXT NOT NULL, 
     quantity INTEGER NOT NULL DEFAULT 0,
-    low_quantity INTEGER, -- in base_unit
+    low_quantity INTEGER, 
     deleted_at TEXT DEFAULT NULL,
     sale_paused_at TEXT DEFAULT NULL,
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -16,7 +16,8 @@ CREATE TABLE IF NOT EXISTS recipe_components (
     owner_type TEXT NOT NULL,
     owner_id INTEGER NOT NULL,
     inventory_item_id INTEGER NOT NULL REFERENCES inventory_items(id),
-    quantity INTEGER NOT NULL, 
+    quantity INTEGER NOT NULL,
+    unit TEXT NOT NULL,
     modifier_id INTEGER, 
     effect TEXT NOT NULL DEFAULT 'add',
     sort_order INTEGER NOT NULL DEFAULT 0,

@@ -13,7 +13,7 @@ struct InventoryItem {
     QString name;
     InventoryType type;
     InventoryBaseUnit base_unit;
-    int quantity;
+    qint64 quantity;
     int low_quantity;
     QString deleted_at;
     QString sale_paused_at;
@@ -24,7 +24,8 @@ struct RecipeComponent {
     RecipeComponentOwnerType owner_type;
     int owner_id = -1;
     int inventory_item_id = -1;
-    int quantity;
+    qint64 quantity;
+    InventoryBaseUnit unit;
     std::optional<int> modifier_id;
     RecipeComponentEffect effect;
     int sort_order;

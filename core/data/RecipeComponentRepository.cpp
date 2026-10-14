@@ -14,15 +14,16 @@ int RecipeComponentRepository::create(const RecipeComponent &row)
     QSqlQuery query(m_db);
 
     query.prepare(R"(INSERT INTO recipe_components
-        (owner_type, owner_id, inventory_item_id, quantity,
+        (owner_type, owner_id, inventory_item_id, quantity, unit,
         modifier_id, effect, sort_order)
-        VALUES (:owner_type, :owner_id, :inventory_item_id, :quantity,
+        VALUES (:owner_type, :owner_id, :inventory_item_id, :quantity, :unit,
         :modifier_id, :effect, :sort_order))");
 
     query.bindValue(":owner_type", toString(row.owner_type));
     query.bindValue(":owner_id", row.owner_id);
     query.bindValue(":inventory_item_id", row.inventory_item_id);
     query.bindValue(":quantity", row.quantity);
+    query.bindValue(":unit", toString(row.unit));
 
     if (row.modifier_id.has_value()) query.bindValue(":modifier_id", *row.modifier_id);
     else query.bindValue(":modifier_id", QVariant());
@@ -47,6 +48,7 @@ bool RecipeComponentRepository::update(const RecipeComponent &row)
         owner_id = :owner_id,
         inventory_item_id = :inventory_item_id,
         quantity = :quantity,
+        unit = :unit,
         modifier_id = :modifier_id,
         effect = :effect,
         sort_order = :sort_order,
@@ -58,6 +60,7 @@ bool RecipeComponentRepository::update(const RecipeComponent &row)
     query.bindValue(":owner_id", row.owner_id);
     query.bindValue(":inventory_item_id", row.inventory_item_id);
     query.bindValue(":quantity", row.quantity);
+    query.bindValue(":unit", toString(row.unit));
 
     if (row.modifier_id.has_value()) query.bindValue(":modifier_id", *row.modifier_id);
     else query.bindValue(":modifier_id", QVariant());
@@ -88,7 +91,7 @@ std::optional<RecipeComponent> RecipeComponentRepository::getById(int id) const
     QSqlQuery query(m_db);
 
     query.prepare(R"(SELECT id, owner_type, owner_id, inventory_item_id,
-        quantity, modifier_id, effect, sort_order 
+        quantity, unit, modifier_id, effect, sort_order 
         FROM recipe_components 
         WHERE id = :id)");
 
@@ -101,24 +104,19 @@ std::optional<RecipeComponent> RecipeComponentRepository::getById(int id) const
 
     row.id = query.value(0).toInt();
 
-    fromString(
-        query.value(1).toString(),
-        row.owner_type);
+    fromString(query.value(1).toString(), row.owner_type);
 
     row.owner_id = query.value(2).toInt();
     row.inventory_item_id = query.value(3).toInt();
-    row.quantity = query.value(4).toInt();
+    row.quantity = query.value(4).toLongLong();
+    fromString(query.value(5).toString(), row.unit);
 
-    if (!query.value(5).isNull())
-        row.modifier_id = query.value(5).toInt();
-    else
-        row.modifier_id.reset();
+    if (!query.value(6).isNull()) row.modifier_id = query.value(6).toInt();
+    else row.modifier_id.reset();
 
-    fromString(
-        query.value(6).toString(),
-        row.effect);
+    fromString(query.value(7).toString(), row.effect);
 
-    row.sort_order = query.value(7).toInt();
+    row.sort_order = query.value(8).toInt();
 
     return row;
 }
@@ -132,7 +130,7 @@ std::vector<RecipeComponent> RecipeComponentRepository::listByOwner(RecipeCompon
     QSqlQuery query(m_db);
 
     query.prepare(R"(SELECT id, owner_type, owner_id, inventory_item_id,
-        quantity, modifier_id, effect, sort_order
+        quantity, unit, modifier_id, effect, sort_order
         FROM recipe_components
         WHERE owner_type = :owner_type
         AND owner_id = :owner_id
@@ -149,24 +147,19 @@ std::vector<RecipeComponent> RecipeComponentRepository::listByOwner(RecipeCompon
 
         row.id = query.value(0).toInt();
 
-        fromString(
-            query.value(1).toString(),
-            row.owner_type);
+        fromString(query.value(1).toString(), row.owner_type);
 
         row.owner_id = query.value(2).toInt();
         row.inventory_item_id = query.value(3).toInt();
-        row.quantity = query.value(4).toInt();
+        row.quantity = query.value(4).toLongLong();
+        fromString(query.value(5).toString(), row.unit);
 
-        if (!query.value(5).isNull())
-            row.modifier_id = query.value(5).toInt();
-        else
-            row.modifier_id.reset();
+        if (!query.value(6).isNull()) row.modifier_id = query.value(6).toInt();
+        else row.modifier_id.reset();
 
-        fromString(
-            query.value(6).toString(),
-            row.effect);
+        fromString(query.value(7).toString(), row.effect);
 
-        row.sort_order = query.value(7).toInt();
+        row.sort_order = query.value(8).toInt();
 
         rows.push_back(row);
     }

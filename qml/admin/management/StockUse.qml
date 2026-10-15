@@ -53,8 +53,6 @@ Item {
     ]
 
     property string fulfillmentMode: "none"
-    property int linkedStockId: -1
-    property double packagedQty: 1
     property bool fulfillmentDirty: false
     property string linePickerQuery: ""
     property bool creatingLineStock: false
@@ -66,7 +64,6 @@ Item {
     property int nextRuleKey: 1
 
     ListModel { id: stockModel }
-    ListModel { id: packagedStockModel }
     ListModel { id: recipeStockModel }
     ListModel { id: recipeLines }
     ListModel { id: modifierRules }
@@ -228,11 +225,6 @@ Item {
         const conditional = modifierComponents(rows)
         if (defaults.length === 0 && conditional.length === 0)
             return "none"
-        if (conditional.length === 0 && defaults.length === 1) {
-            const type = defaults[0].type || stockType(defaults[0].inventoryItemId)
-            if (type === "finishedProduct")
-                return "stock"
-        }
         return "recipe"
     }
 
@@ -271,7 +263,6 @@ Item {
 
     function reloadStock() {
         stockModel.clear()
-        packagedStockModel.clear()
         recipeStockModel.clear()
         if (!InventoryService || typeof InventoryService.getItems !== "function")
             return
@@ -281,32 +272,15 @@ Item {
             if (it.deletedAt)
                 continue
             stockModel.append(it)
-            if (it.type === "finishedProduct")
-                packagedStockModel.append(it)
-            if (it.type === "ingredient" || it.type === "prep" || it.type === "packaging")
+            if (it.type === "ingredient" || it.type === "prep" || it.type === "packaging" || it.type === "finishedProduct")
                 recipeStockModel.append(it)
         }
-        syncPackagedCombo()
-    }
-
-    function syncPackagedCombo() {
-        var idx = -1
-        for (var i = 0; i < packagedStockModel.count; ++i) {
-            if (packagedStockModel.get(i).id === linkedStockId) {
-                idx = i
-                break
-            }
-        }
-        if (packagedBox)
-            packagedBox.currentIndex = idx
     }
 
     function loadFulfillment() {
         recipeLines.clear()
         modifierRules.clear()
         nextRuleKey = 1
-        linkedStockId = -1
-        packagedQty = 1
         creatingLineStock = false
         linePickerQuery = ""
         ruleTargetModifierId = -1
@@ -322,10 +296,7 @@ Item {
         fulfillmentMode = inferMode(rows)
         const defaults = defaultComponents(rows)
 
-        if (fulfillmentMode === "stock" && defaults.length === 1) {
-            linkedStockId = Number(defaults[0].inventoryItemId)
-            packagedQty = Number(defaults[0].quantity) || 1
-        } else if (fulfillmentMode === "recipe") {
+        if (fulfillmentMode === "recipe") {
             for (var i = 0; i < defaults.length; ++i) {
                 const line = defaults[i]
                 recipeLines.append({
@@ -353,7 +324,6 @@ Item {
             }
         }
         rulesRevision++
-        syncPackagedCombo()
         fulfillmentDirty = false
     }
 
@@ -540,8 +510,6 @@ Item {
     }
 
     function matchesLinePicker(item) {
-        if (!item || item.type === "finishedProduct")
-            return false
         if (ruleTargetModifierId > 0 && ruleEffect === "remove" && baseQty(item.id) <= 0)
             return false
         if (ruleTargetModifierId > 0 && ruleEffect === "replace" && replaceFromId <= 0 && baseQty(item.id) <= 0)
@@ -604,20 +572,7 @@ Item {
 
         var lines = []
         var rules = []
-        if (fulfillmentMode === "stock") {
-            if (linkedStockId === -1 || linkedStockId === undefined) {
-                statusMessage = qsTr("Choose a packaged product.")
-                if (packagedBox)
-                    packagedBox.forceActiveFocus()
-                return false
-            }
-            const qty = Number(packagedQty)
-            lines.push({
-                inventoryItemId: linkedStockId,
-                quantity: (!isNaN(qty) && qty > 0) ? qty : 1,
-                unit: stockUnit(linkedStockId)
-            })
-        } else if (fulfillmentMode === "recipe") {
+        if (fulfillmentMode === "recipe") {
             if (recipeLines.count === 0) {
                 statusMessage = qsTr("Add at least one recipe line.")
                 return false
@@ -697,39 +652,6 @@ Item {
         loadFulfillment()
         root.saved()
         return true
-    }
-
-    function clearFulfillment() {
-        fulfillmentMode = "none"
-        linkedStockId = -1
-        packagedQty = 1
-        recipeLines.clear()
-        modifierRules.clear()
-        rulesRevision++
-        fulfillmentDirty = true
-        saveFulfillment()
-    }
-
-    function createPackagedFromMenu() {
-        if (!menuItemName.length)
-            return
-        const newId = InventoryService.createItem({
-            name: menuItemName,
-            type: "finishedProduct",
-            baseUnit: "unit",
-            quantity: 0,
-            lowQuantity: 0,
-            deletedAt: null,
-            salePausedAt: null
-        })
-        if (newId === -1 || newId === undefined || newId === false)
-            return
-        reloadStock()
-        linkedStockId = newId
-        fulfillmentMode = "stock"
-        packagedQty = 1
-        fulfillmentDirty = true
-        syncPackagedCombo()
     }
 
     function createStockAndAddToRecipe() {
@@ -872,29 +794,6 @@ Item {
                 }
 
                 Button {
-                    visible: fulfillmentMode !== "none"
-                    text: qsTr("Don't track")
-                    hoverEnabled: false
-                    focusPolicy: Qt.NoFocus
-                    leftPadding: 12
-                    rightPadding: 12
-                    topPadding: 8
-                    bottomPadding: 8
-                    background: Rectangle {
-                        color: Theme.surface
-                        radius: 6
-                        border.color: Theme.border
-                    }
-                    contentItem: Text {
-                        text: parent.text
-                        color: Theme.text
-                        font.pixelSize: Theme.fontNormal
-                        horizontalAlignment: Text.AlignHCenter
-                    }
-                    onClicked: clearFulfillment()
-                }
-
-                Button {
                     text: fulfillmentDirty ? qsTr("Save") : qsTr("Saved")
                     enabled: fulfillmentDirty
                     hoverEnabled: false
@@ -939,7 +838,6 @@ Item {
                 Repeater {
                     model: [
                         { key: "none", label: qsTr("Don't track") },
-                        { key: "stock", label: qsTr("Packaged") },
                         { key: "recipe", label: qsTr("Recipe") }
                     ]
                     delegate: Rectangle {
@@ -1002,130 +900,6 @@ Item {
                     font.bold: true
                     font.pixelSize: Theme.fontNormal
                     horizontalAlignment: Text.AlignHCenter
-                }
-            }
-        }
-
-        Item {
-            visible: fulfillmentMode === "stock"
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-
-            Rectangle {
-                width: 420
-                anchors.left: parent.left
-                anchors.top: parent.top
-                anchors.bottom: parent.bottom
-                color: Theme.background
-
-                ColumnLayout {
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.top: parent.top
-                    anchors.margins: 20
-                    spacing: 10
-
-                    Text {
-                        text: qsTr("Packaged product")
-                        font.bold: true
-                        color: Theme.text
-                        font.pixelSize: Theme.fontMedium
-                    }
-                    Text {
-                        text: qsTr("One counted item is deducted per sale.")
-                        color: Theme.secondaryText
-                        font.pixelSize: Theme.fontNormal
-                        wrapMode: Text.WordWrap
-                        Layout.fillWidth: true
-                    }
-
-                    ComboBox {
-                        id: packagedBox
-                        Layout.fillWidth: true
-                        implicitHeight: 40
-                        model: packagedStockModel
-                        textRole: "name"
-                        valueRole: "id"
-                        displayText: currentIndex >= 0 ? currentText : qsTr("Choose a packaged product")
-                        onActivated: function (index) {
-                            linkedStockId = packagedStockModel.get(index).id
-                            fulfillmentDirty = true
-                        }
-                    }
-
-                    RowLayout {
-                        Text {
-                            text: qsTr("Qty per sale")
-                            color: Theme.secondaryText
-                            font.pixelSize: Theme.fontNormal
-                        }
-                        TextField {
-                            Layout.preferredWidth: 90
-                            implicitHeight: 38
-                            text: String(packagedQty)
-                            color: Theme.text
-                            leftPadding: 8
-                            inputMethodHints: Qt.ImhFormattedNumbersOnly
-                            background: Rectangle {
-                                color: Theme.surface
-                                radius: 6
-                                border.color: Theme.border
-                            }
-                            onEditingFinished: {
-                                const value = Number(text)
-                                if (!isNaN(value) && value > 0) {
-                                    packagedQty = value
-                                    fulfillmentDirty = true
-                                }
-                            }
-                        }
-                    }
-
-                    Text {
-                        visible: packagedStockModel.count === 0
-                        text: qsTr("No packaged products in inventory yet.")
-                        color: Theme.secondaryText
-                        wrapMode: Text.WordWrap
-                        Layout.fillWidth: true
-                    }
-
-                    Button {
-                        Layout.fillWidth: true
-                        hoverEnabled: false
-                        focusPolicy: Qt.NoFocus
-                        topPadding: 5
-                        bottomPadding: 5
-                        background: Rectangle {
-                            color: Theme.surface
-                            radius: 4
-                            border.color: Theme.border
-                        }
-                        contentItem: Text {
-                            text: qsTr("Create packaged item “%1”").arg(menuItemName)
-                            color: Theme.text
-                            font.pixelSize: Theme.fontNormal
-                            horizontalAlignment: Text.AlignHCenter
-                            elide: Text.ElideRight
-                        }
-                        onClicked: createPackagedFromMenu()
-                    }
-
-                    Text {
-                        visible: linkedStockId !== -1
-                        text: {
-                            const it = stockById(linkedStockId)
-                            if (!it)
-                                return ""
-                            const low = Number(it.quantity) <= Number(it.lowQuantity)
-                            return qsTr("On hand %1 %2").arg(formatQty(it.quantity)).arg(catalogLabel(unitCatalog, it.baseUnit))
-                                   + (low ? qsTr(" · Low") : "")
-                        }
-                        color: {
-                            const it = stockById(linkedStockId)
-                            return (it && Number(it.quantity) <= Number(it.lowQuantity)) ? "#c45c5c" : Theme.secondaryText
-                        }
-                        font.pixelSize: Theme.fontNormal
-                    }
                 }
             }
         }

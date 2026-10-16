@@ -293,8 +293,9 @@ Item {
                                         root.orderTable = null
 
                                         stackView.push(orderEditorComponent, {
-                                                           "orderType": "takeaway"
-                                                       })
+                                            "floorPlanMode": true,
+                                            "orderType": "takeaway"
+                                        })
                                     }
                                 }
 
@@ -330,8 +331,9 @@ Item {
                                         root.orderTable = null
 
                                         stackView.push(orderEditorComponent, {
-                                                           "orderType": "delivery"
-                                                       })
+                                            "floorPlanMode": true,
+                                            "orderType": "delivery"
+                                        })
                                     }
                                 }
                             }
@@ -405,8 +407,9 @@ Item {
                                     root.orderTable = selectedTable()
 
                                     stackView.push(orderEditorComponent, {
-                                                       "orderType": "dine_in"
-                                                   })
+                                        "floorPlanMode": true,
+                                        "orderType": "dine_in"
+                                    })
                                 }
                             }
 
@@ -937,7 +940,7 @@ Item {
 
         OrderEditor {
             anchors.fill: parent
-
+            floorPlanMode: true
             orderType: properties.orderType ?? "dine_in"
 
             tableId: root.orderTable ? root.orderTable.canvasItem.table_id : -1

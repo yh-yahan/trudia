@@ -167,6 +167,53 @@ std::vector<RecipeComponent> RecipeComponentRepository::listByOwner(RecipeCompon
     return rows;
 }
 
+std::vector<RecipeComponent> RecipeComponentRepository::listByModifierId(int modifierId) const
+{
+    std::vector<RecipeComponent> rows;
+
+    if (modifierId < 0) return rows;
+
+    QSqlQuery query(m_db);
+
+    query.prepare(R"(
+        SELECT id, owner_type, owner_id, inventory_item_id,
+               quantity, unit, modifier_id, effect, sort_order
+        FROM recipe_components
+        WHERE modifier_id = :modifier_id
+        ORDER BY owner_type, owner_id, sort_order, id
+    )");
+
+    query.bindValue(":modifier_id", modifierId);
+
+    if (!query.exec()) return rows;
+
+    while (query.next())
+    {
+        RecipeComponent row;
+
+        row.id = query.value(0).toInt();
+
+        fromString(query.value(1).toString(), row.owner_type);
+
+        row.owner_id = query.value(2).toInt();
+        row.inventory_item_id = query.value(3).toInt();
+        row.quantity = query.value(4).toLongLong();
+
+        fromString(query.value(5).toString(), row.unit);
+
+        if (!query.value(6).isNull()) row.modifier_id = query.value(6).toInt();
+        else row.modifier_id.reset();
+
+        fromString(query.value(7).toString(), row.effect);
+
+        row.sort_order = query.value(8).toInt();
+
+        rows.push_back(row);
+    }
+
+    return rows;
+}
+
 bool RecipeComponentRepository::removeByModifier(int modifierId)
 {
     QSqlQuery query(m_db);

@@ -9,6 +9,7 @@ InventoryService::InventoryService(InventoryItemRepository &inventoryItemRepo,
                                    StockMovementRepository &stockMovementRepo,
                                    OrderItemRepository &orderItemRepo,
                                    OrderItemModifierRepository &orderItemModifierRepo,
+                                   MenuRepository &menuRepo,
                                    DatabaseManager &databaseManager,
                                    QObject *parent)
     : QObject(parent),
@@ -17,6 +18,7 @@ InventoryService::InventoryService(InventoryItemRepository &inventoryItemRepo,
       m_stockMovementRepo(stockMovementRepo),
       m_orderItemRepo(orderItemRepo),
       m_orderItemModifierRepo(orderItemModifierRepo),
+      m_menuRepo(menuRepo),
       m_databaseManager(databaseManager) {}
 
 QVariantList InventoryService::getItems() const
@@ -62,6 +64,53 @@ bool InventoryService::updateItem(int id, const QVariantMap &data)
 bool InventoryService::removeItem(int id)
 {
     return m_inventoryItemRepo.remove(id);
+}
+
+QVariantMap InventoryService::getModifierRecipeTemplates(int modifierId) const
+{
+    QVariantMap result;
+    result["default"] = QVariant();
+    result["others"] = QVariantList();
+
+    const auto rows = m_recipeComponentRepo.listByModifierId(modifierId);
+    if (rows.empty()) return result;
+
+    std::map<std::pair<RecipeComponentOwnerType, int>, std::vector<RecipeComponent>> grouped;
+    for (const auto &row : rows) grouped[{row.owner_type, row.owner_id}].push_back(row);
+
+    QVariantList templates;
+    for (const auto &[key, components] : grouped) {
+        QVariantList componentList;
+        int maxId = 0;
+
+        for (const auto &c : components) {
+            componentList.append(toMap(c));
+            if (c.id > maxId) maxId = c.id;
+        }
+
+        QVariantMap templateObj;
+        templateObj["ownerType"] = toString(key.first);
+        templateObj["ownerId"] = key.second;
+        templateObj["components"] = componentList;
+        templateObj["maxId"] = maxId;
+
+        if (key.first == RecipeComponentOwnerType::MenuItem) {
+            if (const auto menuItem = m_menuRepo.getMenuItemById(key.second)) templateObj["ownerName"] = menuItem->item;
+        }
+
+        templates.append(templateObj);
+    }
+
+    if (templates.isEmpty()) return result;
+
+    std::sort(templates.begin(), templates.end(), [](const QVariant &a, const QVariant &b) {
+        return a.toMap().value("maxId").toInt() > b.toMap().value("maxId").toInt();
+    });
+
+    result["default"] = templates.takeFirst();
+    result["others"] = templates;
+
+    return result;
 }
 
 QVariantList InventoryService::getRecipeComponents(const QString &ownerType, int ownerId) const

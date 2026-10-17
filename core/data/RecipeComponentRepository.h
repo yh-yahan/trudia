@@ -17,6 +17,8 @@ public:
     std::optional<RecipeComponent> getById(int id) const;
     std::vector<RecipeComponent> listByOwner(RecipeComponentOwnerType ownerType, int ownerId) const;
 
+    std::vector<RecipeComponent> listByModifierId(int modifierId) const;
+
     bool removeByModifier(int modifierId);
     bool removeByOwnerAndModifier(const QString &ownerType, int ownerId, int modifierId);
 

@@ -62,6 +62,8 @@ Item {
     property int replaceFromId: -1
     property int rulesRevision: 0
     property int nextRuleKey: 1
+    property var modifierTemplates: null
+    property int templateRevision: 0
 
     ListModel { id: stockModel }
     ListModel { id: recipeStockModel }
@@ -287,6 +289,7 @@ Item {
         ruleEffect = "add"
         replaceFromId = -1
         statusMessage = ""
+        modifierTemplates = null
         if (lineSearchField)
             lineSearchField.text = ""
         if (newLineQty)
@@ -342,10 +345,72 @@ Item {
     function setRuleTarget(modifierId) {
         ruleTargetModifierId = modifierId
         replaceFromId = -1
-        if (modifierId === -1)
+        if (modifierId === -1) {
             ruleEffect = "add"
-        else if (ruleEffect !== "add" && ruleEffect !== "remove" && ruleEffect !== "replace")
+            modifierTemplates = null
+            return
+        }
+        if (ruleEffect !== "add" && ruleEffect !== "remove" && ruleEffect !== "replace")
             ruleEffect = "add"
+
+        // load templates only when targeting a modifier that has no rules yet
+        if (rulesForModifier(modifierId).length === 0)
+            loadModifierTemplates(modifierId)
+        else
+            modifierTemplates = null
+    }
+
+    function loadModifierTemplates(modifierId) {
+        modifierTemplates = null
+        if (!InventoryService || typeof InventoryService.getModifierRecipeTemplates !== "function" || modifierId <= 0)
+            return
+        const result = InventoryService.getModifierRecipeTemplates(modifierId)
+        if (!result || !result.default)
+            return
+        modifierTemplates = result
+        templateRevision++
+        // auto apply default if present
+        applyTemplate(result.default)
+    }
+
+    function applyTemplate(template) {
+        if (!template || !template.components || ruleTargetModifierId <= 0)
+            return
+        // remove any existing rules for this modifier first
+        for (var i = modifierRules.count - 1; i >= 0; --i) {
+            if (Number(modifierRules.get(i).modifierId) === Number(ruleTargetModifierId))
+                modifierRules.remove(i)
+        }
+        const components = template.components
+        for (var j = 0; j < components.length; ++j) {
+            const rule = components[j]
+            // force the rule onto the currently targeted modifier
+            const adjusted = Object.assign({}, rule)
+            adjusted.modifierId = ruleTargetModifierId
+            const nextRaw = j + 1 < components.length ? components[j + 1] : null
+            const next = nextRaw ? Object.assign({}, nextRaw) : null
+            if (next)
+                next.modifierId = ruleTargetModifierId
+            if ((adjusted.effect || "") === "replace"
+                    && next
+                    && (next.effect || "") === "replace") {
+                appendModifierRuleRow(adjusted, next)
+                j++
+                continue
+            }
+            appendModifierRuleRow(adjusted, null)
+        }
+        fulfillmentDirty = true
+        rulesRevision++
+        statusMessage = template.ownerName
+                         ? qsTr("Using rules from %1").arg(template.ownerName)
+                         : qsTr("Using existing rules")
+    }
+
+    function templateLabel(template) {
+        if (!template)
+            return ""
+        return template.ownerName || qsTr("Template from item %1").arg(template.ownerId || "")
     }
 
     function addRecipeLine(inventoryItemId) {
@@ -1123,13 +1188,6 @@ Item {
                                                     Layout.fillWidth: true
                                                     elide: Text.ElideRight
                                                 }
-                                                Text {
-                                                    text: rulesForModifier(modelData.id).length
-                                                          ? qsTr("%1 rules").arg(rulesForModifier(modelData.id).length)
-                                                          : qsTr("Price only")
-                                                    color: Theme.secondaryText
-                                                    font.pixelSize: Theme.fontSmall
-                                                }
                                             }
 
                                             Repeater {
@@ -1279,6 +1337,41 @@ Item {
                             MouseArea {
                                 anchors.fill: parent
                                 onClicked: setRuleTarget(-1)
+                            }
+                        }
+                    }
+
+                    // template switcher (shown when templates exist for the targeted modifier)
+                    RowLayout {
+                        visible: ruleTargetModifierId > 0 && modifierTemplates && (modifierTemplates.default || (modifierTemplates.others && modifierTemplates.others.length > 0))
+                        spacing: 6
+                        Layout.fillWidth: true
+
+                        Text {
+                            text: qsTr("Template:")
+                            color: Theme.secondaryText
+                            font.pixelSize: Theme.fontSmall
+                        }
+
+                        ComboBox {
+                            id: templateCombo
+                            Layout.fillWidth: true
+                            implicitHeight: 28
+                            textRole: "label"
+                            model: {
+                                templateRevision
+                                var items = []
+                                if (modifierTemplates && modifierTemplates.default)
+                                    items.push({ label: templateLabel(modifierTemplates.default), template: modifierTemplates.default })
+                                if (modifierTemplates && modifierTemplates.others) {
+                                    for (var i = 0; i < modifierTemplates.others.length; ++i)
+                                        items.push({ label: templateLabel(modifierTemplates.others[i]), template: modifierTemplates.others[i] })
+                                }
+                                return items
+                            }
+                            onActivated: function(index) {
+                                if (index >= 0 && index < model.length)
+                                    applyTemplate(model[index].template)
                             }
                         }
                     }

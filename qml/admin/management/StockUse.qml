@@ -563,6 +563,17 @@ Item {
         }
     }
 
+    function updateModifierRuleProperty(ruleKey, property, value) {
+        for (var i = 0; i < modifierRules.count; ++i) {
+            if (modifierRules.get(i).ruleKey === ruleKey) {
+                modifierRules.setProperty(i, property, value)
+                fulfillmentDirty = true
+                rulesRevision++
+                return
+            }
+        }
+    }
+
     function rulesForModifier(modifierId) {
         rulesRevision
         var out = []
@@ -1205,6 +1216,40 @@ Item {
                                                         font.pixelSize: Theme.fontNormal
                                                         elide: Text.ElideRight
                                                     }
+
+                                                    TextField {
+                                                        text: modelData.qty !== undefined ? String(modelData.qty) : ""
+                                                        Layout.preferredWidth: 56
+                                                        horizontalAlignment: TextInput.AlignHCenter
+                                                        inputMethodHints: Qt.ImhFormattedNumbersOnly
+                                                        onEditingFinished: {
+                                                            const qty = parseFloat(text)
+                                                            if (isNaN(qty) || qty < 0)
+                                                                return
+                                                            updateModifierRuleProperty(modelData.ruleKey, "qty", qty)
+                                                        }
+                                                    }
+
+                                                    ComboBox {
+                                                        Layout.preferredWidth: 110
+                                                        implicitHeight: 34
+                                                        model: unitsForCategory(unitCategory(stockUnit(modelData.inventoryItemId)))
+                                                        textRole: "label"
+                                                        currentIndex: {
+                                                            const units = unitsForCategory(unitCategory(stockUnit(modelData.inventoryItemId)))
+                                                            for (var i = 0; i < units.length; ++i) {
+                                                                if (units[i].key === modelData.unit)
+                                                                    return i
+                                                            }
+                                                            return 0
+                                                        }
+                                                        onActivated: function(index) {
+                                                            const units = unitsForCategory(unitCategory(stockUnit(modelData.inventoryItemId)))
+                                                            if (index >= 0 && index < units.length)
+                                                                updateModifierRuleProperty(modelData.ruleKey, "unit", units[index].key)
+                                                        }
+                                                    }
+
                                                     Button {
                                                         hoverEnabled: false
                                                         focusPolicy: Qt.NoFocus

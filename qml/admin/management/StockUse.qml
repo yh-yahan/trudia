@@ -15,42 +15,113 @@ Item {
     property bool menuItemAvailable: true
     property string menuOwnerType: "menu_item"
 
-    signal closed()
-    signal saved()
+    signal closed
+    signal saved
 
-    readonly property var typeCatalog: [
-        { key: "ingredient", label: qsTr("Ingredient") },
-        { key: "finishedProduct", label: qsTr("Packaged product") },
-        { key: "packaging", label: qsTr("Packaging") },
-        { key: "prep", label: qsTr("Prep") }
-    ]
-    readonly property var unitCatalog: [
-        { key: "g", label: qsTr("Gram"), category: "weight" },
-        { key: "kg", label: qsTr("Kilogram"), category: "weight" },
-        { key: "oz", label: qsTr("Ounce"), category: "weight" },
-        { key: "lb", label: qsTr("Pound"), category: "weight" },
-        { key: "ml", label: qsTr("Milliliter"), category: "volume" },
-        { key: "L", label: qsTr("Liter"), category: "volume" },
-        { key: "fl_oz", label: qsTr("Fluid ounce"), category: "volume" },
-        { key: "gal", label: qsTr("Gallon"), category: "volume" },
-        { key: "qt", label: qsTr("Quart"), category: "volume" },
-        { key: "pt", label: qsTr("Pint"), category: "volume" },
-        { key: "cup", label: qsTr("Cup"), category: "volume" },
-        { key: "unit", label: qsTr("Unit"), category: "count" },
-        { key: "dozen", label: qsTr("Dozen"), category: "count" },
-        { key: "pack", label: qsTr("Pack"), category: "count" },
-        { key: "box", label: qsTr("Box"), category: "count" },
-        { key: "bag", label: qsTr("Bag"), category: "count" },
-        { key: "bottle", label: qsTr("Bottle"), category: "count" },
-        { key: "can", label: qsTr("Can"), category: "count" },
-        { key: "carton", label: qsTr("Carton"), category: "count" },
-        { key: "case", label: qsTr("Case"), category: "count" }
-    ]
-    readonly property var effectCatalog: [
-        { key: "add", label: qsTr("Use extra") },
-        { key: "remove", label: qsTr("Leave out") },
-        { key: "replace", label: qsTr("Replace") }
-    ]
+    readonly property var typeCatalog: [{
+            "key": "ingredient",
+            "label": qsTr("Ingredient")
+        }, {
+            "key": "finishedProduct",
+            "label": qsTr("Packaged product")
+        }, {
+            "key": "packaging",
+            "label": qsTr("Packaging")
+        }, {
+            "key": "prep",
+            "label": qsTr("Prep")
+        }]
+    readonly property var unitCatalog: [{
+            "key": "g",
+            "label": qsTr("Gram"),
+            "category": "weight"
+        }, {
+            "key": "kg",
+            "label": qsTr("Kilogram"),
+            "category": "weight"
+        }, {
+            "key": "oz",
+            "label": qsTr("Ounce"),
+            "category": "weight"
+        }, {
+            "key": "lb",
+            "label": qsTr("Pound"),
+            "category": "weight"
+        }, {
+            "key": "ml",
+            "label": qsTr("Milliliter"),
+            "category": "volume"
+        }, {
+            "key": "L",
+            "label": qsTr("Liter"),
+            "category": "volume"
+        }, {
+            "key": "fl_oz",
+            "label": qsTr("Fluid ounce"),
+            "category": "volume"
+        }, {
+            "key": "gal",
+            "label": qsTr("Gallon"),
+            "category": "volume"
+        }, {
+            "key": "qt",
+            "label": qsTr("Quart"),
+            "category": "volume"
+        }, {
+            "key": "pt",
+            "label": qsTr("Pint"),
+            "category": "volume"
+        }, {
+            "key": "cup",
+            "label": qsTr("Cup"),
+            "category": "volume"
+        }, {
+            "key": "unit",
+            "label": qsTr("Unit"),
+            "category": "count"
+        }, {
+            "key": "dozen",
+            "label": qsTr("Dozen"),
+            "category": "count"
+        }, {
+            "key": "pack",
+            "label": qsTr("Pack"),
+            "category": "count"
+        }, {
+            "key": "box",
+            "label": qsTr("Box"),
+            "category": "count"
+        }, {
+            "key": "bag",
+            "label": qsTr("Bag"),
+            "category": "count"
+        }, {
+            "key": "bottle",
+            "label": qsTr("Bottle"),
+            "category": "count"
+        }, {
+            "key": "can",
+            "label": qsTr("Can"),
+            "category": "count"
+        }, {
+            "key": "carton",
+            "label": qsTr("Carton"),
+            "category": "count"
+        }, {
+            "key": "case",
+            "label": qsTr("Case"),
+            "category": "count"
+        }]
+    readonly property var effectCatalog: [{
+            "key": "add",
+            "label": qsTr("Use extra")
+        }, {
+            "key": "remove",
+            "label": qsTr("Leave out")
+        }, {
+            "key": "replace",
+            "label": qsTr("Replace")
+        }]
 
     property string fulfillmentMode: "none"
     property bool fulfillmentDirty: false
@@ -65,10 +136,18 @@ Item {
     property var modifierTemplates: null
     property int templateRevision: 0
 
-    ListModel { id: stockModel }
-    ListModel { id: recipeStockModel }
-    ListModel { id: recipeLines }
-    ListModel { id: modifierRules }
+    ListModel {
+        id: stockModel
+    }
+    ListModel {
+        id: recipeStockModel
+    }
+    ListModel {
+        id: recipeLines
+    }
+    ListModel {
+        id: modifierRules
+    }
 
     function catalogKey(catalog, index) {
         if (index >= 0 && index < catalog.length)
@@ -102,8 +181,9 @@ Item {
     }
 
     function formatMoney(value) {
-        const symbol = (typeof SettingService !== "undefined" && SettingService.currencySymbol)
-                     ? SettingService.currencySymbol() : ""
+        const symbol = (typeof SettingService !== "undefined"
+                        && SettingService.currencySymbol) ? SettingService.currencySymbol(
+                                                                ) : ""
         const number = Number(value)
         return symbol + (isNaN(number) ? "0.00" : number.toFixed(2))
     }
@@ -118,7 +198,8 @@ Item {
     }
 
     function isDefaultComponent(row) {
-        return !row || row.modifierId === undefined || row.modifierId === null || row.modifierId === "" || Number(row.modifierId) <= 0
+        return !row || row.modifierId === undefined || row.modifierId === null
+                || row.modifierId === "" || Number(row.modifierId) <= 0
     }
 
     function defaultComponents(rows) {
@@ -166,11 +247,6 @@ Item {
         return it ? it.baseUnit : "unit"
     }
 
-    function stockQuantity(id) {
-        const it = stockById(id)
-        return it ? Number(it.quantity) : 0
-    }
-
     function stockLow(id) {
         const it = stockById(id)
         return it ? Number(it.lowQuantity) : 0
@@ -180,37 +256,48 @@ Item {
         if (!row)
             return ""
         if (row.effect === "replace") {
-            return qsTr("Replace %1 %2 %3 with %4 %5 %6")
-                    .arg(formatQty(row.qty))
-                    .arg(catalogLabel(unitCatalog, row.unit))
-                    .arg(row.name || "")
-                    .arg(formatQty(row.replacementQty))
-                    .arg(catalogLabel(unitCatalog, row.replacementUnit))
-                    .arg(row.replacementName || "")
+            return qsTr("Replace %1 %2 %3 with %4 %5 %6").arg(formatQty(
+                                                                  row.qty)).arg(catalogLabel(unitCatalog, row.unit)).arg(
+                        row.name || "").arg(formatQty(row.replacementQty)).arg(
+                        catalogLabel(unitCatalog,
+                                     row.replacementUnit)).arg(row.replacementName
+                                                               || "")
         }
-        const verb = row.effect === "remove" ? qsTr("Leave out") : qsTr("Use extra")
-        return verb + " " + formatQty(row.qty) + " " + catalogLabel(unitCatalog, row.unit) + " · " + (row.name || "")
+        const verb = row.effect === "remove" ? qsTr("Leave out") : qsTr(
+                                                   "Use extra")
+        return verb + " " + formatQty(row.qty) + " " + catalogLabel(
+                    unitCatalog, row.unit) + " of " + (row.name || "")
     }
 
     function appendModifierRuleRow(rule, replacement) {
         const meta = modifierMeta(rule.modifierId)
         modifierRules.append({
-            ruleKey: nextRuleKey++,
-            componentId: rule.id || -1,
-            modifierId: Number(rule.modifierId),
-            modifierName: meta.name,
-            groupName: meta.groupName,
-            inventoryItemId: rule.inventoryItemId,
-            name: rule.inventoryItemName || stockName(rule.inventoryItemId),
-            type: rule.type || stockType(rule.inventoryItemId),
-            qty: Number(rule.quantity) || 0,
-            unit: rule.unit || stockUnit(rule.inventoryItemId),
-            effect: replacement ? "replace" : (rule.effect || "add"),
-            replacementInventoryItemId: replacement ? replacement.inventoryItemId : -1,
-            replacementName: replacement ? (replacement.inventoryItemName || stockName(replacement.inventoryItemId)) : "",
-            replacementQty: replacement ? (Number(replacement.quantity) || 0) : 0,
-            replacementUnit: replacement ? (replacement.unit || stockUnit(replacement.inventoryItemId)) : ""
-        })
+                                 "ruleKey": nextRuleKey++,
+                                 "componentId": rule.id || -1,
+                                 "modifierId": Number(rule.modifierId),
+                                 "modifierName": meta.name,
+                                 "groupName": meta.groupName,
+                                 "inventoryItemId": rule.inventoryItemId,
+                                 "name": rule.inventoryItemName || stockName(
+                                             rule.inventoryItemId),
+                                 "type": rule.type || stockType(
+                                             rule.inventoryItemId),
+                                 "qty": Number(rule.quantity) || 0,
+                                 "unit": rule.unit || stockUnit(
+                                             rule.inventoryItemId),
+                                 "effect": replacement ? "replace" : (rule.effect
+                                                                      || "add"),
+                                 "replacementInventoryItemId": replacement ? replacement.inventoryItemId : -1,
+                                 "replacementName": replacement ? (replacement.inventoryItemName
+                                                                   || stockName(
+                                                                       replacement.inventoryItemId)) : "",
+                                 "replacementQty": replacement ? (Number(
+                                                                      replacement.quantity)
+                                                                  || 0) : 0,
+                                 "replacementUnit": replacement ? (replacement.unit
+                                                                   || stockUnit(
+                                                                       replacement.inventoryItemId)) : ""
+                             })
     }
 
     function baseQty(inventoryItemId) {
@@ -231,7 +318,9 @@ Item {
     }
 
     function loadComponents(id) {
-        if (!InventoryService || typeof InventoryService.getRecipeComponents !== "function" || id < 0)
+        if (!InventoryService
+                || typeof InventoryService.getRecipeComponents !== "function"
+                || id < 0)
             return []
         return InventoryService.getRecipeComponents(menuOwnerType, id) || []
     }
@@ -241,14 +330,19 @@ Item {
             return
         if (ModifiersService.reloadForMenu)
             ModifiersService.reloadForMenu(menuItemId)
-        else if (ModifiersService.menuModifierModel && ModifiersService.menuModifierModel.loadGroupsForMenu)
+        else if (ModifiersService.menuModifierModel
+                 && ModifiersService.menuModifierModel.loadGroupsForMenu)
             ModifiersService.menuModifierModel.loadGroupsForMenu(menuItemId)
     }
 
     function modifierMeta(modifierId) {
-        const model = (typeof ModifiersService !== "undefined") ? ModifiersService.menuModifierModel : null
+        const model = (typeof ModifiersService
+                       !== "undefined") ? ModifiersService.menuModifierModel : null
         if (!model)
-            return { name: qsTr("Option"), groupName: "" }
+            return {
+                "name": qsTr("Option"),
+                "groupName": ""
+            }
         const nameRole = Qt.UserRole + 2
         const modifiersRole = Qt.UserRole + 8
         for (var g = 0; g < model.rowCount(); ++g) {
@@ -257,16 +351,23 @@ Item {
             const options = model.data(groupIndex, modifiersRole) || []
             for (var m = 0; m < options.length; ++m) {
                 if (Number(options[m].id) === Number(modifierId))
-                    return { name: options[m].name || qsTr("Option"), groupName: groupName }
+                    return {
+                        "name": options[m].name || qsTr("Option"),
+                        "groupName": groupName
+                    }
             }
         }
-        return { name: qsTr("Option"), groupName: "" }
+        return {
+            "name": qsTr("Option"),
+            "groupName": ""
+        }
     }
 
     function reloadStock() {
         stockModel.clear()
         recipeStockModel.clear()
-        if (!InventoryService || typeof InventoryService.getItems !== "function")
+        if (!InventoryService
+                || typeof InventoryService.getItems !== "function")
             return
         const items = InventoryService.getItems()
         for (var i = 0; i < items.length; ++i) {
@@ -274,7 +375,8 @@ Item {
             if (it.deletedAt)
                 continue
             stockModel.append(it)
-            if (it.type === "ingredient" || it.type === "prep" || it.type === "packaging" || it.type === "finishedProduct")
+            if (it.type === "ingredient" || it.type === "prep"
+                    || it.type === "packaging" || it.type === "finishedProduct")
                 recipeStockModel.append(it)
         }
     }
@@ -292,8 +394,6 @@ Item {
         modifierTemplates = null
         if (lineSearchField)
             lineSearchField.text = ""
-        if (newLineQty)
-            newLineQty.text = "1"
 
         const rows = loadComponents(menuItemId)
         fulfillmentMode = inferMode(rows)
@@ -303,22 +403,25 @@ Item {
             for (var i = 0; i < defaults.length; ++i) {
                 const line = defaults[i]
                 recipeLines.append({
-                    componentId: line.id || -1,
-                    inventoryItemId: line.inventoryItemId,
-                    name: line.inventoryItemName || stockName(line.inventoryItemId),
-                    type: line.type || stockType(line.inventoryItemId),
-                    qty: Number(line.quantity) || 0,
-                    unit: line.unit || stockUnit(line.inventoryItemId)
-                })
+                                       "componentId": line.id || -1,
+                                       "inventoryItemId": line.inventoryItemId,
+                                       "name": line.inventoryItemName
+                                               || stockName(
+                                                   line.inventoryItemId),
+                                       "type": line.type || stockType(
+                                                   line.inventoryItemId),
+                                       "qty": Number(line.quantity) || 0,
+                                       "unit": line.unit || stockUnit(
+                                                   line.inventoryItemId)
+                                   })
             }
             const conditional = modifierComponents(rows)
             for (var j = 0; j < conditional.length; ++j) {
                 const rule = conditional[j]
                 const next = j + 1 < conditional.length ? conditional[j + 1] : null
-                if ((rule.effect || "") === "replace"
-                        && next
-                        && (next.effect || "") === "replace"
-                        && Number(next.modifierId) === Number(rule.modifierId)) {
+                if ((rule.effect || "") === "replace" && next
+                        && (next.effect || "") === "replace" && Number(
+                            next.modifierId) === Number(rule.modifierId)) {
                     appendModifierRuleRow(rule, next)
                     j++
                     continue
@@ -350,7 +453,8 @@ Item {
             modifierTemplates = null
             return
         }
-        if (ruleEffect !== "add" && ruleEffect !== "remove" && ruleEffect !== "replace")
+        if (ruleEffect !== "add" && ruleEffect !== "remove"
+                && ruleEffect !== "replace")
             ruleEffect = "add"
 
         // load templates only when targeting a modifier that has no rules yet
@@ -362,7 +466,9 @@ Item {
 
     function loadModifierTemplates(modifierId) {
         modifierTemplates = null
-        if (!InventoryService || typeof InventoryService.getModifierRecipeTemplates !== "function" || modifierId <= 0)
+        if (!InventoryService
+                || typeof InventoryService.getModifierRecipeTemplates !== "function"
+                || modifierId <= 0)
             return
         const result = InventoryService.getModifierRecipeTemplates(modifierId)
         if (!result || !result.default)
@@ -378,7 +484,8 @@ Item {
             return
         // remove any existing rules for this modifier first
         for (var i = modifierRules.count - 1; i >= 0; --i) {
-            if (Number(modifierRules.get(i).modifierId) === Number(ruleTargetModifierId))
+            if (Number(modifierRules.get(i).modifierId) === Number(
+                        ruleTargetModifierId))
                 modifierRules.remove(i)
         }
         const components = template.components
@@ -391,8 +498,7 @@ Item {
             const next = nextRaw ? Object.assign({}, nextRaw) : null
             if (next)
                 next.modifierId = ruleTargetModifierId
-            if ((adjusted.effect || "") === "replace"
-                    && next
+            if ((adjusted.effect || "") === "replace" && next
                     && (next.effect || "") === "replace") {
                 appendModifierRuleRow(adjusted, next)
                 j++
@@ -402,25 +508,27 @@ Item {
         }
         fulfillmentDirty = true
         rulesRevision++
-        statusMessage = template.ownerName
-                         ? qsTr("Using rules from %1").arg(template.ownerName)
-                         : qsTr("Using existing rules")
+        statusMessage = template.ownerName ? qsTr("Using rules from %1").arg(
+                                                 template.ownerName) : qsTr(
+                                                 "Using existing rules")
     }
 
     function templateLabel(template) {
         if (!template)
             return ""
-        return template.ownerName || qsTr("Template from item %1").arg(template.ownerId || "")
+        return template.ownerName || qsTr("Template from item %1").arg(
+                    template.ownerId || "")
     }
 
     function addRecipeLine(inventoryItemId) {
         if (!inventoryItemId || inventoryItemId === -1)
             return
-        const typed = Number(newLineQty ? newLineQty.text : 1)
-        const addQty = (!isNaN(typed) && typed > 0) ? typed : 1
+        const addQty = 1
         for (var i = 0; i < recipeLines.count; ++i) {
             if (recipeLines.get(i).inventoryItemId === inventoryItemId) {
-                recipeLines.setProperty(i, "qty", (Number(recipeLines.get(i).qty) || 0) + addQty)
+                recipeLines.setProperty(i, "qty",
+                                        (Number(recipeLines.get(i).qty)
+                                         || 0) + addQty)
                 fulfillmentDirty = true
                 return
             }
@@ -429,26 +537,24 @@ Item {
         if (!it)
             return
         recipeLines.append({
-            componentId: -1,
-            inventoryItemId: it.id,
-            name: it.name,
-            type: it.type,
-            qty: addQty,
-            unit: it.baseUnit
-        })
+                               "componentId": -1,
+                               "inventoryItemId": it.id,
+                               "name": it.name,
+                               "type": it.type,
+                               "qty": addQty,
+                               "unit": it.baseUnit
+                           })
         fulfillmentDirty = true
-        if (newLineQty)
-            newLineQty.text = "1"
         linePickerQuery = ""
         if (lineSearchField)
             lineSearchField.text = ""
     }
 
     function addModifierRule(inventoryItemId) {
-        if (ruleTargetModifierId <= 0 || !inventoryItemId || inventoryItemId === -1)
+        if (ruleTargetModifierId <= 0 || !inventoryItemId
+                || inventoryItemId === -1)
             return
-        const typed = Number(newLineQty ? newLineQty.text : 1)
-        const addQty = (!isNaN(typed) && typed > 0) ? typed : 1
+        const addQty = 1
         if (ruleEffect === "replace") {
             if (replaceFromId <= 0) {
                 if (baseQty(inventoryItemId) <= 0) {
@@ -471,32 +577,31 @@ Item {
             const fromQty = Math.min(addQty, baseQty(replaceFromId))
             const meta = modifierMeta(ruleTargetModifierId)
             modifierRules.append({
-                ruleKey: nextRuleKey++,
-                componentId: -1,
-                modifierId: ruleTargetModifierId,
-                modifierName: meta.name,
-                groupName: meta.groupName,
-                inventoryItemId: from.id,
-                name: from.name,
-                type: from.type,
-                qty: fromQty,
-                unit: from.baseUnit,
-                effect: "replace",
-                replacementInventoryItemId: to.id,
-                replacementName: to.name,
-                replacementQty: addQty,
-                replacementUnit: to.baseUnit
-            })
+                                     "ruleKey": nextRuleKey++,
+                                     "componentId": -1,
+                                     "modifierId": ruleTargetModifierId,
+                                     "modifierName": meta.name,
+                                     "groupName": meta.groupName,
+                                     "inventoryItemId": from.id,
+                                     "name": from.name,
+                                     "type": from.type,
+                                     "qty": fromQty,
+                                     "unit": from.baseUnit,
+                                     "effect": "replace",
+                                     "replacementInventoryItemId": to.id,
+                                     "replacementName": to.name,
+                                     "replacementQty": addQty,
+                                     "replacementUnit": to.baseUnit
+                                 })
             replaceFromId = -1
             fulfillmentDirty = true
             rulesRevision++
             statusMessage = ""
-            if (newLineQty)
-                newLineQty.text = "1"
             return
         }
         if (ruleEffect === "remove" && baseQty(inventoryItemId) <= 0) {
-            statusMessage = qsTr("Leave out only applies to a base recipe line.")
+            statusMessage = qsTr(
+                        "Leave out only applies to a base recipe line.")
             return
         }
         for (var i = 0; i < modifierRules.count; ++i) {
@@ -504,7 +609,8 @@ Item {
             if (existing.modifierId === ruleTargetModifierId
                     && existing.inventoryItemId === inventoryItemId
                     && existing.effect === ruleEffect) {
-                modifierRules.setProperty(i, "qty", (Number(existing.qty) || 0) + addQty)
+                modifierRules.setProperty(i, "qty",
+                                          (Number(existing.qty) || 0) + addQty)
                 fulfillmentDirty = true
                 rulesRevision++
                 return
@@ -515,27 +621,25 @@ Item {
             return
         const meta = modifierMeta(ruleTargetModifierId)
         modifierRules.append({
-            ruleKey: nextRuleKey++,
-            componentId: -1,
-            modifierId: ruleTargetModifierId,
-            modifierName: meta.name,
-            groupName: meta.groupName,
-            inventoryItemId: it.id,
-            name: it.name,
-            type: it.type,
-            qty: addQty,
-            unit: it.baseUnit,
-            effect: ruleEffect,
-            replacementInventoryItemId: -1,
-            replacementName: "",
-            replacementQty: 0,
-            replacementUnit: ""
-        })
+                                 "ruleKey": nextRuleKey++,
+                                 "componentId": -1,
+                                 "modifierId": ruleTargetModifierId,
+                                 "modifierName": meta.name,
+                                 "groupName": meta.groupName,
+                                 "inventoryItemId": it.id,
+                                 "name": it.name,
+                                 "type": it.type,
+                                 "qty": addQty,
+                                 "unit": it.baseUnit,
+                                 "effect": ruleEffect,
+                                 "replacementInventoryItemId": -1,
+                                 "replacementName": "",
+                                 "replacementQty": 0,
+                                 "replacementUnit": ""
+                             })
         fulfillmentDirty = true
         rulesRevision++
         statusMessage = ""
-        if (newLineQty)
-            newLineQty.text = "1"
     }
 
     function addFromPicker(inventoryItemId) {
@@ -586,15 +690,20 @@ Item {
     }
 
     function matchesLinePicker(item) {
-        if (ruleTargetModifierId > 0 && ruleEffect === "remove" && baseQty(item.id) <= 0)
+        if (ruleTargetModifierId > 0 && ruleEffect === "remove" && baseQty(
+                    item.id) <= 0)
             return false
-        if (ruleTargetModifierId > 0 && ruleEffect === "replace" && replaceFromId <= 0 && baseQty(item.id) <= 0)
+        if (ruleTargetModifierId > 0 && ruleEffect === "replace"
+                && replaceFromId <= 0 && baseQty(item.id) <= 0)
             return false
-        if (ruleTargetModifierId > 0 && ruleEffect === "replace" && replaceFromId > 0 && Number(item.id) === Number(replaceFromId))
+        if (ruleTargetModifierId > 0 && ruleEffect === "replace"
+                && replaceFromId > 0 && Number(item.id) === Number(
+                    replaceFromId))
             return false
         if (!linePickerQuery.length)
             return true
-        return String(item.name).toLowerCase().indexOf(linePickerQuery.toLowerCase()) !== -1
+        return String(item.name).toLowerCase().indexOf(
+                    linePickerQuery.toLowerCase()) !== -1
     }
 
     function replaceDefaultComponents(lines) {
@@ -605,14 +714,14 @@ Item {
         }
         for (var j = 0; j < lines.length; ++j) {
             const newId = InventoryService.createRecipeComponent({
-                ownerType: menuOwnerType,
-                ownerId: menuItemId,
-                inventoryItemId: lines[j].inventoryItemId,
-                quantity: lines[j].quantity,
-                unit: lines[j].unit,
-                effect: "add",
-                sortOrder: j
-            })
+                                                                     "ownerType": menuOwnerType,
+                                                                     "ownerId": menuItemId,
+                                                                     "inventoryItemId": lines[j].inventoryItemId,
+                                                                     "quantity": lines[j].quantity,
+                                                                     "unit": lines[j].unit,
+                                                                     "effect": "add",
+                                                                     "sortOrder": j
+                                                                 })
             if (newId === -1 || newId === undefined || newId === false)
                 return false
         }
@@ -627,15 +736,15 @@ Item {
         }
         for (var j = 0; j < lines.length; ++j) {
             const newId = InventoryService.createRecipeComponent({
-                ownerType: menuOwnerType,
-                ownerId: menuItemId,
-                inventoryItemId: lines[j].inventoryItemId,
-                quantity: lines[j].quantity,
-                unit: lines[j].unit,
-                modifierId: lines[j].modifierId,
-                effect: lines[j].effect,
-                sortOrder: j
-            })
+                                                                     "ownerType": menuOwnerType,
+                                                                     "ownerId": menuItemId,
+                                                                     "inventoryItemId": lines[j].inventoryItemId,
+                                                                     "quantity": lines[j].quantity,
+                                                                     "unit": lines[j].unit,
+                                                                     "modifierId": lines[j].modifierId,
+                                                                     "effect": lines[j].effect,
+                                                                     "sortOrder": j
+                                                                 })
             if (newId === -1 || newId === undefined || newId === false)
                 return false
         }
@@ -643,7 +752,8 @@ Item {
     }
 
     function saveFulfillment() {
-        if (menuItemId === -1 || !InventoryService || typeof InventoryService.createRecipeComponent !== "function")
+        if (menuItemId === -1 || !InventoryService
+                || typeof InventoryService.createRecipeComponent !== "function")
             return false
 
         var lines = []
@@ -661,55 +771,62 @@ Item {
                     return false
                 }
                 lines.push({
-                    inventoryItemId: line.inventoryItemId,
-                    quantity: qty,
-                    unit: line.unit
-                })
+                               "inventoryItemId": line.inventoryItemId,
+                               "quantity": qty,
+                               "unit": line.unit
+                           })
             }
             for (var r = 0; r < modifierRules.count; ++r) {
                 const rule = modifierRules.get(r)
                 const qty = Number(rule.qty)
                 if (isNaN(qty) || qty <= 0) {
-                    statusMessage = qsTr("Every modifier rule needs a quantity.")
+                    statusMessage = qsTr(
+                                "Every modifier rule needs a quantity.")
                     return false
                 }
-                if (rule.effect === "remove" && qty > baseQty(rule.inventoryItemId)) {
-                    statusMessage = qsTr("Leave out cannot exceed the base quantity.")
+                if (rule.effect === "remove" && qty > baseQty(
+                            rule.inventoryItemId)) {
+                    statusMessage = qsTr(
+                                "Leave out cannot exceed the base quantity.")
                     return false
                 }
                 if (rule.effect === "replace") {
                     const replacementQty = Number(rule.replacementQty)
-                    if (!rule.replacementInventoryItemId || rule.replacementInventoryItemId === -1 || isNaN(replacementQty) || replacementQty <= 0) {
-                        statusMessage = qsTr("Replace needs the item to use instead.")
+                    if (!rule.replacementInventoryItemId
+                            || rule.replacementInventoryItemId === -1 || isNaN(
+                                replacementQty) || replacementQty <= 0) {
+                        statusMessage = qsTr(
+                                    "Replace needs the item to use instead.")
                         return false
                     }
                     if (qty > baseQty(rule.inventoryItemId)) {
-                        statusMessage = qsTr("Replace cannot leave out more than the base quantity.")
+                        statusMessage = qsTr(
+                                    "Replace cannot leave out more than the base quantity.")
                         return false
                     }
                     rules.push({
-                        inventoryItemId: rule.inventoryItemId,
-                        quantity: qty,
-                        unit: rule.unit,
-                        modifierId: rule.modifierId,
-                        effect: "replace"
-                    })
+                                   "inventoryItemId": rule.inventoryItemId,
+                                   "quantity": qty,
+                                   "unit": rule.unit,
+                                   "modifierId": rule.modifierId,
+                                   "effect": "replace"
+                               })
                     rules.push({
-                        inventoryItemId: rule.replacementInventoryItemId,
-                        quantity: replacementQty,
-                        unit: rule.replacementUnit,
-                        modifierId: rule.modifierId,
-                        effect: "replace"
-                    })
+                                   "inventoryItemId": rule.replacementInventoryItemId,
+                                   "quantity": replacementQty,
+                                   "unit": rule.replacementUnit,
+                                   "modifierId": rule.modifierId,
+                                   "effect": "replace"
+                               })
                     continue
                 }
                 rules.push({
-                    inventoryItemId: rule.inventoryItemId,
-                    quantity: qty,
-                    unit: rule.unit,
-                    modifierId: rule.modifierId,
-                    effect: rule.effect || "add"
-                })
+                               "inventoryItemId": rule.inventoryItemId,
+                               "quantity": qty,
+                               "unit": rule.unit,
+                               "modifierId": rule.modifierId,
+                               "effect": rule.effect || "add"
+                           })
             }
         }
 
@@ -730,36 +847,14 @@ Item {
         return true
     }
 
-    function createStockAndAddToRecipe() {
-        const name = inlineStockName.text.trim()
-        if (!name.length) {
-            inlineStockName.forceActiveFocus()
-            return
-        }
-        const newId = InventoryService.createItem({
-            name: name,
-            type: catalogKey(typeCatalog, inlineStockType.currentIndex),
-            baseUnit: catalogKey(unitCatalog, inlineStockUnit.currentIndex),
-            quantity: 0,
-            lowQuantity: 0,
-            deletedAt: null,
-            salePausedAt: null
-        })
-        if (newId === -1 || newId === undefined || newId === false)
-            return
-        reloadStock()
-        addFromPicker(newId)
-        inlineStockName.text = ""
-        creatingLineStock = false
-    }
-
     function requestClose() {
         if (!fulfillmentDirty) {
             root.closed()
             return
         }
         confirmationDialog.title = qsTr("Unsaved changes")
-        confirmationDialog.message = qsTr("Save stock use for “%1” before leaving?").arg(menuItemName)
+        confirmationDialog.message = qsTr(
+                    "Save stock use for “%1” before leaving?").arg(menuItemName)
         confirmationDialog.type = "saveBeforeLeave"
         confirmationDialog.confirmCallback = function (confirmed) {
             if (confirmed)
@@ -822,7 +917,7 @@ Item {
                     bottomPadding: 8
                     background: Rectangle {
                         color: Theme.surface
-                        radius: 6
+                        radius: 4
                         border.color: Theme.border
                         border.width: 1
                     }
@@ -840,7 +935,11 @@ Item {
                     Layout.fillWidth: true
 
                     Text {
-                        text: menuItemName.length ? menuItemName : qsTr("Stock use")
+                        text: menuItemName.length ? menuItemName + (menuItemPortion.length
+                                                                    || !menuItemAvailable ? " (" : "") + (menuItemPortion.length ? menuItemPortion : "") + (menuItemPortion.length && !menuItemAvailable ? ", " : "") + (!menuItemAvailable ? qsTr("Hidden on menu") : "")
+                                                    + (menuItemPortion.length
+                                                       || !menuItemAvailable ? ")" : "") : qsTr(
+                                                        "Stock use")
                         color: Theme.text
                         font.bold: true
                         font.pixelSize: Theme.fontNormal + 2
@@ -848,14 +947,7 @@ Item {
                         Layout.fillWidth: true
                     }
                     Text {
-                        text: {
-                            var bits = [root.formatMoney(menuItemPrice)]
-                            if (menuItemPortion.length)
-                                bits.push(menuItemPortion)
-                            if (!menuItemAvailable)
-                                bits.push(qsTr("Hidden on menu"))
-                            return bits.join(" · ")
-                        }
+                        text: root.formatMoney(menuItemPrice)
                         color: Theme.secondaryText
                         font.pixelSize: Theme.fontNormal
                         elide: Text.ElideRight
@@ -879,8 +971,9 @@ Item {
                     topPadding: 8
                     bottomPadding: 8
                     background: Rectangle {
-                        color: fulfillmentDirty ? Theme.primary() : Theme.surface
-                        radius: 6
+                        color: fulfillmentDirty ? Theme.primary(
+                                                      ) : Theme.surface
+                        radius: 4
                     }
                     contentItem: Text {
                         text: parent.text
@@ -912,16 +1005,20 @@ Item {
                 spacing: 8
 
                 Repeater {
-                    model: [
-                        { key: "none", label: qsTr("Don't track") },
-                        { key: "recipe", label: qsTr("Recipe") }
-                    ]
+                    model: [{
+                            "key": "none",
+                            "label": qsTr("Untracked")
+                        }, {
+                            "key": "recipe",
+                            "label": qsTr("Recipe")
+                        }]
                     delegate: Rectangle {
                         required property var modelData
                         implicitHeight: 32
                         implicitWidth: modeLabel.implicitWidth + 20
-                        radius: 6
-                        color: fulfillmentMode === modelData.key ? Theme.primary() : Theme.surface
+                        radius: 4
+                        color: fulfillmentMode === modelData.key ? Theme.primary(
+                                                                       ) : Theme.surface
                         border.width: fulfillmentMode === modelData.key ? 0 : 1
                         border.color: Theme.border
 
@@ -942,7 +1039,9 @@ Item {
                     }
                 }
 
-                Item { Layout.fillWidth: true }
+                Item {
+                    Layout.fillWidth: true
+                }
 
                 Text {
                     visible: statusMessage.length && fulfillmentDirty
@@ -1033,7 +1132,7 @@ Item {
 
                                 Layout.fillWidth: true
                                 implicitHeight: 58
-                                radius: 8
+                                radius: 4
                                 color: Theme.surface
                                 border.width: 1
                                 border.color: Theme.border
@@ -1056,10 +1155,8 @@ Item {
                                             font.pixelSize: Theme.fontMedium
                                         }
                                         Text {
-                                            text: catalogLabel(typeCatalog, type)
-                                                  + qsTr(" · on hand %1").arg(formatQty(stockQuantity(inventoryItemId)))
-                                                  + (stockQuantity(inventoryItemId) <= stockLow(inventoryItemId) ? qsTr(" · Low") : "")
-                                            color: stockQuantity(inventoryItemId) <= stockLow(inventoryItemId) ? "#c45c5c" : Theme.secondaryText
+                                            text: catalogLabel(typeCatalog,
+                                                               type)
                                             font.pixelSize: Theme.fontNormal
                                             elide: Text.ElideRight
                                             Layout.fillWidth: true
@@ -1073,15 +1170,18 @@ Item {
                                         color: Theme.text
                                         leftPadding: 8
                                         inputMethodHints: Qt.ImhFormattedNumbersOnly
+                                        font.pixelSize: Theme.fontNormal
                                         background: Rectangle {
                                             color: Theme.background
-                                            radius: 6
+                                            radius: 4
                                             border.color: Theme.border
                                         }
                                         onEditingFinished: {
                                             const value = Number(text)
                                             if (!isNaN(value) && value >= 0) {
-                                                recipeLines.setProperty(index, "qty", value)
+                                                recipeLines.setProperty(index,
+                                                                        "qty",
+                                                                        value)
                                                 fulfillmentDirty = true
                                             }
                                         }
@@ -1090,19 +1190,30 @@ Item {
                                     ComboBox {
                                         Layout.preferredWidth: 110
                                         implicitHeight: 34
-                                        model: unitsForCategory(unitCategory(stockUnit(inventoryItemId)))
+                                        model: unitsForCategory(
+                                                   unitCategory(
+                                                       stockUnit(
+                                                           inventoryItemId)))
                                         textRole: "label"
                                         currentIndex: {
-                                            const units = unitsForCategory(unitCategory(stockUnit(inventoryItemId)))
+                                            const units = unitsForCategory(
+                                                            unitCategory(
+                                                                stockUnit(
+                                                                    inventoryItemId)))
                                             for (var i = 0; i < units.length; ++i) {
                                                 if (units[i].key === unit)
                                                     return i
                                             }
                                             return 0
                                         }
-                                        onActivated: function(index) {
-                                            const units = unitsForCategory(unitCategory(stockUnit(inventoryItemId)))
-                                            recipeLines.setProperty(index, "unit", units[index].key)
+                                        onActivated: function (index) {
+                                            const units = unitsForCategory(
+                                                            unitCategory(
+                                                                stockUnit(
+                                                                    inventoryItemId)))
+                                            recipeLines.setProperty(
+                                                        index, "unit",
+                                                        units[index].key)
                                             fulfillmentDirty = true
                                         }
                                     }
@@ -1151,7 +1262,8 @@ Item {
                         }
 
                         Repeater {
-                            model: (typeof ModifiersService !== "undefined") ? ModifiersService.menuModifierModel : null
+                            model: (typeof ModifiersService
+                                    !== "undefined") ? ModifiersService.menuModifierModel : null
 
                             delegate: ColumnLayout {
                                 id: groupBlock
@@ -1176,10 +1288,20 @@ Item {
                                         required property var modelData
                                         Layout.fillWidth: true
                                         implicitHeight: optionCol.implicitHeight + 16
-                                        radius: 8
+                                        radius: 4
                                         color: Theme.surface
                                         border.width: 1
-                                        border.color: ruleTargetModifierId === Number(modelData.id) ? Theme.primary() : Theme.border
+                                        border.color: ruleTargetModifierId === Number(
+                                                          modelData.id) ? Theme.primary(
+                                                                              ) : Theme.border
+
+                                        MouseArea {
+                                            anchors.fill: parent
+                                            cursorShape: Qt.PointingHandCursor
+                                            onClicked: setRuleTarget(
+                                                           Number(
+                                                               optionCard.modelData.id))
+                                        }
 
                                         ColumnLayout {
                                             id: optionCol
@@ -1202,7 +1324,8 @@ Item {
                                             }
 
                                             Repeater {
-                                                model: rulesForModifier(modelData.id)
+                                                model: rulesForModifier(
+                                                           modelData.id)
 
                                                 delegate: RowLayout {
                                                     required property var modelData
@@ -1211,7 +1334,8 @@ Item {
 
                                                     Text {
                                                         Layout.fillWidth: true
-                                                        text: ruleLabel(modelData)
+                                                        text: ruleLabel(
+                                                                  modelData)
                                                         color: Theme.text
                                                         font.pixelSize: Theme.fontNormal
                                                         elide: Text.ElideRight
@@ -1219,34 +1343,56 @@ Item {
 
                                                     TextField {
                                                         text: modelData.qty !== undefined ? String(modelData.qty) : ""
-                                                        Layout.preferredWidth: 56
-                                                        horizontalAlignment: TextInput.AlignHCenter
+                                                        Layout.preferredWidth: 80
+                                                        implicitHeight: 34
+                                                        color: Theme.text
+                                                        font.pixelSize: Theme.fontNormal
+                                                        leftPadding: 8
                                                         inputMethodHints: Qt.ImhFormattedNumbersOnly
+                                                        background: Rectangle {
+                                                            color: Theme.background
+                                                            radius: 4
+                                                            border.color: Theme.border
+                                                        }
                                                         onEditingFinished: {
-                                                            const qty = parseFloat(text)
-                                                            if (isNaN(qty) || qty < 0)
+                                                            const qty = parseFloat(
+                                                                          text)
+                                                            if (isNaN(qty)
+                                                                    || qty < 0)
                                                                 return
-                                                            updateModifierRuleProperty(modelData.ruleKey, "qty", qty)
+                                                            updateModifierRuleProperty(
+                                                                        modelData.ruleKey,
+                                                                        "qty",
+                                                                        qty)
                                                         }
                                                     }
 
                                                     ComboBox {
                                                         Layout.preferredWidth: 110
                                                         implicitHeight: 34
-                                                        model: unitsForCategory(unitCategory(stockUnit(modelData.inventoryItemId)))
+                                                        model: unitsForCategory(
+                                                                   unitCategory(
+                                                                       stockUnit(
+                                                                           modelData.inventoryItemId)))
                                                         textRole: "label"
                                                         currentIndex: {
-                                                            const units = unitsForCategory(unitCategory(stockUnit(modelData.inventoryItemId)))
+                                                            const units = unitsForCategory(
+                                                                            unitCategory(stockUnit(modelData.inventoryItemId)))
                                                             for (var i = 0; i < units.length; ++i) {
                                                                 if (units[i].key === modelData.unit)
                                                                     return i
                                                             }
                                                             return 0
                                                         }
-                                                        onActivated: function(index) {
-                                                            const units = unitsForCategory(unitCategory(stockUnit(modelData.inventoryItemId)))
-                                                            if (index >= 0 && index < units.length)
-                                                                updateModifierRuleProperty(modelData.ruleKey, "unit", units[index].key)
+                                                        onActivated: function (index) {
+                                                            const units = unitsForCategory(
+                                                                            unitCategory(stockUnit(modelData.inventoryItemId)))
+                                                            if (index >= 0
+                                                                    && index < units.length)
+                                                                updateModifierRuleProperty(
+                                                                            modelData.ruleKey,
+                                                                            "unit",
+                                                                            units[index].key)
                                                         }
                                                     }
 
@@ -1267,31 +1413,10 @@ Item {
                                                             color: Theme.secondaryText
                                                             font.pixelSize: Theme.fontSmall
                                                         }
-                                                        onClicked: removeModifierRule(modelData.ruleKey)
+                                                        onClicked: removeModifierRule(
+                                                                       modelData.ruleKey)
                                                     }
                                                 }
-                                            }
-
-                                            Button {
-                                                hoverEnabled: false
-                                                focusPolicy: Qt.NoFocus
-                                                visible: ruleTargetModifierId !== Number(optionCard.modelData.id)
-                                                leftPadding: 8
-                                                rightPadding: 8
-                                                topPadding: 4
-                                                bottomPadding: 4
-                                                background: Rectangle {
-                                                    color: ruleTargetModifierId === Number(optionCard.modelData.id) ? Theme.primary() : Theme.background
-                                                    radius: 4
-                                                    border.color: Theme.border
-                                                    border.width: ruleTargetModifierId === Number(optionCard.modelData.id) ? 0 : 1
-                                                }
-                                                contentItem: Text {
-                                                    text: qsTr("Add stock rule")
-                                                    color: ruleTargetModifierId === Number(optionCard.modelData.id) ? "white" : Theme.text
-                                                    font.pixelSize: Theme.fontSmall
-                                                }
-                                                onClicked: setRuleTarget(Number(optionCard.modelData.id))
                                             }
                                         }
                                     }
@@ -1302,7 +1427,8 @@ Item {
                         Text {
                             visible: typeof ModifiersService === "undefined"
                                      || !ModifiersService.menuModifierModel
-                                     || ModifiersService.menuModifierModel.rowCount() === 0
+                                     || ModifiersService.menuModifierModel.rowCount(
+                                         ) === 0
                             text: qsTr("No modifier groups attached to this item.")
                             color: Theme.secondaryText
                             font.pixelSize: Theme.fontNormal
@@ -1330,13 +1456,15 @@ Item {
                     spacing: 10
 
                     Text {
-                        text: ruleTargetModifierId <= 0
-                              ? qsTr("Add to recipe")
-                              : qsTr("Add to %1").arg(modifierMeta(ruleTargetModifierId).name)
+                        text: ruleTargetModifierId <= 0 ? qsTr("Add to recipe") : qsTr(
+                                                              "Add to %1").arg(
+                                                              modifierMeta(
+                                                                  ruleTargetModifierId).name)
                         font.bold: true
                         color: Theme.text
                         Layout.fillWidth: true
                         elide: Text.ElideRight
+                        font.pixelSize: Theme.fontLarge
                     }
 
                     RowLayout {
@@ -1349,8 +1477,9 @@ Item {
                                 required property var modelData
                                 implicitHeight: 28
                                 implicitWidth: effectLabel.implicitWidth + 16
-                                radius: 6
-                                color: ruleEffect === modelData.key ? Theme.primary() : Theme.surface
+                                radius: 4
+                                color: ruleEffect === modelData.key ? Theme.primary(
+                                                                          ) : Theme.surface
                                 border.width: ruleEffect === modelData.key ? 0 : 1
                                 border.color: Theme.border
 
@@ -1373,12 +1502,15 @@ Item {
                             }
                         }
 
-                        Item { Layout.fillWidth: true }
+                        Item {
+                            Layout.fillWidth: true
+                        }
 
                         Text {
                             text: qsTr("Base")
+                            font.underline: true
                             color: Theme.primary()
-                            font.pixelSize: Theme.fontSmall
+                            font.pixelSize: Theme.fontNormal
                             MouseArea {
                                 anchors.fill: parent
                                 onClicked: setRuleTarget(-1)
@@ -1388,7 +1520,10 @@ Item {
 
                     // template switcher (shown when templates exist for the targeted modifier)
                     RowLayout {
-                        visible: ruleTargetModifierId > 0 && modifierTemplates && (modifierTemplates.default || (modifierTemplates.others && modifierTemplates.others.length > 0))
+                        visible: ruleTargetModifierId > 0 && modifierTemplates
+                                 && (modifierTemplates.default
+                                     || (modifierTemplates.others
+                                         && modifierTemplates.others.length > 0))
                         spacing: 6
                         Layout.fillWidth: true
 
@@ -1406,15 +1541,25 @@ Item {
                             model: {
                                 templateRevision
                                 var items = []
-                                if (modifierTemplates && modifierTemplates.default)
-                                    items.push({ label: templateLabel(modifierTemplates.default), template: modifierTemplates.default })
-                                if (modifierTemplates && modifierTemplates.others) {
+                                if (modifierTemplates
+                                        && modifierTemplates.default)
+                                    items.push({
+                                                   "label": templateLabel(
+                                                                modifierTemplates.default),
+                                                   "template": modifierTemplates.default
+                                               })
+                                if (modifierTemplates
+                                        && modifierTemplates.others) {
                                     for (var i = 0; i < modifierTemplates.others.length; ++i)
-                                        items.push({ label: templateLabel(modifierTemplates.others[i]), template: modifierTemplates.others[i] })
+                                        items.push({
+                                                       "label": templateLabel(
+                                                                    modifierTemplates.others[i]),
+                                                       "template": modifierTemplates.others[i]
+                                                   })
                                 }
                                 return items
                             }
-                            onActivated: function(index) {
+                            onActivated: function (index) {
                                 if (index >= 0 && index < model.length)
                                     applyTemplate(model[index].template)
                             }
@@ -1422,46 +1567,33 @@ Item {
                     }
 
                     Text {
-                        visible: ruleTargetModifierId > 0 && ruleEffect === "replace"
-                        text: replaceFromId <= 0
-                              ? qsTr("Pick the base item to replace.")
-                              : qsTr("Replacing %1. Pick the item to use instead.").arg(stockName(replaceFromId))
+                        visible: ruleTargetModifierId > 0
+                                 && ruleEffect === "replace"
+                        text: replaceFromId
+                              <= 0 ? qsTr("Pick the base item to replace.") : qsTr(
+                                         "Replacing %1. Pick the item to use instead.").arg(
+                                         stockName(replaceFromId))
                         color: Theme.secondaryText
                         font.pixelSize: Theme.fontSmall
                         wrapMode: Text.WordWrap
                         Layout.fillWidth: true
                     }
 
-                    RowLayout {
-                        TextField {
-                            id: lineSearchField
-                            Layout.fillWidth: true
-                            implicitHeight: 36
-                            placeholderText: qsTr("Search stock")
-                            color: Theme.text
-                            leftPadding: 10
-                            placeholderTextColor: Theme.secondaryText
-                            background: Rectangle {
-                                color: Theme.surface
-                                radius: 6
-                                border.color: Theme.border
-                            }
-                            onTextChanged: linePickerQuery = text.trim()
+                    TextField {
+                        id: lineSearchField
+                        Layout.fillWidth: true
+                        implicitHeight: 36
+                        placeholderText: qsTr("Search stock")
+                        font.pixelSize: Theme.fontNormal
+                        color: Theme.text
+                        leftPadding: 10
+                        placeholderTextColor: Theme.secondaryText
+                        background: Rectangle {
+                            color: Theme.surface
+                            radius: 4
+                            border.color: Theme.border
                         }
-                        TextField {
-                            id: newLineQty
-                            Layout.preferredWidth: 56
-                            implicitHeight: 36
-                            text: "1"
-                            color: Theme.text
-                            leftPadding: 8
-                            inputMethodHints: Qt.ImhFormattedNumbersOnly
-                            background: Rectangle {
-                                color: Theme.surface
-                                radius: 6
-                                border.color: Theme.border
-                            }
-                        }
+                        onTextChanged: linePickerQuery = text.trim()
                     }
 
                     ListView {
@@ -1477,10 +1609,14 @@ Item {
                             required property string type
                             required property string baseUnit
 
-                            visible: matchesLinePicker({ id: id, name: name, type: type })
+                            visible: matchesLinePicker({
+                                                           "id": id,
+                                                           "name": name,
+                                                           "type": type
+                                                       })
                             width: ListView.view.width
-                            height: visible ? 44 : 0
-                            radius: 8
+                            height: visible ? 54 : 0
+                            radius: 4
                             color: Theme.surface
                             border.width: 1
                             border.color: Theme.border
@@ -1501,7 +1637,10 @@ Item {
                                         font.pixelSize: Theme.fontNormal
                                     }
                                     Text {
-                                        text: catalogLabel(typeCatalog, type) + " · " + catalogLabel(unitCatalog, baseUnit)
+                                        text: catalogLabel(
+                                                  typeCatalog,
+                                                  type) + " (" + catalogLabel(
+                                                  unitCatalog, baseUnit) + ")"
                                         color: Theme.secondaryText
                                         font.pixelSize: Theme.fontNormal
                                     }
@@ -1512,88 +1651,6 @@ Item {
                                 anchors.fill: parent
                                 cursorShape: Qt.PointingHandCursor
                                 onClicked: addFromPicker(id)
-                            }
-                        }
-                    }
-
-                    Text {
-                        visible: !creatingLineStock
-                        text: qsTr("+ New stock item")
-                        color: Theme.primary()
-                        font.pixelSize: Theme.fontNormal
-                        MouseArea {
-                            anchors.fill: parent
-                            onClicked: creatingLineStock = true
-                        }
-                    }
-
-                    Rectangle {
-                        visible: creatingLineStock
-                        Layout.fillWidth: true
-                        implicitHeight: inlineCol.implicitHeight + 16
-                        radius: 8
-                        color: Theme.surface
-                        border.color: Theme.border
-
-                        ColumnLayout {
-                            id: inlineCol
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            anchors.top: parent.top
-                            anchors.margins: 8
-                            spacing: 8
-
-                            Text {
-                                text: qsTr("New stock item")
-                                font.bold: true
-                                color: Theme.text
-                                font.pixelSize: Theme.fontNormal
-                            }
-                            TextField {
-                                id: inlineStockName
-                                Layout.fillWidth: true
-                                implicitHeight: 34
-                                placeholderText: qsTr("Name")
-                                color: Theme.text
-                                leftPadding: 8
-                                background: Rectangle {
-                                    color: Theme.background
-                                    radius: 6
-                                    border.color: Theme.border
-                                }
-                            }
-                            RowLayout {
-                                ComboBox {
-                                    id: inlineStockType
-                                    Layout.fillWidth: true
-                                    implicitHeight: 34
-                                    model: typeCatalog
-                                    textRole: "label"
-                                }
-                                ComboBox {
-                                    id: inlineStockUnit
-                                    Layout.fillWidth: true
-                                    implicitHeight: 34
-                                    model: unitCatalog
-                                    textRole: "label"
-                                }
-                            }
-                            RowLayout {
-                                Button {
-                                    text: qsTr("Cancel")
-                                    implicitHeight: 32
-                                    hoverEnabled: false
-                                    focusPolicy: Qt.NoFocus
-                                    onClicked: creatingLineStock = false
-                                }
-                                Button {
-                                    Layout.fillWidth: true
-                                    text: qsTr("Add to recipe")
-                                    implicitHeight: 32
-                                    hoverEnabled: false
-                                    focusPolicy: Qt.NoFocus
-                                    onClicked: createStockAndAddToRecipe()
-                                }
                             }
                         }
                     }

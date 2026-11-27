@@ -12,6 +12,7 @@ Dialog {
     property real basePrice: 0
     property string portion: ""
     property string currencySymbol: SettingService.currencySymbol()
+    property int editIndex: -1
 
     signal confirmed(var payload)
 
@@ -43,6 +44,7 @@ Dialog {
     }
 
     function openFor(id, name, price, itemPortion) {
+        editIndex = -1
         menuItemId = id
         itemName = name
         basePrice = Number(price) || 0
@@ -64,6 +66,49 @@ Dialog {
         }
 
         open()
+    }
+
+    function openForEdit(index, id, name, price, itemPortion, existingModifiers) {
+        editIndex = index
+        menuItemId = id
+        itemName = name
+        basePrice = Number(price) || 0
+        portion = itemPortion || ""
+        selectionModel.clear()
+        groupMetaModel.clear()
+        errorLabel.text = ""
+
+        ModifiersService.currentMenuId = id
+        if (ModifiersService.reloadForMenu)
+            ModifiersService.reloadForMenu(id)
+        else if (ModifiersService.menuModifierModel)
+            ModifiersService.menuModifierModel.loadGroupsForMenu(id)
+
+        if (!ModifiersService.menuModifierModel
+                || ModifiersService.menuModifierModel.rowCount() === 0) {
+            confirmed(buildPayload())
+            return
+        }
+
+        open()
+
+        Qt.callLater(function () {
+            applyExistingModifiers(existingModifiers || [])
+        })
+    }
+
+    function applyExistingModifiers(existing) {
+        const byGroup = {}
+        for (let i = 0; i < existing.length; ++i) {
+            const m = existing[i]
+            const gid = m.groupId
+            if (!byGroup[gid])
+                byGroup[gid] = []
+            byGroup[gid].push(m)
+        }
+
+        for (const gid in byGroup)
+            setGroupSelection(Number(gid), byGroup[gid])
     }
 
     function selectedModifiers() {
@@ -181,7 +226,7 @@ Dialog {
 
     function buildPayload() {
         const mods = selectedModifiers()
-        return {
+        const payload = {
             "menuItemId": menuItemId,
             "name": itemName,
             "portion": portion,
@@ -191,6 +236,9 @@ Dialog {
             "modifierKey": modifierKey(),
             "modifierLabel": mods.map(function (m) { return m.name }).join(", ")
         }
+        if (editIndex >= 0)
+            payload.editIndex = editIndex
+        return payload
     }
 
     ListModel { id: selectionModel }
@@ -200,7 +248,7 @@ Dialog {
         spacing: 10
 
         Text {
-            text: portion.length ? portion + " · " + root.formatMoney(root.basePrice)
+            text: portion?.length ? portion + " · " + root.formatMoney(root.basePrice)
                                  : root.formatMoney(root.basePrice)
             color: Theme.secondaryText
             font.pixelSize: Theme.fontNormal
@@ -243,9 +291,11 @@ Dialog {
                                              "isRequired": isRequired
                                          })
 
-                    for (let i = 0; i < modifiers.length; ++i) {
-                        if (modifiers[i].isDefault)
-                            root.toggleModifier(id, modifiers[i], true)
+                    if (root.editIndex < 0) {
+                        for (let i = 0; i < modifiers.length; ++i) {
+                            if (modifiers[i].isDefault)
+                                root.toggleModifier(id, modifiers[i], true)
+                        }
                     }
                 }
 
@@ -377,7 +427,7 @@ Dialog {
                     radius: 8
                 }
                 contentItem: Text {
-                    text: qsTr("Add to order")
+                    text: root.editIndex >= 0 ? qsTr("Update") : qsTr("Add to order")
                     color: "white"
                     font.bold: true
                     horizontalAlignment: Text.AlignHCenter

@@ -25,6 +25,8 @@ Item {
     property var editOrdersList: []
     property bool allowEditAfterSend: false
 
+    property string editingOrderNumber: ""
+
     property var kitchenSettings: ({})
     property string currencySymbol: SettingService.currencySymbol()
 
@@ -101,11 +103,29 @@ Item {
                               "qty": 1,
                               "price": payload.price,
                               "basePrice": payload.basePrice,
+                              "portion": payload.portion || "",
                               "notes": "",
                               "modifierKey": key,
                               "modifierLabel": payload.modifierLabel || "",
                               "modifiersJson": JSON.stringify(payload.modifiers || [])
                           })
+    }
+
+    function updateLineFromPayload(index, payload) {
+        const key = payload.modifierKey || ""
+        orderModel.set(index, {
+            "orderItemId": orderModel.get(index).orderItemId,
+            "menuItemId": payload.menuItemId,
+            "name": payload.name,
+            "qty": orderModel.get(index).qty,
+            "price": payload.price,
+            "basePrice": payload.basePrice,
+            "portion": payload.portion || "",
+            "notes": orderModel.get(index).notes,
+            "modifierKey": key,
+            "modifierLabel": payload.modifierLabel || "",
+            "modifiersJson": JSON.stringify(payload.modifiers || [])
+        })
     }
 
     function reloadOrder() {
@@ -115,20 +135,27 @@ Item {
         for (var i = 0; i < items.length; i++) {
             const mods = items[i].modifiers || []
             const names = []
-            for (var j = 0; j < mods.length; j++)
+            let modifierTotal = 0
+            for (var j = 0; j < mods.length; j++) {
                 names.push(mods[j].name)
+                modifierTotal += Number(mods[j].price_delta || 0)
+            }
+
+            const unitPrice = items[i].price + modifierTotal;
+
             orderModel.append({
                                   "orderItemId": items[i].id,
                                   "menuItemId": items[i].item_id,
                                   "name": items[i].item_name,
                                   "qty": items[i].quantity,
-                                  "price": items[i].price,
-                                  "basePrice": items[i].base_price !== undefined ? items[i].base_price : items[i].price,
+                                  "price": unitPrice,
+                                  "basePrice": items[i].price,
+                                  "portion": items[i].portion_size || "",
                                   "notes": items[i].notes || "",
                                   "modifierKey": modifierKeyFromList(mods),
                                   "modifierLabel": names.join(", "),
                                   "modifiersJson": JSON.stringify(mods)
-                              })
+                                })
         }
     }
 
@@ -154,7 +181,10 @@ Item {
     ModifierPickerDialog {
         id: modifierPicker
         onConfirmed: function (payload) {
-            root.addPayloadToOrder(payload)
+            if (payload.editIndex !== undefined && payload.editIndex >= 0)
+                root.updateLineFromPayload(payload.editIndex, payload)
+            else
+                root.addPayloadToOrder(payload)
         }
     }
 
@@ -493,6 +523,7 @@ Item {
                             onClicked: {
                                 orderModel.clear()
                                 currentOrderId = -1
+                                editingOrderNumber = -1
                                 currentOrderType = ""
                                 selectedTableId = -1
                                 showEditOrdersList = false
@@ -545,7 +576,9 @@ Item {
                     }
 
                     Label {
-                        text: qsTr("Current Order")
+                        text: currentOrderId >= 0
+                            ? qsTr("Editing Order #%1").arg(editingOrderNumber)
+                            : qsTr("Current Order")
                         visible: !showEditOrdersList
                         font.bold: true
                         font.pixelSize: floorPlanMode ? Theme.fontLarge : Theme.fontNormal
@@ -648,6 +681,21 @@ Item {
                                         color: floorPlanMode ? Theme.text : Theme.secondaryText
                                         font.pixelSize: Theme.fontNormal
                                     }
+
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        onClicked: {
+                                            const line = orderModel.get(index)
+                                            modifierPicker.openForEdit(
+                                                index,
+                                                line.menuItemId,
+                                                line.name,
+                                                line.basePrice,
+                                                line.portion || "",
+                                                root.parseModifiers(line)
+                                            )
+                                        }
+                                    }
                                 }
 
                                 Label {
@@ -657,6 +705,21 @@ Item {
                                     font.pixelSize: Theme.fontSmall
                                     wrapMode: Text.WordWrap
                                     Layout.fillWidth: true
+
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        onClicked: {
+                                            const line = orderModel.get(index)
+                                            modifierPicker.openForEdit(
+                                                index,
+                                                line.menuItemId,
+                                                line.name,
+                                                line.basePrice,
+                                                line.portion || "",
+                                                root.parseModifiers(line)
+                                            )
+                                        }
+                                    }
                                 }
 
                                 RowLayout {
@@ -770,9 +833,10 @@ Item {
                                 onClicked: {
                                     showEditOrdersList = false
                                     currentOrderId = modelData.id
+                                    editingOrderNumber = modelData.display_number || modelData.id
                                     currentOrderType = modelData.type
                                     selectedTableId = modelData.table_id !== undefined && modelData.table_id !== null
-                                                      ? modelData.table_id : -1
+                                                    ? modelData.table_id : -1
                                     reloadOrder()
                                 }
                             }
@@ -860,6 +924,7 @@ Item {
                                 var e = orderModel.get(i)
                                 if (floorPlanMode) {
                                     items.push({
+                                                   "orderItemId": e.orderItemId,
                                                    "menuItemId": e.menuItemId,
                                                    "qty": e.qty,
                                                    "notes": e.notes,
@@ -868,6 +933,7 @@ Item {
                                                })
                                 } else {
                                     items.push({
+                                                   "orderItemId": e.orderItemId,
                                                    "menuItemId": e.menuItemId,
                                                    "qty": e.qty,
                                                    "notes": e.notes,
@@ -896,6 +962,7 @@ Item {
                                 currentOrderType = ""
                                 selectedTableId = -1
                                 currentOrderId = -1
+                                editingOrderNumber = -1
                             }
                         }
                     }

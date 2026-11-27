@@ -184,6 +184,68 @@ OrderService::OrderService(OrderSessionRepository &orderSessionRepo,
       m_inventoryService(inventoryService),
       m_databaseManager(dbManager) {}
 
+QVariantList OrderService::getOpenOrders()
+{
+    QVariantList result;
+
+    auto orders = m_orderRepo.getActiveOrderSessionOrders();
+
+    auto tables = m_tableRepo.getAllTables();
+    QMap<int, QString> tableMap;
+
+    for (const auto &table : tables)
+        tableMap[table.id] = table.table_name;
+
+    for (const auto &order : orders)
+    {
+        QVariantMap map;
+
+        map["id"] = order.id;
+        map["display_number"] = order.display_number;
+        map["status"] = order.status;
+        map["notes"] = order.notes;
+        map["type"] = order.order_type;
+
+        if (order.table_id.has_value()) {
+            int tableId = order.table_id.value();
+            map["table_name"] = tableMap.value(tableId);
+            map["table_id"] = tableId;
+        } else {
+            map["table_name"] = QVariant();
+        }
+
+        result.append(map);
+    }
+
+    return result;
+}
+
+QVariantList OrderService::getOrderItems(int orderId)
+{
+    QVariantList result;
+
+    auto items = m_orderItemRepo.getOrderItemsByOrderId(orderId);
+
+    for (const auto &item : items)
+    {
+        QVariantMap map;
+
+        map["id"] = item.id;
+        map["item_id"] = item.item_id;
+        map["item_name"] = item.item_name;
+        map["quantity"] = item.quantity;
+        map["price"] = item.price / 100;
+        map["status"] = item.item_status;
+        map["notes"] = item.notes;
+        map["portion_size"] = item.portion_size;
+        map["modifiers"] = modifiersForItem(m_orderItemModifierRepo, item.id);
+
+        result.append(map);
+    }
+
+    return result;
+}
+
 int OrderService::createOrder(
     const QString &orderType,
     const QVariantList &items,
@@ -363,68 +425,6 @@ int OrderService::createOrder(
     emit orderCreated(orderId);
 
     return orderId;
-}
-
-QVariantList OrderService::getOpenOrders()
-{
-    QVariantList result;
-
-    auto orders = m_orderRepo.getActiveOrderSessionOrders();
-
-    auto tables = m_tableRepo.getAllTables();
-    QMap<int, QString> tableMap;
-
-    for (const auto &table : tables)
-        tableMap[table.id] = table.table_name;
-
-    for (const auto &order : orders)
-    {
-        QVariantMap map;
-
-        map["id"] = order.id;
-        map["display_number"] = order.display_number;
-        map["status"] = order.status;
-        map["notes"] = order.notes;
-        map["type"] = order.order_type;
-
-        if (order.table_id.has_value()) {
-            int tableId = order.table_id.value();
-            map["table_name"] = tableMap.value(tableId);
-            map["table_id"] = tableId;
-        } else {
-            map["table_name"] = QVariant();
-        }
-
-        result.append(map);
-    }
-
-    return result;
-}
-
-QVariantList OrderService::getOrderItems(int orderId)
-{
-    QVariantList result;
-
-    auto items = m_orderItemRepo.getOrderItemsByOrderId(orderId);
-
-    for (const auto &item : items)
-    {
-        QVariantMap map;
-
-        map["id"] = item.id;
-        map["item_id"] = item.item_id;
-        map["item_name"] = item.item_name;
-        map["quantity"] = item.quantity;
-        map["price"] = item.price / 100;
-        map["status"] = item.item_status;
-        map["notes"] = item.notes;
-        map["portion_size"] = item.portion_size;
-        map["modifiers"] = modifiersForItem(m_orderItemModifierRepo, item.id);
-
-        result.append(map);
-    }
-
-    return result;
 }
 
 int OrderService::updateOrder(
